@@ -1,0 +1,54 @@
+services:
+  backend:
+    container_name: backend
+    build: ./backend
+    volumes:
+      - ./backend/src:/app/src
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_SCHEMA: ${DB_SCHEMA}
+      DB_USER: ${DB_USER}
+      DB_HOST: ${DB_HOST}
+      APP_SECRET: ${APP_SECRET}
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    volumes: 
+      - ./frontend/src:/app/src
+    environment:
+      VITE_GATEWAY_PORT: ${GATEWAY_PORT}
+      VITE_UPLOAD_URL: ${UPLOAD_URL}
+  database:
+    container_name: database
+    image: postgres
+    volumes:
+      - ./persist/data/:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_SCHEMA}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_HOST: ${DB_HOST}
+  visualizer:
+    container_name: visualizer
+    image: adminer
+  file:
+    container_name: file
+    build: ./file
+    volumes:
+      - ./file/uploads:/app/uploads
+      - ./file/src:/app/src
+    ports:
+      - 3002:3002
+  gateway: 
+    container_name: gateway
+    image: nginx
+    depends_on:
+      - backend
+      - frontend
+    restart: always
+    ports: 
+      - ${GATEWAY_PORT}:80
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf
+
+
