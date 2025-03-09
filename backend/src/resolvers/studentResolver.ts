@@ -1,6 +1,7 @@
-import { Arg, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Query, Resolver } from "type-graphql";
 import { User } from "../entities/user";
-import { Between, ILike } from "typeorm";
+import { Between, ILike, In } from "typeorm";
+import { Crew } from "../entities/crew";
 
 @Resolver(User)
 export class StudentResolver {
@@ -75,5 +76,27 @@ export class StudentResolver {
     // Exécuter la requête et retourner les résultats
     const users = await queryBuilder.getMany();
     return users;
+  }
+
+  @Query(() => [User])
+  async getChatUsers(@Ctx() context: { user: User }) {
+    const user = await User.findOne({
+      where: { id: context.user.id },
+      relations: {
+        crew: {
+          students: true,
+        },
+        coach: true,
+      },
+    });
+    if (!user) throw new Error("Aucun utilisateur trouvé");
+    const allUsers = [];
+    if (user.crew?.students)
+      allUsers.push(
+        ...user.crew?.students.filter((user) => user.id !== context.user.id)
+      );
+    if (user.coach) allUsers.push(user.coach);
+
+    return allUsers;
   }
 }
