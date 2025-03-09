@@ -227,9 +227,13 @@ export default function ConversationChat({
           placeholder="Votre message ..."
           className="rounded-full focus-visible:ring-primary"
           value={input}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setInput(e.target.value)
-          }
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            if (input.length === 0) {
+              setInput(e.target.value.toUpperCase());
+            } else {
+              setInput(e.target.value);
+            }
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && input.length > 0) {
               e.preventDefault();
@@ -279,9 +283,9 @@ export default function ConversationChat({
             const markAsRead = i === lastMessageReadIndex;
             return (
               <div key={message?.id}>
-                {-differenceInMinutes(
-                  allMessages[i + 1]?.createdAt,
-                  message?.createdAt
+                {differenceInMinutes(
+                  message?.createdAt,
+                  allMessages[i + 1]?.createdAt
                 ) > 60 ? (
                   <p className="w-full flex justify-center items-center py-4 text-xs text-gray-300">
                     {format(message?.createdAt, "d MMM, HH:mm", { locale: fr })}

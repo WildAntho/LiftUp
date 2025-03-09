@@ -176,7 +176,7 @@ export default function Calendar({ currentUser }: CalendarProps) {
   };
 
   return (
-    <section className=" relative w-full h-full flex flex-col justify-center items-center bg-white rounded-2xl p-8 gap-5">
+    <section className=" relative w-full h-full flex flex-col justify-center items-center bg-white rounded-2xl p-4 pb-8 gap-4">
       {currentStudent && <BadgeStudent student={currentStudent} />}
       {currentCrew && <BadgeCrew crew={currentCrew} />}
       <Tabs
@@ -196,7 +196,7 @@ export default function Calendar({ currentUser }: CalendarProps) {
       !loadingFeedbacks &&
       !loadingStudentFeedbacks &&
       !loadingCrewTraining ? (
-        <section className="relative w-full h-[93%]">
+        <section className="relative w-full h-[90%]">
           <section className="w-full h-full flex justify-center items-center overflow-y-scroll">
             {active === "plan" && (
               <ScheduleCalendar

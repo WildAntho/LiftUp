@@ -113,7 +113,7 @@ export const ScheduleCalendar = <T extends CalendarEvent>({
 
   return (
     <div className="bg-white p-2 w-full h-full">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-2">
         <div className="flex items-center gap-4">
           <h2 className="text-xl font-semibold ml-4">
             {monthDisplay[0].toUpperCase() + monthDisplay.slice(1)}
