@@ -434,6 +434,7 @@ export type Query = {
   __typename?: 'Query';
   getAllCategories: Array<OfferCategory>;
   getAllExercicesModel: Array<ExerciceModel>;
+  getChatUsers: Array<User>;
   getCoachCrews: Array<Crew>;
   getCoachOffers: Array<Offer>;
   getCoachProfile: CoachProfile;
@@ -945,6 +946,11 @@ export type GetAllExercicesModelQueryVariables = Exact<{
 
 
 export type GetAllExercicesModelQuery = { __typename?: 'Query', getAllExercicesModel: Array<{ __typename?: 'ExerciceModel', id: string, title: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, notes?: string | null, type?: { __typename?: 'ExerciceType', id: string, value: string, label: string } | null }> };
+
+export type GetChatUsersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetChatUsersQuery = { __typename?: 'Query', getChatUsers: Array<{ __typename?: 'User', firstname: string, id: string, email: string, lastname: string, avatar?: string | null, roles: string }> };
 
 export type GetCoachQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2244,6 +2250,50 @@ export type GetAllExercicesModelQueryHookResult = ReturnType<typeof useGetAllExe
 export type GetAllExercicesModelLazyQueryHookResult = ReturnType<typeof useGetAllExercicesModelLazyQuery>;
 export type GetAllExercicesModelSuspenseQueryHookResult = ReturnType<typeof useGetAllExercicesModelSuspenseQuery>;
 export type GetAllExercicesModelQueryResult = Apollo.QueryResult<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>;
+export const GetChatUsersDocument = gql`
+    query GetChatUsers {
+  getChatUsers {
+    firstname
+    id
+    email
+    lastname
+    avatar
+    roles
+  }
+}
+    `;
+
+/**
+ * __useGetChatUsersQuery__
+ *
+ * To run a query within a React component, call `useGetChatUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChatUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChatUsersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetChatUsersQuery(baseOptions?: Apollo.QueryHookOptions<GetChatUsersQuery, GetChatUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChatUsersQuery, GetChatUsersQueryVariables>(GetChatUsersDocument, options);
+      }
+export function useGetChatUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatUsersQuery, GetChatUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChatUsersQuery, GetChatUsersQueryVariables>(GetChatUsersDocument, options);
+        }
+export function useGetChatUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetChatUsersQuery, GetChatUsersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetChatUsersQuery, GetChatUsersQueryVariables>(GetChatUsersDocument, options);
+        }
+export type GetChatUsersQueryHookResult = ReturnType<typeof useGetChatUsersQuery>;
+export type GetChatUsersLazyQueryHookResult = ReturnType<typeof useGetChatUsersLazyQuery>;
+export type GetChatUsersSuspenseQueryHookResult = ReturnType<typeof useGetChatUsersSuspenseQuery>;
+export type GetChatUsersQueryResult = Apollo.QueryResult<GetChatUsersQuery, GetChatUsersQueryVariables>;
 export const GetCoachDocument = gql`
     query GetCoach($id: String!) {
   getUserById(id: $id) {

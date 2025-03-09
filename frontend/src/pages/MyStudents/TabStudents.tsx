@@ -164,6 +164,7 @@ export default function TabStudent() {
               labelPlacement="outside"
               placeholder="Offre"
               radius="sm"
+              aria-label="Filtrer par offre"
               startContent={<BadgeEuro />}
               selectedKeys={[offer]}
               onChange={(e) => setOffer(e.target.value)}
@@ -177,6 +178,7 @@ export default function TabStudent() {
               labelPlacement="outside"
               placeholder="Equipe"
               radius="sm"
+              aria-label="Filtrer par équipe"
               startContent={<Handshake />}
               selectedKeys={[crew]}
               onChange={(e) => setCrew(e.target.value)}
@@ -189,13 +191,18 @@ export default function TabStudent() {
             </Select>
             <Dialog>
               <DialogTrigger asChild>
-                <Button color="primary" radius="sm" isIconOnly>
+                <Button
+                  color="primary"
+                  radius="sm"
+                  isIconOnly
+                  aria-label="Ouvrir la boîte de dialogue pour sélectionner un élève"
+                >
                   <Plus />
                 </Button>
               </DialogTrigger>
               <DialogContent
-                aria-description="dialog-description"
-                aria-describedby="dialog-description"
+                aria-label="Sélectionner un élève"
+                aria-describedby="Ajouter un nouvel élève"
                 className="h-[60%] flex flex-col justify-start items-center overflow-y-scroll"
               >
                 <DialogHeader>

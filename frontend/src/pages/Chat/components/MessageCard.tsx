@@ -1,4 +1,3 @@
-import UserAvatar from "@/components/UserAvatar";
 import { IoArrowRedo } from "react-icons/io5";
 import { Message } from "@/graphql/hooks";
 import {
@@ -75,9 +74,6 @@ export default function MessageCard({
             : "justify-start"
         }`}
       >
-        {message?.sender?.id !== currentUser?.id.toString() && (
-          <UserAvatar avatar={user?.avatar ?? ""} size="sm" />
-        )}
         <div
           className={`max-w-[70%] min-h-[35px] rounded-2xl flex items-center px-4 py-2 text-sm ${
             message?.sender?.id === currentUser?.id.toString()

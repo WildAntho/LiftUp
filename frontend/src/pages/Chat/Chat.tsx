@@ -5,6 +5,7 @@ import {
 import ConversationChat from "./components/ConversationChat";
 import {
   Conversation,
+  useGetChatUsersQuery,
   useGetConversationsQuery,
   useGetStudentsQuery,
 } from "@/graphql/hooks";
@@ -36,6 +37,7 @@ export default function Chat() {
       fetchPolicy: "cache-and-network",
     });
   const allConversations = dataConversation?.getConversations ?? [];
+
   const { data: dataStudents } = useGetStudentsQuery({
     variables: {
       id: currentUser?.id.toString() as string,
@@ -43,8 +45,13 @@ export default function Chat() {
     },
     skip: currentUser?.roles !== "COACH",
   });
+  const { data: dataUsers } = useGetChatUsersQuery({
+    fetchPolicy: "cache-and-network",
+    skip: currentUser?.roles !== "STUDENT",
+  });
   const allStudents = dataStudents?.getStudents[0]?.students ?? [];
-  const userSelect = currentUser?.roles === "COACH" ? allStudents : [];
+  const allUsers = dataUsers?.getChatUsers ?? [];
+  const userSelect = currentUser?.roles === "COACH" ? allStudents : allUsers;
 
   useEffect(() => {
     if (activeUser) {
