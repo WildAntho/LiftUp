@@ -1037,7 +1037,7 @@ export type GetMessagesQuery = { __typename?: 'Query', getMessages: { __typename
 export type GetMyOffersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMyOffersQuery = { __typename?: 'Query', getCoachOffers: Array<{ __typename?: 'Offer', id: string, name: string, price: number, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', label: string, id: string } }> };
+export type GetMyOffersQuery = { __typename?: 'Query', getCoachOffers: Array<{ __typename?: 'Offer', id: string, name: string, price: number, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', label: string, id: string }, crew?: { __typename?: 'Crew', id: string, name: string } | null }> };
 
 export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2907,6 +2907,10 @@ export const GetMyOffersDocument = gql`
     category {
       label
       id
+    }
+    crew {
+      id
+      name
     }
   }
 }

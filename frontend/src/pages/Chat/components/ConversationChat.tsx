@@ -95,6 +95,9 @@ export default function ConversationChat({
       setAllMessages([]);
       lastCursorRef.current = "";
       setCursor("");
+      if (messagesContainerRef && messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTop = 0;
+      }
     }
   }, [conversationId]);
 
