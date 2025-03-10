@@ -32,9 +32,9 @@ export class Crew extends BaseEntity {
   @ManyToOne(() => User, (user) => user.coachedCrews)
   coach!: User;
 
-  @Field(() => [User])
+  @Field(() => [User], { nullable: true })
   @OneToMany(() => User, (user) => user.crew)
-  students!: User[];
+  students?: User[];
 
   @Field(() => Offer, { nullable: true })
   @OneToOne(() => Offer, (offer) => offer.crew, {
