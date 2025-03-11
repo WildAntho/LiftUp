@@ -1,4 +1,5 @@
 import {
+  Request,
   useGetRequestQuery,
   useGetSentQuery,
   useGetTotalStudentsQuery,
@@ -16,10 +17,11 @@ import { Receiver } from "@/type";
 import UserCard from "@/components/UserCard";
 import { useLocation, useNavigate } from "react-router-dom";
 import TabStudents from "./TabStudents";
+import TabRequests from "./TabRequests";
 
 export default function MyStudents() {
   const currentUser = useUserStore((state) => state.user);
-  const { data: dataTotalStudent } = useGetTotalStudentsQuery();
+  const { data: dataTotalStudent, refetch: refetchTotal } = useGetTotalStudentsQuery();
   const {
     data: dataRequest,
     loading: loadingRequest,
@@ -44,6 +46,7 @@ export default function MyStudents() {
   const refetch = {
     refetchSent,
     refetchRequest,
+    refetchTotal
   };
 
   const totalStudents = dataTotalStudent?.getTotalStudents;
@@ -127,36 +130,17 @@ export default function MyStudents() {
             <>
               {active === "students" && (
                 <div className="w-full pb-4">
-                  <TabStudents />
+                  <TabStudents refetch={refetch}/>
                 </div>
               )}
-              {active === "request" &&
-                (myRequests.length > 0 ? (
-                  <section className="flex justify-start items-start flex-wrap w-full gap-2">
-                    {myRequests.map((s) => {
-                      const details = {
-                        description: s.description,
-                        phone: s.phone,
-                        offer: s.offer?.name,
-                      };
-                      return (
-                        <div key={s.sender.id} className="w-[49%] h-[100px]">
-                          <UserCard
-                            details={details}
-                            user={s.sender}
-                            canAccept={true}
-                            requestId={s.id}
-                            refetch={refetch}
-                          />
-                        </div>
-                      );
-                    })}
-                  </section>
-                ) : (
-                  <p className="w-full justify-start pl-5 text-sm text-gray-600">
-                    Vous n'avez aucune demande en cours.
-                  </p>
-                ))}
+              {active === "request" && (
+                <div className="w-full pb-4">
+                  <TabRequests
+                    refetch={refetch}
+                    requests={myRequests as Request[]}
+                  />
+                </div>
+              )}
               {active === "pending" &&
                 (mySent.length > 0 ? (
                   <section className="flex justify-start items-start flex-wrap w-full gap-2">

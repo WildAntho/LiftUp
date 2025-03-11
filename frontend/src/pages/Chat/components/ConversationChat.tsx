@@ -82,7 +82,7 @@ export default function ConversationChat({
       limit: 30,
       cursor: cursor,
     },
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "no-cache",
     skip: conversationId == "" && newConversationId == "",
   });
 
