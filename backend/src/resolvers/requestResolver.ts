@@ -128,7 +128,11 @@ export class RequestResolver {
         },
       });
       if (crew && sender?.roles === "STUDENT") {
-        crew.students.push(sender);
+        if (crew.students) {
+          crew.students.push(sender);
+        } else {
+          crew.students = [sender];
+        }
         await crew.save();
       }
     }

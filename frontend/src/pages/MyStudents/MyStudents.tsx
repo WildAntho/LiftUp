@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Chip, Tab, Tabs } from "@heroui/react";
 import { useUserStore } from "@/services/zustand/userStore";
-import { Key, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import { Receiver } from "@/type";
 import UserCard from "@/components/UserCard";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -21,7 +21,8 @@ import TabRequests from "./TabRequests";
 
 export default function MyStudents() {
   const currentUser = useUserStore((state) => state.user);
-  const { data: dataTotalStudent, refetch: refetchTotal } = useGetTotalStudentsQuery();
+  const { data: dataTotalStudent, refetch: refetchTotal } =
+    useGetTotalStudentsQuery();
   const {
     data: dataRequest,
     loading: loadingRequest,
@@ -46,7 +47,7 @@ export default function MyStudents() {
   const refetch = {
     refetchSent,
     refetchRequest,
-    refetchTotal
+    refetchTotal,
   };
 
   const totalStudents = dataTotalStudent?.getTotalStudents;
@@ -105,6 +106,10 @@ export default function MyStudents() {
     navigate(`?tab=${key}`);
   };
 
+  useEffect(() => {
+    if (urlTab) setActive(urlTab);
+  }, [urlTab]);
+
   return (
     <section className="h-full w-full pt-4 pb-4 gap-4 flex justify-center items-center">
       <section className="w-[80%] h-full bg-white rounded-2xl flex flex-col justify-start items-center overflow-y-scroll gap-5">
@@ -130,7 +135,7 @@ export default function MyStudents() {
             <>
               {active === "students" && (
                 <div className="w-full pb-4">
-                  <TabStudents refetch={refetch}/>
+                  <TabStudents refetch={refetch} />
                 </div>
               )}
               {active === "request" && (
