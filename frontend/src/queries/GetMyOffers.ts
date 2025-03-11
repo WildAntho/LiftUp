@@ -13,6 +13,10 @@ export const GET_MYOFFERS = gql`
         label
         id
       }
+      crew {
+        id
+        name
+      }
     }
   }
 `;

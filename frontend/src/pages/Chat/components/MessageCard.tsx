@@ -4,10 +4,9 @@ import {
   UserWithoutPassword,
   useUserStore,
 } from "@/services/zustand/userStore";
-import { differenceInMinutes, formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
 import { Tooltip } from "@heroui/tooltip";
 import { repliedMessage } from "./ConversationChat";
+import UserAvatar from "@/components/UserAvatar";
 
 type MessageCardProps = {
   message: Message;
@@ -50,7 +49,7 @@ export default function MessageCard({
               : "justify-start"
           } w-full`}
         >
-          <p className="flex flex-col items-start justify-start gap-1 relative z-1 text-xs rounded-2xl px-4 pt-2 pb-7 bg-gray-white border border-gray-300 max-w-[50%] translate-y-5">
+          <p className="flex flex-col items-start justify-start gap-1 relative z-1 text-xs rounded-2xl px-4 pt-2 pb-4 bg-white border border-gray-300 max-w-[50%] translate-y-2">
             {message?.sender.id === currentUser?.id.toString() && (
               <span className="font-semibold flex gap-2">
                 <IoArrowRedo className="size-4 opacity-50" />
@@ -106,13 +105,12 @@ export default function MessageCard({
         </p>
       )}
       {markAsRead && isSentByCurrentUser && (
-        <p className="w-full flex justify-end text-[10px] text-gray-400 pr-2 pt-1">
-          {differenceInMinutes(new Date(), message?.readAt) < 1
-            ? "Vu à l'instant"
-            : `Vu il y a ${formatDistanceToNow(message?.readAt, {
-                locale: fr,
-              })}`}
-        </p>
+        <div className="w-full flex justify-end pr-2 pt-1">
+          <UserAvatar
+            avatar={user?.avatar ?? ""}
+            className="w-[15px] h-[15px]"
+          />
+        </div>
       )}
     </>
   );

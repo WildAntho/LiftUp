@@ -82,7 +82,7 @@ export default function ConversationChat({
       limit: 30,
       cursor: cursor,
     },
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "no-cache",
     skip: conversationId == "" && newConversationId == "",
   });
 
@@ -95,6 +95,9 @@ export default function ConversationChat({
       setAllMessages([]);
       lastCursorRef.current = "";
       setCursor("");
+      if (messagesContainerRef && messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTop = 0;
+      }
     }
   }, [conversationId]);
 

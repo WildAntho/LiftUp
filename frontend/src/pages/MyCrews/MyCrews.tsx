@@ -2,7 +2,8 @@ import CrewCard from "@/components/CrewCard";
 import CrewModal from "@/components/modals/CrewModal";
 import { Button } from "@/components/ui/button";
 import { useGetCoachCrewsQuery } from "@/graphql/hooks";
-import { Plus } from "lucide-react";
+import { UserWithoutPassword } from "@/services/zustand/userStore";
+import { Info, Plus } from "lucide-react";
 import { useState } from "react";
 
 export default function MyCrews() {
@@ -20,7 +21,7 @@ export default function MyCrews() {
       <CrewModal open={open} onClose={onClose} refetch={refetch} />
       <section className="h-full w-full pt-4 pb-4 gap-4 flex justify-center items-center">
         <section className="w-[80%] h-full bg-white rounded-2xl flex flex-col justify-start items-center overflow-y-scroll gap-7">
-          <section className="w-[90%] h-full p-5 flex flex-col items-start justify-start gap-10">
+          <section className="w-[90%] h-full p-5 flex flex-col items-start justify-start gap-7">
             <div className="w-full">
               <Button
                 type="button"
@@ -30,6 +31,13 @@ export default function MyCrews() {
                 <Plus /> Créer une nouvelle équipe
               </Button>
             </div>
+            <p className="text-xs text-gray-500 flex justify-start items-center gap-4 w-[70%]">
+              <Info size={40} />
+              Si vous souhaitez assigner une offre à une équipe, vous pouvez
+              créer une équipe sans élève et ensuite assigner une offre à cette
+              équipe dans la section "Profil / Mes offres". Les élèves qui
+              souscriront à l'offre seront automatiquement ajoutés à l'équipe.
+            </p>
             <section className="flex justify-start items-start flex-wrap w-full gap-2">
               {allCrews?.map((crew) => (
                 <div
@@ -39,7 +47,7 @@ export default function MyCrews() {
                   <CrewCard
                     id={crew.id}
                     name={crew.name}
-                    students={crew.students}
+                    students={crew.students as UserWithoutPassword[]}
                     refetch={refetch}
                     isEditable={true}
                   />

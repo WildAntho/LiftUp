@@ -77,7 +77,7 @@ export type Crew = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   offer?: Maybe<Offer>;
-  students: Array<User>;
+  students?: Maybe<Array<User>>;
   trainings?: Maybe<Array<Training>>;
 };
 
@@ -962,7 +962,7 @@ export type GetCoachQuery = { __typename?: 'Query', getUserById: { __typename?: 
 export type GetCoachCrewsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCoachCrewsQuery = { __typename?: 'Query', getCoachCrews: Array<{ __typename?: 'Crew', id: string, name: string, students: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null }> }> };
+export type GetCoachCrewsQuery = { __typename?: 'Query', getCoachCrews: Array<{ __typename?: 'Crew', id: string, name: string, students?: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null }> | null }> };
 
 export type GetOneCoachOffersQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1037,7 +1037,7 @@ export type GetMessagesQuery = { __typename?: 'Query', getMessages: { __typename
 export type GetMyOffersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMyOffersQuery = { __typename?: 'Query', getCoachOffers: Array<{ __typename?: 'Offer', id: string, name: string, price: number, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', label: string, id: string } }> };
+export type GetMyOffersQuery = { __typename?: 'Query', getCoachOffers: Array<{ __typename?: 'Offer', id: string, name: string, price: number, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', label: string, id: string }, crew?: { __typename?: 'Crew', id: string, name: string } | null }> };
 
 export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2907,6 +2907,10 @@ export const GetMyOffersDocument = gql`
     category {
       label
       id
+    }
+    crew {
+      id
+      name
     }
   }
 }

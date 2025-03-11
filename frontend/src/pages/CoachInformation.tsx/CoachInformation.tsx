@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import RequestForm from "./components/RequestForm";
 import {
   CoachProfile,
+  Offer,
   useGetOneCoachOffersQuery,
   useGetOneCoachProfileQuery,
 } from "@/graphql/hooks";
@@ -53,7 +54,7 @@ export default function CoachInformation() {
                 </section>
                 <section className="w-full bg-white rounded-2xl p-6">
                   {offers.length > 0 ? (
-                    <OffersCoach offers={offers} />
+                    <OffersCoach offers={offers as Offer[]} />
                   ) : (
                     <p className="text-xs">Aucune offre renseignée</p>
                   )}
@@ -65,7 +66,7 @@ export default function CoachInformation() {
                 )}
               </section>
               <section className="sticky top-4 w-[30%] bg-white rounded-2xl p-4 shadow-md">
-                <RequestForm offers={availableOffers} coachId={id} />
+                <RequestForm offers={availableOffers as Offer[]} coachId={id} />
               </section>
             </section>
           </section>

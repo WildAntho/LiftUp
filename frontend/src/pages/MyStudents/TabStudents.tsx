@@ -42,7 +42,13 @@ type UserType = {
   offer: string;
 };
 
-export default function TabStudent() {
+type TabStudentProps = {
+  refetch?: {
+    refetchTotal: () => void;
+  };
+};
+
+export default function TabStudent({ refetch }: TabStudentProps) {
   const currentUser = useUserStore((state) => state.user);
   const [input, setInput] = useState<string>("");
   const [offer, setOffer] = useState<string>("");
@@ -81,6 +87,7 @@ export default function TabStudent() {
         },
       },
     });
+    refetch?.refetchTotal();
     refetchStudents();
   };
   const loadingState = loadingStudents ? "loading" : "idle";
@@ -237,7 +244,6 @@ export default function TabStudent() {
     <section className="w-full flex flex-col items-center justify-start gap-5">
       <Table
         isHeaderSticky
-        aria-label="Example table with custom cells"
         bottomContent={
           <div className="flex w-full justify-center">
             <PaginationBar />
@@ -248,6 +254,7 @@ export default function TabStudent() {
           base: "max-h-[520px]",
           table: "min-h-[200px] overflow-scroll",
         }}
+        aria-label="Table élèves"
       >
         <TableHeader columns={columns}>
           {(column) => (
