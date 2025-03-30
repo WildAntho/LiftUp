@@ -121,20 +121,20 @@ export default function ExerciceCard({
           <section className="flex justify-center items-start flex-1">
             <div className="flex flex-col justify-center items-center gap-1 flex-1">
               <p className="text-xs font-bold">Série</p>
-              <div className="border bg-white drop-shadow-md w-[50%] h-full p-2 flex justify-center items-center rounded-lg">
+              <div className="border border-gray-100 bg-white shadow-sm w-[50%] h-full p-2 flex justify-center items-center rounded-lg">
                 {serie}
               </div>
             </div>
             <div className="flex flex-col justify-center items-center gap-1 flex-1">
               <p className="text-xs font-bold">Répétitions</p>
-              <div className="border bg-white drop-shadow-md w-[50%] h-full p-2 flex justify-center items-center rounded-lg">
+              <div className="border border-gray-100 bg-white shadow-sm w-[50%] h-full p-2 flex justify-center items-center rounded-lg">
                 {rep}
               </div>
             </div>
           </section>
           <div className="flex flex-col justify-center items-center gap-1 flex-1">
             <p className="text-xs font-bold">Charge</p>
-            <div className="border bg-white drop-shadow-md w-[50%] h-full p-2 flex justify-center items-center rounded-lg">
+            <div className="border border-gray-100 bg-white shadow-sm w-[50%] h-full p-2 flex justify-center items-center rounded-lg">
               <p>{weight ? weight + "kg" : "Au choix"}</p>
             </div>
           </div>

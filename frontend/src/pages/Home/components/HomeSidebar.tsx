@@ -33,6 +33,7 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
         id: currentUser ? currentUser.id.toString() : "",
         input: input ? input : "",
       },
+      fetchPolicy: "cache-and-network",
     });
   const [getCrews, { data: dataCrews, loading: loadingCrews }] =
     useGetCoachCrewsLazyQuery();

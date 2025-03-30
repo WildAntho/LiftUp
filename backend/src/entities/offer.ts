@@ -13,6 +13,7 @@ import { User } from "./user";
 import { OfferCategory } from "./offerCategory";
 import { Crew } from "./crew";
 import { Request } from "./request";
+import { Membership } from "./memberShip";
 
 @ObjectType()
 @Entity()
@@ -62,4 +63,8 @@ export class Offer extends BaseEntity {
   @Field(() => [Request], { nullable: true })
   @OneToMany(() => Request, (request) => request.offer, { cascade: true })
   requests?: Request[];
+
+  @Field(() => [Membership], { nullable: true })
+  @OneToMany(() => Membership, (membership) => membership.offer)
+  memberships?: Membership[];
 }

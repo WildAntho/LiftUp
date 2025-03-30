@@ -18,6 +18,7 @@ import { Offer } from "./offer";
 import { Notification } from "./notification";
 import { Message } from "./message";
 import { Conversation } from "./conversation";
+import { Membership } from "./memberShip";
 
 @ObjectType()
 @Entity()
@@ -108,6 +109,10 @@ export class User extends BaseEntity {
   @Field(() => Offer, { nullable: true })
   @ManyToOne(() => Offer, (offer) => offer.students, { nullable: true })
   studentOffer?: Offer | null;
+
+  @Field(() => Membership, { nullable: true })
+  @OneToOne(() => Membership, (membership) => membership.student)
+  membership?: Membership;
 
   @Field(() => [Notification], { nullable: true })
   @OneToMany(() => Notification, (notification) => notification.user, {

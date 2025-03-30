@@ -64,6 +64,7 @@ export default function RequestForm({ offers, coachId }: RequestFormProps) {
           }
         />
         <SelectField
+          required
           label="Prestation"
           className="flex-1"
           value={formState.offerId}

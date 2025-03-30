@@ -14,6 +14,7 @@ import { OfferCategory } from "../entities/offerCategory";
 import { Notification } from "../entities/notification";
 import { Message } from "../entities/message";
 import { Conversation } from "../entities/conversation";
+import { Membership } from "../entities/memberShip";
 
 config();
 
@@ -41,6 +42,7 @@ export const dataSource = new DataSource({
     Notification,
     Message,
     Conversation,
+    Membership
   ],
   synchronize: true,
 });
