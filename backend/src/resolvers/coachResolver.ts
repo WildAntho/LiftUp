@@ -76,63 +76,46 @@ export class CoachResolver {
     @Arg("id") id: string,
     @Arg("input", { nullable: true }) input?: string,
     @Arg("offerId", { nullable: true }) offerId?: string,
-    @Arg("crewId", { nullable: true }) crewId?: string
+    @Arg("crewId", { nullable: true }) crewId?: string,
+    @Arg("sortRemaining", { nullable: true }) sortRemaining?: boolean
   ) {
-    let whereClause: any = { id };
+    const query = User.createQueryBuilder("user")
+      .leftJoinAndSelect("user.students", "student")
+      .leftJoinAndSelect("student.crew", "crew")
+      .leftJoinAndSelect("student.studentOffer", "studentOffer")
+      .leftJoinAndSelect(
+        "student.memberships",
+        "membership",
+        "(membership.isActive = true OR membership.id IS NULL)"
+      )
+      .where("user.id = :id", { id });
 
     if (input) {
-      whereClause = {
-        id,
-        students: [
-          {
-            firstname: ILike(`%${input}%`), // Vérifie si l'input est dans le prénom
-          },
-          {
-            lastname: ILike(`%${input}%`), // Vérifie si l'input est dans le nom
-          },
-          {
-            email: ILike(`%${input}%`), // Vérifie si l'input est dans l'email
-          },
-        ],
-      };
+      query.andWhere(
+        `(student.firstname ILIKE :input OR student.lastname ILIKE :input OR student.email ILIKE :input)`,
+        { input: `%${input}%` }
+      );
     }
 
-    // Ajouter offerId et crewId si présents
     if (offerId) {
-      whereClause.students = {
-        ...whereClause.students,
-        studentOffer: { id: offerId },
-      };
+      query.andWhere("studentOffer.id = :offerId", { offerId });
     }
 
     if (crewId) {
       if (crewId === "none") {
-        whereClause.students = {
-          ...whereClause.students,
-          crew: IsNull(), // Cela permet de récupérer les étudiants qui n'ont pas de `crew`
-        };
+        query.andWhere("student.crew IS NULL");
       } else {
-        whereClause.students = {
-          ...whereClause.students,
-          crew: { id: crewId }, // Cela récupère les étudiants appartenant à une équipe avec `crewId`
-        };
+        query.andWhere("crew.id = :crewId", { crewId });
       }
     }
 
-    const coach = await User.find({
-      where: whereClause,
-      relations: {
-        students: {
-          crew: true,
-          studentOffer: true,
-        },
-      },
-      order: {
-        students: {
-          firstname: "ASC",
-        },
-      },
-    });
+    if (sortRemaining) {
+      query.addOrderBy(`COALESCE(membership.endDate, '9999-12-31')`, "ASC");
+    } else {
+      query.addOrderBy("student.firstname", "ASC");
+    }
+
+    const coach = await query.getMany();
     return coach;
   }
 

@@ -6,8 +6,15 @@ export const GET_STUDENTS = gql`
     $id: String!
     $crewId: String
     $offerId: String
+    $sortRemaining: Boolean
   ) {
-    getStudents(input: $input, id: $id, crewId: $crewId, offerId: $offerId) {
+    getStudents(
+      input: $input
+      id: $id
+      crewId: $crewId
+      offerId: $offerId
+      sortRemaining: $sortRemaining
+    ) {
       students {
         email
         firstname
@@ -22,6 +29,11 @@ export const GET_STUDENTS = gql`
         crew {
           id
           name
+        }
+        memberships {
+          id
+          endDate
+          isActive
         }
       }
     }

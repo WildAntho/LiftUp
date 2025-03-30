@@ -18,6 +18,11 @@ export type Scalars = {
   DateTimeISO: { input: any; output: any; }
 };
 
+export type ActiveMembershipType = {
+  offerId: Scalars['String']['input'];
+  studentId: Scalars['String']['input'];
+};
+
 export type AddMessagetData = {
   content: Scalars['String']['input'];
   conversationId?: InputMaybe<Scalars['String']['input']>;
@@ -168,6 +173,16 @@ export type MarkAsReadResponse = {
   message: Scalars['String']['output'];
 };
 
+export type Membership = {
+  __typename?: 'Membership';
+  endDate: Scalars['DateTimeISO']['output'];
+  id: Scalars['ID']['output'];
+  isActive: Scalars['Boolean']['output'];
+  offer: Offer;
+  startDate: Scalars['DateTimeISO']['output'];
+  student: User;
+};
+
 export type Message = {
   __typename?: 'Message';
   content: Scalars['String']['output'];
@@ -190,6 +205,7 @@ export type MessageResult = {
 export type Mutation = {
   __typename?: 'Mutation';
   acceptRequest: Scalars['String']['output'];
+  activeMembership: Scalars['String']['output'];
   addCategory: Scalars['String']['output'];
   addCoachProfile: Scalars['String']['output'];
   addExercice: Exercice;
@@ -227,6 +243,11 @@ export type Mutation = {
 export type MutationAcceptRequestArgs = {
   data: AddRequestData;
   id: Scalars['String']['input'];
+};
+
+
+export type MutationActiveMembershipArgs = {
+  data: ActiveMembershipType;
 };
 
 
@@ -406,6 +427,7 @@ export type Offer = {
   description: Scalars['String']['output'];
   durability: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
+  memberships?: Maybe<Array<Membership>>;
   name: Scalars['String']['output'];
   price: Scalars['Float']['output'];
   requests?: Maybe<Array<Request>>;
@@ -548,6 +570,7 @@ export type QueryGetStudentsArgs = {
   id: Scalars['String']['input'];
   input?: InputMaybe<Scalars['String']['input']>;
   offerId?: InputMaybe<Scalars['String']['input']>;
+  sortRemaining?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -684,6 +707,7 @@ export type User = {
   firstname: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   lastname: Scalars['String']['output'];
+  memberships?: Maybe<Array<Membership>>;
   notifications?: Maybe<Array<Notification>>;
   offers?: Maybe<Array<Offer>>;
   password: Scalars['String']['output'];
@@ -718,6 +742,13 @@ export type AcceptRequestMutationVariables = Exact<{
 
 
 export type AcceptRequestMutation = { __typename?: 'Mutation', acceptRequest: string };
+
+export type ActivateMemberShipMutationVariables = Exact<{
+  data: ActiveMembershipType;
+}>;
+
+
+export type ActivateMemberShipMutation = { __typename?: 'Mutation', activeMembership: string };
 
 export type AddCoachProfileMutationVariables = Exact<{
   data: CoachProfileInput;
@@ -1099,10 +1130,11 @@ export type GetStudentsQueryVariables = Exact<{
   id: Scalars['String']['input'];
   crewId?: InputMaybe<Scalars['String']['input']>;
   offerId?: InputMaybe<Scalars['String']['input']>;
+  sortRemaining?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
-export type GetStudentsQuery = { __typename?: 'Query', getStudents: Array<{ __typename?: 'User', students?: Array<{ __typename?: 'User', email: string, firstname: string, lastname: string, roles: string, id: string, avatar?: string | null, studentOffer?: { __typename?: 'Offer', name: string, id: string } | null, crew?: { __typename?: 'Crew', id: string, name: string } | null }> | null }> };
+export type GetStudentsQuery = { __typename?: 'Query', getStudents: Array<{ __typename?: 'User', students?: Array<{ __typename?: 'User', email: string, firstname: string, lastname: string, roles: string, id: string, avatar?: string | null, studentOffer?: { __typename?: 'Offer', name: string, id: string } | null, crew?: { __typename?: 'Crew', id: string, name: string } | null, memberships?: Array<{ __typename?: 'Membership', id: string, endDate: any, isActive: boolean }> | null }> | null }> };
 
 export type GetTotalStudentsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1194,6 +1226,37 @@ export function useAcceptRequestMutation(baseOptions?: Apollo.MutationHookOption
 export type AcceptRequestMutationHookResult = ReturnType<typeof useAcceptRequestMutation>;
 export type AcceptRequestMutationResult = Apollo.MutationResult<AcceptRequestMutation>;
 export type AcceptRequestMutationOptions = Apollo.BaseMutationOptions<AcceptRequestMutation, AcceptRequestMutationVariables>;
+export const ActivateMemberShipDocument = gql`
+    mutation ActivateMemberShip($data: ActiveMembershipType!) {
+  activeMembership(data: $data)
+}
+    `;
+export type ActivateMemberShipMutationFn = Apollo.MutationFunction<ActivateMemberShipMutation, ActivateMemberShipMutationVariables>;
+
+/**
+ * __useActivateMemberShipMutation__
+ *
+ * To run a mutation, you first call `useActivateMemberShipMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useActivateMemberShipMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [activateMemberShipMutation, { data, loading, error }] = useActivateMemberShipMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useActivateMemberShipMutation(baseOptions?: Apollo.MutationHookOptions<ActivateMemberShipMutation, ActivateMemberShipMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ActivateMemberShipMutation, ActivateMemberShipMutationVariables>(ActivateMemberShipDocument, options);
+      }
+export type ActivateMemberShipMutationHookResult = ReturnType<typeof useActivateMemberShipMutation>;
+export type ActivateMemberShipMutationResult = Apollo.MutationResult<ActivateMemberShipMutation>;
+export type ActivateMemberShipMutationOptions = Apollo.BaseMutationOptions<ActivateMemberShipMutation, ActivateMemberShipMutationVariables>;
 export const AddCoachProfileDocument = gql`
     mutation AddCoachProfile($data: CoachProfileInput!) {
   addCoachProfile(data: $data)
@@ -3366,8 +3429,14 @@ export type GetStudentTrainingsLazyQueryHookResult = ReturnType<typeof useGetStu
 export type GetStudentTrainingsSuspenseQueryHookResult = ReturnType<typeof useGetStudentTrainingsSuspenseQuery>;
 export type GetStudentTrainingsQueryResult = Apollo.QueryResult<GetStudentTrainingsQuery, GetStudentTrainingsQueryVariables>;
 export const GetStudentsDocument = gql`
-    query getStudents($input: String, $id: String!, $crewId: String, $offerId: String) {
-  getStudents(input: $input, id: $id, crewId: $crewId, offerId: $offerId) {
+    query getStudents($input: String, $id: String!, $crewId: String, $offerId: String, $sortRemaining: Boolean) {
+  getStudents(
+    input: $input
+    id: $id
+    crewId: $crewId
+    offerId: $offerId
+    sortRemaining: $sortRemaining
+  ) {
     students {
       email
       firstname
@@ -3382,6 +3451,11 @@ export const GetStudentsDocument = gql`
       crew {
         id
         name
+      }
+      memberships {
+        id
+        endDate
+        isActive
       }
     }
   }
@@ -3404,6 +3478,7 @@ export const GetStudentsDocument = gql`
  *      id: // value for 'id'
  *      crewId: // value for 'crewId'
  *      offerId: // value for 'offerId'
+ *      sortRemaining: // value for 'sortRemaining'
  *   },
  * });
  */

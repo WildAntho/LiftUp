@@ -110,9 +110,9 @@ export class User extends BaseEntity {
   @ManyToOne(() => Offer, (offer) => offer.students, { nullable: true })
   studentOffer?: Offer | null;
 
-  @Field(() => Membership, { nullable: true })
-  @OneToOne(() => Membership, (membership) => membership.student)
-  membership?: Membership;
+  @Field(() => [Membership], { nullable: true })
+  @OneToMany(() => Membership, (membership) => membership.student)
+  memberships?: Membership[];
 
   @Field(() => [Notification], { nullable: true })
   @OneToMany(() => Notification, (notification) => notification.user, {

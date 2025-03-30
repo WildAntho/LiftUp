@@ -44,7 +44,7 @@ export default function OfferModal({
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
       }}
     >
-      <ModalContent>
+      <ModalContent className="min-h-[550px]">
         <ModalHeader className="w-full h-full flex justify-center">
           <p>Démarrer une nouvelle conversation</p>
         </ModalHeader>

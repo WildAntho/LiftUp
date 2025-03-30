@@ -4,7 +4,6 @@ import {
   Column,
   Entity,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
 } from "typeorm";
@@ -23,12 +22,15 @@ export class Membership extends BaseEntity {
   startDate!: Date;
 
   @Field()
+  @Column()
+  endDate!: Date;
+
+  @Field()
   @Column({ default: true })
   isActive!: boolean;
 
   @Field(() => User)
-  @OneToOne(() => User, (user) => user.membership, { onDelete: "CASCADE" })
-  @JoinColumn()
+  @ManyToOne(() => User, (user) => user.memberships, { onDelete: "CASCADE" })
   student!: User;
 
   @Field(() => Offer)
