@@ -14,6 +14,7 @@ import {
   useGetCoachCrewsQuery,
   useGetOneCoachOffersQuery,
   useGetStudentsQuery,
+  useRenewMemberShipMutation,
 } from "@/graphql/hooks";
 import { useUserStore } from "@/services/zustand/userStore";
 import {
@@ -34,7 +35,8 @@ import { useCallback, useMemo, useState } from "react";
 import imgDefault from "../../../public/default.jpg";
 import { uploadURL } from "@/services/utils";
 import Activate from "@/components/Activate";
-import { differenceInDays } from "date-fns";
+import { addMonths, differenceInDays } from "date-fns";
+import Renew from "@/components/Renew";
 
 type UserType = {
   id: string;
@@ -45,6 +47,8 @@ type UserType = {
   offer: string;
   offerId: string;
   remaining: number;
+  endMembership: string;
+  memberShipId?: string;
 };
 
 type TabStudentProps = {
@@ -87,6 +91,8 @@ export default function TabStudent({ refetch }: TabStudentProps) {
   const [deleteStudent, { loading }] = useDeleteStudentMutation();
   const [activeMemberShip, { loading: loadingActivate }] =
     useActivateMemberShipMutation();
+  const [renewMembership, { loading: loadingRenew }] =
+    useRenewMemberShipMutation();
   const handleDeleteStudent = async (studentId: string) => {
     await deleteStudent({
       variables: {
@@ -110,6 +116,14 @@ export default function TabStudent({ refetch }: TabStudentProps) {
     });
     refetchStudents();
   };
+  const handleRenewMembership = async (membershipId: string) => {
+    await renewMembership({
+      variables: {
+        id: membershipId,
+      },
+    });
+    refetchStudents();
+  };
   const handleSortChange = () => {
     setSortRemaining(!sortRemaining);
   };
@@ -129,6 +143,19 @@ export default function TabStudent({ refetch }: TabStudentProps) {
     team: student.crew ? student.crew.name : "Aucune équipe",
     offer: student.studentOffer ? student.studentOffer.name : "Aucune offre",
     offerId: student.studentOffer ? student.studentOffer.id : "Aucune offre",
+    memberShipId:
+      student && student?.memberships ? student?.memberships[0]?.id : "",
+    endMembership:
+      student.studentOffer?.durability &&
+      student.memberships &&
+      student.memberships.length > 0 &&
+      student.memberships[0].endDate &&
+      student.memberships[0].endDate
+        ? addMonths(
+            new Date(student.memberships[0].endDate),
+            student.studentOffer?.durability
+          ).toISOString()
+        : "",
     remaining:
       student.memberships &&
       student.memberships.length > 0 &&
@@ -183,6 +210,15 @@ export default function TabStudent({ refetch }: TabStudentProps) {
                   loading={loadingActivate}
                   title="Démarrer le suivi"
                   description="Êtes-vous sûr de vouloir démarrer le suivi de cet élève ?"
+                />
+              )}
+              {user.remaining && user.memberShipId && (
+                <Renew
+                  title="Renouveler le suivi"
+                  description="Êtes-vous sûr de vouloir renouveler le suivi ?"
+                  loading={loadingRenew}
+                  onRenew={() => handleRenewMembership(user.memberShipId!)}
+                  endDate={user.endMembership}
                 />
               )}
             </div>

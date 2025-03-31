@@ -28,7 +28,7 @@ export default function Delete({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="hover:bg-black/5 p-2 rounded-full cursor-pointer">
+        <div className="hover:bg-red-500 hover:bg-opacity-10 p-2 rounded-full cursor-pointer">
           <Tooltip
             content="Supprimer"
             showArrow={true}

@@ -1,4 +1,4 @@
-import { Loader2, Play } from "lucide-react";
+import { Loader2, RefreshCcw } from "lucide-react";
 import {
   Dialog,
   DialogClose,
@@ -11,31 +11,36 @@ import {
 } from "./ui/dialog";
 import { Tooltip } from "@heroui/tooltip";
 import { Button } from "./ui/button";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { capitalize } from "@/services/utils";
 
-type ActivateProps = {
-  onActive: () => void;
-  loading?: boolean;
+type RenewProps = {
   description: string;
   title: string;
+  loading: boolean;
+  onRenew: () => void;
+  endDate: string;
 };
 
-export default function Activate({
-  onActive,
-  loading,
+export default function Renew({
   description,
   title,
-}: ActivateProps) {
+  loading,
+  onRenew,
+  endDate,
+}: RenewProps) {
   return (
     <Dialog>
       <DialogTrigger>
-        <div className="hover:bg-green-500 hover:bg-opacity-10 p-2 rounded-full cursor-pointer">
+        <div className="hover:bg-blue-500 hover:bg-opacity-10 p-2 rounded-full cursor-pointer">
           <Tooltip
-            content="Démarrer le suivi"
+            content="Renouveler le suivi"
             showArrow={true}
             color="foreground"
             className="text-xs"
           >
-            <Play className={`size-4 text-black`} />
+            <RefreshCcw className={`size-4 text-black`} />
           </Tooltip>
         </div>
       </DialogTrigger>
@@ -44,12 +49,20 @@ export default function Activate({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
+        <p className="text-sm my-2">
+          La nouvelle date de fin sera la suivante:{" "}
+          <span className="text-black font-semibold">
+            {capitalize(
+              format(new Date(endDate), "EEEE d MMMM yyyy", { locale: fr })
+            )}
+          </span>
+        </p>
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
             <Button
               type="button"
               className="bg-primary hover:bg-blue-600 w-[20%]"
-              onClick={onActive}
+              onClick={onRenew}
               disabled={loading}
             >
               {loading && <Loader2 className="animate-spin" />}

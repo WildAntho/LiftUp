@@ -24,6 +24,7 @@ export const GET_STUDENTS = gql`
         avatar
         studentOffer {
           name
+          durability
           id
         }
         crew {

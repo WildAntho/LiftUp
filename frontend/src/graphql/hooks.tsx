@@ -229,6 +229,7 @@ export type Mutation = {
   logout: Scalars['Boolean']['output'];
   markAsRead: MarkAsReadResponse;
   rejectRequest: Scalars['String']['output'];
+  renewMemberShip: Scalars['String']['output'];
   signUp: Scalars['String']['output'];
   updateCoachProfile: Scalars['String']['output'];
   updateCrew: Scalars['String']['output'];
@@ -359,6 +360,11 @@ export type MutationMarkAsReadArgs = {
 
 
 export type MutationRejectRequestArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationRenewMemberShipArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -904,6 +910,13 @@ export type RejectRequestMutationVariables = Exact<{
 
 export type RejectRequestMutation = { __typename?: 'Mutation', rejectRequest: string };
 
+export type RenewMemberShipMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type RenewMemberShipMutation = { __typename?: 'Mutation', renewMemberShip: string };
+
 export type SignupMutationVariables = Exact<{
   data: UserInput;
 }>;
@@ -1134,7 +1147,7 @@ export type GetStudentsQueryVariables = Exact<{
 }>;
 
 
-export type GetStudentsQuery = { __typename?: 'Query', getStudents: Array<{ __typename?: 'User', students?: Array<{ __typename?: 'User', email: string, firstname: string, lastname: string, roles: string, id: string, avatar?: string | null, studentOffer?: { __typename?: 'Offer', name: string, id: string } | null, crew?: { __typename?: 'Crew', id: string, name: string } | null, memberships?: Array<{ __typename?: 'Membership', id: string, endDate: any, isActive: boolean }> | null }> | null }> };
+export type GetStudentsQuery = { __typename?: 'Query', getStudents: Array<{ __typename?: 'User', students?: Array<{ __typename?: 'User', email: string, firstname: string, lastname: string, roles: string, id: string, avatar?: string | null, studentOffer?: { __typename?: 'Offer', name: string, durability: number, id: string } | null, crew?: { __typename?: 'Crew', id: string, name: string } | null, memberships?: Array<{ __typename?: 'Membership', id: string, endDate: any, isActive: boolean }> | null }> | null }> };
 
 export type GetTotalStudentsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1949,6 +1962,37 @@ export function useRejectRequestMutation(baseOptions?: Apollo.MutationHookOption
 export type RejectRequestMutationHookResult = ReturnType<typeof useRejectRequestMutation>;
 export type RejectRequestMutationResult = Apollo.MutationResult<RejectRequestMutation>;
 export type RejectRequestMutationOptions = Apollo.BaseMutationOptions<RejectRequestMutation, RejectRequestMutationVariables>;
+export const RenewMemberShipDocument = gql`
+    mutation RenewMemberShip($id: String!) {
+  renewMemberShip(id: $id)
+}
+    `;
+export type RenewMemberShipMutationFn = Apollo.MutationFunction<RenewMemberShipMutation, RenewMemberShipMutationVariables>;
+
+/**
+ * __useRenewMemberShipMutation__
+ *
+ * To run a mutation, you first call `useRenewMemberShipMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRenewMemberShipMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [renewMemberShipMutation, { data, loading, error }] = useRenewMemberShipMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useRenewMemberShipMutation(baseOptions?: Apollo.MutationHookOptions<RenewMemberShipMutation, RenewMemberShipMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RenewMemberShipMutation, RenewMemberShipMutationVariables>(RenewMemberShipDocument, options);
+      }
+export type RenewMemberShipMutationHookResult = ReturnType<typeof useRenewMemberShipMutation>;
+export type RenewMemberShipMutationResult = Apollo.MutationResult<RenewMemberShipMutation>;
+export type RenewMemberShipMutationOptions = Apollo.BaseMutationOptions<RenewMemberShipMutation, RenewMemberShipMutationVariables>;
 export const SignupDocument = gql`
     mutation Signup($data: UserInput!) {
   signUp(data: $data)
@@ -3446,6 +3490,7 @@ export const GetStudentsDocument = gql`
       avatar
       studentOffer {
         name
+        durability
         id
       }
       crew {
