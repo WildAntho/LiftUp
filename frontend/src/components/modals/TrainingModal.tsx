@@ -661,11 +661,13 @@ export default function TrainingModal({
                 Sauvegarder
               </Button>
             ) : (
-              !currentStudent && (
+              !currentStudent &&
+              !currentCrew &&
+              training?.crew === null && (
                 <Button
                   type="submit"
                   className="bg-primary hover:bg-blue-600 transition duration-150"
-                  disabled={training?.validate || currentStudent !== null}
+                  disabled={training?.validate}
                   onClick={() => setOpenFeedback(true)}
                 >
                   Valider l'entraînement

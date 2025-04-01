@@ -1102,7 +1102,7 @@ export type GetMyTrainingQueryVariables = Exact<{
 }>;
 
 
-export type GetMyTrainingQuery = { __typename?: 'Query', getTrainingsById: Array<{ __typename?: 'Training', createdByCoach?: string | null, id: string, title: string, date: any, notes?: string | null, editable: boolean, validate: boolean, color: string, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, notes?: string | null, type?: { __typename?: 'ExerciceType', id: string, value: string, label: string } | null }> | null }> };
+export type GetMyTrainingQuery = { __typename?: 'Query', getTrainingsById: Array<{ __typename?: 'Training', createdByCoach?: string | null, id: string, title: string, date: any, notes?: string | null, editable: boolean, validate: boolean, color: string, crew?: { __typename?: 'Crew', id: string } | null, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, notes?: string | null, type?: { __typename?: 'ExerciceType', id: string, value: string, label: string } | null }> | null }> };
 
 export type GetNotificationQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3120,6 +3120,9 @@ export const GetMyTrainingDocument = gql`
     editable
     validate
     color
+    crew {
+      id
+    }
     exercices {
       title
       id

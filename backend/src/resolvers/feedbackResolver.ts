@@ -39,6 +39,10 @@ export class FeedbackResolver {
       },
     });
     if (!training) throw new Error("Pas d'entraînement pour cet ID");
+    if (training.crew !== null)
+      throw new Error(
+        "Il n'est pas possible de renseigner un feedback pour un entrainement d'équipe"
+      );
     const newFeedback = new Feedback();
     newFeedback.title = training.title;
     newFeedback.date = training.date;
