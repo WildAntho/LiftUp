@@ -483,7 +483,7 @@ export type Query = {
   getSent: Array<Request>;
   getStudentFeedback: Array<Feedback>;
   getStudentTrainings: Array<Training>;
-  getStudents: Array<User>;
+  getStudents: StudentsResponse;
   getTotalStudents: Scalars['Int']['output'];
   getTotalUnreadMessage: Scalars['Int']['output'];
   getTrainingsById: Array<Training>;
@@ -575,7 +575,9 @@ export type QueryGetStudentsArgs = {
   crewId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   input?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Float']['input']>;
   offerId?: InputMaybe<Scalars['String']['input']>;
+  page?: InputMaybe<Scalars['Float']['input']>;
   sortRemaining?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -626,6 +628,12 @@ export type Request = {
 export type StudentCoach = {
   coach_id: Scalars['String']['input'];
   student_id: Scalars['String']['input'];
+};
+
+export type StudentsResponse = {
+  __typename?: 'StudentsResponse';
+  students: Array<User>;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type Subscription = {
@@ -1144,10 +1152,12 @@ export type GetStudentsQueryVariables = Exact<{
   crewId?: InputMaybe<Scalars['String']['input']>;
   offerId?: InputMaybe<Scalars['String']['input']>;
   sortRemaining?: InputMaybe<Scalars['Boolean']['input']>;
+  page?: InputMaybe<Scalars['Float']['input']>;
+  limit?: InputMaybe<Scalars['Float']['input']>;
 }>;
 
 
-export type GetStudentsQuery = { __typename?: 'Query', getStudents: Array<{ __typename?: 'User', students?: Array<{ __typename?: 'User', email: string, firstname: string, lastname: string, roles: string, id: string, avatar?: string | null, studentOffer?: { __typename?: 'Offer', name: string, durability: number, id: string } | null, crew?: { __typename?: 'Crew', id: string, name: string } | null, memberships?: Array<{ __typename?: 'Membership', id: string, endDate: any, isActive: boolean }> | null }> | null }> };
+export type GetStudentsQuery = { __typename?: 'Query', getStudents: { __typename?: 'StudentsResponse', totalCount: number, students: Array<{ __typename?: 'User', email: string, firstname: string, lastname: string, roles: string, id: string, avatar?: string | null, studentOffer?: { __typename?: 'Offer', name: string, durability: number, id: string } | null, crew?: { __typename?: 'Crew', id: string, name: string } | null, memberships?: Array<{ __typename?: 'Membership', id: string, endDate: any, isActive: boolean }> | null }> } };
 
 export type GetTotalStudentsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3473,14 +3483,17 @@ export type GetStudentTrainingsLazyQueryHookResult = ReturnType<typeof useGetStu
 export type GetStudentTrainingsSuspenseQueryHookResult = ReturnType<typeof useGetStudentTrainingsSuspenseQuery>;
 export type GetStudentTrainingsQueryResult = Apollo.QueryResult<GetStudentTrainingsQuery, GetStudentTrainingsQueryVariables>;
 export const GetStudentsDocument = gql`
-    query getStudents($input: String, $id: String!, $crewId: String, $offerId: String, $sortRemaining: Boolean) {
+    query getStudents($input: String, $id: String!, $crewId: String, $offerId: String, $sortRemaining: Boolean, $page: Float, $limit: Float) {
   getStudents(
     input: $input
     id: $id
     crewId: $crewId
     offerId: $offerId
     sortRemaining: $sortRemaining
+    page: $page
+    limit: $limit
   ) {
+    totalCount
     students {
       email
       firstname
@@ -3524,6 +3537,8 @@ export const GetStudentsDocument = gql`
  *      crewId: // value for 'crewId'
  *      offerId: // value for 'offerId'
  *      sortRemaining: // value for 'sortRemaining'
+ *      page: // value for 'page'
+ *      limit: // value for 'limit'
  *   },
  * });
  */

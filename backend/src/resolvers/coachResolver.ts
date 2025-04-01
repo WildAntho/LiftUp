@@ -15,6 +15,7 @@ import { Training } from "../entities/training";
 import { Feedback } from "../entities/feedback";
 import { createTrainingsForDates } from "../utils/utils";
 import { Crew } from "../entities/crew";
+import { StudentsResponse } from "../InputType/coachProfileType";
 
 @Resolver(User)
 export class CoachResolver {
@@ -71,28 +72,30 @@ export class CoachResolver {
   }
 
   @Authorized("COACH")
-  @Query(() => [User])
+  @Query(() => StudentsResponse)
   async getStudents(
     @Arg("id") id: string,
     @Arg("input", { nullable: true }) input?: string,
     @Arg("offerId", { nullable: true }) offerId?: string,
     @Arg("crewId", { nullable: true }) crewId?: string,
-    @Arg("sortRemaining", { nullable: true }) sortRemaining?: boolean
+    @Arg("sortRemaining", { nullable: true }) sortRemaining?: boolean,
+    @Arg("page", { nullable: true, defaultValue: 1 }) page?: number,
+    @Arg("limit", { nullable: true, defaultValue: 10 }) limit?: number
   ) {
     const query = User.createQueryBuilder("user")
-      .leftJoinAndSelect("user.students", "student")
-      .leftJoinAndSelect("student.crew", "crew")
-      .leftJoinAndSelect("student.studentOffer", "studentOffer")
+      .leftJoinAndSelect("user.crew", "crew")
+      .leftJoinAndSelect("user.studentOffer", "studentOffer")
       .leftJoinAndSelect(
-        "student.memberships",
+        "user.memberships",
         "membership",
         "(membership.isActive = true OR membership.id IS NULL)"
       )
-      .where("user.id = :id", { id });
+      .leftJoin("user.coach", "coach")
+      .andWhere("coach.id = :id", { id });
 
     if (input) {
       query.andWhere(
-        `(student.firstname ILIKE :input OR student.lastname ILIKE :input OR student.email ILIKE :input)`,
+        `(user.firstname ILIKE :input OR user.lastname ILIKE :input OR user.email ILIKE :input)`,
         { input: `%${input}%` }
       );
     }
@@ -103,20 +106,24 @@ export class CoachResolver {
 
     if (crewId) {
       if (crewId === "none") {
-        query.andWhere("student.crew IS NULL");
+        query.andWhere("user.crew IS NULL");
       } else {
         query.andWhere("crew.id = :crewId", { crewId });
       }
     }
 
     if (sortRemaining) {
-      query.addOrderBy(`COALESCE(membership.endDate, '9999-12-31')`, "ASC");
+      query.addOrderBy("membership.endDate", "ASC", "NULLS LAST");
     } else {
-      query.addOrderBy("student.firstname", "ASC");
+      query.addOrderBy("user.firstname", "ASC");
     }
 
-    const coach = await query.getMany();
-    return coach;
+    const totalCount = await query.getCount();
+    const offset = page && limit && (page - 1) * limit;
+    query.skip(offset).take(limit);
+
+    const students = await query.getMany();
+    return { students, totalCount };
   }
 
   @Authorized("COACH")

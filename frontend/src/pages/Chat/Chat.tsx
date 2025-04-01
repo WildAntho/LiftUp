@@ -49,7 +49,7 @@ export default function Chat() {
     fetchPolicy: "cache-and-network",
     skip: currentUser?.roles !== "STUDENT",
   });
-  const allStudents = dataStudents?.getStudents[0]?.students ?? [];
+  const allStudents = dataStudents?.getStudents.students ?? [];
   const allUsers = dataUsers?.getChatUsers ?? [];
   const userSelect = currentUser?.roles === "COACH" ? allStudents : allUsers;
 

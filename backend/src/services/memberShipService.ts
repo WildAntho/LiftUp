@@ -11,5 +11,6 @@ export async function startMembership(student: User, offer: Offer) {
   newMemberShip.endDate = endDate;
   newMemberShip.isActive = true;
   newMemberShip.student = student;
+  newMemberShip.offer = offer;
   await newMemberShip.save();
 }

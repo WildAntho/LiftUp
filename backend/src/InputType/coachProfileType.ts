@@ -1,4 +1,5 @@
-import { Field, InputType } from "type-graphql";
+import { Field, InputType, Int, ObjectType } from "type-graphql";
+import { User } from "../entities/user";
 
 @InputType()
 export class CoachProfileInput {
@@ -19,4 +20,13 @@ export class CoachProfileInput {
 
   @Field({ nullable: true })
   linkedin?: string;
+}
+
+@ObjectType()
+export class StudentsResponse {
+  @Field(() => [User])
+  students!: User[];
+
+  @Field(() => Int)
+  totalCount!: number;
 }

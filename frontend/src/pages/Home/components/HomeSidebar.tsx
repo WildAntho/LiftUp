@@ -38,7 +38,7 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
   const [getCrews, { data: dataCrews, loading: loadingCrews }] =
     useGetCoachCrewsLazyQuery();
 
-  const myStudents = dataStudents?.getStudents[0]?.students ?? [];
+  const myStudents = dataStudents?.getStudents.students ?? [];
   const myCoach = dataCoach?.getUserById?.coach
     ? [dataCoach.getUserById.coach]
     : [];

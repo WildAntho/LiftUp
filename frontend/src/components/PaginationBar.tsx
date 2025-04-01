@@ -1,5 +1,24 @@
 import { Pagination } from "@heroui/react";
 
-export default function PaginationBar() {
-  return <Pagination isCompact showControls initialPage={1} total={10} />;
+type PaginationBarProps = {
+  page: number;
+  setPage: (count: number) => void;
+  total: number;
+};
+
+export default function PaginationBar({
+  page,
+  setPage,
+  total,
+}: PaginationBarProps) {
+  return (
+    <Pagination
+      isCompact
+      showControls
+      initialPage={1}
+      page={page}
+      onChange={setPage}
+      total={total}
+    />
+  );
 }

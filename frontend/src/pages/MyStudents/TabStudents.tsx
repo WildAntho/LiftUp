@@ -62,6 +62,8 @@ export default function TabStudent({ refetch }: TabStudentProps) {
   const [input, setInput] = useState<string>("");
   const [offer, setOffer] = useState<string>("");
   const [crew, setCrew] = useState<string>("");
+  const [page, setPage] = useState<number>(1);
+  const limit = 10;
   const [sortRemaining, setSortRemaining] = useState<boolean>(false);
   const { data: dataOffers } = useGetOneCoachOffersQuery({
     variables: { id: currentUser?.id.toString() as string },
@@ -84,10 +86,14 @@ export default function TabStudent({ refetch }: TabStudentProps) {
       offerId: offer,
       crewId: crew,
       sortRemaining,
+      page,
+      limit,
     },
     fetchPolicy: "cache-and-network",
   });
-  const myStudents = dataStudents?.getStudents[0]?.students ?? [];
+  const myStudents = dataStudents?.getStudents.students ?? [];
+  const totalStudents = dataStudents?.getStudents.totalCount ?? 1;
+  const totalPage = Math.ceil(totalStudents / limit);
   const [deleteStudent, { loading }] = useDeleteStudentMutation();
   const [activeMemberShip, { loading: loadingActivate }] =
     useActivateMemberShipMutation();
@@ -310,7 +316,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
         </section>
         <div className="flex items-center justify-between px-3">
           <p className="text-xs text-gray-500">
-            Nombre d'élèves: {myStudents.length}
+            Nombre d'élèves: {totalStudents}
           </p>
           <p
             className="text-xs text-gray-500 hover:underline cursor-pointer"
@@ -339,7 +345,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
         }}
         bottomContent={
           <div className="flex w-full justify-center">
-            <PaginationBar />
+            <PaginationBar setPage={setPage} page={page} total={totalPage} />
           </div>
         }
         topContent={topContent}
