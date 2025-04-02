@@ -28,16 +28,16 @@ export default function Activate({
   return (
     <Dialog>
       <DialogTrigger>
-        <div className="hover:bg-green-500 hover:bg-opacity-10 p-2 rounded-full cursor-pointer">
-          <Tooltip
-            content="Démarrer le suivi"
-            showArrow={true}
-            color="foreground"
-            className="text-xs"
-          >
+        <Tooltip
+          content="Démarrer le suivi"
+          showArrow={true}
+          color="foreground"
+          className="text-xs"
+        >
+          <div className="hover:bg-green-500 hover:bg-opacity-10 p-2 rounded-full cursor-pointer">
             <Play className={`size-4 text-black`} />
-          </Tooltip>
-        </div>
+          </div>
+        </Tooltip>
       </DialogTrigger>
       <DialogContent aria-describedby="dialog-description">
         <DialogHeader>

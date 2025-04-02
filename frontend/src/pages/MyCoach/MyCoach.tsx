@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { Key, useEffect, useState } from "react";
 import SearchCoach from "./components/SearchCoach";
-import PaginationBar from "@/components/PaginationBar";
 import { useLocation } from "react-router-dom";
 
 export default function MyCoach() {
@@ -200,7 +199,7 @@ export default function MyCoach() {
                             </div>
                           ))}
                         </div>
-                        <PaginationBar />
+                        {/* <PaginationBar /> */}
                       </div>
                     ) : (
                       <p className="w-full text-center text-xs text-gray-600 mt-10">

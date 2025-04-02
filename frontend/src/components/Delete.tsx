@@ -28,16 +28,16 @@ export default function Delete({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="hover:bg-red-500 hover:bg-opacity-10 p-2 rounded-full cursor-pointer">
-          <Tooltip
-            content="Supprimer"
-            showArrow={true}
-            color="foreground"
-            className="text-xs"
-          >
+        <Tooltip
+          content="Supprimer"
+          showArrow={true}
+          color="foreground"
+          className="text-xs"
+        >
+          <div className="hover:bg-red-500 hover:bg-opacity-10 p-2 rounded-full cursor-pointer">
             <Trash2 className={`size-4 text-black active:text-gray-500`} />
-          </Tooltip>
-        </div>
+          </div>
+        </Tooltip>
       </DialogTrigger>
       <DialogContent aria-describedby="dialog-description">
         <DialogHeader>

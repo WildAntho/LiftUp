@@ -4,7 +4,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { ReactElement } from "react";
 import {
   UserWithoutPassword,
@@ -25,6 +25,10 @@ type CollapseItemProps = {
   type: string;
   onClick?: () => void;
   loading: boolean;
+  page: number;
+  setPage: (page: number) => void;
+  isLastPage?: boolean;
+  input: string;
 };
 
 export default function CollapseItem(props: CollapseItemProps) {
@@ -112,67 +116,79 @@ export default function CollapseItem(props: CollapseItemProps) {
         </AnimatePresence>
       </CollapsibleTrigger>
       <div>
-        {!props.loading ? (
+        {!props.loading && (
           <div className="pt-2">
             {props.data.length > 0 ? (
-              props.data.map((s) => {
-                if (props.type === "user") {
-                  // s est de type UserWithoutPassword
-                  const user = s as UserWithoutPassword;
-                  return (
-                    props.open && (
-                      <motion.div
-                        key={user.id}
-                        variants={childVariants}
-                        animate="enter"
-                        exit="exit"
-                        initial="initial"
-                      >
-                        <CollapsibleContent className="flex justify-start items-center gap-4">
-                          <ListUsers
-                            handleGetStudent={handleGetStudent}
-                            student={user}
-                            currentStudent={currentStudent}
-                          />
-                        </CollapsibleContent>
-                      </motion.div>
-                    )
-                  );
-                } else if (props.type === "crew") {
-                  // s est de type Crew
-                  const crew = s as Crew;
-                  return (
-                    props.open && (
-                      <motion.div
-                        key={crew.id}
-                        variants={childVariants}
-                        animate="enter"
-                        exit="exit"
-                        initial="initial"
-                      >
-                        <CollapsibleContent className="flex justify-start items-center gap-4">
-                          <Button
-                            variant="ghost"
-                            className={`${
-                              currentCrew && currentCrew.id === crew?.id
-                                ? "bg-primary bg-opacity-10 w-full text-primary justify-start gap-2 hover:text-primary"
-                                : "hover:bg-primary hover:bg-opacity-10 w-full justify-start gap-2"
-                            } hover:bg-primary hover:bg-opacity-10 h-auto`}
-                            onClick={() => handleGetCrew(s as Crew)}
-                          >
-                            <CrewCard
-                              students={crew.students}
-                              id={crew.id}
-                              name={crew.name}
+              <>
+                {props.data.map((s, index) => {
+                  if (props.type === "user") {
+                    const user = s as UserWithoutPassword;
+                    return (
+                      props.open && (
+                        <motion.div
+                          key={user.id}
+                          variants={childVariants}
+                          animate="enter"
+                          exit="exit"
+                          initial="initial"
+                        >
+                          <CollapsibleContent className="flex flex-col justify-center items-center gap-4">
+                            <ListUsers
+                              handleGetStudent={handleGetStudent}
+                              student={user}
+                              currentStudent={currentStudent}
                             />
-                          </Button>
-                        </CollapsibleContent>
-                      </motion.div>
-                    )
-                  );
-                }
-                return null;
-              })
+                            {index === props.data.length - 1 &&
+                              !props.isLastPage &&
+                              props.input.length === 0 && (
+                                <p
+                                  className="text-xs hover:underline text-blue-500 cursor-pointer"
+                                  onClick={() => props.setPage(props.page + 1)}
+                                >
+                                  Voir plus
+                                </p>
+                              )}
+                          </CollapsibleContent>
+                        </motion.div>
+                      )
+                    );
+                  } else if (props.type === "crew") {
+                    const crew = s as Crew;
+                    return (
+                      props.open && (
+                        <motion.div
+                          key={crew.id}
+                          variants={childVariants}
+                          animate="enter"
+                          exit="exit"
+                          initial="initial"
+                        >
+                          <CollapsibleContent className="flex justify-start items-center gap-4">
+                            <Button
+                              variant="ghost"
+                              className={`${
+                                currentCrew && currentCrew.id === crew?.id
+                                  ? "bg-primary bg-opacity-10 w-full text-primary justify-start gap-2 hover:text-primary"
+                                  : "hover:bg-primary hover:bg-opacity-10 w-full justify-start gap-2"
+                              } hover:bg-primary hover:bg-opacity-10 h-auto`}
+                              onClick={() => handleGetCrew(s as Crew)}
+                            >
+                              <CrewCard
+                                students={
+                                  crew.students as UserWithoutPassword[]
+                                }
+                                id={crew.id}
+                                name={crew.name}
+                              />
+                            </Button>
+                          </CollapsibleContent>
+                        </motion.div>
+                      )
+                    );
+                  }
+                  return null;
+                })}
+              </>
             ) : (
               <motion.div
                 variants={childVariants}
@@ -181,20 +197,12 @@ export default function CollapseItem(props: CollapseItemProps) {
                 initial="initial"
               >
                 <CollapsibleContent className="pt-4 pl-2">
-                  <p
-                    className={`text-[12px] text-gray-400 ${
-                      !props.open && "hidden"
-                    }`}
-                  >
+                  <p className="text-[12px] text-gray-400">
                     Vous n'avez pas d'élément
                   </p>
                 </CollapsibleContent>
               </motion.div>
             )}
-          </div>
-        ) : (
-          <div className="w-full mt-2 pl-3 flex justify-center items-center">
-            <Loader2 className="animate-spin" />
           </div>
         )}
       </div>

@@ -13,7 +13,7 @@ export default function PaginationBar({
 }: PaginationBarProps) {
   return (
     <Pagination
-      isCompact
+      disableCursorAnimation
       showControls
       initialPage={1}
       page={page}

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CollapseItem from "./CollapseItem";
 import { SidebarComponent } from "@/type";
 import { SidebarSeparator } from "@/components/ui/sidebar";
@@ -21,6 +21,10 @@ type HomeSidebarProps = {
 export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState<string>("");
+  const prevInputRef = useRef<string>(input);
+  const [page, setPage] = useState<number>(1);
+  const limit = 5;
+  const [myStudents, setMyStudents] = useState<UserWithoutPassword[]>([]);
   const ROLE_COACH = "COACH";
   const isCoach = currentUser?.roles === ROLE_COACH;
   const [getCoach, { data: dataCoach, loading: loadingCoach }] =
@@ -32,13 +36,45 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
       variables: {
         id: currentUser ? currentUser.id.toString() : "",
         input: input ? input : "",
+        limit,
+        page,
       },
       fetchPolicy: "cache-and-network",
     });
   const [getCrews, { data: dataCrews, loading: loadingCrews }] =
     useGetCoachCrewsLazyQuery();
 
-  const myStudents = dataStudents?.getStudents.students ?? [];
+  const allStudents = dataStudents?.getStudents.students ?? [];
+
+  useEffect(() => {
+    // Cas n°1: Chargement initial et lorsque l'input est vidé
+    if (
+      (input.length === 0 && prevInputRef.current.length > 0) ||
+      myStudents.length === 0
+    ) {
+      setMyStudents(allStudents as UserWithoutPassword[]);
+    } 
+    // Cas n°2: Si l'utilisateur tape dans l'input
+    else if (
+      input.length > 0 &&
+      prevInputRef.current.length !== input.length
+    ) {
+      setMyStudents(allStudents as UserWithoutPassword[]);
+    } 
+    // Cas n°3: Si l'utilisateur charge plus de student (page + 1)
+    else {
+      setMyStudents((prev) => [
+        ...prev,
+        ...(allStudents as UserWithoutPassword[]),
+      ]);
+    }
+    prevInputRef.current = input;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataStudents]);
+
+  const totalStudents = dataStudents?.getStudents.totalCount ?? 0;
+  const lastPage = Math.ceil(totalStudents / limit);
+  const isLastPageStudents = lastPage === page;
   const myCoach = dataCoach?.getUserById?.coach
     ? [dataCoach.getUserById.coach]
     : [];
@@ -84,6 +120,7 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
             get: handleGetStudents,
             icon: <SquareUser className="size-5" />,
             type: "user",
+            isLastPage: isLastPageStudents,
           },
           {
             title: "Mes équipes",
@@ -124,7 +161,9 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
     >
       <div className="flex flex-col items-center justify-start pr-4 pl-4 pb-2 pt-7 overflow-y-scroll w-full h-[90%]">
         <div className="flex flex-col gap-10 w-full">
-          {isCoach && <SearchInput open={open} setInput={setInput} />}
+          {isCoach && (
+            <SearchInput open={open} setInput={setInput} setPage={setPage} />
+          )}
           {sidebarConfig.map((s, i) => (
             <div key={s.title}>
               <CollapseItem
@@ -135,6 +174,10 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
                 data={s.data}
                 icon={s.icon}
                 type={s.type}
+                setPage={setPage}
+                page={page}
+                isLastPage={s.isLastPage}
+                input={input}
               />
               {i < sidebarConfig.length - 1 && (
                 <SidebarSeparator className="mt-4" />

@@ -63,7 +63,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
   const [offer, setOffer] = useState<string>("");
   const [crew, setCrew] = useState<string>("");
   const [page, setPage] = useState<number>(1);
-  const limit = 10;
+  const limit = 5;
   const [sortRemaining, setSortRemaining] = useState<boolean>(false);
   const { data: dataOffers } = useGetOneCoachOffersQuery({
     variables: { id: currentUser?.id.toString() as string },
