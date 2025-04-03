@@ -36,6 +36,7 @@ import {
 import { MessageResolver } from "./resolvers/messageResolver";
 import { ConversationResolver } from "./resolvers/conversationResolver";
 import { MessageSusbscription } from "./resolvers/messageSubscriptionResolver";
+import { MembershipResolver } from "./resolvers/memberShipResolver";
 
 const pubsub = createPubSub();
 
@@ -61,6 +62,7 @@ async function StartGraphQLServer() {
       MessageResolver,
       ConversationResolver,
       MessageSusbscription,
+      MembershipResolver
     ],
     emitSchemaFile: true,
     pubSub: pubsub,

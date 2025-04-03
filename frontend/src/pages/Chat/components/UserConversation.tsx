@@ -53,7 +53,7 @@ export default function UserConversation({
         <span className="w-2 h-2 rounded-full absolute bg-primary left-5" />
       )}
       <div className="flex justify-start items-center gap-2 flex-1">
-        <UserAvatar avatar={user.avatar ?? ""} />
+        <UserAvatar avatar={user.avatar ?? ""} className="w-[50px] h-[50px]" />
         <div className="flex flex-col items-start justify-center flex-1">
           <p>{user.firstname + " " + user.lastname}</p>
           <div className="flex justify-between items-center w-full">

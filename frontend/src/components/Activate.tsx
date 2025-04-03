@@ -1,5 +1,4 @@
-import { Tooltip } from "@heroui/tooltip";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2, Play } from "lucide-react";
 import {
   Dialog,
   DialogClose,
@@ -9,33 +8,34 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from "./ui/dialog";
+import { Tooltip } from "@heroui/tooltip";
+import { Button } from "./ui/button";
 
-type DeleteProps = {
-  onDelete: () => void;
+type ActivateProps = {
+  onActive: () => void;
   loading?: boolean;
   description: string;
   title: string;
 };
 
-export default function Delete({
-  onDelete,
+export default function Activate({
+  onActive,
   loading,
   description,
   title,
-}: DeleteProps) {
+}: ActivateProps) {
   return (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Tooltip
-          content="Supprimer"
+          content="Démarrer le suivi"
           showArrow={true}
           color="foreground"
           className="text-xs"
         >
-          <div className="hover:bg-red-500 hover:bg-opacity-10 p-2 rounded-full cursor-pointer">
-            <Trash2 className={`size-4 text-black active:text-gray-500`} />
+          <div className="hover:bg-green-500 hover:bg-opacity-10 p-2 rounded-full cursor-pointer">
+            <Play className={`size-4 text-black`} />
           </div>
         </Tooltip>
       </DialogTrigger>
@@ -49,7 +49,7 @@ export default function Delete({
             <Button
               type="button"
               className="bg-primary hover:bg-blue-600 w-[20%]"
-              onClick={onDelete}
+              onClick={onActive}
               disabled={loading}
             >
               {loading && <Loader2 className="animate-spin" />}

@@ -17,6 +17,7 @@ export type SidebarComponent = {
   get?: () => void;
   icon: ReactElement;
   type: string;
+  isLastPage?: boolean;
 };
 
 export type Sender = {

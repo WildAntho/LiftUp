@@ -11,6 +11,9 @@ export const GET_MYTRAINING = gql`
       editable
       validate
       color
+      crew {
+        id
+      }
       exercices {
         title
         id

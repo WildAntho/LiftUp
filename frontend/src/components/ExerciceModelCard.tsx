@@ -60,12 +60,10 @@ export default function ExerciceModelCard({
     }
   };
   return (
-    <section className="flex justify-between items-center w-full p-2 bg-gray-50 drop-shadow-md rounded-lg z-1000 touch-none">
+    <section className="flex justify-between items-center w-full p-2 bg-gray-50 shadow-md rounded-lg z-1000 touch-none">
       <div className="flex justify-start items-center gap-4">
         {picture.find((p) => p.type === exercice.type?.value)?.image}
-        <p className="text-xs hover:underline hover:underline-offset-4 cursor-pointer">
-          {exercice.title}
-        </p>
+        <p className="text-xs">{exercice.title}</p>
       </div>
       <Tooltip
         content="Ajouter l'exercice"

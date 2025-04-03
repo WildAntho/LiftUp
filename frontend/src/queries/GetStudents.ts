@@ -6,8 +6,20 @@ export const GET_STUDENTS = gql`
     $id: String!
     $crewId: String
     $offerId: String
+    $sortRemaining: Boolean
+    $page: Float
+    $limit: Float
   ) {
-    getStudents(input: $input, id: $id, crewId: $crewId, offerId: $offerId) {
+    getStudents(
+      input: $input
+      id: $id
+      crewId: $crewId
+      offerId: $offerId
+      sortRemaining: $sortRemaining
+      page: $page
+      limit: $limit
+    ) {
+      totalCount
       students {
         email
         firstname
@@ -17,11 +29,17 @@ export const GET_STUDENTS = gql`
         avatar
         studentOffer {
           name
+          durability
           id
         }
         crew {
           id
           name
+        }
+        memberships {
+          id
+          endDate
+          isActive
         }
       }
     }

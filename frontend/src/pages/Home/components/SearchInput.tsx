@@ -5,9 +5,14 @@ import { Dispatch, SetStateAction, useState } from "react";
 type SearchInputProps = {
   open: boolean;
   setInput: Dispatch<SetStateAction<string>>;
+  setPage: (value: number) => void;
 };
 
-export default function SearchInput({ open, setInput }: SearchInputProps) {
+export default function SearchInput({
+  open,
+  setInput,
+  setPage,
+}: SearchInputProps) {
   const [search, setSearch] = useState<string>("");
 
   return (
@@ -19,6 +24,7 @@ export default function SearchInput({ open, setInput }: SearchInputProps) {
           onChange={(e) => {
             setInput(e.target.value);
             setSearch(e.target.value);
+            setPage(1);
           }}
           placeholder="Rechercher un(e) élève"
           className={`placeholder:text-xs transition duration-150 ${

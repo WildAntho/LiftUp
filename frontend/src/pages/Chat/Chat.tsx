@@ -13,7 +13,7 @@ import { Tooltip } from "@heroui/react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { SquarePen } from "lucide-react";
+import { AtSign, SquarePen } from "lucide-react";
 import ChatModal from "@/components/modals/ChatModal";
 import UserConversation from "./components/UserConversation";
 
@@ -49,7 +49,7 @@ export default function Chat() {
     fetchPolicy: "cache-and-network",
     skip: currentUser?.roles !== "STUDENT",
   });
-  const allStudents = dataStudents?.getStudents[0]?.students ?? [];
+  const allStudents = dataStudents?.getStudents.students ?? [];
   const allUsers = dataUsers?.getChatUsers ?? [];
   const userSelect = currentUser?.roles === "COACH" ? allStudents : allUsers;
 
@@ -82,7 +82,7 @@ export default function Chat() {
         setActiveUser={setActiveUser}
         setSearch={setSearch}
       />
-      <section className="flex flex-col justify-start items-start bg-white rounded-2xl h-full w-[320px]">
+      <section className="flex flex-col justify-start items-start bg-white rounded-2xl h-full w-[400px]">
         <section className="w-full flex flex-col items-start justify-start">
           <div className="w-full px-6 pt-6 pb-2">
             <div className="w-full flex justify-between items-center mb-2">
@@ -94,7 +94,7 @@ export default function Chat() {
                 className="text-xs"
               >
                 <div
-                  className="hover:bg-black/5 p-2 rounded-full cursor-pointer"
+                  className="hover:bg-black/5 py-2 rounded-full cursor-pointer"
                   onClick={() => {
                     setOpenModal(true);
                   }}
@@ -112,11 +112,11 @@ export default function Chat() {
             {allConversations.map((conversation) => (
               <Button
                 key={conversation.id}
-                className={`w-full flex items-center justify-start px-4 py-2 shadow-none ${
+                className={`w-full flex items-center justify-start py-2 px-4 shadow-none ${
                   activeUser?.id === conversation.participants[0].id
-                    ? "bg-primary bg-opacity-10 w-full text-primary justify-start gap-2"
-                    : "bg-white text-black hover:bg-primary hover:bg-opacity-10 w-full justify-start gap-2"
-                } hover:bg-primary hover:bg-opacity-10 h-[60px] rounded-none`}
+                    ? "bg-primary bg-opacity-10 w-full hover:bg-primary hover:bg-opacity-10 text-primary justify-start gap-2"
+                    : "bg-white text-black hover:bg-primary hover:bg-opacity-5 w-full justify-start gap-2"
+                } h-auto rounded-none`}
                 onClick={() => {
                   setActiveUser(
                     conversation.participants[0] as UserWithoutPassword
@@ -136,7 +136,33 @@ export default function Chat() {
         </section>
       </section>
       <section className="min-h-full flex-1 bg-white rounded-2xl overflow-hidden">
-        {activeUser && (
+        {!activeUser ? (
+          <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 gap-2">
+            <div className="flex justify-center items-center border-3 border-gray-500 p-4 rounded-full">
+              <AtSign size={46} />
+            </div>
+            <div className="flex flex-col justify-center items-center">
+              <p className="text-xl font-semibold">Vos messages</p>
+              {currentUser?.roles === "COACH" && (
+                <p className="text-sm">
+                  Envoyez des messages privés à vos élèves
+                </p>
+              )}
+              {currentUser?.roles === "STUDENT" && (
+                <p className="text-sm">
+                  Envoyez des messages privés à votre coach ou des membres de
+                  votre équipe
+                </p>
+              )}
+            </div>
+            <Button
+              className="bg-primary hover:bg-blue-600 my-4"
+              onClick={() => setOpenModal(true)}
+            >
+              Envoyer un message
+            </Button>
+          </div>
+        ) : (
           <ConversationChat
             user={activeUser}
             conversationId={conversationId}

@@ -15,6 +15,7 @@ import { Training } from "../entities/training";
 import { Feedback } from "../entities/feedback";
 import { createTrainingsForDates } from "../utils/utils";
 import { Crew } from "../entities/crew";
+import { StudentsResponse } from "../InputType/coachProfileType";
 
 @Resolver(User)
 export class CoachResolver {
@@ -71,69 +72,58 @@ export class CoachResolver {
   }
 
   @Authorized("COACH")
-  @Query(() => [User])
+  @Query(() => StudentsResponse)
   async getStudents(
     @Arg("id") id: string,
     @Arg("input", { nullable: true }) input?: string,
     @Arg("offerId", { nullable: true }) offerId?: string,
-    @Arg("crewId", { nullable: true }) crewId?: string
+    @Arg("crewId", { nullable: true }) crewId?: string,
+    @Arg("sortRemaining", { nullable: true }) sortRemaining?: boolean,
+    @Arg("page", { nullable: true, defaultValue: 1 }) page?: number,
+    @Arg("limit", { nullable: true, defaultValue: 10 }) limit?: number
   ) {
-    let whereClause: any = { id };
+    const query = User.createQueryBuilder("user")
+      .leftJoinAndSelect("user.crew", "crew")
+      .leftJoinAndSelect("user.studentOffer", "studentOffer")
+      .leftJoinAndSelect(
+        "user.memberships",
+        "membership",
+        "(membership.isActive = true OR membership.id IS NULL)"
+      )
+      .leftJoin("user.coach", "coach")
+      .andWhere("coach.id = :id", { id });
 
     if (input) {
-      whereClause = {
-        id,
-        students: [
-          {
-            firstname: ILike(`%${input}%`), // Vérifie si l'input est dans le prénom
-          },
-          {
-            lastname: ILike(`%${input}%`), // Vérifie si l'input est dans le nom
-          },
-          {
-            email: ILike(`%${input}%`), // Vérifie si l'input est dans l'email
-          },
-        ],
-      };
+      query.andWhere(
+        `(user.firstname ILIKE :input OR user.lastname ILIKE :input OR user.email ILIKE :input)`,
+        { input: `%${input}%` }
+      );
     }
 
-    // Ajouter offerId et crewId si présents
     if (offerId) {
-      whereClause.students = {
-        ...whereClause.students,
-        studentOffer: { id: offerId },
-      };
+      query.andWhere("studentOffer.id = :offerId", { offerId });
     }
 
     if (crewId) {
       if (crewId === "none") {
-        whereClause.students = {
-          ...whereClause.students,
-          crew: IsNull(), // Cela permet de récupérer les étudiants qui n'ont pas de `crew`
-        };
+        query.andWhere("user.crew IS NULL");
       } else {
-        whereClause.students = {
-          ...whereClause.students,
-          crew: { id: crewId }, // Cela récupère les étudiants appartenant à une équipe avec `crewId`
-        };
+        query.andWhere("crew.id = :crewId", { crewId });
       }
     }
 
-    const coach = await User.find({
-      where: whereClause,
-      relations: {
-        students: {
-          crew: true,
-          studentOffer: true,
-        },
-      },
-      order: {
-        students: {
-          firstname: "ASC",
-        },
-      },
-    });
-    return coach;
+    if (sortRemaining) {
+      query.addOrderBy("membership.endDate", "ASC", "NULLS LAST");
+    } else {
+      query.addOrderBy("user.firstname", "ASC");
+    }
+
+    const totalCount = await query.getCount();
+    const offset = page && limit && (page - 1) * limit;
+    query.skip(offset).take(limit);
+
+    const students = await query.getMany();
+    return { students, totalCount };
   }
 
   @Authorized("COACH")

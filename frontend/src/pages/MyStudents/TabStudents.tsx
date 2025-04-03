@@ -9,10 +9,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  useActivateMemberShipMutation,
   useDeleteStudentMutation,
   useGetCoachCrewsQuery,
   useGetOneCoachOffersQuery,
   useGetStudentsQuery,
+  useRenewMemberShipMutation,
 } from "@/graphql/hooks";
 import { useUserStore } from "@/services/zustand/userStore";
 import {
@@ -32,6 +34,9 @@ import { BadgeEuro, Handshake, Loader2, Plus, SearchIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import imgDefault from "../../../public/default.jpg";
 import { uploadURL } from "@/services/utils";
+import Activate from "@/components/Activate";
+import { addMonths, differenceInDays } from "date-fns";
+import Renew from "@/components/Renew";
 
 type UserType = {
   id: string;
@@ -40,6 +45,10 @@ type UserType = {
   avatar: string;
   team: string;
   offer: string;
+  offerId: string;
+  remaining: number;
+  endMembership: string;
+  memberShipId?: string;
 };
 
 type TabStudentProps = {
@@ -53,6 +62,9 @@ export default function TabStudent({ refetch }: TabStudentProps) {
   const [input, setInput] = useState<string>("");
   const [offer, setOffer] = useState<string>("");
   const [crew, setCrew] = useState<string>("");
+  const [page, setPage] = useState<number>(1);
+  const limit = 5;
+  const [sortRemaining, setSortRemaining] = useState<boolean>(false);
   const { data: dataOffers } = useGetOneCoachOffersQuery({
     variables: { id: currentUser?.id.toString() as string },
   });
@@ -73,11 +85,20 @@ export default function TabStudent({ refetch }: TabStudentProps) {
       input: input,
       offerId: offer,
       crewId: crew,
+      sortRemaining,
+      page,
+      limit,
     },
     fetchPolicy: "cache-and-network",
   });
-  const myStudents = dataStudents?.getStudents[0]?.students ?? [];
+  const myStudents = dataStudents?.getStudents.students ?? [];
+  const totalStudents = dataStudents?.getStudents.totalCount ?? 1;
+  const totalPage = Math.ceil(totalStudents / limit);
   const [deleteStudent, { loading }] = useDeleteStudentMutation();
+  const [activeMemberShip, { loading: loadingActivate }] =
+    useActivateMemberShipMutation();
+  const [renewMembership, { loading: loadingRenew }] =
+    useRenewMemberShipMutation();
   const handleDeleteStudent = async (studentId: string) => {
     await deleteStudent({
       variables: {
@@ -90,11 +111,34 @@ export default function TabStudent({ refetch }: TabStudentProps) {
     refetch?.refetchTotal();
     refetchStudents();
   };
+  const handleActiveMemberShip = async (studentId: string, offerId: string) => {
+    await activeMemberShip({
+      variables: {
+        data: {
+          studentId,
+          offerId,
+        },
+      },
+    });
+    refetchStudents();
+  };
+  const handleRenewMembership = async (membershipId: string) => {
+    await renewMembership({
+      variables: {
+        id: membershipId,
+      },
+    });
+    refetchStudents();
+  };
+  const handleSortChange = () => {
+    setSortRemaining(!sortRemaining);
+  };
   const loadingState = loadingStudents ? "loading" : "idle";
   const columns = [
     { name: "ELEVES", uid: "name" },
     { name: "OFFRE SOUSCRITE", uid: "offer" },
     { name: "EQUIPE", uid: "team" },
+    { name: "TEMPS RESTANT", uid: "remaining" },
     { name: "ACTIONS", uid: "actions" },
   ];
   const users: UserType[] = myStudents.map((student) => ({
@@ -104,9 +148,28 @@ export default function TabStudent({ refetch }: TabStudentProps) {
     avatar: student.avatar ? `${uploadURL + student.avatar}` : imgDefault,
     team: student.crew ? student.crew.name : "Aucune équipe",
     offer: student.studentOffer ? student.studentOffer.name : "Aucune offre",
+    offerId: student.studentOffer ? student.studentOffer.id : "Aucune offre",
+    memberShipId:
+      student && student?.memberships ? student?.memberships[0]?.id : "",
+    endMembership:
+      student.studentOffer?.durability &&
+      student.memberships &&
+      student.memberships.length > 0 &&
+      student.memberships[0].endDate &&
+      student.memberships[0].endDate
+        ? addMonths(
+            new Date(student.memberships[0].endDate),
+            student.studentOffer?.durability
+          ).toISOString()
+        : "",
+    remaining:
+      student.memberships &&
+      student.memberships.length > 0 &&
+      student.memberships[0].endDate &&
+      differenceInDays(student.memberships[0].endDate, new Date()),
   }));
   const renderCell = useCallback(
-    (user: UserType, columnKey: keyof UserType | "actions") => {
+    (user: UserType, columnKey: keyof UserType | "actions" | "remaining") => {
       const cellValue = user[columnKey as keyof UserType];
 
       switch (columnKey) {
@@ -124,6 +187,20 @@ export default function TabStudent({ refetch }: TabStudentProps) {
           return <p className="truncate text-xs">{user.offer}</p>;
         case "team":
           return <p className="text-xs">{user.team}</p>;
+        case "remaining":
+          return (
+            <p
+              className={`text-xs ${
+                user.remaining < 8
+                  ? "text-red-500"
+                  : user.remaining < 15
+                  ? "text-orange-500"
+                  : "text-green-500"
+              }`}
+            >
+              {user.remaining > 0 ? `${user.remaining} jours` : "Inactif"}
+            </p>
+          );
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
@@ -133,6 +210,23 @@ export default function TabStudent({ refetch }: TabStudentProps) {
                 title="Supprimer l'élève"
                 description="Êtes-vous sûr de vouloir supprimer cet élève ?"
               />
+              {!user.remaining && (
+                <Activate
+                  onActive={() => handleActiveMemberShip(user.id, user.offerId)}
+                  loading={loadingActivate}
+                  title="Démarrer le suivi"
+                  description="Êtes-vous sûr de vouloir démarrer le suivi de cet élève ?"
+                />
+              )}
+              {user.remaining && user.memberShipId && (
+                <Renew
+                  title="Renouveler le suivi"
+                  description="Êtes-vous sûr de vouloir renouveler le suivi ?"
+                  loading={loadingRenew}
+                  onRenew={() => handleRenewMembership(user.memberShipId!)}
+                  endDate={user.endMembership}
+                />
+              )}
             </div>
           );
         default:
@@ -222,7 +316,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
         </section>
         <div className="flex items-center justify-between px-3">
           <p className="text-xs text-gray-500">
-            Nombre d'élèves: {myStudents.length}
+            Nombre d'élèves: {totalStudents}
           </p>
           <p
             className="text-xs text-gray-500 hover:underline cursor-pointer"
@@ -244,9 +338,14 @@ export default function TabStudent({ refetch }: TabStudentProps) {
     <section className="w-full flex flex-col items-center justify-start gap-5">
       <Table
         isHeaderSticky
+        onSortChange={handleSortChange}
+        sortDescriptor={{
+          column: "remaining",
+          direction: sortRemaining ? "ascending" : "descending",
+        }}
         bottomContent={
           <div className="flex w-full justify-center">
-            <PaginationBar />
+            <PaginationBar setPage={setPage} page={page} total={totalPage} />
           </div>
         }
         topContent={topContent}
@@ -262,6 +361,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
               key={column.uid}
               align={column.uid === "actions" ? "center" : "start"}
               style={column.uid === "actions" ? { width: "100px" } : {}}
+              allowsSorting={column.uid === "remaining"}
             >
               {column.name}
             </TableColumn>
