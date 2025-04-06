@@ -94,7 +94,7 @@ export default function Chat() {
                 className="text-xs"
               >
                 <div
-                  className="hover:bg-black/5 py-2 rounded-full cursor-pointer"
+                  className="hover:bg-black/5 p-2 rounded-full cursor-pointer"
                   onClick={() => {
                     setOpenModal(true);
                   }}

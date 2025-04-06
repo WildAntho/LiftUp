@@ -31,6 +31,7 @@ import { onError } from "@apollo/client/link/error";
 import { useUserStore } from "./services/zustand/userStore.ts";
 import { useCrewStore } from "./services/zustand/crewStore.ts";
 import { useStudentStore } from "./services/zustand/studentStore.ts";
+import ExerciceModel from "./pages/ExerciceModel/ExerciceModel.tsx";
 
 const GATEWAY_PORT = import.meta.env.VITE_GATEWAY_PORT;
 
@@ -144,6 +145,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Chat />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/exercices",
+        element: (
+          <ProtectedRoute>
+            <ExerciceModel />
           </ProtectedRoute>
         ),
       },

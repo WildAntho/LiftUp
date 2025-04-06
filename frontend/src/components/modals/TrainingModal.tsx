@@ -237,11 +237,8 @@ export default function TrainingModal({
         await updateTraining({
           variables: {
             data: {
+              ...data,
               id: training.id.toString(),
-              title,
-              date: new Date(selectedDate),
-              notes,
-              editable,
             },
           },
         });
@@ -553,15 +550,13 @@ export default function TrainingModal({
                     </Switch>
                   </>
                 )}
-                {isNew && (
-                  <Switch
-                    isSelected={openRecurrent}
-                    onValueChange={setOpenRecurrent}
-                    size="sm"
-                  >
-                    <p className="text-xs">Ajouter une récurrence</p>
-                  </Switch>
-                )}
+                <Switch
+                  isSelected={openRecurrent}
+                  onValueChange={setOpenRecurrent}
+                  size="sm"
+                >
+                  <p className="text-xs">Ajouter une récurrence</p>
+                </Switch>
                 {openRecurrent && (
                   <>
                     <section className="flex flex-col justify-center items-start w-full rounded-lg bg-white">

@@ -70,3 +70,7 @@ export async function createTrainingsForDates(
     })
   );
 }
+
+export function getNewDate(date: Date[]) {
+  return date.slice(1);
+}
