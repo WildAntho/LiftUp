@@ -48,7 +48,7 @@ export default function OfferModal({
   });
   const [formError, setFormError] = useState({
     name: false,
-    category: false,
+    categoryId: false,
     description: false,
     durability: false,
     price: false,
@@ -65,7 +65,7 @@ export default function OfferModal({
     });
     setFormError({
       name: false,
-      category: false,
+      categoryId: false,
       description: false,
       durability: false,
       price: false,
@@ -89,16 +89,18 @@ export default function OfferModal({
   const allCategories = dataCategories?.getAllCategories ?? [];
   const allCrews = dataCrews?.getCoachCrews ?? [];
   const handleSave = async () => {
+    let hasError = false;
     const entries = Object.entries(formState);
     entries.forEach(([key, value]) => {
-      if (value === "") {
+      if (value === "" || value === 0) {
         setFormError((prev) => ({
           ...prev,
           [key]: true,
         }));
-        return;
+        hasError = true;
       }
     });
+    if (hasError) return;
     if (offer) {
       await updateOffer({
         variables: {
@@ -157,7 +159,7 @@ export default function OfferModal({
               <SelectField
                 label="Catégorie"
                 className="flex-1"
-                isInvalid={formError.category}
+                isInvalid={formError.categoryId}
                 required
                 value={formState.categoryId}
                 onChange={(e) => {
@@ -174,6 +176,11 @@ export default function OfferModal({
                   </option>
                 ))}
               </SelectField>
+              {formError.categoryId && (
+                <p className="text-red-500 text-xs absolute top-[65px] left-1">
+                  Veuillez renseigner ce champ
+                </p>
+              )}
             </div>
           </div>
           <div className="relative">
