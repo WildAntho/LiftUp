@@ -140,7 +140,8 @@ export default function CollapseItem(props: CollapseItemProps) {
                             />
                             {index === props.data.length - 1 &&
                               !props.isLastPage &&
-                              props.input.length === 0 && (
+                              props.input.length === 0 &&
+                              currentUser?.roles !== "STUDENT" && (
                                 <p
                                   className="text-xs hover:underline text-blue-500 cursor-pointer"
                                   onClick={() => props.setPage(props.page + 1)}

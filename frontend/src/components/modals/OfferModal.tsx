@@ -84,14 +84,21 @@ export default function OfferModal({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [open]);
 
   const allCategories = dataCategories?.getAllCategories ?? [];
   const allCrews = dataCrews?.getCoachCrews ?? [];
   const handleSave = async () => {
+    const requiredFields: (keyof typeof formError)[] = [
+      "name",
+      "categoryId",
+      "description",
+      "durability",
+      "price",
+    ];
     let hasError = false;
-    const entries = Object.entries(formState);
-    entries.forEach(([key, value]) => {
+    requiredFields.forEach((key) => {
+      const value = formState[key];
       if (value === "" || value === 0) {
         setFormError((prev) => ({
           ...prev,
@@ -104,14 +111,24 @@ export default function OfferModal({
     if (offer) {
       await updateOffer({
         variables: {
-          data: { ...formState, availability, price: Number(formState.price) },
+          data: {
+            ...formState,
+            availability,
+            price: Number(formState.price),
+            crewId: formState.crewId === "" ? null : formState.crewId,
+          },
           id: offer.id as string,
         },
       });
     } else {
       await addOffer({
         variables: {
-          data: { ...formState, availability, price: Number(formState.price) },
+          data: {
+            ...formState,
+            availability,
+            price: Number(formState.price),
+            crewId: formState.crewId === "" ? null : formState.crewId,
+          },
         },
       });
     }

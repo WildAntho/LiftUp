@@ -58,6 +58,7 @@ export class Offer extends BaseEntity {
 
   @Field(() => Crew, { nullable: true })
   @OneToOne(() => Crew, (crew) => crew.offer)
+  @JoinColumn()
   crew?: Crew;
 
   @Field(() => [Request], { nullable: true })
