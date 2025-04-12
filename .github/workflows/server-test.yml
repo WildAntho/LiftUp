@@ -6,9 +6,10 @@ on:
   pull_request:
     branches:
       - dev
+    types: [opened, synchronize, reopened]
 
 jobs:
-  test:
+  test-server:
     runs-on: ubuntu-latest
 
     steps:
