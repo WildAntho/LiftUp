@@ -1,6 +1,8 @@
 import { Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
+export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+
 export function getExpirationTokenTime(token: string): number {
   try {
     const decoded = jwt.decode(token) as JwtPayload | null;

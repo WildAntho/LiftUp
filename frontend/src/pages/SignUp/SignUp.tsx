@@ -2,10 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSignupMutation } from "@/graphql/hooks";
 import { useUserStore } from "@/services/zustand/userStore";
+import { ApolloError } from "@apollo/client";
 import { Tooltip } from "@heroui/tooltip";
 import { Eye, EyeOff, Info, Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Toaster, toast } from "sonner";
 
 export default function SignUp() {
   const { role } = useParams();
@@ -23,27 +25,34 @@ export default function SignUp() {
   };
 
   const handleSignup = async () => {
-    const result = await signup({
-      variables: {
-        data: {
-          email: email?.current?.value as string,
-          firstname: firstname?.current?.value as string,
-          lastname: lastname?.current?.value as string,
-          password: password?.current?.value as string,
-          confirmedPassword: confirmedPassword?.current?.value as string,
-          roles: role?.toLocaleUpperCase() as string,
+    try {
+      const result = await signup({
+        variables: {
+          data: {
+            email: email?.current?.value as string,
+            firstname: firstname?.current?.value as string,
+            lastname: lastname?.current?.value as string,
+            password: password?.current?.value as string,
+            confirmedPassword: confirmedPassword?.current?.value as string,
+            roles: role?.toLocaleUpperCase() as string,
+          },
         },
-      },
-    });
-    if (result.data) {
-      const profile = JSON.parse(result.data.signUp);
-      setStore(profile);
-      navigate("/");
+      });
+      if (result.data) {
+        const profile = JSON.parse(result.data.signUp);
+        setStore(profile);
+        navigate("/");
+      }
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        toast.error(error.message);
+      }
     }
   };
 
   return (
     <section className="flex items-center justify-center w-screen h-screen">
+      <Toaster />
       <div className="flex justify-center items-center fixed right-0 top-0 w-1/2 h-full z-0">
         <div className="w-full h-full overflow-hidden">
           <img

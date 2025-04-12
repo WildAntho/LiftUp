@@ -14,6 +14,7 @@ jest.mock("jsonwebtoken");
 
 describe("UserResolver", () => {
   let userResolver: UserResolver;
+  const res = mockResponse();
 
   beforeEach(() => {
     process.env.APP_SECRET = "supersecretkey";
@@ -29,7 +30,6 @@ describe("UserResolver", () => {
       (jwt.sign as jest.Mock).mockReturnValue("mockedToken");
       (User.save as jest.Mock).mockResolvedValue(undefined);
 
-      const res = mockResponse();
       const result = await userResolver.signUp(mockUserInput, { res });
 
       expect(User.findOneBy).toHaveBeenCalledWith({
@@ -51,7 +51,6 @@ describe("UserResolver", () => {
 
     it("should throw if APP_SECRET is missing", async () => {
       delete process.env.APP_SECRET;
-      const res = mockResponse();
       await expect(userResolver.signUp(mockUserInput, { res })).rejects.toThrow(
         "Missing environment variable"
       );
@@ -59,7 +58,6 @@ describe("UserResolver", () => {
 
     it("should throw if email is missing", async () => {
       const mockUserInputWithoutEmail = { ...mockUserInput, email: "" };
-      const res = mockResponse();
       await expect(
         userResolver.signUp(mockUserInputWithoutEmail, { res })
       ).rejects.toThrow();
@@ -67,10 +65,20 @@ describe("UserResolver", () => {
 
     it("should throw if user already exists", async () => {
       (User.findOneBy as jest.Mock).mockResolvedValue({});
-      const res = mockResponse();
       await expect(userResolver.signUp(mockUserInput, { res })).rejects.toThrow(
         "Un utilisateur existe déjà pour cette adresse mail"
       );
+    });
+
+    it("should throw if password is not strong enough", async () => {
+      const mockUserInputWithBadPassword = {
+        ...mockUserInput,
+        password: "badpassword",
+      };
+      (User.findOneBy as jest.Mock).mockResolvedValue(undefined);
+      await expect(
+        userResolver.signUp(mockUserInputWithBadPassword, { res })
+      ).rejects.toThrow("Le mot de passe doit contenir une majuscule, une minuscule, un chiffre et un caractère spécial");
     });
 
     it("should throw if passwords do not match", async () => {
@@ -79,7 +87,6 @@ describe("UserResolver", () => {
         confirmedPassword: "Different123!",
       };
       (User.findOneBy as jest.Mock).mockResolvedValue(undefined);
-      const res = mockResponse();
       await expect(
         userResolver.signUp(mockUserInputWithBadPassword, { res })
       ).rejects.toThrow("Les mots de passe doivent être identique");
