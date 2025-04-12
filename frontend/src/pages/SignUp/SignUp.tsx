@@ -45,7 +45,12 @@ export default function SignUp() {
       }
     } catch (error) {
       if (error instanceof ApolloError) {
-        toast.error(error.message);
+        toast.error(error.message, {
+          style: {
+            backgroundColor: "#fee2e2",
+            color: "#b91c1c",
+          },
+        });
       }
     }
   };
@@ -78,7 +83,6 @@ export default function SignUp() {
           <Input
             ref={email}
             placeholder="Email"
-            //className={`${error && "border border-red-500 bg-white"}`}
           />
           <div className="flex flex-col justify-center items-center gap-2 w-full">
             <div className="w-full relative">
@@ -86,7 +90,6 @@ export default function SignUp() {
                 ref={password}
                 type={`${showPassword ? "text" : "password"}`}
                 placeholder="Mot de passe"
-                //className={`${error && "border border-red-500"}`}
               />
               <Eye
                 className={`absolute right-5 top-[6px] text-gray-400 hover:text-gray-500 cursor-pointer ${
@@ -106,7 +109,6 @@ export default function SignUp() {
                 ref={confirmedPassword}
                 type={`${showPassword ? "text" : "password"}`}
                 placeholder="Confirmer le mot de passe"
-                //className={`${error && "border border-red-500"}`}
               />
               <Eye
                 className={`absolute right-5 top-[6px] text-gray-400 hover:text-gray-500 cursor-pointer ${
@@ -122,11 +124,6 @@ export default function SignUp() {
               />
             </div>
           </div>
-          {/* {error && (
-            <p className="text-red-500 text-xs">
-              Adresse e-mail ou mot de passe incorrect.
-            </p>
-          )} */}
           <section className="w-full flex justify-end pr-3">
             <Tooltip
               className="text-xs"
