@@ -1,6 +1,4 @@
-# .github/workflows/jest-tests-on-pr-dev.yml
-
-name: Run Jest Tests on PR to dev
+name: server-test-workflow
 
 on:
   pull_request:
