@@ -1,12 +1,7 @@
 import { User } from "../../entities/user";
+import { mockAndWhere, mockGetMany, mockLeftJoinAndSelect, mockOrderBy, mockWhere } from "../../factory/queryBuilderMock";
 import { StudentResolver } from "../studentResolver";
 
-// Mocks du QueryBuilder principal
-const mockGetMany = jest.fn();
-const mockAndWhere = jest.fn().mockReturnThis();
-const mockWhere = jest.fn().mockReturnThis();
-const mockLeftJoinAndSelect = jest.fn().mockReturnThis();
-const mockOrderBy = jest.fn().mockReturnThis();
 
 // Mocks pour la sous-requête
 const mockSubQueryBuilder = {
