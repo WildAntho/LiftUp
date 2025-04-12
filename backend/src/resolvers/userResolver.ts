@@ -93,9 +93,9 @@ export class UserResolver {
     if (!process.env.APP_SECRET)
       throw new Error("Missing environment variable");
     const user = await User.findOneBy({ email: userData.email });
-    if (!user) throw new Error("Aucun n'utilisateur n'a été trouvé");
+    if (!user) throw new Error("Adresse e-mail ou mot de passe incorrect.");
     const verify = await argon.verify(user.password, userData.password);
-    if (!verify) throw new Error("Wrong password");
+    if (!verify) throw new Error("Adresse e-mail ou mot de passe incorrect.");
     const token = jwt.sign(
       { id: user.id, roles: user.roles },
       process.env.APP_SECRET,

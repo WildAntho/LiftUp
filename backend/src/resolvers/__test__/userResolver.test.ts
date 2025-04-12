@@ -134,7 +134,7 @@ describe("UserResolver", () => {
       const userData = { email: "notfound@test.com", password: "Password123!" };
       const res = mockResponse();
       await expect(userResolver.login(userData, { res })).rejects.toThrow(
-        "Aucun n'utilisateur n'a été trouvé"
+        "Adresse e-mail ou mot de passe incorrect."
       );
     });
 
@@ -144,7 +144,7 @@ describe("UserResolver", () => {
       const userData = { email: fakeUser.email, password: "WrongPassword!" };
       const res = mockResponse();
       await expect(userResolver.login(userData, { res })).rejects.toThrow(
-        "Wrong password"
+        "Adresse e-mail ou mot de passe incorrect."
       );
     });
   });
