@@ -87,33 +87,30 @@ export class UserResolver {
   ) {
     if (!process.env.APP_SECRET)
       throw new Error("Missing environment variable");
-    if (!userData.email || !userData.password)
-      throw new Error("One field is missing");
     const user = await User.findOneBy({ email: userData.email });
-    if (user) {
-      const verify = await argon.verify(user.password, userData.password);
-      if (!verify) throw new Error("Wrong password");
-      const token = jwt.sign(
-        { id: user.id, roles: user.roles },
-        process.env.APP_SECRET,
-        {
-          expiresIn: "7d",
-        }
-      );
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-      });
-      return JSON.stringify({
-        id: user.id,
-        email: user.email,
-        firstname: user.firstname,
-        lastname: user.lastname,
-        roles: user.roles,
-        avatar: user.avatar,
-      });
-    }
+    if (!user) throw new Error("Aucun n'utilisateur n'a été trouvé")
+    const verify = await argon.verify(user.password, userData.password);
+    if (!verify) throw new Error("Wrong password");
+    const token = jwt.sign(
+      { id: user.id, roles: user.roles },
+      process.env.APP_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+    return JSON.stringify({
+      id: user.id,
+      email: user.email,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      roles: user.roles,
+      avatar: user.avatar,
+    });
   }
 
   @Mutation(() => Boolean)
