@@ -63,7 +63,7 @@ export function Day<T extends CalendarEvent>({
               !isCurrentMonth && "text-gray-300"
             } ${
               isToday(date) &&
-              "flex justify-center items-center bg-primary text-white rounded-full w-8 h-8 text-gray-900"
+              "flex justify-center items-center bg-primary text-white rounded-full w-8 h-8"
             }`}
           >
             {dayNumber}

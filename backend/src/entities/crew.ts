@@ -41,6 +41,5 @@ export class Crew extends BaseEntity {
     nullable: true,
     cascade: true,
   })
-  @JoinColumn()
   offer?: Offer;
 }

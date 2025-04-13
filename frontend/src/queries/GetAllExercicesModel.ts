@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const GET_ALLEXERCICE_MODEL = gql`
-  query GetAllExercicesModel($data: ExerciceModelData) {
+  query GetAllExercicesModel($data: ExerciceModelInput) {
     getAllExercicesModel(data: $data) {
       id
       title

@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { Response } from "express";
 import { UpdateProfile, UserInput, userLogin } from "../InputType/userType";
 import { CtxUser } from "../InputType/coachType";
+import { passwordRegex } from "../services/userService";
 
 @Resolver(User)
 export class UserResolver {
@@ -48,6 +49,10 @@ export class UserResolver {
     const user = await User.findOneBy({ email: userData.email });
     if (user)
       throw new Error("Un utilisateur existe déjà pour cette adresse mail");
+    if (!passwordRegex.test(userData.password))
+      throw new Error(
+        "Le mot de passe doit contenir une majuscule, une minuscule, un chiffre et un caractère spécial"
+      );
     if (userData.password !== userData.confirmedPassword)
       throw new Error("Les mots de passe doivent être identique");
     const hashPaswword = await argon.hash(userData.password);
@@ -87,33 +92,30 @@ export class UserResolver {
   ) {
     if (!process.env.APP_SECRET)
       throw new Error("Missing environment variable");
-    if (!userData.email || !userData.password)
-      throw new Error("One field is missing");
     const user = await User.findOneBy({ email: userData.email });
-    if (user) {
-      const verify = await argon.verify(user.password, userData.password);
-      if (!verify) throw new Error("Wrong password");
-      const token = jwt.sign(
-        { id: user.id, roles: user.roles },
-        process.env.APP_SECRET,
-        {
-          expiresIn: "7d",
-        }
-      );
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-      });
-      return JSON.stringify({
-        id: user.id,
-        email: user.email,
-        firstname: user.firstname,
-        lastname: user.lastname,
-        roles: user.roles,
-        avatar: user.avatar,
-      });
-    }
+    if (!user) throw new Error("Adresse e-mail ou mot de passe incorrect.");
+    const verify = await argon.verify(user.password, userData.password);
+    if (!verify) throw new Error("Adresse e-mail ou mot de passe incorrect.");
+    const token = jwt.sign(
+      { id: user.id, roles: user.roles },
+      process.env.APP_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+    return JSON.stringify({
+      id: user.id,
+      email: user.email,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      roles: user.roles,
+      avatar: user.avatar,
+    });
   }
 
   @Mutation(() => Boolean)

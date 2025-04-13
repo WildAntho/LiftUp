@@ -3,9 +3,11 @@ import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
 import { useLoginMutation } from "@/graphql/hooks";
 import { useUserStore } from "@/services/zustand/userStore";
+import { ApolloError } from "@apollo/client";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function Login() {
   const setStore = useUserStore((state) => state.set);
@@ -19,23 +21,35 @@ export default function Login() {
   };
 
   const handleLogin = async () => {
-    const result = await login({
-      variables: {
-        data: {
-          email: email.current ? email.current.value : "",
-          password: password.current ? password.current.value : "",
+    try {
+      const result = await login({
+        variables: {
+          data: {
+            email: email.current ? email.current.value : "",
+            password: password.current ? password.current.value : "",
+          },
         },
-      },
-    });
-    if (result.data) {
-      const profile = JSON.parse(result.data.login);
-      setStore(profile);
-      navigate("/");
+      });
+      if (result.data) {
+        const profile = JSON.parse(result.data.login);
+        setStore(profile);
+        navigate("/");
+      }
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        toast.error(error.message, {
+          style: {
+            backgroundColor: "#fee2e2",
+            color: "#b91c1c",
+          },
+        });
+      }
     }
   };
 
   return (
     <section className="relative flex items-center justify-center w-screen h-screen bg-white">
+      <Toaster />
       <div className="flex justify-center items-center fixed left-0 top-0 w-1/2 h-full z-0">
         <div className="w-full h-full overflow-hidden">
           <img

@@ -110,6 +110,7 @@ async function StartGraphQLServer() {
             },
           });
         } else if (err.name === "JsonWebTokenError") {
+          res.clearCookie("token");
           throw new GraphQLError("Invalid token. Authentication failed.", {
             extensions: {
               code: "UNAUTHENTICATED",

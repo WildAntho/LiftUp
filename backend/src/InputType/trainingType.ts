@@ -33,17 +33,20 @@ export class UpdateTrainingData {
   @Field({ nullable: true })
   title?: string;
 
-  @Field({ nullable: true })
-  date?: Date;
+  @Field(() => [Date])
+  date!: Date[];
 
   @Field({ nullable: true })
   notes?: string;
 
   @Field({ nullable: true })
-  editable?: boolean;
+  editable!: boolean;
 
   @Field({ nullable: true })
   color?: string;
+
+  @Field(() => [ExerciceData], { nullable: true })
+  exercices?: ExerciceData[];
 }
 
 @InputType()

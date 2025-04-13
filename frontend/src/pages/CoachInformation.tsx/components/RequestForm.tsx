@@ -94,7 +94,10 @@ export default function RequestForm({ offers, coachId }: RequestFormProps) {
         />
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-blue-600 w-full flex items-center gap-5">
+            <Button
+              className="bg-primary hover:bg-blue-600 w-full flex items-center gap-5"
+              disabled={formState.offerId.length === 0}
+            >
               <Send />
               Envoyer la demande
             </Button>
@@ -124,6 +127,9 @@ export default function RequestForm({ offers, coachId }: RequestFormProps) {
           <p className="text-xs">
             Seul le coach sera notifié et aura accès à ces informations.
           </p>
+        </div>
+        <div className="mt-4 ml-2">
+          <p className="flex-1 text-xs text-gray-600">* Champs obligatoires</p>
         </div>
       </section>
     </section>

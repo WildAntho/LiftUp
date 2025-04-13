@@ -126,6 +126,17 @@ export type ExerciceModel = {
 
 export type ExerciceModelData = {
   id?: InputMaybe<Scalars['String']['input']>;
+  intensity?: InputMaybe<Scalars['Float']['input']>;
+  notes?: InputMaybe<Scalars['String']['input']>;
+  rep: Scalars['Float']['input'];
+  serie: Scalars['Float']['input'];
+  title: Scalars['String']['input'];
+  type?: InputMaybe<ExerciceTypeData>;
+  weight?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type ExerciceModelInput = {
+  id?: InputMaybe<Scalars['String']['input']>;
   input?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -217,6 +228,7 @@ export type Mutation = {
   addTrainingCrew: Scalars['String']['output'];
   addTrainingStudent: Scalars['String']['output'];
   createCrew: Scalars['String']['output'];
+  createExerciceModel: Scalars['String']['output'];
   deleteCrew: Scalars['String']['output'];
   deleteExercice: Scalars['String']['output'];
   deleteFeedback: Scalars['String']['output'];
@@ -306,6 +318,11 @@ export type MutationAddTrainingStudentArgs = {
 export type MutationCreateCrewArgs = {
   ids: Array<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+};
+
+
+export type MutationCreateExerciceModelArgs = {
+  data: ExerciceModelData;
 };
 
 
@@ -496,7 +513,7 @@ export type Query = {
 
 
 export type QueryGetAllExercicesModelArgs = {
-  data?: InputMaybe<ExerciceModelData>;
+  data?: InputMaybe<ExerciceModelInput>;
 };
 
 
@@ -701,8 +718,9 @@ export type UpdateProfile = {
 
 export type UpdateTrainingData = {
   color?: InputMaybe<Scalars['String']['input']>;
-  date?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  date: Array<Scalars['DateTimeISO']['input']>;
   editable?: InputMaybe<Scalars['Boolean']['input']>;
+  exercices?: InputMaybe<Array<ExerciceData>>;
   id: Scalars['String']['input'];
   notes?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
@@ -993,7 +1011,7 @@ export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetAllCategoriesQuery = { __typename?: 'Query', getAllCategories: Array<{ __typename?: 'OfferCategory', id: string, label: string }> };
 
 export type GetAllExercicesModelQueryVariables = Exact<{
-  data?: InputMaybe<ExerciceModelData>;
+  data?: InputMaybe<ExerciceModelInput>;
 }>;
 
 
@@ -2317,7 +2335,7 @@ export type GetAllCategoriesLazyQueryHookResult = ReturnType<typeof useGetAllCat
 export type GetAllCategoriesSuspenseQueryHookResult = ReturnType<typeof useGetAllCategoriesSuspenseQuery>;
 export type GetAllCategoriesQueryResult = Apollo.QueryResult<GetAllCategoriesQuery, GetAllCategoriesQueryVariables>;
 export const GetAllExercicesModelDocument = gql`
-    query GetAllExercicesModel($data: ExerciceModelData) {
+    query GetAllExercicesModel($data: ExerciceModelInput) {
   getAllExercicesModel(data: $data) {
     id
     title

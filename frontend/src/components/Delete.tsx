@@ -27,7 +27,7 @@ export default function Delete({
 }: DeleteProps) {
   return (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Tooltip
           content="Supprimer"
           showArrow={true}

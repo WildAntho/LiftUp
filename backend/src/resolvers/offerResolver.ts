@@ -44,7 +44,7 @@ export class OfferResolver {
     newOffer.availability = data.availability;
     if (user) newOffer.user = user;
     if (category) newOffer.category = category;
-    if (crew) newOffer.crew = crew;
+    if (data.crewId && crew) newOffer.crew = crew;
     await newOffer.save();
     return JSON.stringify("L'offre a bien été créée");
   }
@@ -60,6 +60,7 @@ export class OfferResolver {
         category: true,
       },
     });
+    const crew = await Crew.findOneBy({ id: data.crewId });
     if (!offer) throw new Error("Aucune offre ne correspond");
     offer.name = data.name;
     offer.description = data.description;
@@ -67,6 +68,7 @@ export class OfferResolver {
     offer.durability = data.durability;
     offer.availability = data.availability;
     if (category) offer.category = category;
+    if (data.crewId && crew) offer.crew = crew;
     await offer.save();
     return JSON.stringify("L'offre a bien été modifiée");
   }

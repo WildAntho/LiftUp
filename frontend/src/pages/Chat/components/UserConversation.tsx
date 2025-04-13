@@ -1,8 +1,13 @@
 import UserAvatar from "@/components/UserAvatar";
 import { Conversation, useNewMessageSubscription } from "@/graphql/hooks";
 import { useUserStore } from "@/services/zustand/userStore";
-import { differenceInMinutes, formatDistanceStrict } from "date-fns";
+import {
+  differenceInMinutes,
+  differenceInMonths,
+  formatDistanceStrict,
+} from "date-fns";
 import { fr } from "date-fns/locale";
+import { format } from "date-fns";
 import { useEffect } from "react";
 
 type UserConversationProps = {
@@ -77,7 +82,9 @@ export default function UserConversation({
                 }`}
               >
                 {differenceInMinutes(new Date(), createdAt) < 1
-                  ? "A l'instant"
+                  ? "À l'instant"
+                  : differenceInMonths(new Date(), createdAt) >= 1
+                  ? format(createdAt, "dd/MM/yyyy", { locale: fr })
                   : formatDistanceStrict(new Date(), createdAt, {
                       locale: fr,
                     })}

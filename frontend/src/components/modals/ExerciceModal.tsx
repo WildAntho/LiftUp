@@ -41,7 +41,6 @@ export default function ExerciceModal({
   trainingId,
 }: ExerciceModalProps) {
   const allTypes = useTypeStore((state) => state.types);
-  const [error, setError] = useState<boolean>(false);
   const [activeWeight, setActiveWeight] = useState<boolean>(true);
   const [activeIntensity, setActiveIntensity] = useState<boolean>(true);
   const [config, setConfig] = useState<Config>({
@@ -74,6 +73,11 @@ export default function ExerciceModal({
       label: "",
     },
   });
+  const [formError, setFormError] = useState({
+    title: false,
+    rep: false,
+    serie: false,
+  });
 
   const [updateExercice] = useUpdateExerciceMutation();
   const [addExercice] = useAddExerciceMutation();
@@ -98,7 +102,11 @@ export default function ExerciceModal({
       serie: 0,
       intensity: 0,
     });
-    setError(false);
+    setFormError({
+      title: false,
+      rep: false,
+      serie: false,
+    });
   }, []);
 
   // Initialisation des valeurs en mode édition
@@ -123,11 +131,22 @@ export default function ExerciceModal({
   }, [exerciceToEdit, purgeInput]);
 
   const handleExercice = async () => {
-    if (!formState.title) {
-      setError(true);
-      return;
-    }
-
+    const requiredFields: (keyof typeof formError)[] = [
+      "title",
+      "rep",
+      "serie",
+    ];
+    let hasError = false;
+    requiredFields.forEach((key) => {
+      if (formState[key] === "") {
+        setFormError((prev) => ({
+          ...prev,
+          [key]: true,
+        }));
+        hasError = true;
+      }
+    });
+    if (hasError) return;
     const payload = {
       title: formState.title,
       serie: Number(formState.serie),
@@ -228,7 +247,7 @@ export default function ExerciceModal({
             <div className="relative w-[65%]">
               <TextInputField
                 required
-                isInvalid={error}
+                isInvalid={formError.title}
                 label="Titre"
                 type="text"
                 placeholder="Titre de l'exercice"
@@ -237,7 +256,7 @@ export default function ExerciceModal({
                   setFormState((prev) => ({ ...prev, title: e.target.value }))
                 }
               />
-              {error && (
+              {formError.title && (
                 <p className="text-red-500 text-xs absolute top-[65px] left-1">
                   Veuillez renseigner ce champ
                 </p>
@@ -266,30 +285,48 @@ export default function ExerciceModal({
               </SelectField>
             </div>
           </section>
-          <section className="flex justify-start items-center gap-2">
-            <TextInputField
-              required
-              label="Série"
-              type="number"
-              placeholder="Nombre de série"
-              value={formState.serie}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setFormState((prev) => ({ ...prev, serie: e.target.value }))
-              }
-            />
-            <p>X</p>
-            <TextInputField
-              required
-              label="Répétitions"
-              type="number"
-              placeholder="Nombre de répétitions"
-              value={formState.rep}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setFormState((prev) => ({ ...prev, rep: e.target.value }))
-              }
-            />
+          <section className="flex justify-between items-center">
+            <section className="flex justify-start items-center gap-2 flex-1">
+              <div className="relative flex-1">
+                <TextInputField
+                  required
+                  isInvalid={formError.serie}
+                  label="Série"
+                  type="number"
+                  placeholder="Nombre de série"
+                  value={formState.serie}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setFormState((prev) => ({ ...prev, serie: e.target.value }))
+                  }
+                />
+                {formError.serie && (
+                  <p className="text-red-500 text-xs absolute top-[65px] left-1">
+                    Veuillez renseigner ce champ
+                  </p>
+                )}
+              </div>
+              <p>X</p>
+              <div className="relative flex-1">
+                <TextInputField
+                  required
+                  isInvalid={formError.rep}
+                  label="Répétitions"
+                  type="number"
+                  placeholder="Nombre de répétitions"
+                  value={formState.rep}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setFormState((prev) => ({ ...prev, rep: e.target.value }))
+                  }
+                />
+                {formError.rep && (
+                  <p className="text-red-500 text-xs absolute top-[65px] left-1">
+                    Veuillez renseigner ce champ
+                  </p>
+                )}
+              </div>
+            </section>
             {activeWeight && (
-              <div className="flex justify-center items-center gap-1 pl-5">
+              <div className="flex justify-center items-center gap-1 pl-5 w-[25%]">
                 <TextInputField
                   label="Charge"
                   type="number"
@@ -405,7 +442,6 @@ export default function ExerciceModal({
               onClick={() => {
                 purgeInput();
                 onClose();
-                setError(false);
               }}
             >
               Annuler

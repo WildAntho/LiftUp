@@ -48,7 +48,7 @@ export default function OfferModal({
   });
   const [formError, setFormError] = useState({
     name: false,
-    category: false,
+    categoryId: false,
     description: false,
     durability: false,
     price: false,
@@ -65,7 +65,7 @@ export default function OfferModal({
     });
     setFormError({
       name: false,
-      category: false,
+      categoryId: false,
       description: false,
       durability: false,
       price: false,
@@ -84,32 +84,51 @@ export default function OfferModal({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [open]);
 
   const allCategories = dataCategories?.getAllCategories ?? [];
   const allCrews = dataCrews?.getCoachCrews ?? [];
   const handleSave = async () => {
-    const entries = Object.entries(formState);
-    entries.forEach(([key, value]) => {
-      if (value === "") {
+    const requiredFields: (keyof typeof formError)[] = [
+      "name",
+      "categoryId",
+      "description",
+      "durability",
+      "price",
+    ];
+    let hasError = false;
+    requiredFields.forEach((key) => {
+      const value = formState[key];
+      if (value === "" || value === 0) {
         setFormError((prev) => ({
           ...prev,
           [key]: true,
         }));
-        return;
+        hasError = true;
       }
     });
+    if (hasError) return;
     if (offer) {
       await updateOffer({
         variables: {
-          data: { ...formState, availability, price: Number(formState.price) },
+          data: {
+            ...formState,
+            availability,
+            price: Number(formState.price),
+            crewId: formState.crewId === "" ? null : formState.crewId,
+          },
           id: offer.id as string,
         },
       });
     } else {
       await addOffer({
         variables: {
-          data: { ...formState, availability, price: Number(formState.price) },
+          data: {
+            ...formState,
+            availability,
+            price: Number(formState.price),
+            crewId: formState.crewId === "" ? null : formState.crewId,
+          },
         },
       });
     }
@@ -157,7 +176,7 @@ export default function OfferModal({
               <SelectField
                 label="Catégorie"
                 className="flex-1"
-                isInvalid={formError.category}
+                isInvalid={formError.categoryId}
                 required
                 value={formState.categoryId}
                 onChange={(e) => {
@@ -174,6 +193,11 @@ export default function OfferModal({
                   </option>
                 ))}
               </SelectField>
+              {formError.categoryId && (
+                <p className="text-red-500 text-xs absolute top-[65px] left-1">
+                  Veuillez renseigner ce champ
+                </p>
+              )}
             </div>
           </div>
           <div className="relative">

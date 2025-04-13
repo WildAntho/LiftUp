@@ -1,12 +1,4 @@
-import {
-  Arg,
-  Ctx,
-  Field,
-  InputType,
-  Mutation,
-  Query,
-  Resolver,
-} from "type-graphql";
+import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { Training } from "../entities/training";
 import { User } from "../entities/user";
 import {
@@ -16,9 +8,12 @@ import {
 } from "../InputType/trainingType";
 import { Between } from "typeorm";
 import { CtxUser } from "../InputType/coachType";
-import { createTrainingsForDates } from "../utils/utils";
 import { Feedback } from "../entities/feedback";
 import { Crew } from "../entities/crew";
+import {
+  createTrainingsForDates,
+  getNewDate,
+} from "../services/trainingService";
 
 @Resolver(Training)
 export class TrainingResolver {
@@ -94,11 +89,13 @@ export class TrainingResolver {
   ) {
     const user = await User.findOneBy({ id: context.user.id });
     const training = await Training.findOneBy({ id: data.id });
+    if (!training || !user)
+      throw new Error("Utilisateur ou entraînement introuvable");
     if (user && training) {
       if (training.editable === false && user.roles === "STUDENT")
         throw new Error("Vous ne pouvez pas éditer cet entraînement");
       if (data.title) training.title = data.title;
-      if (data.date) training.date = data.date;
+      if (data.date) training.date = data.date[0];
       if (data.notes) training.notes = data.notes;
       training.editable = data.editable ?? true;
       await training.save();
@@ -109,11 +106,15 @@ export class TrainingResolver {
         },
       });
       if (feedback && data.date) {
-        feedback.date = data.date;
+        feedback.date = data.date[0];
         await feedback.save();
       }
+      if (data.date && data.date.length > 1) {
+        const newDate = getNewDate(data.date);
+        await createTrainingsForDates(newDate, data as TrainingData, user);
+      }
     }
-    return JSON.stringify("L'entraînement a bien été modifié");
+    return JSON.stringify("La mise à jour a bien été effectuée");
   }
 
   @Mutation(() => String)

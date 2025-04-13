@@ -13,9 +13,9 @@ import { CtxUser, StudentCoach } from "../InputType/coachType";
 import { RangeDate, TrainingData } from "../InputType/trainingType";
 import { Training } from "../entities/training";
 import { Feedback } from "../entities/feedback";
-import { createTrainingsForDates } from "../utils/utils";
 import { Crew } from "../entities/crew";
 import { StudentsResponse } from "../InputType/coachProfileType";
+import { createTrainingsForDates } from "../services/trainingService";
 
 @Resolver(User)
 export class CoachResolver {
