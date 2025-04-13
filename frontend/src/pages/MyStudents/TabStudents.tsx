@@ -187,20 +187,26 @@ export default function TabStudent({ refetch }: TabStudentProps) {
           return <p className="truncate text-xs">{user.offer}</p>;
         case "team":
           return <p className="text-xs">{user.team}</p>;
-        case "remaining":
-          return (
-            <p
-              className={`text-xs ${
-                user.remaining < 8
-                  ? "text-red-500"
-                  : user.remaining < 15
-                  ? "text-orange-500"
-                  : "text-green-500"
-              }`}
-            >
-              {user.remaining > 0 ? `${user.remaining} jours` : "Inactif"}
-            </p>
-          );
+        case "remaining": {
+          let text = "";
+          let color = "";
+          if (user.remaining > 0) {
+            text = `${user.remaining} jour${user.remaining > 1 ? "s" : ""}`;
+            color =
+              user.remaining < 8
+                ? "text-red-500"
+                : user.remaining < 15
+                ? "text-orange-500"
+                : "text-green-500";
+          } else if (user.endMembership) {
+            text = "A renouveler";
+            color = "text-red-500";
+          } else {
+            text = "Inactif";
+            color = "text-gray-400";
+          }
+          return <p className={`text-xs ${color}`}>{text}</p>;
+        }
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
