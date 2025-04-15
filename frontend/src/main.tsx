@@ -33,18 +33,18 @@ import { useCrewStore } from "./services/zustand/crewStore.ts";
 import { useStudentStore } from "./services/zustand/studentStore.ts";
 import ExerciceModel from "./pages/ExerciceModel/ExerciceModel.tsx";
 
-const GATEWAY_PORT = import.meta.env.VITE_GATEWAY_PORT;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Création du lien WebSocket
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: `ws://localhost:${GATEWAY_PORT}/subscriptions`,
+    url: `${BACKEND_URL}/subscriptions`,
   })
 );
 
 // Création du lien HTTP
 const httpLink = new HttpLink({
-  uri: `http://localhost:${GATEWAY_PORT}/api`,
+  uri: `${BACKEND_URL}/api`,
   credentials: "include",
 });
 
