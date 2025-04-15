@@ -46,7 +46,7 @@ export default function TrainingCard({
   return (
     <>
       <div
-        className="w-full h-full text-xs bg-blue-100 text-blue-800 rounded px-2 py-1 truncate flex-1 cursor-grab active:cursor-grabbing"
+        className="w-full h-full shadow-md text-xs bg-blue-100 text-blue-800 rounded px-2 py-1 truncate flex-1 cursor-grab active:cursor-grabbing"
         onClick={handleClick}
         ref={setNodeRef}
         {...listeners}

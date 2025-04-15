@@ -28,7 +28,7 @@ export default function FeedbackCard({
   return (
     <>
       <div
-        className="text-xs bg-green-100 text-green-800 rounded px-2 py-1 truncate flex-1"
+        className="text-xs shadow-md bg-green-100 text-green-800 rounded px-2 py-1 truncate flex-1"
         onClick={handleClick}
       >
         {event.title}

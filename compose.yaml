@@ -18,6 +18,7 @@ services:
     environment:
       VITE_GATEWAY_PORT: ${GATEWAY_PORT}
       VITE_UPLOAD_URL: ${UPLOAD_URL}
+      VITE_BACKEND_URL: ${BACKEND_URL}
   database:
     container_name: database
     image: postgres
