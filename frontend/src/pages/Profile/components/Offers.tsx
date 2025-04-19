@@ -2,7 +2,7 @@ import { useState } from "react";
 import HeaderProfile from "./HeaderProfile";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useGetMyOffersQuery } from "@/graphql/hooks";
+import { Offer, useGetMyOffersQuery } from "@/graphql/hooks";
 import OfferCard from "@/components/OfferCard";
 import OfferModal from "@/components/modals/OfferModal";
 
@@ -41,7 +41,7 @@ export default function Offers() {
           <section className="w-[80%] flex flex-col items-start justify-start gap-6 px-2 py-10">
             {myOffers?.map((o) => (
               <div key={o.id} className="w-full">
-                <OfferCard offer={o} refetch={refetch} isMyOffer={true} />
+                <OfferCard offer={o as Omit<Offer, "user">} refetch={refetch} isMyOffer={true} />
               </div>
             ))}
           </section>

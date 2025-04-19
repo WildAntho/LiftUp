@@ -1,15 +1,19 @@
 BUILD =  docker compose -f compose.yaml --env-file .env.dev up -d
+STAGING =  docker compose -f compose.staging.yaml --env-file .env.staging up -d
 CLEAN = docker system prune -af --volumes   
-STOP = docker stop database gateway visualizer frontend backend file
-STOPFRONTEND = docker stop frontend
-STOPBACKEND = docker stop backend
-STOPDATABASE = docker stop database
-STOPVISUALIZER = docker stop visualizer
-STOPGATEWAY = docker stop gateway
-STOPFILE = docker stop file
+STOP = docker stop $(shell docker ps -a -q)
+STOPFRONTEND = docker stop liftup-dev-frontend
+STOPBACKEND = docker stop liftup-dev-backend
+STOPDATABASE = docker stop liftup-dev-database
+STOPVISUALIZER = docker stop liftup-dev-visualizer
+STOPGATEWAY = docker stop liftup-dev-gateway
+STOPFILE = docker stop liftup-dev-file
 
 build:
 	$(BUILD)
+
+staging:
+	$(STAGING)
 
 clean:
 	$(CLEAN)
