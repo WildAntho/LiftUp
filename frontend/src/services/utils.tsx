@@ -1,7 +1,7 @@
 import { ExerciceType, Message } from "@/graphql/hooks";
 import { Image } from "@heroui/react";
 
-export const uploadURL = import.meta.env.VITE_UPLOAD_URL;
+export const uploadURL = "file";
 
 export function formatUser(user: string) {
   return user
@@ -113,7 +113,10 @@ export function getLastReadMessageIndex(
   return null;
 }
 
-export const adjustScrollPosition = (container: HTMLDivElement, prevScrollHeight: number) => {
+export const adjustScrollPosition = (
+  container: HTMLDivElement,
+  prevScrollHeight: number
+) => {
   const newScrollHeight = container.scrollHeight;
   const scrollDifference = newScrollHeight - prevScrollHeight;
   container.scrollTop += scrollDifference;

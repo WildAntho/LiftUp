@@ -7,4 +7,4 @@ RUN npm i
 COPY tsconfig*.json ./
 COPY src src
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]

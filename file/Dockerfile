@@ -11,4 +11,4 @@ COPY uploads uploads
 COPY tsconfig.json .
 
 
-CMD npm run start
+CMD ["npm", "run", "dev"]

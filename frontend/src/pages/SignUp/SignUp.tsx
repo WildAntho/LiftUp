@@ -61,7 +61,7 @@ export default function SignUp() {
       <div className="flex justify-center items-center fixed right-0 top-0 w-1/2 h-full z-0">
         <div className="w-full h-full overflow-hidden">
           <img
-            src="../../../public/imagesignup.webp"
+            src="/imagesignup.webp"
             alt="Image Fixe"
             className="object-cover w-full h-full"
           />

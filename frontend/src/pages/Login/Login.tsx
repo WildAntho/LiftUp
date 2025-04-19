@@ -53,7 +53,7 @@ export default function Login() {
       <div className="flex justify-center items-center fixed left-0 top-0 w-1/2 h-full z-0">
         <div className="w-full h-full overflow-hidden">
           <img
-            src="../../../public/login.webp"
+            src="/login.webp"
             alt="Image Fixe"
             className="object-cover w-full h-full"
           />

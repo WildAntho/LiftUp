@@ -6,7 +6,7 @@ import fs from "fs";
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:7100",
+    origin: process.env.FRONTEND_HOST,
     methods: "GET,POST,PUT,DELETE",
     allowedHeaders: "Content-Type,Authorization",
   })
@@ -51,5 +51,5 @@ app.get("/:filename", (req, res) => {
   });
 });
 app.listen(3002, () => {
-  console.log("Lancé sur http://localhost:3002");
+  console.log(`Lancé sur ${process.env.UPLOAD_HOST}`);
 });
