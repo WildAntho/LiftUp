@@ -36,7 +36,7 @@ import ExerciceModel from "./pages/ExerciceModel/ExerciceModel.tsx";
 // Création du lien WebSocket
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "/subscriptions",
+    url: "/api",
   })
 );
 
