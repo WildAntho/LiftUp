@@ -104,11 +104,11 @@ export default function Login() {
             {loading && <Loader2 className="animate-spin" />}
             Se connecter
           </Button>
-          <section className="w-full flex justify-end">
+          {/* <section className="w-full flex justify-end">
             <Button variant="link">
               <p className="text-xs">Mot de passe oublié ?</p>
             </Button>
-          </section>
+          </section> */}
         </section>
         <section className="flex justify-center items-center">
           <p className="text-xs">Tu n'as pas encore de compte ?</p>
