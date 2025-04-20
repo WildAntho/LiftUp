@@ -1,15 +1,11 @@
 networks:
   staging:
-    name: staging-network
+    name: staging
 
 services:
   liftup-staging-backend:
     container_name: liftup-staging-backend
-    build: 
-      context: ./backend
-      dockerfile: Dockerfile.prod
-    volumes:
-      - ./backend/src:/app/src
+    image: wildantho/liftup-backend
     environment:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_SCHEMA: ${DB_SCHEMA}
@@ -23,11 +19,7 @@ services:
       - staging
   liftup-staging-frontend:
     container_name: liftup-staging-frontend
-    build: 
-      context: ./frontend
-      dockerfile: Dockerfile.prod
-    volumes: 
-      - ./frontend/src:/app/src
+    image: wildantho/liftup-frontend
     environment:
       VITE_GATEWAY_PORT: ${GATEWAY_PORT}
       VITE_BACKEND_HOST: ${BACKEND_HOST}
@@ -57,9 +49,7 @@ services:
       - staging
   liftup-staging-file:
     container_name: liftup-staging-file
-    build: 
-      context: ./file
-      dockerfile: Dockerfile.prod
+    image: wildantho/liftup-file
     volumes:
       - ./file/uploads:/app/uploads
       - ./file/src:/app/src
