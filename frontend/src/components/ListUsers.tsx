@@ -1,41 +1,25 @@
-import { Button } from "@/components/ui/button";
-import { StudentStore } from "@/services/zustand/studentStore";
 import { UserWithoutPassword } from "@/services/zustand/userStore";
-import UserAvatar from "./UserAvatar";
+import imgDefault from "../../public/default.jpg";
+import { Radio, User } from "@heroui/react";
+import { uploadURL } from "@/services/utils";
 
-type ListUsersProps = {
-  currentStudent: StudentStore | null;
-  student?: UserWithoutPassword;
-  handleGetStudent: (s: UserWithoutPassword) => void;
+type ListUserProps = {
+  user: UserWithoutPassword;
 };
 
-export default function ListUsers({
-  currentStudent,
-  student,
-  handleGetStudent,
-}: ListUsersProps) {
+export default function ListUser({ user }: ListUserProps) {
   return (
-    <Button
-      variant="ghost"
-      className={`${
-        currentStudent && currentStudent.email === student?.email
-          ? "bg-primary bg-opacity-10 w-full text-primary justify-start gap-2"
-          : "hover:bg-primary hover:bg-opacity-10 w-full justify-start gap-2"
-      } hover:bg-primary hover:bg-opacity-10 h-[50px]`}
-      onClick={() => {
-        handleGetStudent(student as UserWithoutPassword);
-      }}
+    <Radio
+      value={user.id}
+      key={user.id}
+      className="m-0 bg-content1 hover:bg-content2 gap-0 items-center justify-between flex-row-reverse max-w-full cursor-pointer rounded-lg p-2 border-2 border-transparent data-[selected=true]:border-primary data-[selected=true]:border-opacity-50 data-[selected=true]:bg-content2"
     >
-      <UserAvatar avatar={student?.avatar ?? ""} />
-      <p
-        className={`${
-          currentStudent && currentStudent.email === student?.email
-            ? "text-primary"
-            : "text-black"
-        } text-xs`}
-      >
-        {student?.firstname + " " + student?.lastname}
-      </p>
-    </Button>
+      <User
+        avatarProps={{
+          src: user.avatar ? `${uploadURL + user.avatar}` : imgDefault,
+        }}
+        name={user.firstname + " " + user.lastname}
+      />
+    </Radio>
   );
 }

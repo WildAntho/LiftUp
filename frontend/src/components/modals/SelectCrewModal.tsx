@@ -1,7 +1,3 @@
-import {
-  UserWithoutPassword,
-  useUserStore,
-} from "@/services/zustand/userStore";
 import { useState } from "react";
 import {
   Input,
@@ -12,47 +8,34 @@ import {
   ModalHeader,
   RadioGroup,
 } from "@heroui/react";
-import { useGetStudentsQuery } from "@/graphql/hooks";
-import ListUser from "../ListUsers";
+import { Crew, useGetCoachCrewsQuery } from "@/graphql/hooks";
 import { Button } from "../ui/button";
 import { useStudentStore } from "@/services/zustand/studentStore";
 import { useCrewStore } from "@/services/zustand/crewStore";
-import PaginationBar from "../PaginationBar";
 import { Search } from "lucide-react";
 import { Separator } from "../ui/separator";
+import ListCrew from "../ListCrew";
 
-type SelectStudentModalProps = {
+type SelectCrewModalProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   closeNav: () => void;
 };
 
-export default function SelectStudentModal({
+export default function SelectCrewModal({
   open,
   setOpen,
   closeNav,
-}: SelectStudentModalProps) {
+}: SelectCrewModalProps) {
   const [input, setInput] = useState<string>("");
-  const currentUser = useUserStore((state) => state.user);
-  const currentStudent = useStudentStore((state) => state.student);
-  const setStudent = useStudentStore((state) => state.set);
-  const clearCrew = useCrewStore((state) => state.clear);
-  const [selected, setSelected] = useState(currentStudent?.id ?? "");
-  const [page, setPage] = useState<number>(1);
-  const limit = 20;
-  const { data: dataStudents } = useGetStudentsQuery({
-    variables: {
-      id: currentUser ? currentUser.id.toString() : "",
-      input,
-      limit,
-      page,
-    },
+  const currentCrew = useCrewStore((state) => state.crew);
+  const setCrew = useCrewStore((state) => state.set);
+  const clearStudent = useStudentStore((state) => state.clear);
+  const [selected, setSelected] = useState(currentCrew?.id ?? "");
+  const { data: dataCrews } = useGetCoachCrewsQuery({
     fetchPolicy: "cache-and-network",
   });
-  const myStudents = dataStudents?.getStudents.students ?? [];
-  const totalPage = dataStudents?.getStudents.totalCount
-    ? Math.ceil(dataStudents?.getStudents.totalCount / limit)
-    : 0;
+  const myCrews = dataCrews?.getCoachCrews ?? [];
 
   const handleClose = () => {
     setOpen(false);
@@ -61,14 +44,12 @@ export default function SelectStudentModal({
   };
 
   const handleSelectStudent = () => {
-    const selectedStudent = myStudents.find((s) => s.id === selected);
-    if (selectedStudent) {
-      clearCrew();
-      setStudent({
-        id: selectedStudent.id,
-        firstname: selectedStudent.firstname,
-        lastname: selectedStudent.lastname,
-        email: selectedStudent.email,
+    const selectedCrew = myCrews.find((s) => s.id === selected);
+    if (selectedCrew) {
+      clearStudent();
+      setCrew({
+        id: selectedCrew.id,
+        name: selectedCrew.name,
       });
       handleClose();
       closeNav();
@@ -89,7 +70,7 @@ export default function SelectStudentModal({
     >
       <ModalContent>
         <ModalHeader className="w-full h-full flex flex-col items-center justify-center gap-4">
-          <p>Sélectionner un élève</p>
+          <p>Sélectionner une équipe</p>
           <Separator />
           <Input
             labelPlacement="outside"
@@ -110,17 +91,12 @@ export default function SelectStudentModal({
             onValueChange={setSelected}
             className="w-full"
           >
-            {myStudents.map((s) => (
-              <ListUser key={s.id} user={s as UserWithoutPassword} />
+            {myCrews.map((s) => (
+              <ListCrew key={s.id} crew={s as Crew} />
             ))}
           </RadioGroup>
         </ModalBody>
         <ModalFooter className="flex flex-col justify-end items-center gap-2">
-          {totalPage > 1 && (
-            <div className="flex w-full justify-center">
-              <PaginationBar setPage={setPage} page={page} total={totalPage} />
-            </div>
-          )}
           <Button
             type="button"
             className="bg-primary hover:bg-blue-600 w-full"

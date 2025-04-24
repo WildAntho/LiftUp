@@ -12,10 +12,14 @@ export type CalendarEvent = Omit<Training, "user"> | Omit<Feedback, "training">;
 
 export type SidebarComponent = {
   title: string;
-  data: UserWithoutPassword[] | Crew[] | [];
-  loading: boolean;
+  data?: UserWithoutPassword[] | Crew[] | [];
+  value?: string;
+  withArrow: boolean;
+  loading?: boolean;
+  rotateArrow?: boolean;
+  subitems?: SidebarComponent[];
   get?: () => void;
-  icon: ReactElement;
+  icon?: ReactElement;
   type: string;
   isLastPage?: boolean;
 };

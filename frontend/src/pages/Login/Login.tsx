@@ -33,7 +33,7 @@ export default function Login() {
       if (result.data) {
         const profile = JSON.parse(result.data.login);
         setStore(profile);
-        navigate("/");
+        navigate("/home");
       }
     } catch (error) {
       if (error instanceof ApolloError) {
