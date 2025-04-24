@@ -108,9 +108,7 @@ export default function Navigation() {
               onClick={() => {
                 navigate(`${l.value}`);
               }}
-              className={`${
-                l.value === path && "bg-primary hover:bg-blue-600"
-              }`}
+              className={`${l.value === path && "bg-dark hover:bg-dark/90"}`}
               value={l.value}
             >
               {l.icon}

@@ -12,6 +12,8 @@ export default {
   		},
   		colors: {
 			'primary': '#3B82F6',
+			'dark': '#2C2C2C',
+			'tertiary': '#FF7F50',
   			sidebar: {
   				DEFAULT: 'hsl(var(--sidebar-background))',
   				foreground: 'hsl(var(--sidebar-foreground))',
