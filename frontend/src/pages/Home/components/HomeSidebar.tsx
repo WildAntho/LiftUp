@@ -116,7 +116,7 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
       ? [
           {
             title: "Mon coach",
-            withArrow: false,
+            withArrow: true,
             data: myCoach as UserWithoutPassword[],
             loading: loadingCoach,
             get: handleGetCoach,
