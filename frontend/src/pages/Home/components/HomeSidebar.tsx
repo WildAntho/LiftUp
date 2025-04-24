@@ -103,7 +103,7 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
     ...(isCoach
       ? [
           {
-            title: "Plan d'entraînement",
+            title: "Programmes",
             value: "program",
             withArrow: true,
             icon: <BicepsFlexed className="size-5" />,
@@ -126,7 +126,7 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
         ]
       : []),
     {
-      title: "Mes entraînements",
+      title: "Entraînements",
       value: "training",
       get: () => navigate("/home?tab=training"),
       withArrow: true,
@@ -134,7 +134,7 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
       type: "content",
     },
     {
-      title: "Mes exercices",
+      title: "Exercices",
       value: "exercices",
       withArrow: true,
       icon: <Dumbbell className="size-5" />,
