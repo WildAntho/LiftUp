@@ -9,7 +9,7 @@ export type IntensityComponentProps = {
 };
 
 export default function IntensityComponent({
-  size = "lg",
+  size = "sm",
   value,
   setValue,
   disabled = false,

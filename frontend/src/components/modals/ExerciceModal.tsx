@@ -347,7 +347,6 @@ export default function ExerciceModal({
             <div className="w-[90%]">
               {activeIntensity && (
                 <IntensityComponent
-                  size="md"
                   value={formState.intensity}
                   setValue={(value) =>
                     setFormState((prev) => ({ ...prev, intensity: value }))
