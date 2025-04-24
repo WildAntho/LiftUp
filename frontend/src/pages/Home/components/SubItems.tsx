@@ -28,7 +28,7 @@ export default function SubItems(props: SubItemProps) {
 
   return (
     <section
-      className={`group flex items-center justify-between w-full h-5 cursor-pointer px-4 py-5 rounded-r-md hover:bg-primary hover:bg-opacity-10`}
+      className={`group flex items-center justify-between w-full h-5 cursor-pointer px-4 py-5 rounded-r-md hover:bg-dark hover:bg-opacity-5`}
       onClick={props.get}
     >
       <div className="h-full flex justify-center items-center gap-5">
@@ -39,7 +39,7 @@ export default function SubItems(props: SubItemProps) {
               animate="enter"
               exit="exit"
               initial="initial"
-              className={`text-sm text-gray-500 transition transform group-hover:translate-x-1 group-hover:text-primary`}
+              className={`text-sm text-gray-500 transition transform group-hover:translate-x-1 group-hover:text-dark`}
             >
               {props.title}
             </motion.p>

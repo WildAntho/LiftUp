@@ -183,7 +183,7 @@ export default function Calendar({ currentUser }: CalendarProps) {
         aria-label="Options"
         color="primary"
         size="md"
-        variant="bordered"
+        variant="underlined"
         selectedKey={active}
         onSelectionChange={handleSelectionChange}
       >
