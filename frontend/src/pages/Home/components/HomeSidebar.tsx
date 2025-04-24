@@ -1,95 +1,51 @@
+import React from "react";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import CollapseItem from "./CollapseItem";
 import { SidebarComponent } from "@/type";
-import { SidebarSeparator } from "@/components/ui/sidebar";
-import { HandCoins, Handshake, NotepadText, SquareUser } from "lucide-react";
-import UserProfile from "./UserProfile";
-import SearchInput from "./SearchInput";
-import { UserWithoutPassword } from "@/services/zustand/userStore";
 import {
-  Crew,
-  useGetCoachCrewsLazyQuery,
-  useGetCoachLazyQuery,
-  useGetStudentsLazyQuery,
-} from "@/graphql/hooks";
+  BicepsFlexed,
+  Calendar,
+  ChartNoAxesCombined,
+  Dumbbell,
+  Gauge,
+  HandCoins,
+  NotepadText,
+} from "lucide-react";
+import UserProfile from "./UserProfile";
+import { UserWithoutPassword } from "@/services/zustand/userStore";
+import { Crew, useGetCoachLazyQuery } from "@/graphql/hooks";
+import SelectStudentModal from "@/components/modals/SelectStudentModal";
+import SelectCrewModal from "@/components/modals/SelectCrewModal";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import SubItems from "./SubItems";
+import { Separator } from "@/components/ui/separator";
 
 type HomeSidebarProps = {
   currentUser: UserWithoutPassword | null;
 };
 
 export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const params = searchParams.get("tab");
+  const isCalendar = params === "calendar";
   const [open, setOpen] = useState(false);
-  const [input, setInput] = useState<string>("");
-  const prevInputRef = useRef<string>(input);
-  const [page, setPage] = useState<number>(1);
-  const limit = 5;
-  const [myStudents, setMyStudents] = useState<UserWithoutPassword[]>([]);
+  const [openStudentModal, setOpenStudentModal] = useState(false);
+  const [openCrewModal, setOpenCrewModal] = useState(false);
   const ROLE_COACH = "COACH";
   const isCoach = currentUser?.roles === ROLE_COACH;
   const [getCoach, { data: dataCoach, loading: loadingCoach }] =
     useGetCoachLazyQuery({
       variables: { id: currentUser ? currentUser.id.toString() : "" },
     });
-  const [getStudents, { data: dataStudents, loading: loadingStudents }] =
-    useGetStudentsLazyQuery({
-      variables: {
-        id: currentUser ? currentUser.id.toString() : "",
-        input: input ? input : "",
-        limit,
-        page,
-      },
-      fetchPolicy: "cache-and-network",
-    });
-  const [getCrews, { data: dataCrews, loading: loadingCrews }] =
-    useGetCoachCrewsLazyQuery();
 
-  const allStudents = dataStudents?.getStudents.students ?? [];
-
-  useEffect(() => {
-    // Cas n°1: Chargement initial et lorsque l'input est vidé
-    if (
-      (input.length === 0 && prevInputRef.current.length > 0) ||
-      myStudents.length === 0
-    ) {
-      setMyStudents(allStudents as UserWithoutPassword[]);
-    } 
-    // Cas n°2: Si l'utilisateur tape dans l'input
-    else if (
-      input.length > 0 &&
-      prevInputRef.current.length !== input.length
-    ) {
-      setMyStudents(allStudents as UserWithoutPassword[]);
-    } 
-    // Cas n°3: Si l'utilisateur charge plus de student (page + 1)
-    else {
-      setMyStudents((prev) => [
-        ...prev,
-        ...(allStudents as UserWithoutPassword[]),
-      ]);
-    }
-    prevInputRef.current = input;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataStudents]);
-
-  const totalStudents = dataStudents?.getStudents.totalCount ?? 0;
-  const lastPage = Math.ceil(totalStudents / limit);
-  const isLastPageStudents = lastPage === page;
   const myCoach = dataCoach?.getUserById?.coach
     ? [dataCoach.getUserById.coach]
     : [];
-  const myCrews = dataCrews?.getCoachCrews ?? [];
-
-  const handleGetStudents = (): void => {
-    getStudents();
-  };
 
   const handleGetCoach = (): void => {
     getCoach();
-  };
-
-  const handleGetCrews = (): void => {
-    getCrews();
   };
 
   const parentVariants = {
@@ -111,42 +67,87 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
   };
 
   const sidebarConfig: SidebarComponent[] = [
+    {
+      title: "Tableau de bord",
+      value: "dashboard",
+      withArrow: true,
+      icon: <Gauge className="size-5" />,
+      type: "content",
+      get: () => navigate("/home"),
+    },
+    {
+      title: "Calendrier",
+      value: "calendar",
+      withArrow: true,
+      rotateArrow: isCalendar,
+      icon: <Calendar className="size-5" />,
+      get: () => navigate("/home?tab=calendar"),
+      type: "content",
+      subitems: isCoach
+        ? [
+            {
+              title: "Elèves",
+              withArrow: false,
+              get: () => setOpenStudentModal(true),
+              type: "user",
+            },
+            {
+              title: "Equipes",
+              withArrow: false,
+              get: () => setOpenCrewModal(true),
+              type: "crew",
+            },
+          ]
+        : undefined,
+    },
     ...(isCoach
       ? [
           {
-            title: "Mes élèves",
-            data: myStudents as UserWithoutPassword[],
-            loading: loadingStudents,
-            get: handleGetStudents,
-            icon: <SquareUser className="size-5" />,
-            type: "user",
-            isLastPage: isLastPageStudents,
-          },
-          {
-            title: "Mes équipes",
-            data: myCrews as Crew[],
-            loading: loadingCrews,
-            get: handleGetCrews,
-            icon: <Handshake className="size-5" />,
-            type: "crew",
+            title: "Plan d'entraînement",
+            value: "program",
+            withArrow: true,
+            icon: <BicepsFlexed className="size-5" />,
+            type: "content",
+            get: () => navigate("/home?tab=program"),
           },
         ]
-      : [
+      : []),
+    ...(!isCoach
+      ? [
           {
             title: "Mon coach",
+            withArrow: false,
             data: myCoach as UserWithoutPassword[],
             loading: loadingCoach,
             get: handleGetCoach,
             icon: <HandCoins className="size-5" />,
             type: "user",
           },
-        ]),
+        ]
+      : []),
     {
       title: "Mes entraînements",
-      data: [],
-      loading: false,
+      value: "training",
+      get: () => navigate("/home?tab=training"),
+      withArrow: true,
       icon: <NotepadText className="size-5" />,
       type: "content",
+    },
+    {
+      title: "Mes exercices",
+      value: "exercices",
+      withArrow: true,
+      icon: <Dumbbell className="size-5" />,
+      type: "content",
+      get: () => navigate("/home?tab=exercices"),
+    },
+    {
+      title: "Statistiques",
+      value: "statistics",
+      withArrow: true,
+      icon: <ChartNoAxesCombined className="size-5" />,
+      type: "content",
+      get: () => navigate("/home?tab=statistics"),
     },
   ];
 
@@ -159,30 +160,63 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
-      <div className="flex flex-col items-center justify-start pr-4 pl-4 pb-2 pt-7 overflow-y-scroll w-full h-[90%]">
-        <div className="flex flex-col gap-10 w-full">
-          {isCoach && (
-            <SearchInput open={open} setInput={setInput} setPage={setPage} />
-          )}
-          {sidebarConfig.map((s, i) => (
-            <div key={s.title}>
-              <CollapseItem
+      <SelectStudentModal
+        open={openStudentModal}
+        setOpen={setOpenStudentModal}
+        closeNav={() => setOpen(false)}
+      />
+      <SelectCrewModal
+        open={openCrewModal}
+        setOpen={setOpenCrewModal}
+        closeNav={() => setOpen(false)}
+      />
+      <div
+        className={`flex flex-col items-center justify-start px-2 pb-2 pt-7 overflow-y-scroll w-full h-[90%]`}
+      >
+        <div className="flex flex-col w-full gap-1">
+          {sidebarConfig.map((s) => (
+            <React.Fragment key={s.title}>
+              <motion.div
+                whileTap={{ scale: 0.99 }}
+                transition={{ type: "spring", stiffness: 600 }}
+                className={`group ${
+                  s.withArrow
+                    ? "hover:bg-primary hover:bg-opacity-10 hover:text-primary"
+                    : "hover:bg-none"
+                } rounded-md py-2 cursor-pointer ${
+                  ((!params && s.value === "dashboard") ||
+                    s.value === params) &&
+                  "bg-primary bg-opacity-10 text-primary"
+                }`}
                 onClick={s.get}
-                loading={s.loading}
-                open={open}
-                title={s.title}
-                data={s.data}
-                icon={s.icon}
-                type={s.type}
-                setPage={setPage}
-                page={page}
-                isLastPage={s.isLastPage}
-                input={input}
-              />
-              {i < sidebarConfig.length - 1 && (
-                <SidebarSeparator className="mt-4" />
+              >
+                <CollapseItem
+                  open={open}
+                  title={s.title}
+                  data={s.data as UserWithoutPassword[] | Crew[]}
+                  icon={s.icon}
+                  type={s.type}
+                  withArrow={s.withArrow}
+                  rotateArrow={s.rotateArrow}
+                  subitems={s.subitems}
+                />
+              </motion.div>
+              {s.subitems && s.subitems?.length > 0 && isCalendar && (
+                <div className="flex h-full w-full justify-start items-center pl-5 py-1">
+                  <Separator className="h-full" orientation="vertical" />
+                  <div className="flex flex-col w-full">
+                    {s.subitems.map((subitem) => (
+                      <SubItems
+                        key={subitem.title}
+                        title={subitem.title}
+                        open={open}
+                        get={subitem.get}
+                      />
+                    ))}
+                  </div>
+                </div>
               )}
-            </div>
+            </React.Fragment>
           ))}
         </div>
       </div>

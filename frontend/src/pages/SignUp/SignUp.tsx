@@ -41,7 +41,7 @@ export default function SignUp() {
       if (result.data) {
         const profile = JSON.parse(result.data.signUp);
         setStore(profile);
-        navigate("/");
+        navigate("/home");
       }
     } catch (error) {
       if (error instanceof ApolloError) {
@@ -80,10 +80,7 @@ export default function SignUp() {
             <Input ref={firstname} placeholder="Prénom" />
             <Input ref={lastname} placeholder="Nom" />
           </div>
-          <Input
-            ref={email}
-            placeholder="Email"
-          />
+          <Input ref={email} placeholder="Email" />
           <div className="flex flex-col justify-center items-center gap-2 w-full">
             <div className="w-full relative">
               <Input

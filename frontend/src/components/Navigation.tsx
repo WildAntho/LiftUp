@@ -1,7 +1,8 @@
 import {
-  CalendarIcon,
+  BicepsFlexed,
   ChevronDown,
   Handshake,
+  HomeIcon,
   LogOut,
   Settings,
   UserPen,
@@ -44,9 +45,9 @@ export default function Navigation() {
   const links: Link[] = [
     {
       id: 1,
-      value: "/",
-      label: "Calendrier",
-      icon: <CalendarIcon size={16} />,
+      value: "/home",
+      label: "Accueil",
+      icon: <HomeIcon size={16} />,
     },
     ...(isCoach
       ? [
@@ -62,23 +63,19 @@ export default function Navigation() {
           },
         ]
       : []),
-    {
-      id: 4,
-      value: "/trainings",
-      label: "Mes entrainements",
-    },
-    {
-      id: 5,
-      value: "/exercices",
-      label: "Mes exercices",
-    },
     ...(isStudent
       ? [
           {
-            id: 6,
+            id: 4,
             value: "/coach",
             label: "Besoin d'un coach ?",
             icon: <Handshake />,
+          },
+          {
+            id: 5,
+            value: "/program",
+            label: "Besoin d'un plan d'entraînement ?",
+            icon: <BicepsFlexed />,
           },
         ]
       : []),

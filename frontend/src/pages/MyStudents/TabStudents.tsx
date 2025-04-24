@@ -1,13 +1,5 @@
 import Delete from "@/components/Delete";
 import PaginationBar from "@/components/PaginationBar";
-import SelectStudentModal from "@/components/modals/SelectStudentModal";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   useActivateMemberShipMutation,
   useDeleteStudentMutation,
@@ -26,11 +18,10 @@ import {
   TableCell,
   User,
   Input,
-  Button,
   Select,
   SelectItem,
 } from "@heroui/react";
-import { BadgeEuro, Handshake, Loader2, Plus, SearchIcon } from "lucide-react";
+import { BadgeEuro, Handshake, Loader2, SearchIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import imgDefault from "../../../public/default.jpg";
 import { uploadURL } from "@/services/utils";
@@ -296,28 +287,6 @@ export default function TabStudent({ refetch }: TabStudentProps) {
                 ))}
               </>
             </Select>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  color="primary"
-                  radius="sm"
-                  isIconOnly
-                  aria-label="Ouvrir la boîte de dialogue pour sélectionner un élève"
-                >
-                  <Plus />
-                </Button>
-              </DialogTrigger>
-              <DialogContent
-                aria-label="Sélectionner un élève"
-                aria-describedby="Ajouter un nouvel élève"
-                className="h-[60%] flex flex-col justify-start items-center overflow-y-scroll"
-              >
-                <DialogHeader>
-                  <DialogTitle>Sélectionner un élève</DialogTitle>
-                </DialogHeader>
-                <SelectStudentModal currentUser={currentUser} />
-              </DialogContent>
-            </Dialog>
           </section>
         </section>
         <div className="flex items-center justify-between px-3">

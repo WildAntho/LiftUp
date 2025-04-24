@@ -15,10 +15,10 @@ function App() {
   }, [data, loading, error, setTypes]);
   return (
     <section className="h-screen flex flex-col bg-gray-100 overflow-hidden">
-      <section className="h-[12%]">
+      <section className="h-[10%]">
         <Navigation />
       </section>
-      <section className="h-[88%]">
+      <section className="h-[90%]">
         <Outlet />
       </section>
       <Toaster position="top-right" />

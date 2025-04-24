@@ -10,7 +10,11 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import Home from "./pages/Home/Home.tsx";
 import Login from "./pages/Login/Login.tsx";
 import SignUp from "./pages/SignUp/SignUp.tsx";
@@ -31,7 +35,8 @@ import { onError } from "@apollo/client/link/error";
 import { useUserStore } from "./services/zustand/userStore.ts";
 import { useCrewStore } from "./services/zustand/crewStore.ts";
 import { useStudentStore } from "./services/zustand/studentStore.ts";
-import ExerciceModel from "./pages/ExerciceModel/ExerciceModel.tsx";
+import useIsDesktop from "./pages/UnsupportedScreen/useIsDesktop.ts";
+import UnsupportedScreen from "./pages/UnsupportedScreen/UnsupportedScreen.tsx";
 
 // Création du lien WebSocket
 const wsLink = new GraphQLWsLink(
@@ -92,6 +97,10 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <Navigate to="/home" replace />,
+      },
+      {
+        path: "/home",
         element: (
           <ProtectedRoute>
             <Home />
@@ -146,14 +155,6 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      {
-        path: "/exercices",
-        element: (
-          <ProtectedRoute>
-            <ExerciceModel />
-          </ProtectedRoute>
-        ),
-      },
     ],
   },
   {
@@ -182,11 +183,17 @@ const router = createBrowserRouter([
   },
 ]);
 
+export function AppWrapper() {
+  const isDesktop = useIsDesktop();
+
+  return isDesktop ? <RouterProvider router={router} /> : <UnsupportedScreen />;
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <HeroUIProvider>
       <ApolloProvider client={client}>
-        <RouterProvider router={router} />
+        <AppWrapper />
       </ApolloProvider>
     </HeroUIProvider>
   </StrictMode>
