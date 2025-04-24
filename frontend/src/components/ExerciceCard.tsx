@@ -142,7 +142,7 @@ export default function ExerciceCard({
         {intensity ? (
           <section className="flex my-5 w-full justify-center">
             <div className="w-[90%]">
-              <IntensityComponent size="md" value={intensity} disabled={true} />
+              <IntensityComponent value={intensity} disabled={true} />
             </div>
           </section>
         ) : null}
