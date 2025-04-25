@@ -329,7 +329,7 @@ export default function TrainingModal({
       isOpen={open}
       onOpenChange={() => close()}
       isDismissable={false}
-      size="full"
+      size={!isShow ? "full" : "5xl"}
       style={{ backgroundColor: "#f3f4f6" }}
       classNames={{
         closeButton: "text-black hover:bg-black/5 active:bg-black/10",
@@ -346,7 +346,7 @@ export default function TrainingModal({
           refetch={refetch}
         />
       )}
-      <ModalContent className="h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+      <ModalContent className="h-full">
         <ModalHeader className="w-full flex justify-center">
           <p>Entraînement</p>
         </ModalHeader>
@@ -359,10 +359,9 @@ export default function TrainingModal({
             flex: 1,
             height: "100%",
           }}
-          className="[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 pr-2"
         >
           {!isShow && (
-            <section className="sticky top-0 h-full w-[50%] bg-white shadow-md rounded-lg p-4 overflow-y-auto flex flex-col gap-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100">
+            <section className="sticky top-0 h-full w-[50%] bg-white shadow-md rounded-lg p-4 overflow-y-auto flex flex-col gap-4">
               <p className="font-bold">Modèles d'exercices</p>
               <div className="w-full flex items-center justify-between gap-2">
                 <div className="flex-1">
@@ -408,7 +407,7 @@ export default function TrainingModal({
             </section>
           )}
           <section className="flex flex-col gap-2 w-full h-full">
-            <section className="flex flex-col justify-center items-center gap-3 p-4 rounded-lg bg-white shadow-md">
+            <section className="flex-none flex flex-col justify-center items-center gap-3 p-4 rounded-lg bg-white shadow-md min-h-[15%]">
               <p className="w-full items-start font-bold">
                 Informations générales
               </p>
@@ -477,7 +476,7 @@ export default function TrainingModal({
                 )}
               </section>
             </section>
-            <section className="flex flex-col justify-start items-center gap-3 w-full p-4 rounded-lg bg-white shadow-md flex-grow">
+            <section className="flex-1 flex flex-col justify-start items-center gap-3 w-full p-4 rounded-lg bg-white shadow-md flex-grow">
               <p className="w-full items-start font-bold">Exercices</p>
               <DndContext
                 modifiers={[restrictToVerticalAxis]}
@@ -538,7 +537,11 @@ export default function TrainingModal({
                 </SortableContext>
               </DndContext>
             </section>
-            <section className="flex flex-col justify-start gap-3 w-full p-4 rounded-lg bg-white shadow-md">
+            <section
+              className={`flex-none flex flex-col justify-start gap-3 w-full p-4 rounded-lg bg-white shadow-md ${
+                isShow ? "min-h-[15%]" : "min-h-[35%]"
+              }`}
+            >
               <p className="w-full items-start font-bold">Notes</p>
               {!isShow ? (
                 <Textarea
@@ -556,7 +559,7 @@ export default function TrainingModal({
               )}
             </section>
             {!isShow && (
-              <section className="flex flex-col justify-center items-start gap-4 w-full p-4 rounded-lg bg-white shadow-md h-[10%] overflow-y-auto">
+              <section className="flex-none flex flex-col justify-center items-start gap-4 w-full p-4 rounded-lg bg-white shadow-md min-h-[10%]">
                 {currentStudent && (
                   <Switch
                     isSelected={editable}
