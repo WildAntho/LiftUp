@@ -110,8 +110,7 @@ export class TrainingResolver {
         await feedback.save();
       }
       if (data.date && data.date.length > 1) {
-        const newDate = getNewDate(data.date);
-        await createTrainingsForDates(newDate, data as TrainingData, user);
+        await createTrainingsForDates(data.date, data as TrainingData, user, {}, true);
       }
     }
     return JSON.stringify("La mise à jour a bien été effectuée");

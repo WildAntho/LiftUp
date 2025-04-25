@@ -184,6 +184,10 @@ export default function Calendar({ currentUser }: CalendarProps) {
         color="primary"
         size="md"
         variant="underlined"
+        classNames={{
+          tabList:
+            "gap-4 w-full relative rounded-none p-0 border-b border-divider",
+        }}
         selectedKey={active}
         onSelectionChange={handleSelectionChange}
       >

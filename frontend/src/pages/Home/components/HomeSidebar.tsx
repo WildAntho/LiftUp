@@ -171,7 +171,7 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
         closeNav={() => setOpen(false)}
       />
       <div
-        className={`flex flex-col items-center justify-start px-2 pb-2 pt-7 overflow-y-scroll w-full h-[90%]`}
+        className={`flex flex-col items-center justify-start px-2 pb-2 pt-7 w-full h-[90%] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']`}
       >
         <div className="flex flex-col w-full gap-1">
           {sidebarConfig.map((s) => (

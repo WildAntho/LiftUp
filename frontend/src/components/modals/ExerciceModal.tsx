@@ -19,7 +19,8 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import { useTypeStore } from "@/services/zustand/typeStore";
-import { removeTypename } from "@/services/utils";
+import Counter from "../Counter";
+import NumberInput from "../NumberInput";
 
 type ExerciceModalProps = {
   open: boolean;
@@ -29,6 +30,7 @@ type ExerciceModalProps = {
   exerciceToEdit?: Exercice | null;
   isNew?: boolean;
   trainingId?: string;
+  config?: Config;
 };
 
 export default function ExerciceModal({
@@ -39,15 +41,11 @@ export default function ExerciceModal({
   exerciceToEdit,
   isNew = false,
   trainingId,
+  config,
 }: ExerciceModalProps) {
   const allTypes = useTypeStore((state) => state.types);
   const [activeWeight, setActiveWeight] = useState<boolean>(true);
   const [activeIntensity, setActiveIntensity] = useState<boolean>(true);
-  const [config, setConfig] = useState<Config>({
-    rep: 0,
-    serie: 0,
-    intensity: 0,
-  });
 
   // Transformation de allTypes pour le SelectField : on s'assure d'avoir un id
   const types = allTypes.map((t) => {
@@ -62,9 +60,9 @@ export default function ExerciceModal({
   // On stocke la propriété "type" sous forme de chaîne (la valeur du type)
   const [formState, setFormState] = useState({
     title: "",
-    serie: "",
-    rep: "",
-    weight: "",
+    serie: 1,
+    rep: 1,
+    weight: 0,
     intensity: 1 as Maybe<number>,
     notes: "",
     type: {
@@ -86,9 +84,9 @@ export default function ExerciceModal({
   const purgeInput = useCallback(() => {
     setFormState({
       title: "",
-      serie: "",
-      rep: "",
-      weight: "",
+      serie: 1,
+      rep: 1,
+      weight: 0,
       intensity: 1,
       notes: "",
       type: {
@@ -96,11 +94,6 @@ export default function ExerciceModal({
         value: "",
         label: "",
       },
-    });
-    setConfig({
-      rep: 0,
-      serie: 0,
-      intensity: 0,
     });
     setFormError({
       title: false,
@@ -114,9 +107,9 @@ export default function ExerciceModal({
     if (exerciceToEdit) {
       setFormState({
         title: exerciceToEdit.title,
-        serie: String(exerciceToEdit.serie ?? ""),
-        rep: String(exerciceToEdit.rep ?? ""),
-        weight: String(exerciceToEdit.weight ?? ""),
+        serie: Number(exerciceToEdit.serie ?? 1),
+        rep: Number(exerciceToEdit.rep ?? 1),
+        weight: Number(exerciceToEdit.weight ?? 0),
         intensity: exerciceToEdit.intensity ?? 1,
         notes: exerciceToEdit.notes ?? "",
         type: exerciceToEdit.type ?? {
@@ -149,12 +142,12 @@ export default function ExerciceModal({
     if (hasError) return;
     const payload = {
       title: formState.title,
-      serie: Number(formState.serie),
-      rep: Number(formState.rep),
-      weight: activeWeight ? Number(formState.weight) : 0,
+      serie: formState.serie,
+      rep: formState.rep,
+      weight: activeWeight ? formState.weight : 0,
       intensity: activeIntensity ? formState.intensity : 0,
       notes: formState.notes,
-      type: formState.type, // objet complet de type ExerciceType (avec id, value, label)
+      type: formState.type,
       config,
     };
 
@@ -175,17 +168,13 @@ export default function ExerciceModal({
       // Mode API (entraînement existant)
       else {
         let updatedExercice: Exercice;
-        const cleanedPayload = {
-          ...payload,
-          type: removeTypename(payload.type),
-        };
 
         if (exerciceToEdit) {
           // Mise à jour
           const { data } = await updateExercice({
             variables: {
               id: exerciceToEdit.id,
-              data: cleanedPayload,
+              data: payload,
             },
           });
 
@@ -226,210 +215,146 @@ export default function ExerciceModal({
 
   return (
     <Modal
-      scrollBehavior="outside"
+      scrollBehavior="inside"
       isOpen={open}
       onOpenChange={onClose}
-      size="xl"
+      size="2xl"
       isDismissable={false}
       classNames={{
         closeButton: "text-black hover:bg-black/5 active:bg-black/10",
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
+        base: "max-h-[80vh]",
       }}
     >
-      <ModalContent>
-        <ModalHeader className="w-full h-full flex justify-center">
+      <ModalContent className="h-full flex flex-col">
+        <ModalHeader className="flex-none flex justify-center border-b">
           <p>
             {exerciceToEdit ? "Modifier l'exercice" : "Ajouter un exercice"}
           </p>
         </ModalHeader>
-        <ModalBody style={{ gap: "4px" }} className="h-full">
-          <section className="flex justify-center items-center gap-2 w-full overflow-y-scroll">
-            <div className="relative w-[65%]">
-              <TextInputField
-                required
-                isInvalid={formError.title}
-                label="Titre"
-                type="text"
-                placeholder="Titre de l'exercice"
-                value={formState.title}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setFormState((prev) => ({ ...prev, title: e.target.value }))
-                }
-              />
-              {formError.title && (
-                <p className="text-red-500 text-xs absolute top-[65px] left-1">
-                  Veuillez renseigner ce champ
-                </p>
-              )}
-            </div>
-            <div className="w-[35%]">
-              <SelectField
-                label="Type"
-                value={formState.type.value}
-                onChange={(e) => {
-                  const selectedType = types.find(
-                    (t) => t.value === e.target.value
-                  );
-                  setFormState((prev) => ({
-                    ...prev,
-                    type: selectedType || { id: "", value: "", label: "" },
-                  }));
-                }}
-              >
-                <option value="">Aucun type</option>
-                {types.map((type, i) => (
-                  <option key={i} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </SelectField>
-            </div>
-          </section>
-          <section className="flex justify-between items-center">
-            <section className="flex justify-start items-center gap-2 flex-1">
-              <div className="relative flex-1">
+        <ModalBody className="flex-1 overflow-y-auto py-4">
+          <div className="flex flex-col gap-4">
+            <section className="flex justify-center items-center gap-2 w-full">
+              <div className="relative w-[65%]">
                 <TextInputField
                   required
-                  isInvalid={formError.serie}
-                  label="Série"
-                  type="number"
-                  placeholder="Nombre de série"
-                  value={formState.serie}
+                  isInvalid={formError.title}
+                  label="Titre"
+                  type="text"
+                  placeholder="Titre de l'exercice"
+                  value={formState.title}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormState((prev) => ({ ...prev, serie: e.target.value }))
+                    setFormState((prev) => ({ ...prev, title: e.target.value }))
                   }
                 />
-                {formError.serie && (
+                {formError.title && (
                   <p className="text-red-500 text-xs absolute top-[65px] left-1">
                     Veuillez renseigner ce champ
                   </p>
                 )}
               </div>
-              <p>X</p>
-              <div className="relative flex-1">
-                <TextInputField
-                  required
-                  isInvalid={formError.rep}
-                  label="Répétitions"
-                  type="number"
-                  placeholder="Nombre de répétitions"
-                  value={formState.rep}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormState((prev) => ({ ...prev, rep: e.target.value }))
-                  }
-                />
-                {formError.rep && (
-                  <p className="text-red-500 text-xs absolute top-[65px] left-1">
-                    Veuillez renseigner ce champ
-                  </p>
-                )}
-              </div>
-            </section>
-            {activeWeight && (
-              <div className="flex justify-center items-center gap-1 pl-5 w-[25%]">
-                <TextInputField
-                  label="Charge"
-                  type="number"
-                  placeholder="Charge"
-                  value={formState.weight}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              <div className="w-[35%]">
+                <SelectField
+                  label="Type"
+                  value={formState.type.value}
+                  onChange={(e) => {
+                    const selectedType = types.find(
+                      (t) => t.value === e.target.value
+                    );
                     setFormState((prev) => ({
                       ...prev,
-                      weight: e.target.value,
-                    }))
-                  }
-                />
-                <p className="text-xs">Kg</p>
+                      type: selectedType || { id: "", value: "", label: "" },
+                    }));
+                  }}
+                >
+                  <option value="">Aucun type</option>
+                  {types.map((type, i) => (
+                    <option key={i} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </SelectField>
               </div>
-            )}
-          </section>
-          <section className="flex mb-4 w-full justify-center">
-            <div className="w-[90%]">
-              {activeIntensity && (
-                <IntensityComponent
-                  value={formState.intensity}
-                  setValue={(value) =>
-                    setFormState((prev) => ({ ...prev, intensity: value }))
-                  }
-                />
+            </section>
+            <section className="flex justify-center items-center mb-4 gap-2">
+              <section className="flex w-[80%] justify-start items-center gap-2">
+                <div className="flex-1 flex-col items-center justify-center gap-2">
+                  <p className="text-sm w-full text-center">Séries</p>
+                  <Counter
+                    setValue={(value) =>
+                      setFormState((prev) => ({ ...prev, serie: value }))
+                    }
+                    value={formState.serie}
+                    withNegative={false}
+                  />
+                </div>
+                <div className="flex-1 flex-col items-center justify-center gap-2">
+                  <p className="text-sm w-full text-center">Répétitions</p>
+                  <Counter
+                    setValue={(value) =>
+                      setFormState((prev) => ({ ...prev, rep: value }))
+                    }
+                    value={formState.rep}
+                    withNegative={false}
+                  />
+                </div>
+              </section>
+              {activeWeight && (
+                <div className="w-[20%] flex-col items-center justify-center gap-2">
+                  <p className="text-sm w-full text-center">Poids (Kg)</p>
+                  <NumberInput
+                    setValue={(value) =>
+                      setFormState((prev) => ({ ...prev, weight: value }))
+                    }
+                    value={formState.weight}
+                  />
+                </div>
               )}
-            </div>
-          </section>
-          <section className="flex flex-col w-full items-start justify-center gap-2">
-            <Switch
-              isSelected={activeWeight}
-              onValueChange={setActiveWeight}
-              size="sm"
-            >
-              <p className="text-xs">Charge</p>
-            </Switch>
-            <Switch
-              isSelected={activeIntensity}
-              onValueChange={setActiveIntensity}
-              size="sm"
-              className="text-xs"
-            >
-              <p className="text-xs">RPE</p>
-            </Switch>
-            <Textarea
-              className="mt-4"
-              placeholder="Renseigner vos notes"
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-                setFormState((prev) => ({
-                  ...prev,
-                  notes: e.target.value,
-                }))
-              }
-              value={formState.notes}
-            />
-          </section>
-          <section className="flex flex-col items-start justify-center gap-2 mt-4">
-            <p className="text-xs">
-              Si une récurrence est appliquée vous pouvez adapter les différents
-              paramètres ci-dessous (+1 rep par semaine avec -1 série à la même
-              intensité par exemple)
-            </p>
-            <section className="flex justify-center items-center gap-2">
-              <TextInputField
-                label="Séries"
-                type="number"
-                placeholder="Séries à ajouter ou enlever"
-                value={config.serie ? config.serie : 0}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setConfig((prev) => ({
+            </section>
+            {activeIntensity && (
+              <section className="flex flex-col mb-4 w-full justify-center items-start">
+                <p className="text-sm w-full text-center">RPE</p>
+                <div className="w-full bg-white border border-tertiary border-opacity-20 hover:border-opacity-70 shadow-sm rounded-xl px-4 py-3 flex items-center justify-center">
+                  <IntensityComponent
+                    value={formState.intensity}
+                    setValue={(value) =>
+                      setFormState((prev) => ({ ...prev, intensity: value }))
+                    }
+                  />
+                </div>
+              </section>
+            )}
+            <section className="flex flex-col w-full items-start justify-center gap-2">
+              <Switch
+                isSelected={activeWeight}
+                onValueChange={setActiveWeight}
+                size="sm"
+              >
+                <p className="text-xs">Charge</p>
+              </Switch>
+              <Switch
+                isSelected={activeIntensity}
+                onValueChange={setActiveIntensity}
+                size="sm"
+                className="text-xs"
+              >
+                <p className="text-xs">RPE</p>
+              </Switch>
+              <Textarea
+                className="mt-4"
+                placeholder="Ajouter des notes"
+                onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                  setFormState((prev) => ({
                     ...prev,
-                    serie: Number(e.target.value),
+                    notes: e.target.value,
                   }))
                 }
-              />
-              <TextInputField
-                label="Répétitions"
-                type="number"
-                placeholder="Répétitions à ajouter ou enlever"
-                value={config.rep ? config.rep : 0}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setConfig((prev) => ({
-                    ...prev,
-                    rep: Number(e.target.value),
-                  }))
-                }
-              />
-              <TextInputField
-                label="Intensité"
-                type="number"
-                placeholder="Intensité à ajouter ou enlever"
-                value={config.intensity ? config.intensity : 0}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setConfig((prev) => ({
-                    ...prev,
-                    intensity: Number(e.target.value),
-                  }))
-                }
+                value={formState.notes}
               />
             </section>
-          </section>
+          </div>
         </ModalBody>
-        <ModalFooter className="flex justify-between items-center w-full">
+        <ModalFooter className="flex-none flex justify-between items-center w-full border-t">
           <div className="flex-1">
             <p className="flex-1 text-xs text-gray-600">
               * Champs obligatoires
@@ -437,7 +362,7 @@ export default function ExerciceModal({
           </div>
           <div className="flex flex-1 justify-end items-center w-full gap-2">
             <Button
-              variant="secondary"
+              variant="outline"
               onClick={() => {
                 purgeInput();
                 onClose();
