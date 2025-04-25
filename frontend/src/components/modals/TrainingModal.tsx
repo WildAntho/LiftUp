@@ -329,7 +329,7 @@ export default function TrainingModal({
       isOpen={open}
       onOpenChange={() => close()}
       isDismissable={false}
-      size={!isDesktop && !isShow ? "full" : "3xl"}
+      size="full"
       style={{ backgroundColor: "#f3f4f6" }}
       classNames={{
         closeButton: "text-black hover:bg-black/5 active:bg-black/10",
