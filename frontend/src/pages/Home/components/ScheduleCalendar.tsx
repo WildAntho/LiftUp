@@ -20,6 +20,8 @@ import {
 import { useStudentStore } from "@/services/zustand/studentStore";
 import { useUserStore } from "@/services/zustand/userStore";
 import { useCrewStore } from "@/services/zustand/crewStore";
+import BadgeStudent from "./BadgeStudent";
+import BadgeCrew from "./BadgeCrew";
 
 interface CalendarProps<T> {
   events: T[];
@@ -141,6 +143,8 @@ export const ScheduleCalendar = <T extends CalendarEvent>({
               />
             </div>
           </Tooltip>
+          {currentStudent && <BadgeStudent student={currentStudent} />}
+          {currentCrew && <BadgeCrew crew={currentCrew} />}
         </div>
         <div className="flex gap-2">
           <button
