@@ -17,7 +17,7 @@ export default function BadgeCrew({ crew }: BadgeCrewProps) {
   };
 
   return (
-    <section className="absolute top-10 left-10 flex justify-center items-center gap-2">
+    <section className="flex justify-center items-center gap-2">
       <Badge className="bg-black text-white">{crew.name}</Badge>
       <Tooltip
         content="Revenir à ma programmation"

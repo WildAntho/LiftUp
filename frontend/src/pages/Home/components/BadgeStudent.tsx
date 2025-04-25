@@ -18,7 +18,7 @@ export default function BadgeStudent({ student }: BadgeStudentProps) {
   };
 
   return (
-    <section className="absolute top-10 left-10 flex justify-center items-center gap-2">
+    <section className="flex justify-center items-center gap-2">
       <Badge className="bg-black text-white">{`${student?.firstname} ${student?.lastname}`}</Badge>
       <Tooltip
         content="Revenir à ma programmation"

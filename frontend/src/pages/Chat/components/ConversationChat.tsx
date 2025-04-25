@@ -315,7 +315,7 @@ export default function ConversationChat({
           })}
       </section>
       {user && (
-        <section className="sticky top-0 w-full flex items-center justify-start bg-white shadow-sm p-4">
+        <section className="sticky top-0 w-full flex items-center justify-start bg-white shadow-md p-4">
           <User
             avatarProps={{
               src: user.avatar ? `${uploadURL + user.avatar}` : imgDefault,

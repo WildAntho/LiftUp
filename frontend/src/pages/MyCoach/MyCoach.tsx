@@ -10,7 +10,6 @@ import { useUserStore } from "@/services/zustand/userStore";
 import { Receiver, Sender } from "@/type";
 import { Chip, Tabs, Tab, Progress } from "@heroui/react";
 import {
-  MessageCircleQuestion,
   PlaneTakeoff,
   Search,
   User,
@@ -127,18 +126,6 @@ export default function MyCoach() {
           <span>Mon Coach</span>
           <Chip size="sm" variant="faded">
             {myCoach ? "1" : "0"}
-          </Chip>
-        </div>
-      ),
-    },
-    {
-      id: "request",
-      label: (
-        <div className="flex items-center space-x-2">
-          <MessageCircleQuestion size={18} />
-          <span>Mes demandes reçus</span>
-          <Chip size="sm" variant="faded">
-            {myRequests.length}
           </Chip>
         </div>
       ),

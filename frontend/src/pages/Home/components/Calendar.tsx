@@ -12,12 +12,10 @@ import {
 } from "@/graphql/hooks";
 import { AlarmClockCheck, BookOpenCheck, CheckCheck } from "lucide-react";
 import { useStudentStore } from "@/services/zustand/studentStore";
-import BadgeStudent from "./BadgeStudent";
 import { Tab, Tabs } from "@heroui/tabs";
 import { Progress } from "@heroui/react";
 import { subDays } from "date-fns";
 import { useCrewStore } from "@/services/zustand/crewStore";
-import BadgeCrew from "./BadgeCrew";
 
 type CalendarProps = {
   currentUser: UserWithoutPassword | null;
@@ -176,9 +174,7 @@ export default function Calendar({ currentUser }: CalendarProps) {
   };
 
   return (
-    <section className=" relative w-full h-full flex flex-col justify-center items-center bg-white rounded-2xl p-4 pb-8 gap-4">
-      {currentStudent && <BadgeStudent student={currentStudent} />}
-      {currentCrew && <BadgeCrew crew={currentCrew} />}
+    <section className="relative w-full h-full flex flex-col justify-center items-center p-4 pb-8 gap-4">
       <Tabs
         aria-label="Options"
         color="primary"
