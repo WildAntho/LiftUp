@@ -50,10 +50,14 @@ export async function createTrainingsForDates(
   dates: Date[],
   data: TrainingData,
   entity: User | Crew,
-  additionalTrainingProps: Partial<Training> = {}
+  additionalTrainingProps: Partial<Training> = {},
+  isUpdate: boolean = false
 ): Promise<Training[]> {
-  return Promise.all(
+  const results = await Promise.all(
     dates.map(async (date, index) => {
+      if (isUpdate && index === 0) {
+        return null;
+      }
       const allExercices = await createExercices(index, data.exercices);
       const training = Training.create({
         title: data.title,
@@ -63,12 +67,14 @@ export async function createTrainingsForDates(
         color: data.color,
         exercices: allExercices,
         ...(entity instanceof User ? { user: entity } : { crew: entity }),
-        ...additionalTrainingProps, // Permet d'ajouter des propriétés spécifiques (ex: createdByCoach)
+        ...additionalTrainingProps,
       });
       await training.save();
       return training;
     })
   );
+
+  return results.filter((training): training is Training => training !== null);
 }
 
 export function getNewDate(date: Date[]) {

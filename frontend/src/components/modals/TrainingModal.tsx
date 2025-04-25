@@ -5,9 +5,9 @@ import { fr } from "date-fns/locale";
 import { useUserStore } from "@/services/zustand/userStore";
 import { useStudentStore } from "@/services/zustand/studentStore";
 import FeedbackModal from "./FeedbackModal";
+import useIsDesktop from "@/pages/UnsupportedScreen/useIsDesktop";
 import {
   Exercice,
-  ExerciceData,
   ExerciceModel,
   Training,
   useAddTrainingCrewMutation,
@@ -48,6 +48,12 @@ import {
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { useCrewStore } from "@/services/zustand/crewStore";
+
+interface Config {
+  rep: number;
+  serie: number;
+  intensity: number;
+}
 
 type TrainingModalProps = {
   training?: Training;
@@ -117,6 +123,9 @@ export default function TrainingModal({
   const [exercices, setExercices] = useState<Exercice[]>(
     training && training.exercices ? training.exercices : []
   );
+  const [exerciceConfigs, setExerciceConfigs] = useState<
+    Record<string, Config>
+  >({});
   const [editingExercice, setEditingExercice] = useState<Exercice | null>(null);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
 
@@ -206,22 +215,28 @@ export default function TrainingModal({
     (currentStudent && (currentStudent.id.toString() as string)) ||
     (currentUser && (currentUser.id.toString() as string));
 
-  const data = {
-    id: id as string,
-    title,
-    notes,
-    date: openRecurrent ? recurrentDate : [new Date(selectedDate)],
-    editable,
-    color,
-    exercices: exercices as ExerciceData[],
-  };
-
   const handleSave = async () => {
     if (title === "") {
       setError(true);
       return;
     }
     try {
+      // Ajout des configurations aux exercices
+      const exercicesWithConfig = exercices.map((e) => ({
+        ...e,
+        config: openRecurrent ? exerciceConfigs[e.id] || null : null,
+      }));
+
+      const data = {
+        id: id as string,
+        title,
+        notes,
+        date: openRecurrent ? recurrentDate : [new Date(selectedDate)],
+        editable,
+        color,
+        exercices: exercicesWithConfig,
+      };
+
       if (isNew) {
         if (currentStudent?.id) {
           await addTrainingStudent({ variables: { data } });
@@ -306,17 +321,20 @@ export default function TrainingModal({
     })
   );
 
+  const isDesktop = useIsDesktop(1920);
+
   return (
     <Modal
       scrollBehavior="inside"
       isOpen={open}
       onOpenChange={() => close()}
       isDismissable={false}
-      size={`${isShow ? "2xl" : "5xl"}`}
-      style={{ backgroundColor: "#E5EDF1" }}
+      size={!isDesktop && !isShow ? "full" : "3xl"}
+      style={{ backgroundColor: "#f3f4f6" }}
       classNames={{
         closeButton: "text-black hover:bg-black/5 active:bg-black/10",
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
+        base: isDesktop ? "w-[70%] m-auto" : "",
       }}
     >
       {training && (
@@ -328,7 +346,7 @@ export default function TrainingModal({
           refetch={refetch}
         />
       )}
-      <ModalContent className="h-full">
+      <ModalContent className="h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
         <ModalHeader className="w-full flex justify-center">
           <p>Entraînement</p>
         </ModalHeader>
@@ -341,9 +359,10 @@ export default function TrainingModal({
             flex: 1,
             height: "100%",
           }}
+          className="[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 pr-2"
         >
           {!isShow && (
-            <section className="sticky top-0 h-full w-[50%] bg-white rounded-lg p-4 overflow-y-auto flex flex-col gap-4">
+            <section className="sticky top-0 h-full w-[50%] bg-white shadow-md rounded-lg p-4 overflow-y-auto flex flex-col gap-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100">
               <p className="font-bold">Modèles d'exercices</p>
               <div className="w-full flex items-center justify-between gap-2">
                 <div className="flex-1">
@@ -389,7 +408,7 @@ export default function TrainingModal({
             </section>
           )}
           <section className="flex flex-col gap-2 w-full h-full">
-            <section className="flex flex-col justify-center items-center gap-3 p-4 rounded-lg bg-white">
+            <section className="flex flex-col justify-center items-center gap-3 p-4 rounded-lg bg-white shadow-md">
               <p className="w-full items-start font-bold">
                 Informations générales
               </p>
@@ -458,15 +477,15 @@ export default function TrainingModal({
                 )}
               </section>
             </section>
-            <section>
+            <section className="flex flex-col justify-start items-center gap-3 w-full p-4 rounded-lg bg-white shadow-md flex-grow">
+              <p className="w-full items-start font-bold">Exercices</p>
               <DndContext
                 modifiers={[restrictToVerticalAxis]}
                 onDragEnd={handleDragEnd}
                 sensors={sensors}
               >
                 <SortableContext items={exercices}>
-                  <section className="flex flex-col justify-center items-center gap-3 w-full p-4 rounded-lg bg-white">
-                    <p className="w-full items-start font-bold">Exercices</p>
+                  <div className="w-full h-full flex flex-col gap-3">
                     {exercices.map((e: Exercice) => (
                       <ExerciceCard
                         key={e.id}
@@ -494,7 +513,7 @@ export default function TrainingModal({
                     />
                     {!isShow && (
                       <div
-                        className="group w-full h-[80px] rounded-lg flex justify-center items-center bg-gray-50 cursor-pointer "
+                        className={`group rounded-lg flex justify-center items-center bg-gray-50 cursor-pointer h-full`}
                         onClick={() => {
                           setEditingExercice(null);
                           setOpenExerciceModal(true);
@@ -506,7 +525,7 @@ export default function TrainingModal({
                           showArrow={true}
                           color="foreground"
                         >
-                          <Plus className="size-10 text-gray-500 transition duration-150 group-hover:scale-110 group-hover:text-black" />
+                          <Plus className="size-8 text-gray-500 transition duration-150 group-hover:scale-110 group-hover:text-black" />
                         </Tooltip>
                       </div>
                     )}
@@ -515,11 +534,11 @@ export default function TrainingModal({
                         Aucun exercice
                       </p>
                     )}
-                  </section>
+                  </div>
                 </SortableContext>
               </DndContext>
             </section>
-            <section className="flex flex-col justify-center items-start gap-3 w-full p-4 rounded-lg bg-white">
+            <section className="flex flex-col justify-start gap-3 w-full p-4 rounded-lg bg-white shadow-md">
               <p className="w-full items-start font-bold">Notes</p>
               {!isShow ? (
                 <Textarea
@@ -527,7 +546,8 @@ export default function TrainingModal({
                   onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
                     setNotes(e.target.value)
                   }
-                  placeholder="Ajoutez vos notes"
+                  placeholder="Ajouter des notes"
+                  className="h-full resize-none"
                 />
               ) : (
                 <p className={`text-xs ${!training?.notes && "text-gray-400"}`}>
@@ -536,19 +556,17 @@ export default function TrainingModal({
               )}
             </section>
             {!isShow && (
-              <section className="flex flex-col justify-center items-start gap-4 w-full p-4 rounded-lg bg-white">
+              <section className="flex flex-col justify-center items-start gap-4 w-full p-4 rounded-lg bg-white shadow-md h-[10%] overflow-y-auto">
                 {currentStudent && (
-                  <>
-                    <Switch
-                      isSelected={editable}
-                      onValueChange={setEditable}
-                      size="sm"
-                    >
-                      <p className="text-xs">
-                        Autoriser l'élève à modifier cet entraînement
-                      </p>
-                    </Switch>
-                  </>
+                  <Switch
+                    isSelected={editable}
+                    onValueChange={setEditable}
+                    size="sm"
+                  >
+                    <p className="text-xs">
+                      Autoriser l'élève à modifier cet entraînement
+                    </p>
+                  </Switch>
                 )}
                 <Switch
                   isSelected={openRecurrent}
@@ -586,6 +604,87 @@ export default function TrainingModal({
                         ))}
                       </div>
                     </div>
+                    <div className="space-y-4 border-t pt-4">
+                      <p className="text-sm font-semibold">
+                        Configuration des exercices
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Configurez l'évolution de chaque exercice sur la période
+                      </p>
+                      {exercices.map((e: Exercice) => (
+                        <div
+                          key={e.id}
+                          className="space-y-2 border p-4 rounded-lg"
+                        >
+                          <p className="text-xs font-semibold">{e.title}</p>
+                          <div className="flex gap-2">
+                            <TextInputField
+                              label="Séries"
+                              type="number"
+                              placeholder="+/- séries"
+                              value={exerciceConfigs[e.id]?.serie || 0}
+                              onChange={(
+                                event: React.ChangeEvent<HTMLInputElement>
+                              ) =>
+                                setExerciceConfigs((prev) => ({
+                                  ...prev,
+                                  [e.id]: {
+                                    ...(prev[e.id] || {
+                                      rep: 0,
+                                      serie: 0,
+                                      intensity: 0,
+                                    }),
+                                    serie: Number(event.target.value),
+                                  },
+                                }))
+                              }
+                            />
+                            <TextInputField
+                              label="Répétitions"
+                              type="number"
+                              placeholder="+/- répétitions"
+                              value={exerciceConfigs[e.id]?.rep || 0}
+                              onChange={(
+                                event: React.ChangeEvent<HTMLInputElement>
+                              ) =>
+                                setExerciceConfigs((prev) => ({
+                                  ...prev,
+                                  [e.id]: {
+                                    ...(prev[e.id] || {
+                                      rep: 0,
+                                      serie: 0,
+                                      intensity: 0,
+                                    }),
+                                    rep: Number(event.target.value),
+                                  },
+                                }))
+                              }
+                            />
+                            <TextInputField
+                              label="Intensité"
+                              type="number"
+                              placeholder="+/- intensité"
+                              value={exerciceConfigs[e.id]?.intensity || 0}
+                              onChange={(
+                                event: React.ChangeEvent<HTMLInputElement>
+                              ) =>
+                                setExerciceConfigs((prev) => ({
+                                  ...prev,
+                                  [e.id]: {
+                                    ...(prev[e.id] || {
+                                      rep: 0,
+                                      serie: 0,
+                                      intensity: 0,
+                                    }),
+                                    intensity: Number(event.target.value),
+                                  },
+                                }))
+                              }
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </>
                 )}
               </section>
@@ -621,7 +720,7 @@ export default function TrainingModal({
             {isShow ? (
               <Button
                 type="button"
-                variant="secondary"
+                variant="outline"
                 onClick={() => {
                   close();
                 }}
@@ -631,7 +730,7 @@ export default function TrainingModal({
             ) : (
               <Button
                 type="button"
-                variant="secondary"
+                variant="outline"
                 onClick={() => {
                   if (setIsShow && training) setIsShow(true);
                   if (!training) {

@@ -1,4 +1,4 @@
-import { ExerciceType, Message } from "@/graphql/hooks";
+import { Message } from "@/graphql/hooks";
 import { Image } from "@heroui/react";
 
 export const uploadURL = "file";
@@ -54,13 +54,6 @@ export const getDaysInWeek = (date: Date): Date[] => {
   }
 
   return days;
-};
-
-export const removeTypename = (obj: ExerciceType) => {
-  if (!obj || typeof obj !== "object") return obj;
-  const { __typename, ...cleanedObj } = obj;
-  __typename?.split("");
-  return cleanedObj;
 };
 
 export const picture = [

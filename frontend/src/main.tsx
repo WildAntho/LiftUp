@@ -35,8 +35,8 @@ import { onError } from "@apollo/client/link/error";
 import { useUserStore } from "./services/zustand/userStore.ts";
 import { useCrewStore } from "./services/zustand/crewStore.ts";
 import { useStudentStore } from "./services/zustand/studentStore.ts";
-import useIsDesktop from "./pages/UnsupportedScreen/useIsDesktop.ts";
 import UnsupportedScreen from "./pages/UnsupportedScreen/UnsupportedScreen.tsx";
+import useIsDesktop from "./pages/UnsupportedScreen/useIsDesktop.ts";
 
 // Création du lien WebSocket
 const wsLink = new GraphQLWsLink(
@@ -87,7 +87,9 @@ const splitLink = split(
 // Configuration du client Apollo
 const client = new ApolloClient({
   link: from([errorLink, splitLink]),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    addTypename: false,
+  }),
 });
 
 const router = createBrowserRouter([
