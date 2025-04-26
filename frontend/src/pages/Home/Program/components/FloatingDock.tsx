@@ -1,11 +1,5 @@
 import FloatingDockDesktop from "./FloatingMenu";
-import {
-  Home,
-  Undo2,
-  CircleCheckBig,
-  Copy,
-  PlusCircle,
-} from "lucide-react";
+import { Home, Undo2, CircleCheckBig, Copy, PlusCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function FloatingDock() {
@@ -52,7 +46,7 @@ export default function FloatingDock() {
     <div className="sticky bottom-0 left-0 right-0 flex items-center justify-center p-4">
       <FloatingDockDesktop
         items={links}
-        className="shadow-lg border border-gray-100"
+        className="shadow-lg border border-gray-100 "
       />
     </div>
   );

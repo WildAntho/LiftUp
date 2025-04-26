@@ -227,8 +227,10 @@ export type Mutation = {
   addTraining: Scalars['String']['output'];
   addTrainingCrew: Scalars['String']['output'];
   addTrainingStudent: Scalars['String']['output'];
+  archiveProgram: Scalars['String']['output'];
   createCrew: Scalars['String']['output'];
   createExerciceModel: Scalars['String']['output'];
+  createProgram: Program;
   deleteCrew: Scalars['String']['output'];
   deleteExercice: Scalars['String']['output'];
   deleteFeedback: Scalars['String']['output'];
@@ -240,6 +242,7 @@ export type Mutation = {
   login: Scalars['String']['output'];
   logout: Scalars['Boolean']['output'];
   markAsRead: MarkAsReadResponse;
+  publishProgram: Scalars['String']['output'];
   rejectRequest: Scalars['String']['output'];
   renewMemberShip: Scalars['String']['output'];
   signUp: Scalars['String']['output'];
@@ -249,6 +252,7 @@ export type Mutation = {
   updateFeedback: Scalars['String']['output'];
   updateOffer: Scalars['String']['output'];
   updateProfile: User;
+  updateProgram: Scalars['String']['output'];
   updateTraining: Scalars['String']['output'];
 };
 
@@ -315,6 +319,11 @@ export type MutationAddTrainingStudentArgs = {
 };
 
 
+export type MutationArchiveProgramArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationCreateCrewArgs = {
   ids: Array<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -323,6 +332,11 @@ export type MutationCreateCrewArgs = {
 
 export type MutationCreateExerciceModelArgs = {
   data: ExerciceModelData;
+};
+
+
+export type MutationCreateProgramArgs = {
+  data: ProgramInput;
 };
 
 
@@ -372,6 +386,11 @@ export type MutationLoginArgs = {
 
 
 export type MutationMarkAsReadArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationPublishProgramArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -427,6 +446,12 @@ export type MutationUpdateProfileArgs = {
 };
 
 
+export type MutationUpdateProgramArgs = {
+  data: ProgramInput;
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateTrainingArgs = {
   data: UpdateTrainingData;
 };
@@ -475,6 +500,33 @@ export type OfferInput = {
   price: Scalars['Float']['input'];
 };
 
+export type Program = {
+  __typename?: 'Program';
+  coach: User;
+  description?: Maybe<Scalars['String']['output']>;
+  duration: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  price?: Maybe<Scalars['Float']['output']>;
+  public: Scalars['Boolean']['output'];
+  status: ProgramStatus;
+  title: Scalars['String']['output'];
+};
+
+export type ProgramInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  duration: Scalars['Float']['input'];
+  price?: InputMaybe<Scalars['Float']['input']>;
+  public: Scalars['Boolean']['input'];
+  title: Scalars['String']['input'];
+};
+
+/** Le statut d'un programme (brouillon, publié, archivé) */
+export enum ProgramStatus {
+  Archived = 'ARCHIVED',
+  Draft = 'DRAFT',
+  Published = 'PUBLISHED'
+}
+
 export type Query = {
   __typename?: 'Query';
   getAllCategories: Array<OfferCategory>;
@@ -496,6 +548,7 @@ export type Query = {
   getOneCoachOffers: Array<Offer>;
   getOneCoachProfile: CoachProfile;
   getOneTraining: Training;
+  getPrograms: Array<Program>;
   getRequest: Array<Request>;
   getSent: Array<Request>;
   getStudentFeedback: Array<Feedback>;
@@ -563,6 +616,11 @@ export type QueryGetOneCoachProfileArgs = {
 
 export type QueryGetOneTrainingArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QueryGetProgramsArgs = {
+  status?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -846,6 +904,13 @@ export type AddTrainingStudentMutationVariables = Exact<{
 
 export type AddTrainingStudentMutation = { __typename?: 'Mutation', addTrainingStudent: string };
 
+export type ArchiveProgramMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type ArchiveProgramMutation = { __typename?: 'Mutation', archiveProgram: string };
+
 export type CreateCrewMutationVariables = Exact<{
   ids: Array<Scalars['String']['input']> | Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -853,6 +918,13 @@ export type CreateCrewMutationVariables = Exact<{
 
 
 export type CreateCrewMutation = { __typename?: 'Mutation', createCrew: string };
+
+export type CreateProgramMutationVariables = Exact<{
+  data: ProgramInput;
+}>;
+
+
+export type CreateProgramMutation = { __typename?: 'Mutation', createProgram: { __typename?: 'Program', id: string, duration: number, title: string } };
 
 export type DeleteCrewMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1005,6 +1077,13 @@ export type UpdateTrainingMutationVariables = Exact<{
 
 export type UpdateTrainingMutation = { __typename?: 'Mutation', updateTraining: string };
 
+export type ValidateProgramMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type ValidateProgramMutation = { __typename?: 'Mutation', publishProgram: string };
+
 export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1113,6 +1192,13 @@ export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetMyProfileQuery = { __typename?: 'Query', getCoachProfile: { __typename?: 'CoachProfile', id: string, name?: string | null, description?: string | null, specialisation?: Array<string> | null, instagram?: string | null, linkedin?: string | null, facebook?: string | null } };
+
+export type GetMyProgramsQueryVariables = Exact<{
+  status?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetMyProgramsQuery = { __typename?: 'Query', getPrograms: Array<{ __typename?: 'Program', id: string, title: string, description?: string | null, status: ProgramStatus, duration: number, public: boolean, price?: number | null }> };
 
 export type GetMyTrainingQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1585,6 +1671,37 @@ export function useAddTrainingStudentMutation(baseOptions?: Apollo.MutationHookO
 export type AddTrainingStudentMutationHookResult = ReturnType<typeof useAddTrainingStudentMutation>;
 export type AddTrainingStudentMutationResult = Apollo.MutationResult<AddTrainingStudentMutation>;
 export type AddTrainingStudentMutationOptions = Apollo.BaseMutationOptions<AddTrainingStudentMutation, AddTrainingStudentMutationVariables>;
+export const ArchiveProgramDocument = gql`
+    mutation ArchiveProgram($id: String!) {
+  archiveProgram(id: $id)
+}
+    `;
+export type ArchiveProgramMutationFn = Apollo.MutationFunction<ArchiveProgramMutation, ArchiveProgramMutationVariables>;
+
+/**
+ * __useArchiveProgramMutation__
+ *
+ * To run a mutation, you first call `useArchiveProgramMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useArchiveProgramMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [archiveProgramMutation, { data, loading, error }] = useArchiveProgramMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useArchiveProgramMutation(baseOptions?: Apollo.MutationHookOptions<ArchiveProgramMutation, ArchiveProgramMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ArchiveProgramMutation, ArchiveProgramMutationVariables>(ArchiveProgramDocument, options);
+      }
+export type ArchiveProgramMutationHookResult = ReturnType<typeof useArchiveProgramMutation>;
+export type ArchiveProgramMutationResult = Apollo.MutationResult<ArchiveProgramMutation>;
+export type ArchiveProgramMutationOptions = Apollo.BaseMutationOptions<ArchiveProgramMutation, ArchiveProgramMutationVariables>;
 export const CreateCrewDocument = gql`
     mutation CreateCrew($ids: [String!]!, $name: String!) {
   createCrew(ids: $ids, name: $name)
@@ -1617,6 +1734,41 @@ export function useCreateCrewMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateCrewMutationHookResult = ReturnType<typeof useCreateCrewMutation>;
 export type CreateCrewMutationResult = Apollo.MutationResult<CreateCrewMutation>;
 export type CreateCrewMutationOptions = Apollo.BaseMutationOptions<CreateCrewMutation, CreateCrewMutationVariables>;
+export const CreateProgramDocument = gql`
+    mutation CreateProgram($data: ProgramInput!) {
+  createProgram(data: $data) {
+    id
+    duration
+    title
+  }
+}
+    `;
+export type CreateProgramMutationFn = Apollo.MutationFunction<CreateProgramMutation, CreateProgramMutationVariables>;
+
+/**
+ * __useCreateProgramMutation__
+ *
+ * To run a mutation, you first call `useCreateProgramMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateProgramMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createProgramMutation, { data, loading, error }] = useCreateProgramMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateProgramMutation(baseOptions?: Apollo.MutationHookOptions<CreateProgramMutation, CreateProgramMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateProgramMutation, CreateProgramMutationVariables>(CreateProgramDocument, options);
+      }
+export type CreateProgramMutationHookResult = ReturnType<typeof useCreateProgramMutation>;
+export type CreateProgramMutationResult = Apollo.MutationResult<CreateProgramMutation>;
+export type CreateProgramMutationOptions = Apollo.BaseMutationOptions<CreateProgramMutation, CreateProgramMutationVariables>;
 export const DeleteCrewDocument = gql`
     mutation DeleteCrew($id: String!) {
   deleteCrew(id: $id)
@@ -2294,6 +2446,37 @@ export function useUpdateTrainingMutation(baseOptions?: Apollo.MutationHookOptio
 export type UpdateTrainingMutationHookResult = ReturnType<typeof useUpdateTrainingMutation>;
 export type UpdateTrainingMutationResult = Apollo.MutationResult<UpdateTrainingMutation>;
 export type UpdateTrainingMutationOptions = Apollo.BaseMutationOptions<UpdateTrainingMutation, UpdateTrainingMutationVariables>;
+export const ValidateProgramDocument = gql`
+    mutation ValidateProgram($id: String!) {
+  publishProgram(id: $id)
+}
+    `;
+export type ValidateProgramMutationFn = Apollo.MutationFunction<ValidateProgramMutation, ValidateProgramMutationVariables>;
+
+/**
+ * __useValidateProgramMutation__
+ *
+ * To run a mutation, you first call `useValidateProgramMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useValidateProgramMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [validateProgramMutation, { data, loading, error }] = useValidateProgramMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useValidateProgramMutation(baseOptions?: Apollo.MutationHookOptions<ValidateProgramMutation, ValidateProgramMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ValidateProgramMutation, ValidateProgramMutationVariables>(ValidateProgramDocument, options);
+      }
+export type ValidateProgramMutationHookResult = ReturnType<typeof useValidateProgramMutation>;
+export type ValidateProgramMutationResult = Apollo.MutationResult<ValidateProgramMutation>;
+export type ValidateProgramMutationOptions = Apollo.BaseMutationOptions<ValidateProgramMutation, ValidateProgramMutationVariables>;
 export const GetAllCategoriesDocument = gql`
     query GetAllCategories {
   getAllCategories {
@@ -3127,6 +3310,52 @@ export type GetMyProfileQueryHookResult = ReturnType<typeof useGetMyProfileQuery
 export type GetMyProfileLazyQueryHookResult = ReturnType<typeof useGetMyProfileLazyQuery>;
 export type GetMyProfileSuspenseQueryHookResult = ReturnType<typeof useGetMyProfileSuspenseQuery>;
 export type GetMyProfileQueryResult = Apollo.QueryResult<GetMyProfileQuery, GetMyProfileQueryVariables>;
+export const GetMyProgramsDocument = gql`
+    query GetMyPrograms($status: String) {
+  getPrograms(status: $status) {
+    id
+    title
+    description
+    status
+    duration
+    public
+    price
+  }
+}
+    `;
+
+/**
+ * __useGetMyProgramsQuery__
+ *
+ * To run a query within a React component, call `useGetMyProgramsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMyProgramsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMyProgramsQuery({
+ *   variables: {
+ *      status: // value for 'status'
+ *   },
+ * });
+ */
+export function useGetMyProgramsQuery(baseOptions?: Apollo.QueryHookOptions<GetMyProgramsQuery, GetMyProgramsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMyProgramsQuery, GetMyProgramsQueryVariables>(GetMyProgramsDocument, options);
+      }
+export function useGetMyProgramsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyProgramsQuery, GetMyProgramsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMyProgramsQuery, GetMyProgramsQueryVariables>(GetMyProgramsDocument, options);
+        }
+export function useGetMyProgramsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyProgramsQuery, GetMyProgramsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMyProgramsQuery, GetMyProgramsQueryVariables>(GetMyProgramsDocument, options);
+        }
+export type GetMyProgramsQueryHookResult = ReturnType<typeof useGetMyProgramsQuery>;
+export type GetMyProgramsLazyQueryHookResult = ReturnType<typeof useGetMyProgramsLazyQuery>;
+export type GetMyProgramsSuspenseQueryHookResult = ReturnType<typeof useGetMyProgramsSuspenseQuery>;
+export type GetMyProgramsQueryResult = Apollo.QueryResult<GetMyProgramsQuery, GetMyProgramsQueryVariables>;
 export const GetMyTrainingDocument = gql`
     query GetMyTraining($id: String!, $rangeDate: RangeDate!) {
   getTrainingsById(id: $id, rangeDate: $rangeDate) {

@@ -26,6 +26,7 @@ import {
 } from "./services/userService";
 import { Response, Request } from "express";
 import { createPubSub } from "@graphql-yoga/subscription";
+import { ProgramResolver } from "./resolvers/programResolver";
 
 type PubSubType = ReturnType<typeof createPubSub>;
 
@@ -51,6 +52,7 @@ export const createSchema = async (pubsub: PubSubType) => {
       ConversationResolver,
       MessageSusbscription,
       MembershipResolver,
+      ProgramResolver,
     ],
     emitSchemaFile: true,
     pubSub: pubsub,
