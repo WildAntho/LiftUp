@@ -26,6 +26,7 @@ import MyAvatar from "./MyAvatar";
 import Notifications from "./Notifications";
 import ChatIcon from "./ChatIcon";
 import { useCrewStore } from "@/services/zustand/crewStore";
+import { useProgramStore } from "@/services/zustand/programStore";
 
 type Link = {
   id: number;
@@ -84,6 +85,7 @@ export default function Navigation() {
   const clearStore = useUserStore((state) => state.clear);
   const clearStudent = useStudentStore((state) => state.clear);
   const clearCrew = useCrewStore((state) => state.clear);
+  const clearProgram = useProgramStore((state) => state.clear);
   const [logout] = useLogoutMutation();
 
   const handleLogout = async () => {
@@ -91,6 +93,7 @@ export default function Navigation() {
     clearStore();
     clearStudent();
     clearCrew();
+    clearProgram();
     navigate("/login");
   };
 
