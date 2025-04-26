@@ -8,6 +8,7 @@ import {
   Gauge,
   Home,
   NotepadText,
+  Settings,
 } from "lucide-react";
 
 const translations: { [key: string]: string } = {
@@ -16,6 +17,7 @@ const translations: { [key: string]: string } = {
   training: "Entraînements",
   exercices: "Exercices",
   statistics: "Statistiques",
+  configuration: "Configuration",
 };
 
 export default function PathBreadcrumbs() {
@@ -38,6 +40,8 @@ export default function PathBreadcrumbs() {
         return <Dumbbell size={14} />;
       case "statistiques":
         return <ChartNoAxesCombined size={14} />;
+      case "configuration":
+        return <Settings size={14} />;
       default:
         return null;
     }
@@ -64,6 +68,9 @@ export default function PathBreadcrumbs() {
   const handleClick = (item: string) => {
     if (item.toLowerCase() === "accueil") {
       navigate("/home");
+    }
+    if (item.toLowerCase() === "programmes") {
+      navigate("/home?tab=program");
     }
   };
 

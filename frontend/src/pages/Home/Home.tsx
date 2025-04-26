@@ -23,7 +23,7 @@ export default function Home() {
       <div className="relative w-full h-full">
         {!activeTab && <Dashboard currentUser={currentUser} />}
         {activeTab === "calendar" && <Calendar currentUser={currentUser} />}
-        {activeTab === "program" && <Program currentUser={currentUser} />}
+        {activeTab === "program" && <Program />}
         {activeTab === "training" && (
           <TrainingModel currentUser={currentUser} />
         )}

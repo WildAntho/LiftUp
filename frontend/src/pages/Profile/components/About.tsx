@@ -174,7 +174,9 @@ export default function About() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs">Vous n'avez pas de spécialisation</p>
+                  <p className="text-xs mt-2">
+                    Vous n'avez pas de spécialisation
+                  </p>
                 )}
               </div>
               <div className="w-full">
