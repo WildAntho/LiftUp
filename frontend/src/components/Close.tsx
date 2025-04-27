@@ -1,17 +1,17 @@
 import { Tooltip } from "@heroui/tooltip";
-import { Pencil } from "lucide-react";
+import { X } from "lucide-react";
 
-type EditProps = {
+type CloseProps = {
   onClick: () => void;
 };
 
-export default function Close({ onClick }: EditProps) {
+export default function Close({ onClick }: CloseProps) {
   const handleSwitch = () => {
     onClick();
   };
   return (
     <Tooltip
-      content="Editer"
+      content="Annuler"
       showArrow={true}
       color="foreground"
       className="text-xs"
@@ -20,7 +20,7 @@ export default function Close({ onClick }: EditProps) {
         className="hover:bg-black/5 p-2 rounded-full cursor-pointer"
         onClick={handleSwitch}
       >
-        <Pencil className="size-4 text-black active:text-gray-500" />
+        <X className="size-4 text-black active:text-gray-500" />
       </div>
     </Tooltip>
   );

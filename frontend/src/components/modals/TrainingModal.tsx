@@ -751,7 +751,9 @@ export default function TrainingModal({
                 type="button"
                 className="bg-primary hover:bg-blue-600"
                 onClick={handleSave}
-                disabled={loading || loadingStudent || loadingUpdate}
+                disabled={
+                  loading || loadingStudent || loadingUpdate || loadingCrew
+                }
               >
                 {(loading ||
                   loadingStudent ||

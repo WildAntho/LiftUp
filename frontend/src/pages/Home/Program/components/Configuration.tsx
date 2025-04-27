@@ -28,12 +28,18 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
 
   if (!currentProgram) return null;
 
+  const handleBackConfig = () => {
+    setActiveTab("workouts");
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case "workouts":
         return <CreateWorkout />;
       case "details":
-        return <UpdateProgram onUpdate={onUpdate} />;
+        return (
+          <UpdateProgram onUpdate={onUpdate} backConfig={handleBackConfig} />
+        );
     }
   };
 

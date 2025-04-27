@@ -1,79 +1,94 @@
-import { Button } from "@/components/ui/button";
 import MyProfile from "./components/MyProfile";
-import { Separator } from "@/components/ui/separator";
 import { useUserStore } from "@/services/zustand/userStore";
-import { BadgeEuro, MessageCircleQuestion, NotebookPen } from "lucide-react";
-import { useState } from "react";
-import MyAvatar from "@/components/MyAvatar";
+import {
+  BadgeEuro,
+  MessageCircleQuestion,
+  NotebookPen,
+  Settings,
+} from "lucide-react";
+import { useState, Key, useEffect } from "react";
 import About from "./components/About";
 import Offers from "./components/Offers";
 import Plans from "./components/Plans";
+import { Tab, Tabs } from "@heroui/tabs";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function Profile() {
   const currentUser = useUserStore((state) => state.user);
   const isCoach = currentUser?.roles === "COACH";
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get("tab") || "informations";
+  const [active, setActive] = useState<string>(tabFromUrl);
 
-  const [active, setActive] = useState<string>("profile");
+  useEffect(() => {
+    if (tabFromUrl !== active) {
+      setActive(tabFromUrl);
+    }
+  }, [tabFromUrl]);
+
   const navigation = [
+    {
+      key: "informations",
+      label: "Mon profil",
+      icon: <NotebookPen size={18} className="text-red-500" />,
+    },
     ...(isCoach
       ? [
           {
-            id: 1,
-            value: "about",
+            key: "about",
             label: "A propos",
-            icon: <MessageCircleQuestion />,
+            icon: (
+              <MessageCircleQuestion size={18} className="text-green-500" />
+            ),
           },
           {
-            id: 2,
-            value: "offers",
+            key: "offers",
             label: "Mes offres",
-            icon: <BadgeEuro />,
+            icon: <BadgeEuro size={18} className="text-blue-500" />,
           },
           {
-            id: 3,
-            value: "plans",
-            label: "Mes plans d'entraînements",
-            icon: <NotebookPen />,
+            key: "settings",
+            label: "Paramètres",
+            icon: <Settings size={18} className="text-dark-500" />,
           },
         ]
       : []),
   ];
+
+  const handleSelectionChange = (key: Key) => {
+    setActive(key as string);
+    navigate(`?tab=${key}`, { replace: true });
+  };
   return (
-    <section className="h-full p-4 gap-4 flex justify-start align-items-center">
-      <section className="flex flex-col justify-start items-start bg-white rounded-2xl h-full w-[300px] p-2">
-        <Button
-          variant="ghost"
-          className={`flex justify-start items-center gap-4 w-full h-auto px-4 py-2 hover:bg-primary hover:bg-opacity-10 hover:text-primary
-            ${active === "profile" && "bg-primary bg-opacity-10 text-primary"}`}
-          onClick={() => setActive("profile")}
-        >
-          <MyAvatar />
-          <p>{currentUser?.firstname + " " + currentUser?.lastname}</p>
-        </Button>
-        <Separator className="my-2" />
-        <section className="w-full h-full flex flex-col justify-start items-center gap-2">
-          {navigation.map((submenu) => (
-            <Button
-              key={submenu.id}
-              variant="ghost"
-              className={`flex justify-start items-center gap-4 w-full h-[50px] px-4 py-2 hover:bg-primary hover:bg-opacity-10 hover:text-primary ${
-                active === submenu.value &&
-                "bg-primary bg-opacity-10 text-primary"
-              }`}
-              onClick={() => setActive(submenu.value)}
-            >
-              {submenu.icon}
-              {submenu.label}
-            </Button>
-          ))}
-        </section>
-      </section>
-      <section className="h-full overflow-y-scroll flex-1">
-        <section className="min-h-full bg-white rounded-2xl">
-          {active === "profile" && <MyProfile />}
-          {active === "about" && isCoach && <About />}
-          {active === "offers" && isCoach && <Offers />}
-          {active === "plans" && isCoach && <Plans />}
+    <section className="w-full h-full flex justify-center items-center p-4">
+      <section className="h-full w-full py-8 px-10 gap-4 flex flex-col items-start justify-start bg-white rounded-2xl">
+        <div className="min-w-[50%]">
+          <Tabs
+            selectedKey={active}
+            onSelectionChange={handleSelectionChange}
+            fullWidth={true}
+          >
+            {navigation.map((n) => (
+              <Tab
+                key={n.key}
+                title={
+                  <div className="flex items-center space-x-2">
+                    {n.icon}
+                    <span>{n.label}</span>
+                  </div>
+                }
+              />
+            ))}
+          </Tabs>
+        </div>
+        <section className="h-full w-full overflow-y-scroll flex-1">
+          <section className="min-h-full w-full">
+            {active === "informations" && <MyProfile />}
+            {active === "about" && isCoach && <About />}
+            {active === "offers" && isCoach && <Offers />}
+            {active === "plans" && isCoach && <Plans />}
+          </section>
         </section>
       </section>
     </section>

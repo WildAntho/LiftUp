@@ -1,6 +1,5 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import HeaderProfile from "./HeaderProfile";
-import { Info, Loader2 } from "lucide-react";
+import { Info, Loader2, X } from "lucide-react";
 import { Label, TagInput, TextInputField, Textarea } from "evergreen-ui";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +11,10 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { FaFacebook, FaLinkedin, FaInstagram } from "react-icons/fa";
 import { Tooltip } from "@heroui/tooltip";
+import Edit from "@/components/Edit";
+import Close from "@/components/Close";
+import Saving from "@/components/Saving";
+import { toast } from "sonner";
 
 export default function About() {
   const {
@@ -64,7 +67,12 @@ export default function About() {
     } else {
       await update({ variables: { data, id: profile?.id as string } });
     }
-
+    toast.success("Vos informations ont bien été enregistré", {
+      style: {
+        backgroundColor: "#dcfce7",
+        color: "#15803d",
+      },
+    });
     refetch();
     setIsShow(true);
   };
@@ -81,25 +89,23 @@ export default function About() {
   ];
 
   return (
-    <section className="w-full h-full flex flex-col items-start justify-start p-10">
-      <HeaderProfile
-        isShow={isShow}
-        onClick={() => setIsShow(!isShow)}
-        title="A propos"
-        tooltip="Modifier ma description"
-      />
+    <section className="max-w-[50%] h-full flex flex-col items-start justify-start">
       <section className="w-full flex flex-col items-start justify-start gap-5">
         {!loadingProfile ? (
           <>
-            <div className="flex justify-start items-center gap-1">
-              <Info className="text-gray-400" />
-              <p className="w-[70%] text-xs m-4 text-gray-600">
-                Cette section a pour but de décrire vos méthodes et votre vision
-                du coaching, ainsi que vos spécialisations. N'hésitez pas à être
-                exhaustif dans votre description.
-              </p>
+            <div className="flex items-center justify-between">
+              <div className="flex justify-start items-center gap-1">
+                <Info className="text-gray-400" />
+                <p className="w-full text-xs m-4 text-gray-600">
+                  Cette section a pour but de décrire vos méthodes et votre
+                  vision du coaching, ainsi que vos spécialisations. N'hésitez
+                  pas à être exhaustif dans votre description.
+                </p>
+              </div>
+              {isShow && <Edit onClick={() => setIsShow(false)} />}
+              {!isShow && <Close onClick={() => setIsShow(true)} />}
             </div>
-            <div className="w-[80%] flex flex-col items-start justify-start gap-7">
+            <div className="w-full flex flex-col items-start justify-start gap-7">
               <div className="w-full">
                 <Label htmlFor="textarea-2" marginBottom={0} display="block">
                   Intitulé
@@ -152,7 +158,7 @@ export default function About() {
                   <>
                     <div className="flex justify-start items-center gap-2 w-full">
                       <TagInput
-                        className="min-w-[50%] max-w-[80%]"
+                        className="min-w-[50%] max-w-full"
                         inputProps={{
                           placeholder: "Ajouter une spécialisation",
                         }}
@@ -235,24 +241,20 @@ export default function About() {
           </div>
         )}
         {!isShow && (
-          <section className="w-full flex items-center gap-2">
+          <section className="w-full flex items-center justify-end gap-2">
             <Button
-              variant="secondary"
+              className="group shadow-none text-black h-[55px] w-[25%] rounded-xl border border-gray-300 bg-gray-200 hover:bg-gray-200 hover:translate-y-[-2px] hover:shadow-md transition-all duration-200"
               onClick={() => {
                 setIsShow(true);
                 setErrorSpec(false);
               }}
             >
-              Annuler
+              <X />
+              <p className="transition-all duration-200 group-hover:translate-x-1">
+                Annuler
+              </p>
             </Button>
-            <Button
-              className="bg-primary hover:bg-blue-600"
-              disabled={loading}
-              onClick={handleSave}
-            >
-              {loading && <Loader2 className="animate-spin" />}
-              Enregistrer
-            </Button>
+            <Saving loading={loading} onClick={handleSave} />
           </section>
         )}
       </section>

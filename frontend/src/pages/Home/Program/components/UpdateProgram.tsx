@@ -3,19 +3,18 @@ import { Button } from "@/components/ui/button";
 import { ProgramStatus, UpdateProgramInput } from "@/graphql/hooks";
 import { useProgramStore } from "@/services/zustand/programStore";
 import { Input, Select, SelectItem, Textarea } from "@heroui/react";
-import {
-  Archive,
-  CircleCheckBig,
-  NotepadTextDashed,
-  PlusCircle,
-} from "lucide-react";
+import { Archive, CircleCheckBig, NotepadTextDashed, Save } from "lucide-react";
 import { useState } from "react";
 
 type UpdateProgramProps = {
   onUpdate: (id: string, program: UpdateProgramInput) => void;
+  backConfig: () => void;
 };
 
-export default function UpdateProgram({ onUpdate }: UpdateProgramProps) {
+export default function UpdateProgram({
+  onUpdate,
+  backConfig,
+}: UpdateProgramProps) {
   const currentProgram = useProgramStore((state) => state.program);
   const [form, setForm] = useState({
     public: currentProgram?.public ?? false,
@@ -131,9 +130,12 @@ export default function UpdateProgram({ onUpdate }: UpdateProgramProps) {
           <div className="w-full flex items-center justify-end">
             <Button
               className="group shadow-none text-tertiary h-12 w-[50%] rounded-xl bg-tertiary bg-opacity-20 border border-tertiary border-opacity-20 hover:bg-tertiary hover:bg-opacity-20 hover:translate-y-[-2px] hover:shadow-sm transition-all duration-200"
-              onClick={() => onUpdate(currentProgram?.id as string, form)}
+              onClick={() => {
+                onUpdate(currentProgram?.id as string, form);
+                backConfig();
+              }}
             >
-              <PlusCircle className="transition-all duration-200 group-hover:rotate-90" />
+              <Save className="transition-all duration-200 group-hover:scale-105" />
               <p className="text-sm transition-all duration-200 group-hover:translate-x-1">
                 Sauvegarder
               </p>
