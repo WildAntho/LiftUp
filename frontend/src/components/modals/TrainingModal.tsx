@@ -466,7 +466,7 @@ export default function TrainingModal({
               </section>
             </section>
             <Separator />
-            <section className="flex-1 flex flex-col justify-start items-center gap-3 w-full p-4 rounded-lg flex-grow">
+            <section className="flex-1 flex flex-col justify-start items-center gap-3 w-full min-h[35%] p-4">
               <p className="w-full items-start font-bold">Exercices</p>
               <DndContext
                 modifiers={[restrictToVerticalAxis]}
