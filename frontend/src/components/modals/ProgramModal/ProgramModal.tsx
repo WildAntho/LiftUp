@@ -11,7 +11,7 @@ import { Input, Textarea } from "@heroui/react";
 import { Check, ChevronDown, Info, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Privacy from "./components/Privacy";
-import { useCreateProgramMutation } from "@/graphql/hooks";
+import { ProgramStatus, useCreateProgramMutation } from "@/graphql/hooks";
 import { useProgramStore } from "@/services/zustand/programStore";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +22,7 @@ type ProgramModalProps = {
   refetch: () => void;
 };
 
-type ProgramForm = {
+export type ProgramForm = {
   public: boolean;
   title: string;
   description: string;
@@ -116,6 +116,10 @@ export default function ProgramModal({
         id: data?.createProgram.id as string,
         duration: data?.createProgram.duration as number,
         title: data?.createProgram.title as string,
+        description: data?.createProgram.description as string,
+        status: data?.createProgram.status as ProgramStatus,
+        public: data?.createProgram.public as boolean,
+        price: data?.createProgram.price as number,
       });
       resetForm();
       onClose();

@@ -5,10 +5,15 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UpdateProgram from "./UpdateProgram";
 import TabChoice from "./TabChoice";
+import { UpdateProgramInput } from "@/graphql/hooks";
+
+type ConfigurationProps = {
+  onUpdate: (id: string, program: UpdateProgramInput) => void;
+};
 
 type TabKey = "workouts" | "details";
 
-export default function Configuration() {
+export default function Configuration({ onUpdate }: ConfigurationProps) {
   const navigate = useNavigate();
   const currentProgram = useProgramStore((state) => state.program);
   const numberOfDays = (currentProgram?.duration || 0) * 7;
@@ -28,7 +33,7 @@ export default function Configuration() {
       case "workouts":
         return <CreateWorkout />;
       case "details":
-        return <UpdateProgram />;
+        return <UpdateProgram onUpdate={onUpdate} />;
     }
   };
 
@@ -42,7 +47,11 @@ export default function Configuration() {
             onDaySelect={setActiveDay}
           />
         )}
-        <div className="w-[80%] h-full flex justify-center items-center mt-10">
+        <div
+          className={`w-[80%] h-full flex justify-center items-center ${
+            activeTab === "workouts" ? "mt-10" : "mt-0"
+          }`}
+        >
           {renderContent()}
         </div>
       </section>

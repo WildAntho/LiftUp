@@ -5,7 +5,6 @@ import {
   Plus,
   PlusCircle,
   Search,
-  Loader2,
   CircleCheckBig,
   NotepadTextDashed,
   Archive,
@@ -15,16 +14,19 @@ import { useState } from "react";
 import ProgramCard from "./components/ProgramCard";
 import {
   ProgramStatus,
+  UpdateProgramInput,
   useArchiveProgramMutation,
   useGetMyProgramsQuery,
+  useUpdateProgramMutation,
   useValidateProgramMutation,
 } from "@/graphql/hooks";
 import { Input } from "@heroui/react";
 import { toast } from "sonner";
 import StatusCard from "./components/StatusCard";
+import { useProgramStore } from "@/services/zustand/programStore";
 
 export default function Program() {
-  // const navigate = useNavigate();
+  const setProgram = useProgramStore((state) => state.set);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const activeSection = searchParams.get("section");
@@ -38,12 +40,14 @@ export default function Program() {
     variables: {
       status: activeCard,
     },
+    fetchPolicy: "cache-and-network",
   });
+  const [updateProgram] = useUpdateProgramMutation();
   const [archiveProgram] = useArchiveProgramMutation();
   const [validateProgram] = useValidateProgramMutation();
   const myPrograms = data?.getPrograms ?? [];
 
-  const handleDeleteProgram = async (id: string) => {
+  const handleArchiveProgram = async (id: string) => {
     try {
       const { data } = await archiveProgram({ variables: { id } });
       toast.success(data?.archiveProgram, {
@@ -74,6 +78,38 @@ export default function Program() {
       toast.error("Une erreur est survenue lors de la validation du programme");
     }
   };
+
+  const handleUpdateProgram = async (
+    id: string,
+    program: UpdateProgramInput
+  ) => {
+    try {
+      const { data } = await updateProgram({
+        variables: {
+          data: program,
+          id,
+        },
+      });
+      toast.success(data?.updateProgram, {
+        style: {
+          backgroundColor: "#dcfce7",
+          color: "#15803d",
+        },
+      });
+      setProgram({
+        id,
+        ...program,
+        description: program.description ?? undefined,
+        status: program.status as ProgramStatus,
+        price: program.price as number,
+      });
+      refetch();
+    } catch (error) {
+      console.error(error);
+      toast.error("Une erreur est survenue lors de la validation du programme");
+    }
+  };
+
   return (
     <section className="relative w-full h-full flex flex-col justify-start items-center rounded-2xl px-4 py-8 gap-4">
       {!isConfiguration && (
@@ -135,11 +171,9 @@ export default function Program() {
               type="search"
             />
             {loading ? (
-              <div className="w-full h-[200px] flex justify-center items-center">
-                <Loader2 className="w-8 h-8 text-black animate-spin" />
-              </div>
+              <div className="w-full min-h-[350px] flex justify-center items-center" />
             ) : myPrograms.length > 0 ? (
-              <div className="w-full flex flex-wrap justify-start items-start gap-4">
+              <div className="w-full min-h-[350px] flex flex-wrap justify-start items-start gap-4">
                 {myPrograms.map((program) => (
                   <div key={program.id} className="w-[30%] h-[350px]">
                     <ProgramCard
@@ -148,15 +182,16 @@ export default function Program() {
                       description={program.description ?? ""}
                       status={program.status}
                       duration={program.duration}
+                      price={program.price}
                       isPublic={program.public}
-                      onDelete={handleDeleteProgram}
+                      onDelete={handleArchiveProgram}
                       onValidate={handleValidateProgram}
                     />
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="w-full h-full flex flex-col justify-center items-center gap-2">
+              <div className="w-full h-[350px] flex flex-col justify-center items-center gap-2">
                 <p className="text-gray-600 text-sm">
                   {activeCard === ProgramStatus.Published
                     ? "Aucun programme terminé pour le moment"
@@ -182,7 +217,7 @@ export default function Program() {
           </section>
         </section>
       )}
-      {isConfiguration && <Configuration />}
+      {isConfiguration && <Configuration onUpdate={handleUpdateProgram} />}
       <ProgramModal
         open={openProgramModal}
         onClose={() => setOpenProgramModal(false)}
