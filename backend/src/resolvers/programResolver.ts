@@ -1,6 +1,10 @@
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { Program } from "../entities/program";
-import { ProgramInput, ProgramStatus } from "../InputType/programType";
+import {
+  ProgramInput,
+  ProgramStatus,
+  UpdateProgramInput,
+} from "../InputType/programType";
 import { CtxUser } from "../InputType/coachType";
 import { User } from "../entities/user";
 
@@ -47,7 +51,10 @@ export class ProgramResolver {
   }
 
   @Mutation(() => String)
-  async updateProgram(@Arg("data") data: ProgramInput, @Arg("id") id: string) {
+  async updateProgram(
+    @Arg("data") data: UpdateProgramInput,
+    @Arg("id") id: string
+  ) {
     const program = await Program.findOne({
       where: {
         id,
@@ -57,10 +64,11 @@ export class ProgramResolver {
     program.title = data.title;
     program.description = data.description;
     program.duration = data.duration;
+    program.status = data.status;
     if (data.price) program.price = data.price;
     program.public = data.public;
     await program.save();
-    return JSON.stringify("Les détails du programme ont été mis à jour");
+    return "Les détails du programme ont été mis à jour";
   }
 
   @Mutation(() => String)

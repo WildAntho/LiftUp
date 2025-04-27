@@ -11,6 +11,7 @@ type ProgramCardProps = {
   description?: string;
   status: ProgramStatus;
   duration: number;
+  price?: number | null;
   isPublic: boolean;
   onDelete: (id: string) => void;
   onValidate: (id: string) => void;
@@ -22,6 +23,7 @@ export default function ProgramCard({
   description,
   status,
   duration,
+  price,
   isPublic,
   onDelete,
   onValidate,
@@ -63,6 +65,10 @@ export default function ProgramCard({
       id: id as string,
       duration: duration as number,
       title: title as string,
+      description,
+      status,
+      public: isPublic,
+      price: price ?? 0,
     });
     navigate(`/home?tab=program&section=configuration`);
   };

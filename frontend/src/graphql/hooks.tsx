@@ -447,7 +447,7 @@ export type MutationUpdateProfileArgs = {
 
 
 export type MutationUpdateProgramArgs = {
-  data: ProgramInput;
+  data: UpdateProgramInput;
   id: Scalars['String']['input'];
 };
 
@@ -774,6 +774,15 @@ export type UpdateProfile = {
   lastname: Scalars['String']['input'];
 };
 
+export type UpdateProgramInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  duration: Scalars['Float']['input'];
+  price?: InputMaybe<Scalars['Float']['input']>;
+  public: Scalars['Boolean']['input'];
+  status: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+};
+
 export type UpdateTrainingData = {
   color?: InputMaybe<Scalars['String']['input']>;
   date: Array<Scalars['DateTimeISO']['input']>;
@@ -924,7 +933,7 @@ export type CreateProgramMutationVariables = Exact<{
 }>;
 
 
-export type CreateProgramMutation = { __typename?: 'Mutation', createProgram: { __typename?: 'Program', id: string, duration: number, title: string } };
+export type CreateProgramMutation = { __typename?: 'Mutation', createProgram: { __typename?: 'Program', id: string, title: string, description?: string | null, status: ProgramStatus, duration: number, public: boolean, price?: number | null } };
 
 export type DeleteCrewMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1069,6 +1078,14 @@ export type UpdateProfileMutationVariables = Exact<{
 
 
 export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null } };
+
+export type UpdateProgramMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  data: UpdateProgramInput;
+}>;
+
+
+export type UpdateProgramMutation = { __typename?: 'Mutation', updateProgram: string };
 
 export type UpdateTrainingMutationVariables = Exact<{
   data: UpdateTrainingData;
@@ -1738,8 +1755,12 @@ export const CreateProgramDocument = gql`
     mutation CreateProgram($data: ProgramInput!) {
   createProgram(data: $data) {
     id
-    duration
     title
+    description
+    status
+    duration
+    public
+    price
   }
 }
     `;
@@ -2415,6 +2436,38 @@ export function useUpdateProfileMutation(baseOptions?: Apollo.MutationHookOption
 export type UpdateProfileMutationHookResult = ReturnType<typeof useUpdateProfileMutation>;
 export type UpdateProfileMutationResult = Apollo.MutationResult<UpdateProfileMutation>;
 export type UpdateProfileMutationOptions = Apollo.BaseMutationOptions<UpdateProfileMutation, UpdateProfileMutationVariables>;
+export const UpdateProgramDocument = gql`
+    mutation UpdateProgram($id: String!, $data: UpdateProgramInput!) {
+  updateProgram(id: $id, data: $data)
+}
+    `;
+export type UpdateProgramMutationFn = Apollo.MutationFunction<UpdateProgramMutation, UpdateProgramMutationVariables>;
+
+/**
+ * __useUpdateProgramMutation__
+ *
+ * To run a mutation, you first call `useUpdateProgramMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProgramMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProgramMutation, { data, loading, error }] = useUpdateProgramMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateProgramMutation(baseOptions?: Apollo.MutationHookOptions<UpdateProgramMutation, UpdateProgramMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateProgramMutation, UpdateProgramMutationVariables>(UpdateProgramDocument, options);
+      }
+export type UpdateProgramMutationHookResult = ReturnType<typeof useUpdateProgramMutation>;
+export type UpdateProgramMutationResult = Apollo.MutationResult<UpdateProgramMutation>;
+export type UpdateProgramMutationOptions = Apollo.BaseMutationOptions<UpdateProgramMutation, UpdateProgramMutationVariables>;
 export const UpdateTrainingDocument = gql`
     mutation UpdateTraining($data: UpdateTrainingData!) {
   updateTraining(data: $data)

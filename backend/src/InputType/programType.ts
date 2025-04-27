@@ -28,3 +28,24 @@ export class ProgramInput {
   @Field()
   public!: boolean;
 }
+
+@InputType()
+export class UpdateProgramInput {
+  @Field()
+  title!: string;
+
+  @Field({ nullable: true })
+  description?: string;
+
+  @Field()
+  status!: ProgramStatus;
+
+  @Field()
+  duration!: number;
+
+  @Field({ nullable: true })
+  price?: number;
+
+  @Field()
+  public!: boolean;
+}
