@@ -1,4 +1,12 @@
-import { ChevronDown, Grip, Info } from "lucide-react";
+import {
+  ChevronDown,
+  Grip,
+  Info,
+  CheckCircle,
+  BarChart2,
+  Layers,
+  Activity,
+} from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -61,27 +69,11 @@ export default function ExerciceCard({
     <Collapsible
       ref={setNodeRef}
       style={style}
-      className={`group/collapsible flex flex-col gap-3 w-full p-4 bg-gray-50 drop-shadow-md rounded-lg`}
+      className="group/collapsible flex flex-col gap-4 w-full p-4 border border-gray-200 bg-white rounded-lg shadow-md transition-transform ease-in-out duration-300"
     >
       <CollapsibleTrigger className="w-full">
         <section className="flex justify-between items-center">
-          <div className="flex justify-start items-center gap-4">
-            {picture.find((p) => p.type === type?.value)?.image}
-            <p className="text-sm font-semibold">{title}</p>
-          </div>
-          <div className="flex justify-content items-center">
-            {isShow && notes && (
-              <Popover placement="left" showArrow={true}>
-                <PopoverTrigger>
-                  <Info className="size-6 mr-3 text-gray-400 hover:text-black" />
-                </PopoverTrigger>
-                <PopoverContent className="max-w-[250px] p-4">
-                  <p className={`text-xs`}>
-                    {notes ? notes : "Aucune note ajoutée"}
-                  </p>
-                </PopoverContent>
-              </Popover>
-            )}
+          <div className="flex justify-start items-center gap-3">
             {!isShow && (
               <Tooltip
                 content="Déplacer"
@@ -92,11 +84,32 @@ export default function ExerciceCard({
                 <div
                   {...attributes}
                   {...listeners}
-                  className="hover:bg-black/5 p-2 rounded-full cursor-move"
+                  className="hover:bg-gray-200 p-3 rounded-full cursor-move"
                 >
-                  <Grip size={18} />
+                  <Grip size={18} className="text-gray-500" />
                 </div>
               </Tooltip>
+            )}
+            {picture.find((p) => p.type === type?.value)?.image}
+            <div className="flex flex-col justify-center items-start gap-1">
+              <p className="text-md font-semibold text-gray-800">{title}</p>
+              <p className="text-xs text-gray-500">
+                {serie} {`série${serie > 1 ? "s" : ""}`}
+              </p>
+            </div>
+          </div>
+          <div className="flex justify-content items-center gap-3">
+            {isShow && notes && (
+              <Popover placement="left" showArrow={true}>
+                <PopoverTrigger>
+                  <Info className="size-6 text-gray-400 hover:text-gray-700 cursor-pointer" />
+                </PopoverTrigger>
+                <PopoverContent className="max-w-[250px] p-4 bg-gray-100 rounded-md shadow-lg">
+                  <p className="text-xs text-gray-600">
+                    {notes || "Aucune note ajoutée"}
+                  </p>
+                </PopoverContent>
+              </Popover>
             )}
             {!isShow && (
               <Edit
@@ -108,44 +121,50 @@ export default function ExerciceCard({
             {!isShow && (
               <Delete
                 onDelete={() => handleDelete(id)}
-                description="Ëtes vous sur de vouloir supprimer cet exercice ?"
+                description="Êtes-vous sûr de vouloir supprimer cet exercice ?"
                 title="Suppression d'un exercice"
               />
             )}
-            <ChevronDown className="ml-auto scale-75 transition duration-300 transform group-data-[state=open]/collapsible:rotate-180" />
+            <ChevronDown className="ml-auto text-gray-400 scale-75 transition duration-300 transform group-data-[state=open]/collapsible:rotate-180" />
           </div>
         </section>
       </CollapsibleTrigger>
       <CollapsibleContent>
-        <section className="flex justify-start items-center gap-5 w-full">
-          <section className="flex justify-center items-start flex-1">
-            <div className="flex flex-col justify-center items-center gap-1 flex-1">
-              <p className="text-xs font-bold">Série</p>
-              <div className="border border-gray-100 bg-white shadow-sm w-[50%] h-full p-2 flex justify-center items-center rounded-lg">
-                {serie}
-              </div>
+        <section className="grid grid-cols-3 gap-4 w-full mt-3">
+          <div className="flex flex-col items-center gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+            <CheckCircle size={20} className="text-indigo-500" />
+            <p className="text-xs font-medium text-gray-600">Série</p>
+            <div className="w-full h-[40px] flex justify-center items-center text-md font-bold text-gray-800">
+              {serie}
             </div>
-            <div className="flex flex-col justify-center items-center gap-1 flex-1">
-              <p className="text-xs font-bold">Répétitions</p>
-              <div className="border border-gray-100 bg-white shadow-sm w-[50%] h-full p-2 flex justify-center items-center rounded-lg">
-                {rep}
-              </div>
+          </div>
+
+          <div className="flex flex-col items-center gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+            <BarChart2 size={20} className="text-teal-500" />
+            <p className="text-xs font-medium text-gray-600">Répétitions</p>
+            <div className="w-full h-[40px] flex justify-center items-center text-md font-bold text-gray-800">
+              {rep}
             </div>
-          </section>
-          <div className="flex flex-col justify-center items-center gap-1 flex-1">
-            <p className="text-xs font-bold">Charge</p>
-            <div className="border border-gray-100 bg-white shadow-sm w-[50%] h-full p-2 flex justify-center items-center rounded-lg">
+          </div>
+          <div className="flex flex-col items-center gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+            <Layers size={20} className="text-yellow-500" />
+            <p className="text-xs font-medium text-gray-600">Charge</p>
+            <div className="w-full h-[40px] flex justify-center items-center text-md font-bold text-gray-800">
               <p>{weight ? weight + "kg" : "Au choix"}</p>
             </div>
           </div>
         </section>
-        {intensity ? (
-          <section className="flex my-5 w-full justify-center">
-            <div className="w-[90%]">
-              <IntensityComponent value={intensity} disabled={true} />
+        {intensity && (
+          <section className="flex justify-center items-center mt-4 w-full">
+            <div className="flex flex-col items-center w-full max-w-[900px] gap-2 py-2 px-3 bg-gray-50 rounded-lg border border-gray-200">
+              <Activity size={20} className="text-red-500" />
+              <p className="text-xs font-medium text-gray-600">Intensité</p>
+              <div className="w-full">
+                <IntensityComponent value={intensity} disabled={true} />
+              </div>
             </div>
           </section>
-        ) : null}
+        )}
       </CollapsibleContent>
     </Collapsible>
   );

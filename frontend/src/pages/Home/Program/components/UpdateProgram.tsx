@@ -89,7 +89,6 @@ export default function UpdateProgram({ onUpdate }: UpdateProgramProps) {
           <div>
             <Input
               label="Titre du programme"
-              size="sm"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
             />
@@ -97,7 +96,6 @@ export default function UpdateProgram({ onUpdate }: UpdateProgramProps) {
           <div>
             <Textarea
               label="Description"
-              size="sm"
               radius="sm"
               value={form.description}
               onChange={(e) =>
@@ -108,7 +106,6 @@ export default function UpdateProgram({ onUpdate }: UpdateProgramProps) {
           <div>
             <Input
               label="Durée (semaines)"
-              size="sm"
               type="number"
               min={1}
               value={form.duration.toString()}
@@ -121,7 +118,6 @@ export default function UpdateProgram({ onUpdate }: UpdateProgramProps) {
             <div>
               <Input
                 label="Prix (€)"
-                size="sm"
                 type="number"
                 min={0}
                 step={1}
