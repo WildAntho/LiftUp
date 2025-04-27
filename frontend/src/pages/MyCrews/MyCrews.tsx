@@ -3,7 +3,7 @@ import CrewModal from "@/components/modals/CrewModal";
 import { Button } from "@/components/ui/button";
 import { useGetCoachCrewsQuery } from "@/graphql/hooks";
 import { UserWithoutPassword } from "@/services/zustand/userStore";
-import { Info, Plus, PlusCircle } from "lucide-react";
+import { Info, PlusCircle } from "lucide-react";
 import { useState } from "react";
 
 export default function MyCrews() {
