@@ -32,7 +32,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Tooltip } from "@heroui/react";
-import { Loader2, Plus, SlidersHorizontal } from "lucide-react";
+import { Dumbbell, Loader2, Plus, SlidersHorizontal } from "lucide-react";
 import Delete from "../Delete";
 import Edit from "../Edit";
 import ExerciceModal from "./ExerciceModal";
@@ -501,7 +501,18 @@ export default function TrainingModal({
                       trainingId={training?.id}
                     />
                     {!isShow && (
-                      <div className="w-full h-full flex justify-center items-center">
+                      <div className="w-full h-full flex flex-col justify-center items-center gap-4">
+                        {exercices.length === 0 && (
+                          <div className="flex flex-col items-center justify-center gap-2">
+                            <p className="text-sm text-gray-600">
+                              Aucun exercice ajouté pour le moment
+                            </p>
+                            <p className="text-xs text-gray-500 flex items-center justify-center gap-2">
+                              <Dumbbell className="text-gray-500 w-4 h-4" />
+                              Ajouter un nouvel exercice
+                            </p>
+                          </div>
+                        )}
                         <Tooltip
                           content="Ajouter un exercice"
                           className="text-xs"
