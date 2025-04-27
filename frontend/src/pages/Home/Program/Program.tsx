@@ -202,7 +202,7 @@ export default function Program() {
                 {activeCard === ProgramStatus.Published && (
                   <>
                     <p className="text-gray-500 text-xs">
-                      Créez un nouveau programme
+                      Créer un nouveau programme
                     </p>
                     <div
                       className="group rounded-full my-2 cursor-pointer text-tertiary border border-tertiary border-opacity-20 bg-tertiary bg-opacity-20 shadow-sm p-2 hover:translate-y-[-2px] hover:shadow-md transition-all duration-200"
