@@ -247,7 +247,6 @@ export default function ProgramModal({
                                 <div>
                                   <Input
                                     label="Titre du programme"
-                                    size="sm"
                                     variant="underlined"
                                     value={form.title}
                                     onChange={(e) =>
@@ -261,7 +260,6 @@ export default function ProgramModal({
                                 <div>
                                   <Textarea
                                     label="Description"
-                                    size="sm"
                                     radius="sm"
                                     variant="bordered"
                                     value={form.description}
@@ -282,7 +280,6 @@ export default function ProgramModal({
                                 <div>
                                   <Input
                                     label="Durée (semaines)"
-                                    size="sm"
                                     variant="bordered"
                                     type="number"
                                     min={1}
@@ -301,7 +298,6 @@ export default function ProgramModal({
                               <div className="w-[50%]">
                                 <Input
                                   label="Prix (€)"
-                                  size="sm"
                                   variant="bordered"
                                   type="number"
                                   min={0}
