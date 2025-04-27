@@ -421,10 +421,10 @@ export default function TrainingModal({
                     <div className="relative flex-1">
                       <Input
                         isInvalid={error}
-                        required
+                        isRequired
                         type="text"
                         value={title}
-                        label="Titre de l'entraînement *"
+                        label="Titre de l'entraînement"
                         onChange={(e: ChangeEvent<HTMLInputElement>) => {
                           setError(false);
                           setTitle(e.target.value);
@@ -433,7 +433,7 @@ export default function TrainingModal({
                     </div>
                     <div className="flex-1">
                       <Input
-                        required
+                        isRequired
                         label="Date"
                         type="date"
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -587,8 +587,7 @@ export default function TrainingModal({
                       <Input
                         className="m-0"
                         type="number"
-                        label="Récurrence"
-                        placeholder="Nombre de semaines"
+                        label="Nombre de semaines"
                         description="Indiquez le nombre de semaines pendant lesquelles vous souhaitez répéter l'entraînement."
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
                           setRecurrence(e.target.value)
