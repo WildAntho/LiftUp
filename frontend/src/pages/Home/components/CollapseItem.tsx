@@ -39,7 +39,7 @@ export default function CollapseItem(props: CollapseItemProps) {
   return (
     <section
       className={`flex items-center justify-between w-full h-5 cursor-pointer px-2 ${
-        props.withArrow ? "font-semibold py-4" : "text-xs py-1"
+        props.withArrow ? "py-4" : "text-xs py-1"
       }`}
     >
       <div className="h-full flex justify-center items-center gap-5">

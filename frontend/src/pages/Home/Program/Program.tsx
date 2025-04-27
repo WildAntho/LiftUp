@@ -35,7 +35,6 @@ export default function Program() {
     ProgramStatus.Published
   );
   const { data, loading, refetch } = useGetMyProgramsQuery({
-    fetchPolicy: "cache-and-network",
     variables: {
       status: activeCard,
     },
@@ -78,7 +77,7 @@ export default function Program() {
   return (
     <section className="relative w-full h-full flex flex-col justify-start items-center rounded-2xl px-4 py-8 gap-4">
       {!isConfiguration && (
-        <section className="w-full flex flex-col justify-start items-center rounded-2xl gap-4 py-4 mt-4 overflow-y-scroll">
+        <section className="w-full flex flex-col justify-start items-center rounded-2xl gap-4 py-10 mt-4 overflow-y-scroll">
           <section className="w-[80%] flex justify-between items-center">
             <section className="flex justify-start items-start gap-4">
               <div onClick={() => setActiveCard(ProgramStatus.Published)}>
@@ -111,7 +110,7 @@ export default function Program() {
             </section>
             <div className="flex justify-end items-center">
               <Button
-                className="group shadow-none text-tertiary h-12 w-auto my-5 rounded-xl bg-tertiary bg-opacity-20 border border-tertiary border-opacity-20 hover:bg-tertiary hover:bg-opacity-20 hover:translate-y-[-2px] hover:shadow-sm transition-all duration-200"
+                className="group shadow-none text-tertiary h-12 w-auto rounded-xl bg-tertiary bg-opacity-20 border border-tertiary border-opacity-20 hover:bg-tertiary hover:bg-opacity-20 hover:translate-y-[-2px] hover:shadow-sm transition-all duration-200"
                 onClick={() => setOpenProgramModal(true)}
               >
                 <PlusCircle className="transition-all duration-200 group-hover:rotate-90" />
