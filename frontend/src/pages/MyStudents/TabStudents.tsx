@@ -180,24 +180,40 @@ export default function TabStudent({ refetch }: TabStudentProps) {
           return <p className="text-xs">{user.team}</p>;
         case "remaining": {
           let text = "";
-          let color = "";
+          let textColor = "";
+          let bgColor = "";
+
           if (user.remaining > 0) {
             text = `${user.remaining} jour${user.remaining > 1 ? "s" : ""}`;
-            color =
-              user.remaining < 8
-                ? "text-red-500"
-                : user.remaining < 15
-                ? "text-orange-500"
-                : "text-green-500";
+            if (user.remaining < 8) {
+              textColor = "text-red-700";
+              bgColor = "bg-red-100";
+            } else if (user.remaining < 15) {
+              textColor = "text-orange-700";
+              bgColor = "bg-orange-100";
+            } else {
+              textColor = "text-green-700";
+              bgColor = "bg-green-100";
+            }
           } else if (user.endMembership) {
-            text = "A renouveler";
-            color = "text-red-500";
+            text = "À renouveler";
+            textColor = "text-red-700";
+            bgColor = "bg-red-100";
           } else {
             text = "Inactif";
-            color = "text-gray-400";
+            textColor = "text-gray-700";
+            bgColor = "bg-gray-200";
           }
-          return <p className={`text-xs ${color}`}>{text}</p>;
+
+          return (
+            <span
+              className={`px-3 py-1 rounded-full ${textColor} ${bgColor} text-xs`}
+            >
+              {text}
+            </span>
+          );
         }
+
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
@@ -207,7 +223,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
                 title="Supprimer l'élève"
                 description="Êtes-vous sûr de vouloir supprimer cet élève ?"
               />
-              {!user.remaining && (
+              {!user.remaining && !user.memberShipId && (
                 <Activate
                   onActive={() => handleActiveMemberShip(user.id, user.offerId)}
                   loading={loadingActivate}
@@ -215,7 +231,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
                   description="Êtes-vous sûr de vouloir démarrer le suivi de cet élève ?"
                 />
               )}
-              {user.remaining && user.memberShipId && (
+              {user.memberShipId && (
                 <Renew
                   title="Renouveler le suivi"
                   description="Êtes-vous sûr de vouloir renouveler le suivi ?"

@@ -55,7 +55,7 @@ export default function CreateWorkout() {
           className="w-full flex justify-center items-center"
         >
           <Button className="group h-12 w-1/3 text-black bg-gray-100 hover:bg-gray-200 border border-black my-5 rounded-xl hover:translate-y-[-2px] hover:shadow-md transition-all duration-200">
-            <PlusCircle />
+            <PlusCircle className="transition-all duration-200 group-hover:rotate-90" />
             <p className="transition-all duration-200 group-hover:translate-x-1">
               Créer une séance
             </p>

@@ -1,11 +1,13 @@
 import {
   BicepsFlexed,
+  BookOpen,
   ChevronDown,
   Handshake,
   HomeIcon,
   LogOut,
   Settings,
   UserPen,
+  Users,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { ReactElement } from "react";
@@ -56,11 +58,13 @@ export default function Navigation() {
             id: 2,
             value: "/students",
             label: "Mes élèves",
+            icon: <BookOpen />,
           },
           {
             id: 3,
             value: "/crew",
             label: "Mes équipes",
+            icon: <Users />,
           },
         ]
       : []),
@@ -136,11 +140,15 @@ export default function Navigation() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => navigate("/profile")}>
+              <DropdownMenuItem
+                onClick={() => navigate("/profile?tab=informations")}
+              >
                 <UserPen />
                 Profil
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => navigate("/profile?tab=settings")}
+              >
                 <Settings />
                 Paramètres
               </DropdownMenuItem>

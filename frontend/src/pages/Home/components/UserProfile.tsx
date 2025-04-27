@@ -20,7 +20,7 @@ export default function UserProfile({ open }: UserProfileProps) {
     >
       <section
         className="hover:bg-gray-500 hover:bg-opacity-20 w-full cursor-pointer"
-        onClick={() => navigate("/profile")}
+        onClick={() => navigate("/profile?tab=informations")}
       >
         <section className="flex justify-between items-center p-2 w-full">
           <section className="flex justify-center items-center gap-2">

@@ -1,17 +1,12 @@
 import { useState } from "react";
-import HeaderProfile from "./HeaderProfile";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { Offer, useGetMyOffersQuery } from "@/graphql/hooks";
 import OfferCard from "@/components/OfferCard";
 import OfferModal from "@/components/modals/OfferModal";
 
 export default function Offers() {
   const { data: dataOffers, refetch } = useGetMyOffersQuery();
-  const [isShow, setIsShow] = useState<boolean>(true);
-  const switchView = () => {
-    setIsShow(!isShow);
-  };
   const [open, setOpen] = useState<boolean>(false);
   const closeModal = () => {
     setOpen(false);
@@ -21,30 +16,28 @@ export default function Offers() {
 
   return (
     <>
-      <section className="w-full h-full flex flex-col items-start justify-start p-10">
-        <HeaderProfile
-          isShow={isShow}
-          onClick={switchView}
-          title="Mes offres"
-          tooltip="Modifier ma description"
-          withEdit={false}
-        />
-        <section className="w-full">
-          <Button
-            type="button"
-            className="flex justify-center items-center gap-2 bg-primary hover:bg-blue-600 mt-5"
-            onClick={() => setOpen(true)}
-          >
-            <Plus />
-            Ajouter une nouvelle prestation
-          </Button>
-          <section className="w-[80%] flex flex-col items-start justify-start gap-6 px-2 py-10">
-            {myOffers?.map((o) => (
-              <div key={o.id} className="w-full">
-                <OfferCard offer={o as Omit<Offer, "user">} refetch={refetch} isMyOffer={true} />
-              </div>
-            ))}
-          </section>
+      <section className="w-full h-full flex flex-col items-start justify-start py-4">
+        <section className="w-[80%] flex flex-col items-start justify-start gap-6">
+          <div className="w-full flex justify-end items-center">
+            <Button
+              className="group h-12 w-[300px] text-black bg-gray-100 hover:bg-gray-200 border border-black rounded-xl hover:translate-y-[-2px] hover:shadow-md transition-all duration-200"
+              onClick={() => setOpen(true)}
+            >
+              <PlusCircle className="transition-all duration-200 group-hover:rotate-90" />
+              <p className="text-sm transition-all duration-200 group-hover:translate-x-1">
+                Ajouter une nouvelle prestation
+              </p>
+            </Button>
+          </div>
+          {myOffers?.map((o) => (
+            <div key={o.id} className="w-full">
+              <OfferCard
+                offer={o as Omit<Offer, "user">}
+                refetch={refetch}
+                isMyOffer={true}
+              />
+            </div>
+          ))}
         </section>
       </section>
       <OfferModal open={open} onClose={closeModal} refetch={refetch} />

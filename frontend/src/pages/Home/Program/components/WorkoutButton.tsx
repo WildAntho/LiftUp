@@ -3,12 +3,14 @@ type WorkoutButtonProps = {
   isCompleted?: boolean;
   isActive: boolean;
   onClick: () => void;
+  isSelected: boolean;
 };
 
 export default function WorkoutButton({
   number,
   isActive,
   onClick,
+  isSelected,
 }: WorkoutButtonProps) {
   const activeClasses = isActive
     ? "shadow-[0_0_10px_rgba(249,115,22,0.25)] translate-y-[-2px] border-orange-400 bg-gray-50 active:shadow-[0_0_10px_rgba(249,115,22,0.25)]"
@@ -23,9 +25,11 @@ export default function WorkoutButton({
         Jour
       </p>
       <p className="text-xl font-semibold text-center">{number}</p>
-      <div className="bg-orange-100 px-2 py-1 rounded-full">
-        <p className="text-orange-900 text-xs">Prévu</p>
-      </div>
+      {isSelected && (
+        <div className="bg-green-100 px-2 py-1 rounded-full">
+          <p className="text-green-900 text-xs">Prévu</p>
+        </div>
+      )}
     </div>
   );
 }
