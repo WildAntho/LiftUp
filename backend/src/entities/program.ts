@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { User } from "./user";
 import { ProgramStatus } from "../InputType/programType";
+import { TrainingPlan } from "./trainingPlan";
 
 @ObjectType()
 @Entity()
@@ -40,6 +41,10 @@ export class Program extends BaseEntity {
   @Field({ nullable: true })
   @Column({ nullable: true })
   price?: number;
+
+  @Field(() => [TrainingPlan])
+  @OneToMany(() => TrainingPlan, (trainingPlan) => trainingPlan.program)
+  trainingPlans!: TrainingPlan[];
 
   @Field(() => User)
   @ManyToOne(() => User, (user) => user.coachedCrews)

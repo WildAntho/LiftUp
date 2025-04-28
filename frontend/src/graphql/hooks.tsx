@@ -231,6 +231,7 @@ export type Mutation = {
   createCrew: Scalars['String']['output'];
   createExerciceModel: Scalars['String']['output'];
   createProgram: Program;
+  createTrainingPlan: Scalars['String']['output'];
   deleteCrew: Scalars['String']['output'];
   deleteExercice: Scalars['String']['output'];
   deleteFeedback: Scalars['String']['output'];
@@ -337,6 +338,11 @@ export type MutationCreateExerciceModelArgs = {
 
 export type MutationCreateProgramArgs = {
   data: ProgramInput;
+};
+
+
+export type MutationCreateTrainingPlanArgs = {
+  data: TrainingPlanData;
 };
 
 
@@ -510,6 +516,7 @@ export type Program = {
   public: Scalars['Boolean']['output'];
   status: ProgramStatus;
   title: Scalars['String']['output'];
+  trainingPlans: Array<TrainingPlan>;
 };
 
 export type ProgramInput = {
@@ -538,6 +545,7 @@ export type Query = {
   getConversationById: Conversation;
   getConversations: Array<Conversation>;
   getCrewTraining: Array<Training>;
+  getDayNumberTraining: Array<Scalars['Float']['output']>;
   getExerciceTypes: Array<ExerciceType>;
   getExercices: Array<Exercice>;
   getFeedbacks: Array<Feedback>;
@@ -556,6 +564,7 @@ export type Query = {
   getStudents: StudentsResponse;
   getTotalStudents: Scalars['Int']['output'];
   getTotalUnreadMessage: Scalars['Int']['output'];
+  getTrainingPlan: Array<TrainingPlan>;
   getTrainingsById: Array<Training>;
   getUnreadRequests: Array<Request>;
   getUserById: User;
@@ -578,6 +587,11 @@ export type QueryGetConversationByIdArgs = {
 export type QueryGetCrewTrainingArgs = {
   id: Scalars['String']['input'];
   rangeDate: RangeDate;
+};
+
+
+export type QueryGetDayNumberTrainingArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -654,6 +668,11 @@ export type QueryGetStudentsArgs = {
   offerId?: InputMaybe<Scalars['String']['input']>;
   page?: InputMaybe<Scalars['Float']['input']>;
   sortRemaining?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type QueryGetTrainingPlanArgs = {
+  data: GetTrainingType;
 };
 
 
@@ -768,6 +787,22 @@ export type TrainingData = {
   title: Scalars['String']['input'];
 };
 
+export type TrainingPlan = {
+  __typename?: 'TrainingPlan';
+  dayNumber: Scalars['Float']['output'];
+  id: Scalars['ID']['output'];
+  notes?: Maybe<Scalars['String']['output']>;
+  program: Program;
+  title: Scalars['String']['output'];
+};
+
+export type TrainingPlanData = {
+  dayNumber: Scalars['Float']['input'];
+  notes?: InputMaybe<Scalars['String']['input']>;
+  programId: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+};
+
 export type UpdateProfile = {
   avatar?: InputMaybe<Scalars['String']['input']>;
   firstname: Scalars['String']['input'];
@@ -827,6 +862,11 @@ export type UserInput = {
   lastname: Scalars['String']['input'];
   password: Scalars['String']['input'];
   roles: Scalars['String']['input'];
+};
+
+export type GetTrainingType = {
+  dayNumber: Scalars['Float']['input'];
+  programId: Scalars['String']['input'];
 };
 
 export type UserLogin = {
@@ -934,6 +974,13 @@ export type CreateProgramMutationVariables = Exact<{
 
 
 export type CreateProgramMutation = { __typename?: 'Mutation', createProgram: { __typename?: 'Program', id: string, title: string, description?: string | null, status: ProgramStatus, duration: number, public: boolean, price?: number | null } };
+
+export type CreateTrainingPlanMutationVariables = Exact<{
+  data: TrainingPlanData;
+}>;
+
+
+export type CreateTrainingPlanMutation = { __typename?: 'Mutation', createTrainingPlan: string };
 
 export type DeleteCrewMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1164,6 +1211,13 @@ export type GetCrewTrainingQueryVariables = Exact<{
 
 export type GetCrewTrainingQuery = { __typename?: 'Query', getCrewTraining: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, color: string, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, notes?: string | null, type?: { __typename?: 'ExerciceType', id: string, value: string, label: string } | null }> | null }> };
 
+export type GetDayNumberTrainingQueryVariables = Exact<{
+  programId: Scalars['String']['input'];
+}>;
+
+
+export type GetDayNumberTrainingQuery = { __typename?: 'Query', getDayNumberTraining: Array<number> };
+
 export type GetExerciceTypesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1289,6 +1343,13 @@ export type GetTotalUnreadMessageQueryVariables = Exact<{ [key: string]: never; 
 
 
 export type GetTotalUnreadMessageQuery = { __typename?: 'Query', getTotalUnreadMessage: number };
+
+export type GetTrainingPlanQueryVariables = Exact<{
+  data: GetTrainingType;
+}>;
+
+
+export type GetTrainingPlanQuery = { __typename?: 'Query', getTrainingPlan: Array<{ __typename?: 'TrainingPlan', id: string, title: string, dayNumber: number, notes?: string | null }> };
 
 export type SelectCoachQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1790,6 +1851,37 @@ export function useCreateProgramMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateProgramMutationHookResult = ReturnType<typeof useCreateProgramMutation>;
 export type CreateProgramMutationResult = Apollo.MutationResult<CreateProgramMutation>;
 export type CreateProgramMutationOptions = Apollo.BaseMutationOptions<CreateProgramMutation, CreateProgramMutationVariables>;
+export const CreateTrainingPlanDocument = gql`
+    mutation CreateTrainingPlan($data: TrainingPlanData!) {
+  createTrainingPlan(data: $data)
+}
+    `;
+export type CreateTrainingPlanMutationFn = Apollo.MutationFunction<CreateTrainingPlanMutation, CreateTrainingPlanMutationVariables>;
+
+/**
+ * __useCreateTrainingPlanMutation__
+ *
+ * To run a mutation, you first call `useCreateTrainingPlanMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTrainingPlanMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTrainingPlanMutation, { data, loading, error }] = useCreateTrainingPlanMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateTrainingPlanMutation(baseOptions?: Apollo.MutationHookOptions<CreateTrainingPlanMutation, CreateTrainingPlanMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTrainingPlanMutation, CreateTrainingPlanMutationVariables>(CreateTrainingPlanDocument, options);
+      }
+export type CreateTrainingPlanMutationHookResult = ReturnType<typeof useCreateTrainingPlanMutation>;
+export type CreateTrainingPlanMutationResult = Apollo.MutationResult<CreateTrainingPlanMutation>;
+export type CreateTrainingPlanMutationOptions = Apollo.BaseMutationOptions<CreateTrainingPlanMutation, CreateTrainingPlanMutationVariables>;
 export const DeleteCrewDocument = gql`
     mutation DeleteCrew($id: String!) {
   deleteCrew(id: $id)
@@ -3025,6 +3117,44 @@ export type GetCrewTrainingQueryHookResult = ReturnType<typeof useGetCrewTrainin
 export type GetCrewTrainingLazyQueryHookResult = ReturnType<typeof useGetCrewTrainingLazyQuery>;
 export type GetCrewTrainingSuspenseQueryHookResult = ReturnType<typeof useGetCrewTrainingSuspenseQuery>;
 export type GetCrewTrainingQueryResult = Apollo.QueryResult<GetCrewTrainingQuery, GetCrewTrainingQueryVariables>;
+export const GetDayNumberTrainingDocument = gql`
+    query GetDayNumberTraining($programId: String!) {
+  getDayNumberTraining(id: $programId)
+}
+    `;
+
+/**
+ * __useGetDayNumberTrainingQuery__
+ *
+ * To run a query within a React component, call `useGetDayNumberTrainingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDayNumberTrainingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetDayNumberTrainingQuery({
+ *   variables: {
+ *      programId: // value for 'programId'
+ *   },
+ * });
+ */
+export function useGetDayNumberTrainingQuery(baseOptions: Apollo.QueryHookOptions<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables> & ({ variables: GetDayNumberTrainingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>(GetDayNumberTrainingDocument, options);
+      }
+export function useGetDayNumberTrainingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>(GetDayNumberTrainingDocument, options);
+        }
+export function useGetDayNumberTrainingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>(GetDayNumberTrainingDocument, options);
+        }
+export type GetDayNumberTrainingQueryHookResult = ReturnType<typeof useGetDayNumberTrainingQuery>;
+export type GetDayNumberTrainingLazyQueryHookResult = ReturnType<typeof useGetDayNumberTrainingLazyQuery>;
+export type GetDayNumberTrainingSuspenseQueryHookResult = ReturnType<typeof useGetDayNumberTrainingSuspenseQuery>;
+export type GetDayNumberTrainingQueryResult = Apollo.QueryResult<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>;
 export const GetExerciceTypesDocument = gql`
     query GetExerciceTypes {
   getExerciceTypes {
@@ -3935,6 +4065,49 @@ export type GetTotalUnreadMessageQueryHookResult = ReturnType<typeof useGetTotal
 export type GetTotalUnreadMessageLazyQueryHookResult = ReturnType<typeof useGetTotalUnreadMessageLazyQuery>;
 export type GetTotalUnreadMessageSuspenseQueryHookResult = ReturnType<typeof useGetTotalUnreadMessageSuspenseQuery>;
 export type GetTotalUnreadMessageQueryResult = Apollo.QueryResult<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>;
+export const GetTrainingPlanDocument = gql`
+    query GetTrainingPlan($data: getTrainingType!) {
+  getTrainingPlan(data: $data) {
+    id
+    title
+    dayNumber
+    notes
+  }
+}
+    `;
+
+/**
+ * __useGetTrainingPlanQuery__
+ *
+ * To run a query within a React component, call `useGetTrainingPlanQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTrainingPlanQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTrainingPlanQuery({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useGetTrainingPlanQuery(baseOptions: Apollo.QueryHookOptions<GetTrainingPlanQuery, GetTrainingPlanQueryVariables> & ({ variables: GetTrainingPlanQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>(GetTrainingPlanDocument, options);
+      }
+export function useGetTrainingPlanLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>(GetTrainingPlanDocument, options);
+        }
+export function useGetTrainingPlanSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>(GetTrainingPlanDocument, options);
+        }
+export type GetTrainingPlanQueryHookResult = ReturnType<typeof useGetTrainingPlanQuery>;
+export type GetTrainingPlanLazyQueryHookResult = ReturnType<typeof useGetTrainingPlanLazyQuery>;
+export type GetTrainingPlanSuspenseQueryHookResult = ReturnType<typeof useGetTrainingPlanSuspenseQuery>;
+export type GetTrainingPlanQueryResult = Apollo.QueryResult<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>;
 export const SelectCoachDocument = gql`
     query SelectCoach($id: String!, $price: [Float!], $input: String, $categorie: String) {
   selectCoach(id: $id, price: $price, input: $input, categorie: $categorie) {

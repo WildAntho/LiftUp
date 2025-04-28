@@ -1,0 +1,93 @@
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
+import FloatingDock from "./FloatingDock";
+import { motion } from "framer-motion";
+import { TrainingPlan } from "@/graphql/hooks";
+import TrainingPlanCard from "./TrainingPlanCard";
+
+type CreateWorkoutProps = {
+  trainings: TrainingPlan[];
+  onCreate: () => void;
+};
+
+export default function CreateWorkout({
+  trainings,
+  onCreate,
+}: CreateWorkoutProps) {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.2,
+        when: "beforeChildren",
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  return (
+    <section className="flex flex-col justify-between items-between gap-4 w-full h-full">
+      {trainings.length === 0 ? (
+        <motion.section
+          className="flex flex-col justify-center items-center gap-4 w-full h-full mt-10"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.h2
+            variants={itemVariants}
+            className="text-2xl font-semibold text-center text-gray-500"
+          >
+            Ajouter votre première séance
+          </motion.h2>
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col justify-center items-center gap-2"
+          >
+            <p className="text-md text-gray-400 text-center">
+              Créer un entraînement personnalisé en ajoutant des exercices.
+            </p>
+          </motion.div>
+          <motion.div
+            variants={itemVariants}
+            className="w-full flex justify-center items-center"
+          >
+            <Button
+              className="group h-12 w-1/3 text-black bg-gray-100 hover:bg-gray-200 border border-black my-5 rounded-xl hover:translate-y-[-2px] hover:shadow-md transition-all duration-200"
+              onClick={onCreate}
+            >
+              <PlusCircle className="transition-all duration-200 group-hover:rotate-90" />
+              <p className="transition-all duration-200 group-hover:translate-x-1">
+                Créer une séance
+              </p>
+            </Button>
+          </motion.div>
+          <motion.div
+            variants={itemVariants}
+            className="h-64 w-full bg-white"
+          />
+        </motion.section>
+      ) : (
+        <section>
+          {trainings.map((t) => (
+            <TrainingPlanCard title={t.title} key={t.id} />
+          ))}
+        </section>
+      )}
+      <FloatingDock onCreate={onCreate} />
+    </section>
+  );
+}

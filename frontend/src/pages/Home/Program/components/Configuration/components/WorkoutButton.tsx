@@ -25,11 +25,19 @@ export default function WorkoutButton({
         Jour
       </p>
       <p className="text-xl font-semibold text-center">{number}</p>
-      {isSelected && (
-        <div className="bg-green-100 px-2 py-1 rounded-full">
-          <p className="text-green-900 text-xs">Prévu</p>
-        </div>
-      )}
+      <div
+        className={`bg-green-100 px-2 py-1 rounded-full ${
+          !isSelected && "bg-transparent"
+        }`}
+      >
+        <p
+          className={`text-xs ${
+            isSelected ? "text-green-900" : "text-transparent"
+          }`}
+        >
+          Prévu
+        </p>
+      </div>
     </div>
   );
 }

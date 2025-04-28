@@ -16,6 +16,7 @@ import { Message } from "../entities/message";
 import { Conversation } from "../entities/conversation";
 import { Membership } from "../entities/memberShip";
 import { Program } from "../entities/program";
+import { TrainingPlan } from "../entities/trainingPlan";
 
 config();
 
@@ -45,6 +46,7 @@ export const dataSource = new DataSource({
     Conversation,
     Membership,
     Program,
+    TrainingPlan
   ],
   synchronize: true,
 });

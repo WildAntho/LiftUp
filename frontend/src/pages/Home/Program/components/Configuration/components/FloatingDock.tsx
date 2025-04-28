@@ -2,7 +2,11 @@ import FloatingDockDesktop from "./FloatingMenu";
 import { Home, Undo2, CircleCheckBig, Copy, PlusCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export default function FloatingDock() {
+type FloatingDockProps = {
+  onCreate: () => void;
+};
+
+export default function FloatingDock({ onCreate }: FloatingDockProps) {
   const navigate = useNavigate();
   const links = [
     {
@@ -16,7 +20,7 @@ export default function FloatingDock() {
       title: "Créer une séance",
       icon: <PlusCircle className="h-full w-full" />,
       action: () => {
-        console.log("clicked");
+        onCreate();
       },
     },
     {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import WorkoutButton from "./WorkoutButton";
 import {
   Calendar,
@@ -15,11 +15,11 @@ type WeekProgramProps = {
   numberOfDays: number;
   activeDay: number;
   onDaySelect: (day: number) => void;
+  allDayNumber: number[];
 };
 
 type WorkoutDay = {
   number: number;
-  workout: string;
   isSelected: boolean;
 };
 
@@ -27,17 +27,13 @@ export default function WeekProgram({
   numberOfDays,
   activeDay,
   onDaySelect,
+  allDayNumber,
 }: WeekProgramProps) {
   const currentProgram = useProgramStore((state) => state.program);
   const [currentWeek, setCurrentWeek] = useState(1);
   const [direction, setDirection] = useState(0);
   const DAYS_PER_WEEK = 7;
   const totalWeeks = Math.ceil(numberOfDays / DAYS_PER_WEEK);
-
-  const dayTraining = [
-    2, 4, 5, 8, 10, 11, 13, 15, 16, 18, 19, 21, 23, 24, 25, 27, 30, 33, 34, 37,
-    38, 40, 42,
-  ];
 
   // Exemple de données (à remplacer par vos vraies données)
   const generateWeekWorkouts = (): WorkoutDay[] => {
@@ -49,8 +45,7 @@ export default function WeekProgram({
       const dayNumber = startDay + index + 1;
       return {
         number: dayNumber,
-        workout: "Muscle Up",
-        isSelected: dayTraining.includes(dayNumber),
+        isSelected: allDayNumber.includes(dayNumber),
       };
     });
   };
@@ -68,6 +63,10 @@ export default function WeekProgram({
       setCurrentWeek((prev) => prev + 1);
     }
   };
+
+  useEffect(() => {
+    onDaySelect(currentWeek * 7 - 6);
+  }, [currentWeek]);
 
   const workouts = generateWeekWorkouts();
 
