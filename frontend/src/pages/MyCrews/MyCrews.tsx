@@ -20,7 +20,7 @@ export default function MyCrews() {
     <>
       <CrewModal open={open} onClose={onClose} refetch={refetch} />
       <section className="h-full w-full p-4 gap-4 flex justify-center items-center">
-        <section className="w-[80%] h-full bg-white rounded-2xl flex flex-col justify-start items-center overflow-y-scroll gap-7">
+        <section className="w-[80%] 2xl:w-[60%] h-full bg-white rounded-2xl flex flex-col justify-start items-center overflow-y-scroll gap-7">
           <section className="w-[90%] h-full p-5 flex flex-col items-start justify-start gap-7 mt-7">
             <div className="w-full flex justify-between items-center">
               <p className="text-xs text-gray-500 flex justify-start items-center gap-4 max-w-[60%]">

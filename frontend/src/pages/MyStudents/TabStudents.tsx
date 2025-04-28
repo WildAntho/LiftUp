@@ -54,7 +54,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
   const [offer, setOffer] = useState<string>("");
   const [crew, setCrew] = useState<string>("");
   const [page, setPage] = useState<number>(1);
-  const limit = 5;
+  const limit = 20;
   const [sortRemaining, setSortRemaining] = useState<boolean>(false);
   const { data: dataOffers } = useGetOneCoachOffersQuery({
     variables: { id: currentUser?.id.toString() as string },
@@ -272,7 +272,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
             onValueChange={onSearchChange}
             onClear={() => setInput("")}
           />
-          <section className="flex items-center gap-1 flex-1">
+          <section className="flex items-center justify-end gap-1 flex-1">
             <Select
               className="max-w-xs"
               labelPlacement="outside"
@@ -326,7 +326,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
   }, [input, myStudents]);
 
   return (
-    <section className="w-full flex flex-col items-center justify-start gap-5">
+    <section className="w-full h-full flex flex-col items-center justify-start gap-5">
       <Table
         isHeaderSticky
         onSortChange={handleSortChange}
@@ -341,8 +341,8 @@ export default function TabStudent({ refetch }: TabStudentProps) {
         }
         topContent={topContent}
         classNames={{
-          base: "max-h-[520px]",
-          table: "min-h-[200px] overflow-scroll",
+          //base: "max-h-[520px]",
+          table: "min-h-[200px]",
         }}
         aria-label="Table élèves"
       >

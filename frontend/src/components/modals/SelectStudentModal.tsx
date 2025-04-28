@@ -105,15 +105,21 @@ export default function SelectStudentModal({
           />
         </ModalHeader>
         <ModalBody style={{ gap: "15px" }} className="min-h-[50vh]">
-          <RadioGroup
-            value={selected}
-            onValueChange={setSelected}
-            className="w-full"
-          >
-            {myStudents.map((s) => (
-              <ListUser key={s.id} user={s as UserWithoutPassword} />
-            ))}
-          </RadioGroup>
+          {myStudents.length > 0 ? (
+            <RadioGroup
+              value={selected}
+              onValueChange={setSelected}
+              className="w-full"
+            >
+              {myStudents.map((s) => (
+                <ListUser key={s.id} user={s as UserWithoutPassword} />
+              ))}
+            </RadioGroup>
+          ) : (
+            <p className="w-full h-full text-center text-sm text-gray-600">
+              Vous n'avez aucun élève.
+            </p>
+          )}
         </ModalBody>
         <ModalFooter className="flex flex-col justify-end items-center gap-2">
           {totalPage > 1 && (

@@ -69,7 +69,7 @@ export default function ExerciceCard({
     <Collapsible
       ref={setNodeRef}
       style={style}
-      className="group/collapsible flex flex-col gap-4 w-full p-4 border border-gray-200 bg-white rounded-lg shadow-md transition-transform ease-in-out duration-300"
+      className="group/collapsible flex flex-col gap-4 w-full p-4 border border-gray-200 bg-white rounded-lg shadow-md"
     >
       <CollapsibleTrigger className="w-full">
         <section className="flex justify-between items-center">

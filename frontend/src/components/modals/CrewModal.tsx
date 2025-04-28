@@ -232,8 +232,8 @@ export default function OfferModal({
               </CheckboxGroup>
             </section>
           ) : (
-            <p className="text-xs w-full flex justify-center items-center">
-              Aucun élève disponible
+            <p className="w-full h-full text-center text-sm text-gray-600">
+              Vous n'avez aucun élève.
             </p>
           )}
         </ModalBody>

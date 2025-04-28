@@ -17,7 +17,7 @@ export default function Offers() {
   return (
     <>
       <section className="w-full h-full flex flex-col items-start justify-start py-4">
-        <section className="w-[80%] flex flex-col items-start justify-start gap-6">
+        <section className="w-[80%] 2xl:w-[60%] flex flex-col items-start justify-start gap-6">
           <div className="w-full flex justify-end items-center">
             <Button
               className="group h-12 w-[300px] text-black bg-gray-100 hover:bg-gray-200 border border-black rounded-xl hover:translate-y-[-2px] hover:shadow-md transition-all duration-200"

@@ -13,7 +13,6 @@ import {
 import { AlarmClockCheck, BookOpenCheck, CheckCheck } from "lucide-react";
 import { useStudentStore } from "@/services/zustand/studentStore";
 import { Tab, Tabs } from "@heroui/tabs";
-import { Progress } from "@heroui/react";
 import { subDays } from "date-fns";
 import { useCrewStore } from "@/services/zustand/crewStore";
 
@@ -38,52 +37,34 @@ export default function Calendar({ currentUser }: CalendarProps) {
   };
 
   // Get personal trainings
-  const {
-    data: dataMyTrainings,
-    loading: loadingMyTraining,
-    refetch: refetchMyTraining,
-  } = useGetMyTrainingQuery({
-    variables: {
-      id: currentUser?.id.toString() as string,
-      rangeDate,
-    },
-  });
+  const { data: dataMyTrainings, refetch: refetchMyTraining } =
+    useGetMyTrainingQuery({
+      variables: {
+        id: currentUser?.id.toString() as string,
+        rangeDate,
+      },
+    });
   // Get one student trainings
   const [
     getStudentTraining,
-    {
-      data: dataStudentTrainings,
-      loading: loadingStudentTrainings,
-      refetch: refetchStudentTraining,
-    },
+    { data: dataStudentTrainings, refetch: refetchStudentTraining },
   ] = useGetStudentTrainingsLazyQuery();
   // Get personal feedbacks
-  const {
-    data: dataFeedbacks,
-    loading: loadingFeedbacks,
-    refetch: refetchMyFeedbacks,
-  } = useGetFeedbacksQuery({
-    variables: {
-      id: currentUser?.id.toString() as string,
-      rangeDate,
-    },
-  });
+  const { data: dataFeedbacks, refetch: refetchMyFeedbacks } =
+    useGetFeedbacksQuery({
+      variables: {
+        id: currentUser?.id.toString() as string,
+        rangeDate,
+      },
+    });
   // Get one student feedbacks
   const [
     getStudentFeedbacks,
-    {
-      data: dataStudentFeedbacks,
-      loading: loadingStudentFeedbacks,
-      refetch: refetchStudentFeedbacks,
-    },
+    { data: dataStudentFeedbacks, refetch: refetchStudentFeedbacks },
   ] = useGetStudentFeedbackLazyQuery();
   const [
     getCrewTrainings,
-    {
-      data: dataCrewTraining,
-      loading: loadingCrewTraining,
-      refetch: refetchCrewTraining,
-    },
+    { data: dataCrewTraining, refetch: refetchCrewTraining },
   ] = useGetCrewTrainingLazyQuery();
 
   const myTrainings = dataMyTrainings ? dataMyTrainings.getTrainingsById : [];
@@ -173,6 +154,12 @@ export default function Calendar({ currentUser }: CalendarProps) {
     if (!currentCrew) setActive(key as string);
   };
 
+  useEffect(() => {
+    if (currentCrew) {
+      setActive("plan");
+    }
+  }, [currentCrew]);
+
   return (
     <section className="relative w-full h-full flex flex-col justify-center items-center p-4 pb-8 gap-4">
       <Tabs
@@ -191,90 +178,75 @@ export default function Calendar({ currentUser }: CalendarProps) {
           <Tab key={s.id} title={s.label} />
         ))}
       </Tabs>
-      {!loadingMyTraining &&
-      !loadingStudentTrainings &&
-      !loadingFeedbacks &&
-      !loadingStudentFeedbacks &&
-      !loadingCrewTraining ? (
-        <section className="relative w-full h-[90%]">
-          <section className="w-full h-full flex justify-center items-center overflow-y-scroll">
-            {active === "plan" && (
-              <ScheduleCalendar
-                days={days}
-                currentDate={currentDate}
-                setCurrentDate={setCurrentDate}
-                events={
-                  !currentStudent
-                    ? currentCrew
-                      ? crewTrainings
-                      : myTrainings
-                    : studentTrainings
-                }
-                viewMode={viewMode}
-                setViewMode={setViewMode}
-                refetch={refetch}
-                type="plan"
-              />
-            )}
-            {active === "done" && (
-              <ScheduleCalendar
-                days={days}
-                currentDate={currentDate}
-                setCurrentDate={setCurrentDate}
-                events={!currentStudent ? myFeedbacks : studentFeedbacks}
-                viewMode={viewMode}
-                setViewMode={setViewMode}
-                refetch={refetch}
-                type="done"
-              />
-            )}
-            {active === "both" && (
-              <div className="flex justify-center items-center w-full h-full">
-                <div className="w-full h-full">
-                  <ScheduleCalendar
-                    days={days}
-                    currentDate={currentDate}
-                    setCurrentDate={setCurrentDate}
-                    events={
-                      !currentStudent
-                        ? currentCrew
-                          ? crewTrainings
-                          : myTrainings
-                        : studentTrainings
-                    }
-                    viewMode={viewMode}
-                    setViewMode={setViewMode}
-                    refetch={refetch}
-                    type="plan"
-                  />
-                </div>
-                <div className="absolute top-0 border-l-2 border-gray-300 w-auto h-full" />
-                <div className="w-full h-full">
-                  <ScheduleCalendar
-                    days={days}
-                    currentDate={currentDate}
-                    setCurrentDate={setCurrentDate}
-                    events={!currentStudent ? myFeedbacks : studentFeedbacks}
-                    viewMode={viewMode}
-                    setViewMode={setViewMode}
-                    refetch={refetch}
-                    type="done"
-                  />
-                </div>
+      <section className="relative w-full h-[90%]">
+        <section className="w-full h-full flex justify-center items-center overflow-y-scroll">
+          {active === "plan" && (
+            <ScheduleCalendar
+              days={days}
+              currentDate={currentDate}
+              setCurrentDate={setCurrentDate}
+              events={
+                !currentStudent
+                  ? currentCrew
+                    ? crewTrainings
+                    : myTrainings
+                  : studentTrainings
+              }
+              viewMode={viewMode}
+              setViewMode={setViewMode}
+              refetch={refetch}
+              type="plan"
+            />
+          )}
+          {active === "done" && (
+            <ScheduleCalendar
+              days={days}
+              currentDate={currentDate}
+              setCurrentDate={setCurrentDate}
+              events={!currentStudent ? myFeedbacks : studentFeedbacks}
+              viewMode={viewMode}
+              setViewMode={setViewMode}
+              refetch={refetch}
+              type="done"
+            />
+          )}
+          {active === "both" && (
+            <div className="flex justify-center items-center w-full h-full">
+              <div className="w-full h-full">
+                <ScheduleCalendar
+                  days={days}
+                  currentDate={currentDate}
+                  setCurrentDate={setCurrentDate}
+                  events={
+                    !currentStudent
+                      ? currentCrew
+                        ? crewTrainings
+                        : myTrainings
+                      : studentTrainings
+                  }
+                  viewMode={viewMode}
+                  setViewMode={setViewMode}
+                  refetch={refetch}
+                  type="plan"
+                />
               </div>
-            )}
-          </section>
+              <div className="absolute top-0 border-l-2 border-gray-300 w-auto h-full" />
+              <div className="w-full h-full">
+                <ScheduleCalendar
+                  days={days}
+                  currentDate={currentDate}
+                  setCurrentDate={setCurrentDate}
+                  events={!currentStudent ? myFeedbacks : studentFeedbacks}
+                  viewMode={viewMode}
+                  setViewMode={setViewMode}
+                  refetch={refetch}
+                  type="done"
+                />
+              </div>
+            </div>
+          )}
         </section>
-      ) : (
-        <section className="w-full h-[93%] flex justify-center items-center">
-          <Progress
-            isIndeterminate
-            aria-label="Loading..."
-            className="max-w-md"
-            size="sm"
-          />
-        </section>
-      )}
+      </section>
     </section>
   );
 }

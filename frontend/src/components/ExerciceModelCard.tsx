@@ -60,10 +60,17 @@ export default function ExerciceModelCard({
     }
   };
   return (
-    <section className="flex justify-between items-center w-full p-2 bg-gray-50 shadow-md rounded-lg z-1000 touch-none">
+    <section className="flex justify-between items-center w-full p-2 border border-gray-200 bg-white shadow-md rounded-lg z-1000 touch-none">
       <div className="flex justify-start items-center gap-4">
         {picture.find((p) => p.type === exercice.type?.value)?.image}
-        <p className="text-xs">{exercice.title}</p>
+        <div className="flex flex-col items-start justify-center">
+          <p className="text-sm font-semibold text-gray-800">
+            {exercice.title}
+          </p>
+          <p className="text-xs text-gray-500">
+            {exercice.serie} {`série${exercice.serie > 1 ? "s" : ""}`}
+          </p>
+        </div>
       </div>
       <Tooltip
         content="Ajouter l'exercice"

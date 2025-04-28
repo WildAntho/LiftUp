@@ -12,6 +12,7 @@ import Offers from "./components/Offers";
 import Plans from "./components/Plans";
 import { Tab, Tabs } from "@heroui/tabs";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { Separator } from "@/components/ui/separator";
 
 export default function Profile() {
   const currentUser = useUserStore((state) => state.user);
@@ -47,13 +48,13 @@ export default function Profile() {
             label: "Mes offres",
             icon: <BadgeEuro size={18} className="text-blue-500" />,
           },
-          {
-            key: "settings",
-            label: "Paramètres",
-            icon: <Settings size={18} className="text-dark-500" />,
-          },
         ]
       : []),
+    {
+      key: "settings",
+      label: "Paramètres",
+      icon: <Settings size={18} className="text-dark-500" />,
+    },
   ];
 
   const handleSelectionChange = (key: Key) => {
@@ -62,8 +63,8 @@ export default function Profile() {
   };
   return (
     <section className="w-full h-full flex justify-center items-center p-4">
-      <section className="h-full w-full py-8 px-10 gap-4 flex flex-col items-start justify-start bg-white rounded-2xl">
-        <div className="min-w-[50%]">
+      <section className="h-full w-full pt-8 px-10 pb-2 flex flex-col items-start justify-start bg-white rounded-2xl">
+        <div className="min-w-[50%] pb-4">
           <Tabs
             selectedKey={active}
             onSelectionChange={handleSelectionChange}
@@ -82,6 +83,7 @@ export default function Profile() {
             ))}
           </Tabs>
         </div>
+        <Separator />
         <section className="h-full w-full overflow-y-scroll flex-1">
           <section className="min-h-full w-full">
             {active === "informations" && <MyProfile />}

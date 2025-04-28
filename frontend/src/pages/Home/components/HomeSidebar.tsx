@@ -86,13 +86,13 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
       subitems: isCoach
         ? [
             {
-              title: "Elèves",
+              title: "Sélectionner un élève",
               withArrow: false,
               get: () => setOpenStudentModal(true),
               type: "user",
             },
             {
-              title: "Equipes",
+              title: "Sélectionner une équipe",
               withArrow: false,
               get: () => setOpenCrewModal(true),
               type: "crew",

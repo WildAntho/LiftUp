@@ -89,11 +89,11 @@ export default function About() {
   ];
 
   return (
-    <section className="max-w-[50%] h-full flex flex-col items-start justify-start">
+    <section className="max-w-[50%] 2xl:max-w-[40%] h-full flex flex-col items-start justify-start">
       <section className="w-full flex flex-col items-start justify-start gap-5">
         {!loadingProfile ? (
           <>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between w-full">
               <div className="flex justify-start items-center gap-1">
                 <Info className="text-gray-400" />
                 <p className="w-full text-xs m-4 text-gray-600">
