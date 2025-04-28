@@ -1,0 +1,28 @@
+import { Tooltip } from "@heroui/tooltip";
+import { ReactElement } from "react";
+
+type LogoActionProps = {
+  logo: ReactElement;
+  onClick?: () => void;
+  title: string;
+};
+
+export default function LogoAction({ logo, onClick, title }: LogoActionProps) {
+  return (
+    <Tooltip
+      content={title}
+      showArrow={true}
+      color="foreground"
+      className="text-xs"
+    >
+      <div
+        className="group transition-all duration-200 ease-in-out hover:bg-black/5 p-2 rounded-full cursor-pointer hover:-translate-y-0.5"
+        onClick={onClick}
+      >
+        <span className="transition-all duration-200 ease-in-out text-gray-400 group-hover:text-gray-600">
+          {logo}
+        </span>
+      </div>
+    </Tooltip>
+  );
+}

@@ -1,5 +1,5 @@
 import ProgramModal from "@/components/modals/ProgramModal/ProgramModal";
-import Configuration from "./components/Configuration";
+import Configuration from "./components/Configuration/Configuration";
 import { Button } from "@/components/ui/button";
 import {
   Plus,
