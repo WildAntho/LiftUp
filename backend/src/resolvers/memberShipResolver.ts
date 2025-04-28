@@ -34,7 +34,12 @@ export class MembershipResolver {
       relations: { offer: true },
     });
     if (!memberShip) throw new Error("Aucune souscription n'a été trouvée");
-    const endDate = addMonths(memberShip.endDate, memberShip.offer.durability);
+    let endDate: Date;
+    if (memberShip.endDate.getTime() < new Date().getTime()) {
+      endDate = addMonths(memberShip.endDate, memberShip.offer.durability);
+    } else {
+      endDate = addMonths(new Date(), memberShip.offer.durability);
+    }
     memberShip.endDate = endDate;
     await memberShip.save();
     return JSON.stringify("L'abonnement a bien été renouvelé");

@@ -9,11 +9,7 @@ import {
 import { useUserStore } from "@/services/zustand/userStore";
 import { Receiver, Sender } from "@/type";
 import { Chip, Tabs, Tab, Progress } from "@heroui/react";
-import {
-  PlaneTakeoff,
-  Search,
-  User,
-} from "lucide-react";
+import { PlaneTakeoff, Search, User } from "lucide-react";
 import { Key, useEffect, useState } from "react";
 import SearchCoach from "./components/SearchCoach";
 import { useLocation } from "react-router-dom";
@@ -151,7 +147,7 @@ export default function MyCoach() {
 
   return (
     <section className="h-full w-full pt-4 pb-4 gap-4 flex justify-center items-start overflow-y-auto">
-      <section className="w-[80%] min-h-full py-7 bg-white rounded-2xl flex flex-col justify-start items-center gap-7">
+      <section className="w-[80%] 2xl:w-[100rem] min-h-full py-7 bg-white rounded-2xl flex flex-col justify-start items-center gap-7">
         <section className="relative w-[90%] flex flex-col justify-start items-center gap-8">
           {!loadingCoach &&
           !loadingSelectCoach &&

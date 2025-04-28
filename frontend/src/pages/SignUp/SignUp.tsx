@@ -1,10 +1,20 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useSignupMutation } from "@/graphql/hooks";
 import { useUserStore } from "@/services/zustand/userStore";
 import { ApolloError } from "@apollo/client";
+import { Button, Input } from "@heroui/react";
 import { Tooltip } from "@heroui/tooltip";
-import { Eye, EyeOff, Info, Loader2 } from "lucide-react";
+import {
+  ArrowRightToLine,
+  BadgeHelp,
+  CheckCircle,
+  Eye,
+  EyeOff,
+  Info,
+  Loader2,
+  Lock,
+  Mail,
+  User,
+} from "lucide-react";
 import { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Toaster, toast } from "sonner";
@@ -20,8 +30,13 @@ export default function SignUp() {
   const lastname = useRef<HTMLInputElement>(null);
   const confirmedPassword = useRef<HTMLInputElement>(null);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
   const switchView = () => {
     setShowPassword(!showPassword);
+  };
+  const switchViewConfirm = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   const handleSignup = async () => {
@@ -67,7 +82,7 @@ export default function SignUp() {
           />
         </div>
       </div>
-      <form className="relative flex flex-col justify-center items-center gap-10 shadow-2xl rounded-xl w-[40%] h-auto py-4 z-10 bg-white">
+      <form className="relative flex flex-col justify-center items-center gap-10 shadow-2xl rounded-xl min-w-[600px] py-20 h-auto z-10 bg-white">
         <div className="w-[150px]">
           <p className="font-logo text-primary text-7xl">LiftUp</p>
         </div>
@@ -77,47 +92,76 @@ export default function SignUp() {
         </div>
         <section className="flex flex-col gap-2 w-[75%]">
           <div className="flex justify-center items-center gap-2">
-            <Input ref={firstname} placeholder="Prénom" />
-            <Input ref={lastname} placeholder="Nom" />
+            <Input
+              ref={firstname}
+              label="Prénom"
+              isRequired
+              startContent={<BadgeHelp size={20} className="text-gray-500" />}
+            />
+            <Input
+              ref={lastname}
+              label="Nom"
+              isRequired
+              startContent={<User size={20} className="text-gray-500" />}
+            />
           </div>
-          <Input ref={email} placeholder="Email" />
+          <Input
+            ref={email}
+            label="Email"
+            isRequired
+            startContent={<Mail size={20} className="text-gray-500" />}
+          />
           <div className="flex flex-col justify-center items-center gap-2 w-full">
             <div className="w-full relative">
               <Input
                 ref={password}
                 type={`${showPassword ? "text" : "password"}`}
-                placeholder="Mot de passe"
-              />
-              <Eye
-                className={`absolute right-5 top-[6px] text-gray-400 hover:text-gray-500 cursor-pointer ${
-                  showPassword ? "block" : "hidden"
-                }`}
-                onClick={switchView}
-              />
-              <EyeOff
-                className={`absolute right-5 top-[6px] text-gray-400 hover:text-gray-500 cursor-pointer ${
-                  !showPassword ? "block" : "hidden"
-                }`}
-                onClick={switchView}
+                label="Mot de passe"
+                isRequired
+                startContent={<Lock size={20} className="text-gray-500" />}
+                endContent={
+                  <>
+                    <Eye
+                      className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
+                        showPassword ? "block" : "hidden"
+                      }`}
+                      onClick={switchView}
+                    />
+                    <EyeOff
+                      className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
+                        !showPassword ? "block" : "hidden"
+                      }`}
+                      onClick={switchView}
+                    />
+                  </>
+                }
               />
             </div>
             <div className="w-full relative">
               <Input
                 ref={confirmedPassword}
-                type={`${showPassword ? "text" : "password"}`}
-                placeholder="Confirmer le mot de passe"
-              />
-              <Eye
-                className={`absolute right-5 top-[6px] text-gray-400 hover:text-gray-500 cursor-pointer ${
-                  showPassword ? "block" : "hidden"
-                }`}
-                onClick={switchView}
-              />
-              <EyeOff
-                className={`absolute right-5 top-[6px] text-gray-400 hover:text-gray-500 cursor-pointer ${
-                  !showPassword ? "block" : "hidden"
-                }`}
-                onClick={switchView}
+                type={`${showConfirmPassword ? "text" : "password"}`}
+                label="Confirmer le mot de passe"
+                isRequired
+                startContent={
+                  <CheckCircle size={20} className="text-gray-500" />
+                }
+                endContent={
+                  <>
+                    <Eye
+                      className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
+                        showConfirmPassword ? "block" : "hidden"
+                      }`}
+                      onClick={switchViewConfirm}
+                    />
+                    <EyeOff
+                      className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
+                        !showConfirmPassword ? "block" : "hidden"
+                      }`}
+                      onClick={switchViewConfirm}
+                    />
+                  </>
+                }
               />
             </div>
           </div>
@@ -145,24 +189,26 @@ export default function SignUp() {
           </section>
           <Button
             type="submit"
-            className="bg-primary hover:bg-blue-600"
-            onClick={handleSignup}
+            className="group shadow-none text-white h-[45px] rounded-xl bg-primary hover:translate-y-[-2px] hover:shadow-lg transition-all duration-200"
+            onPress={handleSignup}
             disabled={loading}
           >
             {loading && <Loader2 className="animate-spin" />}
-            S'inscrire
+            {!loading && <ArrowRightToLine size={16} />}
+            <p className="text-sm transition-all duration-200 group-hover:translate-x-1">
+              S'inscrire
+            </p>
           </Button>
         </section>
-        <section className="flex justify-center items-center">
-          <p className="text-xs">
+        <section className="w-full flex justify-center items-center">
+          <p className="flex justify-center items-center gap-2 text-xs">
             Tu as déjà un compte ? 😁{" "}
-            <Button
-              variant="link"
-              className="text-primary hover:text-blue-600 text-xs"
+            <div
+              className="text-primary hover:text-blue-600 text-xs hover:underline cursor-pointer"
               onClick={() => navigate("/login")}
             >
               Se connecter
-            </Button>
+            </div>
           </p>
         </section>
       </form>

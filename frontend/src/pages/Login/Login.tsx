@@ -1,10 +1,16 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
 import { useLoginMutation } from "@/graphql/hooks";
 import { useUserStore } from "@/services/zustand/userStore";
 import { ApolloError } from "@apollo/client";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Button, Input } from "@heroui/react";
+import {
+  ArrowRightToLine,
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+  Mail,
+} from "lucide-react";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -59,7 +65,7 @@ export default function Login() {
           />
         </div>
       </div>
-      <form className="relative flex flex-col justify-center items-center gap-10 shadow-2xl rounded-xl w-[40%] h-[70%] z-10 bg-white">
+      <form className="relative flex flex-col justify-center items-center gap-10 shadow-2xl rounded-xl min-w-[600px] py-28 z-10 bg-white">
         <div className="w-[150px]">
           <p className="font-logo text-primary text-7xl">LiftUp</p>
         </div>
@@ -67,42 +73,48 @@ export default function Login() {
         <section className="flex flex-col gap-2 w-[75%]">
           <Input
             ref={email}
-            placeholder="Email"
-            className={`${error && "border border-red-500 bg-white"}`}
+            label="Email"
+            isRequired
+            isInvalid={error !== undefined}
+            startContent={<Mail size={20} className="text-gray-500" />}
           />
           <div className="relative">
             <Input
               ref={password}
               type={`${showPassword ? "text" : "password"}`}
-              placeholder="Mot de passe"
-              className={`${error && "border border-red-500"}`}
-            />
-            <Eye
-              className={`absolute right-5 top-[6px] text-gray-400 hover:text-gray-500 cursor-pointer ${
-                showPassword ? "block" : "hidden"
-              }`}
-              onClick={switchView}
-            />
-            <EyeOff
-              className={`absolute right-5 top-[6px] text-gray-400 hover:text-gray-500 cursor-pointer ${
-                !showPassword ? "block" : "hidden"
-              }`}
-              onClick={switchView}
+              isRequired
+              isInvalid={error !== undefined}
+              label="Mot de passe"
+              startContent={<Lock size={20} className="text-gray-500" />}
+              endContent={
+                <>
+                  <Eye
+                    className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
+                      showPassword ? "block" : "hidden"
+                    }`}
+                    onClick={switchView}
+                  />
+                  <EyeOff
+                    className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
+                      !showPassword ? "block" : "hidden"
+                    }`}
+                    onClick={switchView}
+                  />
+                </>
+              }
             />
           </div>
-          {error && (
-            <p className="text-red-500 text-xs">
-              Adresse e-mail ou mot de passe incorrect.
-            </p>
-          )}
           <Button
             type="submit"
-            className="bg-primary hover:bg-blue-600"
-            onClick={handleLogin}
+            className="group shadow-none text-white h-[45px] rounded-xl bg-primary hover:translate-y-[-2px] hover:shadow-lg transition-all duration-200"
+            onPress={handleLogin}
             disabled={loading}
           >
             {loading && <Loader2 className="animate-spin" />}
-            Se connecter
+            {!loading && <ArrowRightToLine size={16} />}
+            <p className="text-sm transition-all duration-200 group-hover:translate-x-1">
+              Se connecter
+            </p>
           </Button>
           {/* <section className="w-full flex justify-end">
             <Button variant="link">
@@ -110,15 +122,14 @@ export default function Login() {
             </Button>
           </section> */}
         </section>
-        <section className="flex justify-center items-center">
+        <section className="flex justify-center items-center gap-2">
           <p className="text-xs">Tu n'as pas encore de compte ?</p>
-          <Button
-            variant="link"
-            className="text-primary hover:text-blue-600 text-xs"
+          <div
+            className="text-primary cursor-pointer hover:text-blue-600 text-xs hover:underline"
             onClick={() => navigate("/signup")}
           >
             Créer un compte
-          </Button>
+          </div>
         </section>
       </form>
       <Toaster />

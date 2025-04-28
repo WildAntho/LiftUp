@@ -466,7 +466,7 @@ export default function TrainingModal({
               </section>
             </section>
             <Separator />
-            <section className="flex-1 flex flex-col justify-start items-center gap-3 w-full min-h[35%] p-4">
+            <section className="flex flex-col justify-start items-center gap-3 w-full p-4 flex-1">
               <p className="w-full items-start font-bold">Exercices</p>
               <DndContext
                 modifiers={[restrictToVerticalAxis]}
@@ -541,11 +541,7 @@ export default function TrainingModal({
               </DndContext>
             </section>
             <Separator />
-            <section
-              className={`flex-none flex flex-col justify-start gap-3 w-full p-4 ${
-                isShow ? "min-h-[15%]" : "min-h-[35%]"
-              }`}
-            >
+            <section className="flex-none flex flex-col justify-start gap-3 w-full p-4">
               <p className="w-full items-start font-bold">Notes</p>
               {!isShow ? (
                 <Textarea
@@ -562,7 +558,7 @@ export default function TrainingModal({
             </section>
             {!isShow && <Separator />}
             {!isShow && (
-              <section className="flex-none flex flex-col justify-center items-start gap-4 w-full p-4 min-h-[10%]">
+              <section className="flex-none flex flex-col justify-center items-start gap-4 w-full p-4">
                 {currentStudent && (
                   <Switch
                     isSelected={editable}

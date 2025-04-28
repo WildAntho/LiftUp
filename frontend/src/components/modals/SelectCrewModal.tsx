@@ -86,15 +86,21 @@ export default function SelectCrewModal({
           />
         </ModalHeader>
         <ModalBody style={{ gap: "15px" }} className="min-h-[50vh]">
-          <RadioGroup
-            value={selected}
-            onValueChange={setSelected}
-            className="w-full"
-          >
-            {myCrews.map((s) => (
-              <ListCrew key={s.id} crew={s as Crew} />
-            ))}
-          </RadioGroup>
+          {myCrews.length > 0 ? (
+            <RadioGroup
+              value={selected}
+              onValueChange={setSelected}
+              className="w-full"
+            >
+              {myCrews.map((s) => (
+                <ListCrew key={s.id} crew={s as Crew} />
+              ))}
+            </RadioGroup>
+          ) : (
+            <p className="w-full h-full text-center text-sm text-gray-600">
+              Vous n'avez aucune équipe.
+            </p>
+          )}
         </ModalBody>
         <ModalFooter className="flex flex-col justify-end items-center gap-2">
           <Button

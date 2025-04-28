@@ -45,6 +45,10 @@ export class UserResolver {
   ) {
     if (!process.env.APP_SECRET)
       throw new Error("Missing environment variable");
+    if (!userData.firstname || !userData.firstname)
+      throw new Error("Veuillez renseigner un nom et un prénom");
+    if (!userData.email)
+      throw new Error("Veuillez renseigner une adresse mail");
     if (!userData.email) throw new Error();
     const user = await User.findOneBy({ email: userData.email });
     if (user)

@@ -111,8 +111,8 @@ export default function MyStudents() {
   }, [urlTab]);
 
   return (
-    <section className="h-full w-full pt-4 pb-4 gap-4 flex justify-center items-center">
-      <section className="w-[80%] h-full bg-white rounded-2xl flex flex-col justify-start items-center overflow-y-scroll gap-5">
+    <section className="h-full w-full pt-4 pb-4 gap-4 flex justify-center items-start overflow-y-scroll">
+      <section className="w-[80%] 2xl:w-[60%] min-h-full bg-white rounded-2xl flex flex-col justify-start items-center gap-5">
         <section className="w-[90%] flex justify-between items-center p-5">
           <div className="w-full flex justify-between items-center">
             <Tabs
