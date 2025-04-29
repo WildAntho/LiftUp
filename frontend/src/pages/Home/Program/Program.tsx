@@ -113,7 +113,7 @@ export default function Program() {
   };
 
   return (
-    <section className="relative w-full h-full flex flex-col justify-start items-center rounded-2xl px-4 py-8 gap-4">
+    <section className="relative w-full h-full flex flex-col justify-start items-center rounded-2xl px-4 pt-10 gap-4">
       {!isConfiguration && (
         <section className="w-full flex flex-col justify-start items-center rounded-2xl gap-4 py-10 mt-4 overflow-y-scroll">
           <section className="w-[80%] flex justify-between items-center">
