@@ -1,5 +1,13 @@
-import { Message } from "@/graphql/hooks";
+import { Message, ProgramLevel, ProgramStatus } from "@/graphql/hooks";
 import { Image } from "@heroui/react";
+import {
+  Archive,
+  BicepsFlexed,
+  CircleCheckBig,
+  Flame,
+  NotepadTextDashed,
+  Sparkles,
+} from "lucide-react";
 
 export const uploadURL = "file";
 
@@ -114,3 +122,39 @@ export const adjustScrollPosition = (
   const scrollDifference = newScrollHeight - prevScrollHeight;
   container.scrollTop += scrollDifference;
 };
+
+export const allStatus = [
+  {
+    key: ProgramStatus.Published,
+    label: "Validé",
+    startContent: <CircleCheckBig className="w-4 h-4" />,
+  },
+  {
+    key: ProgramStatus.Draft,
+    label: "Brouillon",
+    startContent: <NotepadTextDashed className="w-4 h-4" />,
+  },
+  {
+    key: ProgramStatus.Archived,
+    label: "Archivé",
+    startContent: <Archive className="w-4 h-4" />,
+  },
+];
+
+export const allLevel = [
+  {
+    key: ProgramLevel.Beginner,
+    label: "Débutant",
+    startContent: <Sparkles className="w-4 h-4" />,
+  },
+  {
+    key: ProgramLevel.Intermediate,
+    label: "Intermédiaire",
+    startContent: <BicepsFlexed className="w-4 h-4" />,
+  },
+  {
+    key: ProgramLevel.Advanced,
+    label: "Avancé",
+    startContent: <Flame className="w-4 h-4" />,
+  },
+];

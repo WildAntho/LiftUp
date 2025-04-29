@@ -10,6 +10,7 @@ import {
   NotepadText,
   Settings,
 } from "lucide-react";
+import { motion } from "framer-motion"; // <--- ✅ import Framer
 
 const translations: { [key: string]: string } = {
   calendar: "Calendrier",
@@ -77,22 +78,28 @@ export default function PathBreadcrumbs() {
   const breadcrumbItems = getBreadcrumbItems();
 
   return (
-    <Breadcrumbs>
-      {breadcrumbItems.map((item, index) => (
-        <BreadcrumbItem
-          key={index}
-          isLast={index === breadcrumbItems.length - 1}
-          startContent={getIcon(item.toLowerCase())}
-          onClick={() => handleClick(item)}
-          className={
-            item.toLowerCase() === "accueil"
-              ? "cursor-pointer hover:text-gray-500"
-              : ""
-          }
-        >
-          {item}
-        </BreadcrumbItem>
-      ))}
-    </Breadcrumbs>
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
+      <Breadcrumbs>
+        {breadcrumbItems.map((item, index) => (
+          <BreadcrumbItem
+            key={index}
+            isLast={index === breadcrumbItems.length - 1}
+            startContent={getIcon(item.toLowerCase())}
+            onClick={() => handleClick(item)}
+            className={
+              item.toLowerCase() === "accueil"
+                ? "cursor-pointer hover:text-gray-500"
+                : ""
+            }
+          >
+            {item}
+          </BreadcrumbItem>
+        ))}
+      </Breadcrumbs>
+    </motion.div>
   );
 }

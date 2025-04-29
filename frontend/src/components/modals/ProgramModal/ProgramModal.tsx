@@ -7,14 +7,19 @@ import {
 } from "@heroui/modal";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input, Textarea } from "@heroui/react";
+import { Input, Select, SelectItem, Textarea } from "@heroui/react";
 import { Check, ChevronDown, Info, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Privacy from "./components/Privacy";
-import { ProgramStatus, useCreateProgramMutation } from "@/graphql/hooks";
+import {
+  ProgramLevel,
+  ProgramStatus,
+  useCreateProgramMutation,
+} from "@/graphql/hooks";
 import { useProgramStore } from "@/services/zustand/programStore";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { allLevel } from "@/services/utils";
 
 type ProgramModalProps = {
   open: boolean;
@@ -28,6 +33,7 @@ export type ProgramForm = {
   description: string;
   duration: number;
   price: number;
+  level: ProgramLevel | string;
 };
 
 type Step = {
@@ -50,6 +56,7 @@ export default function ProgramModal({
     description: "",
     duration: 1,
     price: 0,
+    level: "",
   });
 
   const resetForm = () => {
@@ -59,6 +66,7 @@ export default function ProgramModal({
       description: "",
       duration: 1,
       price: 0,
+      level: "",
     });
     setCurrentStep(1);
   };
@@ -74,7 +82,7 @@ export default function ProgramModal({
 
     if (form.public) {
       baseSteps.push({
-        title: "Tarification",
+        title: "Informations complémentaires",
         isCompleted: form.price > 0,
       });
     }
@@ -120,6 +128,7 @@ export default function ProgramModal({
         status: data?.createProgram.status as ProgramStatus,
         public: data?.createProgram.public as boolean,
         price: data?.createProgram.price as number,
+        level: data?.createProgram.level as ProgramLevel,
       });
       resetForm();
       onClose();
@@ -247,7 +256,6 @@ export default function ProgramModal({
                                 <div>
                                   <Input
                                     label="Titre du programme"
-                                    variant="underlined"
                                     value={form.title}
                                     onChange={(e) =>
                                       setForm({
@@ -261,7 +269,6 @@ export default function ProgramModal({
                                   <Textarea
                                     label="Description"
                                     radius="sm"
-                                    variant="bordered"
                                     value={form.description}
                                     onChange={(e) =>
                                       setForm({
@@ -280,7 +287,6 @@ export default function ProgramModal({
                                 <div>
                                   <Input
                                     label="Durée (semaines)"
-                                    variant="bordered"
                                     type="number"
                                     min={1}
                                     value={form.duration.toString()}
@@ -295,10 +301,9 @@ export default function ProgramModal({
                               </div>
                             )}
                             {index === 2 && (
-                              <div className="w-[50%]">
+                              <div className="w-full flex items-center gap-2">
                                 <Input
                                   label="Prix (€)"
-                                  variant="bordered"
                                   type="number"
                                   min={0}
                                   step={1}
@@ -310,6 +315,26 @@ export default function ProgramModal({
                                     })
                                   }
                                 />
+                                <Select
+                                  label="Niveau de pratique"
+                                  selectedKeys={form.level ? [form.level] : []}
+                                  onChange={(e) =>
+                                    setForm({
+                                      ...form,
+                                      level: e.target.value as ProgramLevel,
+                                    })
+                                  }
+                                >
+                                  {allLevel.map((l) => (
+                                    <SelectItem
+                                      key={l.key}
+                                      value={l.key}
+                                      startContent={l.startContent}
+                                    >
+                                      {l.label}
+                                    </SelectItem>
+                                  ))}
+                                </Select>
                               </div>
                             )}
                           </div>

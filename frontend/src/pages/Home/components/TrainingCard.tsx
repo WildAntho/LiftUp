@@ -1,6 +1,7 @@
 import TrainingModal from "@/components/modals/TrainingModal";
 import { Training } from "@/graphql/hooks";
 import { useDraggable } from "@dnd-kit/core";
+import { Dumbbell } from "lucide-react";
 import { useState } from "react";
 
 type TrainingCardProps = {
@@ -46,14 +47,23 @@ export default function TrainingCard({
   return (
     <>
       <div
-        className="w-full h-full shadow-md text-xs bg-blue-100 text-blue-800 rounded px-2 py-1 truncate flex-1 cursor-grab active:cursor-grabbing"
+        className="w-full h-full shadow-md bg-blue-100 text-dark rounded px-2 py-1 truncate line-clamp-1 flex-1 cursor-grab active:cursor-grabbing"
         onClick={handleClick}
         ref={setNodeRef}
         {...listeners}
         {...attributes}
         style={style}
       >
-        {event.title}
+        <p className="text-xs font-semibold">{event.title}</p>
+        <div className="flex justify-start items-center gap-2 text-xs">
+          <Dumbbell size={12} />
+          {event.exercices && (
+            <p>
+              {event?.exercices?.length}{" "}
+              {`exercice${event?.exercices?.length > 0 && "s"}`}
+            </p>
+          )}
+        </div>
       </div>
       <TrainingModal
         open={open}

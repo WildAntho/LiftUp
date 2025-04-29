@@ -10,6 +10,7 @@ export const GET_MY_PROGRAMS = gql`
       duration
       public
       price
+      level
     }
   }
 `;

@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./user";
-import { ProgramStatus } from "../InputType/programType";
+import { ProgramLevel, ProgramStatus } from "../InputType/programType";
 import { TrainingPlan } from "./trainingPlan";
 
 @ObjectType()
@@ -41,6 +41,10 @@ export class Program extends BaseEntity {
   @Field({ nullable: true })
   @Column({ nullable: true })
   price?: number;
+
+  @Field(() => ProgramLevel)
+  @Column({ nullable: true })
+  level?: ProgramLevel;
 
   @Field(() => [TrainingPlan])
   @OneToMany(() => TrainingPlan, (trainingPlan) => trainingPlan.program)

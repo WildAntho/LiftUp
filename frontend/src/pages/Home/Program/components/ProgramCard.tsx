@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import { ProgramStatus } from "@/graphql/hooks";
+import { ProgramLevel, ProgramStatus } from "@/graphql/hooks";
 import { useProgramStore } from "@/services/zustand/programStore";
 import { Clock, Lock, Globe2, PlayCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ type ProgramCardProps = {
   status: ProgramStatus;
   duration: number;
   price?: number | null;
+  level?: ProgramLevel;
   isPublic: boolean;
   onDelete: (id: string) => void;
   onValidate: (id: string) => void;
@@ -23,6 +24,7 @@ export default function ProgramCard({
   description,
   status,
   duration,
+  level,
   price,
   isPublic,
   onDelete,
@@ -69,6 +71,7 @@ export default function ProgramCard({
       status,
       public: isPublic,
       price: price ?? 0,
+      level
     });
     navigate(`/home?tab=program&section=configuration`);
   };

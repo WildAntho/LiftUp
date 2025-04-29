@@ -8,8 +8,10 @@ import {
   TrainingPlan,
   UpdateProgramInput,
   useCreateTrainingPlanMutation,
+  useDeleteTrainingPlanMutation,
   useGetDayNumberTrainingQuery,
   useGetTrainingPlanQuery,
+  useUpdateTrainingPlanMutation,
 } from "@/graphql/hooks";
 import CreateWorkout from "./components/CreateWorkout";
 import { toast } from "sonner";
@@ -45,6 +47,8 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
     });
 
   const [createTraining] = useCreateTrainingPlanMutation();
+  const [updateTraining] = useUpdateTrainingPlanMutation();
+  const [deleteTraining] = useDeleteTrainingPlanMutation();
 
   const allDayNumberTraining = dataDayNumber?.getDayNumberTraining ?? [];
   const trainings = dataTraining?.getTrainingPlan ?? [];
@@ -61,6 +65,17 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
     setActiveTab("workouts");
   };
 
+  const successAction = (content: string) => {
+    toast.success(content, {
+      style: {
+        backgroundColor: "#dcfce7",
+        color: "#15803d",
+      },
+    });
+    refetchDayNumber();
+    refetchTraining();
+  };
+
   const handleCreateTraining = async () => {
     try {
       const { data } = await createTraining({
@@ -72,14 +87,37 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
           },
         },
       });
-      toast.success(data?.createTrainingPlan, {
-        style: {
-          backgroundColor: "#dcfce7",
-          color: "#15803d",
+      successAction(data?.createTrainingPlan ?? "");
+    } catch (error) {
+      console.error(error);
+      toast.error("Une erreur est survenue lors de l'archivage du programme");
+    }
+  };
+
+  const handleUpdateTraining = async (
+    id: string,
+    title: string,
+    notes?: string
+  ) => {
+    try {
+      const { data } = await updateTraining({
+        variables: {
+          id,
+          title,
+          notes,
         },
       });
-      refetchDayNumber();
-      refetchTraining();
+      successAction(data?.updateTrainingPlan ?? "");
+    } catch (error) {
+      console.error(error);
+      toast.error("Une erreur est survenue lors de l'archivage du programme");
+    }
+  };
+
+  const handleDeleteTraining = async (id: string) => {
+    try {
+      const { data } = await deleteTraining({ variables: { id } });
+      successAction(data?.deleteTrainingPlan ?? "");
     } catch (error) {
       console.error(error);
       toast.error("Une erreur est survenue lors de l'archivage du programme");
@@ -92,7 +130,9 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
         return (
           <CreateWorkout
             trainings={trainings as TrainingPlan[]}
-            onCreate={handleCreateTraining}
+            onCreateTraining={handleCreateTraining}
+            onUpdateTraining={handleUpdateTraining}
+            onDeleteTraining={handleDeleteTraining}
           />
         );
       case "details":
