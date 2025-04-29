@@ -42,7 +42,7 @@ export default function StatusCard({
     <div
       className={`w-50 h-15 ${
         isActive ? colors.bg : "bg-gray-50 hover:bg-gray-100"
-      } rounded-xl p-3 flex items-center justify-center gap-3 cursor-pointer transition-all duration-200`}
+      } rounded-xl p-3 flex items-center justify-center gap-3 border border-gray-100 cursor-pointer transition-all duration-200`}
     >
       <div className={colors.text}>{icon}</div>
       <div>

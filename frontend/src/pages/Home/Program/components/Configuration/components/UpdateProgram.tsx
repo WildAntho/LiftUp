@@ -9,7 +9,7 @@ import {
 import { allLevel, allStatus } from "@/services/utils";
 import { useProgramStore } from "@/services/zustand/programStore";
 import { Input, Select, SelectItem, Textarea } from "@heroui/react";
-import { Info, Lightbulb, Save } from "lucide-react";
+import { Info, Lightbulb, Save, TriangleAlert } from "lucide-react";
 import { useState } from "react";
 
 type UpdateProgramProps = {
@@ -125,11 +125,20 @@ export default function UpdateProgram({
                 </p>
                 <Separator />
               </div>
-              <div className="w-full flex items-center gap-2">
+              <div className="w-full flex items-start gap-2">
                 <div className="flex-1">
                   <Input
                     label="Prix (€)"
                     type="number"
+                    description={
+                      <div className="flex items-center justify-start gap-2">
+                        <TriangleAlert className="w-6 h-6" />
+                        <p>
+                          Si aucun prix n'est renseigné, le programme ne sera
+                          pas visible dans le marketplace.
+                        </p>
+                      </div>
+                    }
                     min={0}
                     step={1}
                     value={form.price.toString()}

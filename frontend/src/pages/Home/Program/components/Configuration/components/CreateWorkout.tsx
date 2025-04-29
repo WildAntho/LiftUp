@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { TrainingPlan } from "@/graphql/hooks";
 import TrainingPlanCard from "./TrainingPlanCard";
 import ExerciceComponent from "./ExerciceComponent";
+import React from "react";
 
 type CreateWorkoutProps = {
   trainings: TrainingPlan[];
@@ -88,17 +89,16 @@ export default function CreateWorkout({
       ) : (
         <section>
           {trainings.map((t) => (
-            <>
+            <React.Fragment key={t.id}>
               <TrainingPlanCard
                 id={t.id}
                 title={t.title}
                 notes={t?.notes ?? ""}
-                key={t.id}
                 onUpdate={onUpdateTraining}
                 onDelete={onDeleteTraining}
               />
               <ExerciceComponent />
-            </>
+            </React.Fragment>
           ))}
         </section>
       )}

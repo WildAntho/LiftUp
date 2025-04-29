@@ -4,12 +4,7 @@ import {
   useGetSentQuery,
   useGetTotalStudentsQuery,
 } from "@/graphql/hooks";
-import {
-  Loader2,
-  MessageCircleQuestion,
-  PlaneTakeoff,
-  Users,
-} from "lucide-react";
+import { Loader2, MessageCircleQuestion, Users } from "lucide-react";
 import { Chip, Tab, Tabs } from "@heroui/react";
 import { useUserStore } from "@/services/zustand/userStore";
 import { Key, useEffect, useState } from "react";
@@ -76,18 +71,6 @@ export default function MyStudents() {
           <span>Mes demandes reçus</span>
           <Chip size="sm" variant="faded">
             {myRequests.length}
-          </Chip>
-        </div>
-      ),
-    },
-    {
-      id: "pending",
-      label: (
-        <div className="flex items-center space-x-2">
-          <PlaneTakeoff size={18} />
-          <span>Mes demandes envoyées</span>
-          <Chip size="sm" variant="faded">
-            {mySent.length}
           </Chip>
         </div>
       ),

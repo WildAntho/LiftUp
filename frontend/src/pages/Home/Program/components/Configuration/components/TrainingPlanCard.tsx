@@ -87,11 +87,18 @@ export default function TrainingPlanCard({
         </div>
 
         <div className="flex justify-center items-center gap-2 px-3 py-2 bg-gray-50 rounded-full">
-          <LogoAction
-            logo={<Notebook size={20} />}
-            title="Note d'entraînement"
-            onClick={toggleDescription}
-          />
+          <div className="group relative">
+            <LogoAction
+              logo={<Notebook size={20} />}
+              title="Note d'entraînement"
+              onClick={toggleDescription}
+            />
+            {notes.length > 0 && (
+              <div className="absolute top-[3px] right-[6px] w-[15px] h-[15px] bg-gray-400/50 rounded-full flex justify-center items-center transition-all duration-200 ease-in-out group-hover:-translate-y-0.5">
+                <div className="w-[8px] h-[8px] bg-dark rounded-full" />
+              </div>
+            )}
+          </div>
           <LogoAction
             logo={<Save size={20} />}
             title="Enregistrer"
