@@ -4,15 +4,20 @@ import FloatingDock from "./FloatingDock";
 import { motion } from "framer-motion";
 import { TrainingPlan } from "@/graphql/hooks";
 import TrainingPlanCard from "./TrainingPlanCard";
+import ExerciceComponent from "./ExerciceComponent";
 
 type CreateWorkoutProps = {
   trainings: TrainingPlan[];
-  onCreate: () => void;
+  onCreateTraining: () => void;
+  onUpdateTraining: (id: string, title: string, notes?: string) => void;
+  onDeleteTraining: (id: string) => void;
 };
 
 export default function CreateWorkout({
   trainings,
-  onCreate,
+  onCreateTraining,
+  onUpdateTraining,
+  onDeleteTraining,
 }: CreateWorkoutProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -67,7 +72,7 @@ export default function CreateWorkout({
           >
             <Button
               className="group h-12 w-1/3 text-black bg-gray-100 hover:bg-gray-200 border border-black my-5 rounded-xl hover:translate-y-[-2px] hover:shadow-md transition-all duration-200"
-              onClick={onCreate}
+              onClick={onCreateTraining}
             >
               <PlusCircle className="transition-all duration-200 group-hover:rotate-90" />
               <p className="transition-all duration-200 group-hover:translate-x-1">
@@ -83,11 +88,21 @@ export default function CreateWorkout({
       ) : (
         <section>
           {trainings.map((t) => (
-            <TrainingPlanCard title={t.title} key={t.id} />
+            <>
+              <TrainingPlanCard
+                id={t.id}
+                title={t.title}
+                notes={t?.notes ?? ""}
+                key={t.id}
+                onUpdate={onUpdateTraining}
+                onDelete={onDeleteTraining}
+              />
+              <ExerciceComponent />
+            </>
           ))}
         </section>
       )}
-      <FloatingDock onCreate={onCreate} />
+      <FloatingDock onCreate={onCreateTraining} />
     </section>
   );
 }

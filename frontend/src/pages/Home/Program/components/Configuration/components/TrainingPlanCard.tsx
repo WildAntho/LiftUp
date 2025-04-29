@@ -5,14 +5,25 @@ import { Dumbbell, Notebook, Pen, Save, Trash2 } from "lucide-react";
 import LogoAction from "./LogoActions";
 
 type TrainingPlanProps = {
+  id: string;
   title: string;
+  notes: string;
+  onUpdate: (id: string, title: string, notes: string) => void;
+  onDelete: (id: string) => void;
 };
 
-export default function TrainingPlanCard({ title }: TrainingPlanProps) {
+export default function TrainingPlanCard({
+  id,
+  title,
+  notes,
+  onUpdate,
+  onDelete,
+}: TrainingPlanProps) {
   const [showDescription, setShowDescription] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [hoverTitle, setHoverTitle] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(title);
+  const [currentNotes, setCurrentNotes] = useState(notes);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -81,8 +92,19 @@ export default function TrainingPlanCard({ title }: TrainingPlanProps) {
             title="Note d'entraînement"
             onClick={toggleDescription}
           />
-          <LogoAction logo={<Save size={20} />} title="Enregistrer" />
-          <LogoAction logo={<Trash2 size={20} />} title="Supprimer" />
+          <LogoAction
+            logo={<Save size={20} />}
+            title="Enregistrer"
+            onClick={() => {
+              onUpdate(id, currentTitle, currentNotes);
+              setShowDescription(false);
+            }}
+          />
+          <LogoAction
+            logo={<Trash2 size={20} />}
+            title="Supprimer"
+            onClick={() => onDelete(id)}
+          />
         </div>
       </section>
 
@@ -91,7 +113,11 @@ export default function TrainingPlanCard({ title }: TrainingPlanProps) {
           showDescription ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <Textarea label="Ajouter des notes" />
+        <Textarea
+          label="Ajouter des notes"
+          value={currentNotes}
+          onChange={(e) => setCurrentNotes(e.target.value)}
+        />
       </div>
     </section>
   );

@@ -46,4 +46,26 @@ export class TrainingPlanResolver {
     await training.save();
     return "L'entraînement a bien été crée";
   }
+
+  @Mutation(() => String)
+  async updateTrainingPlan(
+    @Arg("id") id: string,
+    @Arg("title") title: string,
+    @Arg("notes", { nullable: true }) notes: string
+  ) {
+    const training = await TrainingPlan.findOneBy({ id });
+    if (!training) throw new Error("Aucun entraînement n'a été trouvé");
+    training.title = title;
+    training.notes = notes;
+    await training.save();
+    return "L'entraînement a bien été modifié";
+  }
+
+  @Mutation(() => String)
+  async deleteTrainingPlan(@Arg("id") id: string) {
+    const training = await TrainingPlan.findOneBy({ id });
+    if (!training) throw new Error("Aucun entraînement n'a été trouvé");
+    training.remove();
+    return "L'entraînement a bien été supprimé";
+  }
 }

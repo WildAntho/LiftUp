@@ -11,6 +11,17 @@ registerEnumType(ProgramStatus, {
   description: "Le statut d'un programme (brouillon, publié, archivé)",
 });
 
+export enum ProgramLevel {
+  BEGINNER = "BEGINNER",
+  INTERMEDIATE = "INTERMEDIATE",
+  ADVANCED = "ADVANCED",
+}
+
+registerEnumType(ProgramLevel, {
+  name: "ProgramLevel",
+  description: "Le niveau d'un programme (débutant, intermédiaire, avancé)",
+});
+
 @InputType()
 export class ProgramInput {
   @Field()
@@ -24,6 +35,9 @@ export class ProgramInput {
 
   @Field({ nullable: true })
   price?: number;
+
+  @Field({ nullable: true })
+  level?: ProgramLevel;
 
   @Field()
   public!: boolean;
@@ -45,6 +59,9 @@ export class UpdateProgramInput {
 
   @Field({ nullable: true })
   price?: number;
+
+  @Field({ nullable: true })
+  level?: ProgramLevel;
 
   @Field()
   public!: boolean;

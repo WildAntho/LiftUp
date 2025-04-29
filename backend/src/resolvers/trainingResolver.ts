@@ -12,7 +12,6 @@ import { Feedback } from "../entities/feedback";
 import { Crew } from "../entities/crew";
 import {
   createTrainingsForDates,
-  getNewDate,
 } from "../services/trainingService";
 
 @Resolver(Training)

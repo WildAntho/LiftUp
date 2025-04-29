@@ -238,6 +238,7 @@ export type Mutation = {
   deleteOffer: Scalars['String']['output'];
   deleteStudent: Scalars['String']['output'];
   deleteTraining: Scalars['String']['output'];
+  deleteTrainingPlan: Scalars['String']['output'];
   hasBeenSeen: Scalars['String']['output'];
   isRead: Scalars['String']['output'];
   login: Scalars['String']['output'];
@@ -255,6 +256,7 @@ export type Mutation = {
   updateProfile: User;
   updateProgram: Scalars['String']['output'];
   updateTraining: Scalars['String']['output'];
+  updateTrainingPlan: Scalars['String']['output'];
 };
 
 
@@ -376,6 +378,11 @@ export type MutationDeleteTrainingArgs = {
 };
 
 
+export type MutationDeleteTrainingPlanArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationHasBeenSeenArgs = {
   id: Array<Scalars['String']['input']>;
 };
@@ -462,6 +469,13 @@ export type MutationUpdateTrainingArgs = {
   data: UpdateTrainingData;
 };
 
+
+export type MutationUpdateTrainingPlanArgs = {
+  id: Scalars['String']['input'];
+  notes?: InputMaybe<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
+};
+
 export type Notification = {
   __typename?: 'Notification';
   createdAt: Scalars['DateTimeISO']['output'];
@@ -512,6 +526,7 @@ export type Program = {
   description?: Maybe<Scalars['String']['output']>;
   duration: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
+  level: ProgramLevel;
   price?: Maybe<Scalars['Float']['output']>;
   public: Scalars['Boolean']['output'];
   status: ProgramStatus;
@@ -522,10 +537,18 @@ export type Program = {
 export type ProgramInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   duration: Scalars['Float']['input'];
+  level?: InputMaybe<Scalars['String']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
   public: Scalars['Boolean']['input'];
   title: Scalars['String']['input'];
 };
+
+/** Le niveau d'un programme (débutant, intermédiaire, avancé) */
+export enum ProgramLevel {
+  Advanced = 'ADVANCED',
+  Beginner = 'BEGINNER',
+  Intermediate = 'INTERMEDIATE'
+}
 
 /** Le statut d'un programme (brouillon, publié, archivé) */
 export enum ProgramStatus {
@@ -812,6 +835,7 @@ export type UpdateProfile = {
 export type UpdateProgramInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   duration: Scalars['Float']['input'];
+  level?: InputMaybe<Scalars['String']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
   public: Scalars['Boolean']['input'];
   status: Scalars['String']['input'];
@@ -973,7 +997,7 @@ export type CreateProgramMutationVariables = Exact<{
 }>;
 
 
-export type CreateProgramMutation = { __typename?: 'Mutation', createProgram: { __typename?: 'Program', id: string, title: string, description?: string | null, status: ProgramStatus, duration: number, public: boolean, price?: number | null } };
+export type CreateProgramMutation = { __typename?: 'Mutation', createProgram: { __typename?: 'Program', id: string, title: string, description?: string | null, status: ProgramStatus, duration: number, public: boolean, price?: number | null, level: ProgramLevel } };
 
 export type CreateTrainingPlanMutationVariables = Exact<{
   data: TrainingPlanData;
@@ -1023,6 +1047,13 @@ export type DeleteTrainingMutationVariables = Exact<{
 
 
 export type DeleteTrainingMutation = { __typename?: 'Mutation', deleteTraining: string };
+
+export type DeleteTrainingPlanMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteTrainingPlanMutation = { __typename?: 'Mutation', deleteTrainingPlan: string };
 
 export type LoginMutationVariables = Exact<{
   data: UserLogin;
@@ -1140,6 +1171,15 @@ export type UpdateTrainingMutationVariables = Exact<{
 
 
 export type UpdateTrainingMutation = { __typename?: 'Mutation', updateTraining: string };
+
+export type UpdateTrainingPlanMutationVariables = Exact<{
+  title: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+  notes?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type UpdateTrainingPlanMutation = { __typename?: 'Mutation', updateTrainingPlan: string };
 
 export type ValidateProgramMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1269,7 +1309,7 @@ export type GetMyProgramsQueryVariables = Exact<{
 }>;
 
 
-export type GetMyProgramsQuery = { __typename?: 'Query', getPrograms: Array<{ __typename?: 'Program', id: string, title: string, description?: string | null, status: ProgramStatus, duration: number, public: boolean, price?: number | null }> };
+export type GetMyProgramsQuery = { __typename?: 'Query', getPrograms: Array<{ __typename?: 'Program', id: string, title: string, description?: string | null, status: ProgramStatus, duration: number, public: boolean, price?: number | null, level: ProgramLevel }> };
 
 export type GetMyTrainingQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1822,6 +1862,7 @@ export const CreateProgramDocument = gql`
     duration
     public
     price
+    level
   }
 }
     `;
@@ -2068,6 +2109,37 @@ export function useDeleteTrainingMutation(baseOptions?: Apollo.MutationHookOptio
 export type DeleteTrainingMutationHookResult = ReturnType<typeof useDeleteTrainingMutation>;
 export type DeleteTrainingMutationResult = Apollo.MutationResult<DeleteTrainingMutation>;
 export type DeleteTrainingMutationOptions = Apollo.BaseMutationOptions<DeleteTrainingMutation, DeleteTrainingMutationVariables>;
+export const DeleteTrainingPlanDocument = gql`
+    mutation DeleteTrainingPlan($id: String!) {
+  deleteTrainingPlan(id: $id)
+}
+    `;
+export type DeleteTrainingPlanMutationFn = Apollo.MutationFunction<DeleteTrainingPlanMutation, DeleteTrainingPlanMutationVariables>;
+
+/**
+ * __useDeleteTrainingPlanMutation__
+ *
+ * To run a mutation, you first call `useDeleteTrainingPlanMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTrainingPlanMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTrainingPlanMutation, { data, loading, error }] = useDeleteTrainingPlanMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteTrainingPlanMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTrainingPlanMutation, DeleteTrainingPlanMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTrainingPlanMutation, DeleteTrainingPlanMutationVariables>(DeleteTrainingPlanDocument, options);
+      }
+export type DeleteTrainingPlanMutationHookResult = ReturnType<typeof useDeleteTrainingPlanMutation>;
+export type DeleteTrainingPlanMutationResult = Apollo.MutationResult<DeleteTrainingPlanMutation>;
+export type DeleteTrainingPlanMutationOptions = Apollo.BaseMutationOptions<DeleteTrainingPlanMutation, DeleteTrainingPlanMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($data: userLogin!) {
   login(data: $data)
@@ -2591,6 +2663,39 @@ export function useUpdateTrainingMutation(baseOptions?: Apollo.MutationHookOptio
 export type UpdateTrainingMutationHookResult = ReturnType<typeof useUpdateTrainingMutation>;
 export type UpdateTrainingMutationResult = Apollo.MutationResult<UpdateTrainingMutation>;
 export type UpdateTrainingMutationOptions = Apollo.BaseMutationOptions<UpdateTrainingMutation, UpdateTrainingMutationVariables>;
+export const UpdateTrainingPlanDocument = gql`
+    mutation UpdateTrainingPlan($title: String!, $id: String!, $notes: String) {
+  updateTrainingPlan(title: $title, id: $id, notes: $notes)
+}
+    `;
+export type UpdateTrainingPlanMutationFn = Apollo.MutationFunction<UpdateTrainingPlanMutation, UpdateTrainingPlanMutationVariables>;
+
+/**
+ * __useUpdateTrainingPlanMutation__
+ *
+ * To run a mutation, you first call `useUpdateTrainingPlanMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTrainingPlanMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTrainingPlanMutation, { data, loading, error }] = useUpdateTrainingPlanMutation({
+ *   variables: {
+ *      title: // value for 'title'
+ *      id: // value for 'id'
+ *      notes: // value for 'notes'
+ *   },
+ * });
+ */
+export function useUpdateTrainingPlanMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTrainingPlanMutation, UpdateTrainingPlanMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTrainingPlanMutation, UpdateTrainingPlanMutationVariables>(UpdateTrainingPlanDocument, options);
+      }
+export type UpdateTrainingPlanMutationHookResult = ReturnType<typeof useUpdateTrainingPlanMutation>;
+export type UpdateTrainingPlanMutationResult = Apollo.MutationResult<UpdateTrainingPlanMutation>;
+export type UpdateTrainingPlanMutationOptions = Apollo.BaseMutationOptions<UpdateTrainingPlanMutation, UpdateTrainingPlanMutationVariables>;
 export const ValidateProgramDocument = gql`
     mutation ValidateProgram($id: String!) {
   publishProgram(id: $id)
@@ -3503,6 +3608,7 @@ export const GetMyProgramsDocument = gql`
     duration
     public
     price
+    level
   }
 }
     `;

@@ -13,6 +13,7 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import ProgramCard from "./components/ProgramCard";
 import {
+  ProgramLevel,
   ProgramStatus,
   UpdateProgramInput,
   useArchiveProgramMutation,
@@ -102,6 +103,7 @@ export default function Program() {
         description: program.description ?? undefined,
         status: program.status as ProgramStatus,
         price: program.price as number,
+        level: program.level as ProgramLevel,
       });
       refetch();
     } catch (error) {
@@ -183,6 +185,7 @@ export default function Program() {
                       status={program.status}
                       duration={program.duration}
                       price={program.price}
+                      level={program.level}
                       isPublic={program.public}
                       onDelete={handleArchiveProgram}
                       onValidate={handleValidateProgram}

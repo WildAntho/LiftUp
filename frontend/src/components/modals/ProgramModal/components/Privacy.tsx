@@ -18,7 +18,7 @@ export default function Privacy({
   return (
     <section
       onClick={onSelect}
-      className={`p-8 flex flex-col items-center gap-4 cursor-pointer transition-all duration-200 hover:shadow-md rounded-lg border ${
+      className={`p-8 h-full w-full flex flex-col items-center gap-4 cursor-pointer transition-all duration-200 hover:shadow-md rounded-lg border ${
         selected
           ? "border-2 border-primary bg-primary/5"
           : "hover:border-gray-200"

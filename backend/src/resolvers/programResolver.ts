@@ -44,6 +44,7 @@ export class ProgramResolver {
     program.description = data.description;
     program.duration = data.duration;
     if (data.price) program.price = data.price;
+    if (data.level) program.level = data.level;
     program.public = data.public;
     program.coach = coach;
     await program.save();
@@ -66,6 +67,7 @@ export class ProgramResolver {
     program.duration = data.duration;
     program.status = data.status;
     if (data.price) program.price = data.price;
+    if (data.level) program.level = data.level;
     program.public = data.public;
     await program.save();
     return "Les détails du programme ont été mis à jour";

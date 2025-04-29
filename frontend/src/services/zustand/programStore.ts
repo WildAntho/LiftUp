@@ -1,4 +1,4 @@
-import { ProgramStatus } from "@/graphql/hooks";
+import { ProgramLevel, ProgramStatus } from "@/graphql/hooks";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -10,6 +10,7 @@ export type ProgramStore = {
   status: ProgramStatus;
   public: boolean;
   price?: number;
+  level?: ProgramLevel
 };
 
 type ProgramState = {
