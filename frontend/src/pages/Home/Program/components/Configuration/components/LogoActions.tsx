@@ -16,7 +16,7 @@ export default function LogoAction({ logo, onClick, title }: LogoActionProps) {
       className="text-xs"
     >
       <div
-        className="group transition-all duration-200 ease-in-out hover:bg-black/5 p-2 rounded-full cursor-pointer hover:-translate-y-0.5"
+        className=" hover:bg-black/5 p-2 rounded-full cursor-pointer"
         onClick={onClick}
       >
         <span className="transition-all duration-200 ease-in-out text-gray-400 group-hover:text-gray-600">
