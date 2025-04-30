@@ -1,11 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import FloatingDock from "./FloatingDock";
 import { motion } from "framer-motion";
 import { TrainingPlan } from "@/graphql/hooks";
 import TrainingPlanCard from "./TrainingPlanCard";
 import ExerciceComponent from "./ExerciceComponent";
-import React from "react";
 
 type CreateWorkoutProps = {
   trainings: TrainingPlan[];
@@ -81,15 +79,11 @@ export default function CreateWorkout({
               </p>
             </Button>
           </motion.div>
-          <motion.div
-            variants={itemVariants}
-            className="h-64 w-full bg-white"
-          />
         </motion.section>
       ) : (
-        <section>
+        <section className="flex flex-col justify-start items-center gap-10 w-full">
           {trainings.map((t) => (
-            <React.Fragment key={t.id}>
+            <div key={t.id} className="w-full mb-10">
               <TrainingPlanCard
                 id={t.id}
                 title={t.title}
@@ -98,11 +92,10 @@ export default function CreateWorkout({
                 onDelete={onDeleteTraining}
               />
               <ExerciceComponent />
-            </React.Fragment>
+            </div>
           ))}
         </section>
       )}
-      <FloatingDock onCreate={onCreateTraining} />
     </section>
   );
 }

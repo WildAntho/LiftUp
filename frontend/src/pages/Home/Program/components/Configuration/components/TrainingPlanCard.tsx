@@ -4,6 +4,7 @@ import { Textarea } from "@heroui/react";
 import { Dumbbell, Notebook, Pen, Save, Trash2 } from "lucide-react";
 import LogoAction from "./LogoActions";
 import { useDebouncedCallback } from "@/services/useDebouncedCallback";
+import PulsingCircle from "./PulsingCircle";
 
 type TrainingPlanProps = {
   id: string;
@@ -102,11 +103,7 @@ export default function TrainingPlanCard({
               title="Note d'entraînement"
               onClick={toggleDescription}
             />
-            {notes.length > 0 && (
-              <div className="absolute top-[3px] right-[6px] w-[15px] h-[15px] bg-gray-400/50 rounded-full flex justify-center items-center">
-                <div className="w-[8px] h-[8px] bg-dark rounded-full" />
-              </div>
-            )}
+            {notes.length > 0 && <PulsingCircle />}
           </div>
           <div className="group relative transition-all duration-200 ease-in-out hover:-translate-y-0.5">
             <LogoAction
@@ -127,7 +124,6 @@ export default function TrainingPlanCard({
           </div>
         </div>
       </section>
-
       <div
         className={`w-full overflow-hidden transition-all duration-500 ease-in-out ${
           showDescription ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
