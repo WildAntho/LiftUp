@@ -108,19 +108,23 @@ export default function TrainingPlanCard({
               </div>
             )}
           </div>
-          <LogoAction
-            logo={<Save size={20} />}
-            title="Enregistrer"
-            onClick={() => {
-              debouncedUpdate();
-              setShowDescription(false);
-            }}
-          />
-          <LogoAction
-            logo={<Trash2 size={20} />}
-            title="Supprimer"
-            onClick={() => onDelete(id)}
-          />
+          <div className="group relative transition-all duration-200 ease-in-out hover:-translate-y-0.5">
+            <LogoAction
+              logo={<Save size={20} />}
+              title="Enregistrer"
+              onClick={() => {
+                debouncedUpdate();
+                setShowDescription(false);
+              }}
+            />
+          </div>
+          <div className="group relative transition-all duration-200 ease-in-out hover:-translate-y-0.5">
+            <LogoAction
+              logo={<Trash2 size={20} />}
+              title="Supprimer"
+              onClick={() => onDelete(id)}
+            />
+          </div>
         </div>
       </section>
 
