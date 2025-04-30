@@ -64,7 +64,6 @@ export default function ExerciceComponent() {
           </div>
         </Tooltip>
       </motion.div>
-      <motion.div variants={itemVariants} className="h-64 w-full bg-white" />
     </motion.section>
   );
 }

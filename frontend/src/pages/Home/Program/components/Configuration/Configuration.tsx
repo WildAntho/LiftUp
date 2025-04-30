@@ -15,6 +15,7 @@ import {
 } from "@/graphql/hooks";
 import CreateWorkout from "./components/CreateWorkout";
 import { toast } from "sonner";
+import FloatingDock from "./components/FloatingDock";
 
 type ConfigurationProps = {
   onUpdate: (id: string, program: UpdateProgramInput) => void;
@@ -143,23 +144,26 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
   };
 
   return (
-    <section className="relative w-full h-full flex flex-col justify-between items-center pt-[60px] overflow-y-scroll">
-      <section className="w-full 2xl:w-[75%] h-full flex flex-col justify-start items-center gap-8">
-        {activeTab === "workouts" && (
-          <WeekProgram
-            numberOfDays={numberOfDays}
-            activeDay={activeDay}
-            onDaySelect={setActiveDay}
-            allDayNumber={allDayNumberTraining}
-          />
-        )}
-        <div className="w-[80%] h-full flex justify-center items-center">
-          {renderContent()}
-        </div>
+    <>
+      {activeTab === "workouts" && <FloatingDock onCreate={handleCreateTraining} />}
+      <section className="relative w-full h-full flex flex-col justify-between items-center pt-[60px] overflow-y-scroll">
+        <section className="w-full 2xl:w-[75%] h-full flex flex-col justify-start items-center gap-8">
+          {activeTab === "workouts" && (
+            <WeekProgram
+              numberOfDays={numberOfDays}
+              activeDay={activeDay}
+              onDaySelect={setActiveDay}
+              allDayNumber={allDayNumberTraining}
+            />
+          )}
+          <div className="w-[80%] h-full flex justify-center items-center">
+            {renderContent()}
+          </div>
+        </section>
+        <section className="absolute top-0 w-full flex justify-center items-center z-10">
+          <TabChoice activeTab={activeTab} setActiveTab={setActiveTab} />
+        </section>
       </section>
-      <section className="absolute top-0 w-full flex justify-center items-center z-10">
-        <TabChoice activeTab={activeTab} setActiveTab={setActiveTab} />
-      </section>
-    </section>
+    </>
   );
 }

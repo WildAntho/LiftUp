@@ -47,7 +47,7 @@ export default function FloatingDock({ onCreate }: FloatingDockProps) {
   ];
 
   return (
-    <div className="sticky bottom-0 left-0 right-0 flex items-center justify-center p-4">
+    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center p-4 z-10">
       <FloatingDockDesktop
         items={links}
         className="shadow-lg border border-gray-100 "
