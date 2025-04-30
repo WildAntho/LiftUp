@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input"; // Shadcn Input
 import { Textarea } from "@heroui/react";
 import { Dumbbell, Notebook, Pen, Save, Trash2 } from "lucide-react";
 import LogoAction from "./LogoActions";
+import { useDebouncedCallback } from "@/services/useDebouncedCallback";
 
 type TrainingPlanProps = {
   id: string;
@@ -52,6 +53,14 @@ export default function TrainingPlanCard({
     };
   }, [isEditingTitle]);
 
+  const debouncedUpdate = useDebouncedCallback(
+    async () => {
+      onUpdate(id, currentTitle, currentNotes);
+    },
+    2000,
+    { leading: true }
+  );
+
   return (
     <section className="w-full flex flex-col items-center justify-center gap-4 px-4 py-6 rounded-2xl bg-white border border-gray-200 transition-all duration-200 ease-in-out hover:shadow-md hover:-translate-y-1">
       <section className="w-full flex items-center justify-between">
@@ -87,14 +96,14 @@ export default function TrainingPlanCard({
         </div>
 
         <div className="flex justify-center items-center gap-2 px-3 py-2 bg-gray-50 rounded-full">
-          <div className="group relative">
+          <div className="group relative transition-all duration-200 ease-in-out hover:-translate-y-0.5">
             <LogoAction
               logo={<Notebook size={20} />}
               title="Note d'entraînement"
               onClick={toggleDescription}
             />
             {notes.length > 0 && (
-              <div className="absolute top-[3px] right-[6px] w-[15px] h-[15px] bg-gray-400/50 rounded-full flex justify-center items-center transition-all duration-200 ease-in-out group-hover:-translate-y-0.5">
+              <div className="absolute top-[3px] right-[6px] w-[15px] h-[15px] bg-gray-400/50 rounded-full flex justify-center items-center">
                 <div className="w-[8px] h-[8px] bg-dark rounded-full" />
               </div>
             )}
@@ -103,7 +112,7 @@ export default function TrainingPlanCard({
             logo={<Save size={20} />}
             title="Enregistrer"
             onClick={() => {
-              onUpdate(id, currentTitle, currentNotes);
+              debouncedUpdate();
               setShowDescription(false);
             }}
           />
