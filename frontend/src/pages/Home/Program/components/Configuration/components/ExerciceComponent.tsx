@@ -1,9 +1,41 @@
 import { Separator } from "@/components/ui/separator";
-import { Tooltip } from "@heroui/react";
 import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
+import DrawerExercice from "./DrawerExercice";
+import { AddExercicePlanInput, Exercice, ExerciceData } from "@/graphql/hooks";
+import ExercicePlanCard from "./ExercicePlanCard";
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import { useEffect, useState } from "react";
+import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 
-export default function ExerciceComponent() {
+type ExerciceComponentProps = {
+  onCreate: (id: string, exercices: AddExercicePlanInput[]) => void;
+  onDelete: (id: string) => void;
+  onUpdate: (id: string, exercice: ExerciceData, showToast?: boolean) => void;
+  trainingId: string;
+  exercices: Exercice[];
+};
+
+export default function ExerciceComponent({
+  onCreate,
+  onDelete,
+  onUpdate,
+  trainingId,
+  exercices,
+}: ExerciceComponentProps) {
+  const [localExercices, setLocalExercices] = useState<Exercice[]>(exercices);
+
+  // Synchronise localExercices quand les props changent
+  useEffect(() => {
+    setLocalExercices(exercices);
+  }, [exercices]);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -27,6 +59,59 @@ export default function ExerciceComponent() {
       },
     },
   };
+
+  const handleCreate = (exercices: AddExercicePlanInput[]) => {
+    const lastPosition = (localExercices.at(-1)?.position ?? -1) + 1;
+    const allExercicesWithPosition = exercices.map((e, i) => {
+      return {
+        ...e,
+        position: lastPosition + i,
+      };
+    });
+    onCreate(trainingId, allExercicesWithPosition);
+  };
+
+  const handleDelete = (deletedId: string) => {
+    const updatedExercices = localExercices
+      .filter((e) => e.id !== deletedId)
+      .map((e, index) => ({
+        ...e,
+        position: index,
+      }));
+    onDelete(deletedId);
+    setLocalExercices(updatedExercices);
+    updatedExercices.forEach((e) => {
+      onUpdate(e.id, e, false);
+    });
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = localExercices.findIndex((item) => item.id === active.id);
+    const newIndex = localExercices.findIndex((item) => item.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const newOrder = arrayMove(localExercices, oldIndex, newIndex);
+
+    setLocalExercices(newOrder);
+
+    newOrder.forEach((ex, index) => {
+      if (ex.position !== index) {
+        onUpdate(ex.id, { ...ex, position: index }, false);
+      }
+    });
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 10 },
+    })
+  );
+
+  const hasExercice = exercices.length > 0;
   return (
     <motion.section
       className="flex flex-col justify-start items-center gap-4 w-full h-full"
@@ -35,35 +120,50 @@ export default function ExerciceComponent() {
       animate="visible"
     >
       <Separator orientation="vertical" className="h-12" />
-      <motion.h2
-        variants={itemVariants}
-        className="text-2xl font-semibold text-center text-gray-500"
-      >
-        Ajouter un exercice à cette séance
-      </motion.h2>
-      <motion.div
-        variants={itemVariants}
-        className="flex flex-col justify-center items-center gap-2"
-      >
-        <p className="text-md text-gray-400 text-center">
-          Créer un exercice personnalisé pour un entraînement sur mesure.
-        </p>
-      </motion.div>
-      <motion.div
-        variants={itemVariants}
-        className="w-full flex justify-center items-center"
-      >
-        <Tooltip
-          content="Ajouter un exercice"
-          className="text-xs"
-          showArrow={true}
-          color="foreground"
+      {!hasExercice && (
+        <>
+          <motion.h2
+            variants={itemVariants}
+            className="text-2xl font-semibold text-center text-gray-500"
+          >
+            Ajouter un exercice à cette séance
+          </motion.h2>
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col justify-center items-center gap-2"
+          >
+            <p className="text-md text-gray-400 text-center">
+              Créer un exercice personnalisé pour un entraînement sur mesure.
+            </p>
+          </motion.div>
+        </>
+      )}
+      <section className="w-[90%] flex flex-col items-center gap-2">
+        <DndContext
+          modifiers={[restrictToVerticalAxis]}
+          onDragEnd={handleDragEnd}
+          sensors={sensors}
         >
-          <div className="group flex justify-center items-center w-12 h-12 rounded-full my-2 cursor-pointer text-tertiary border border-tertiary border-opacity-20 bg-tertiary bg-opacity-20 hover:bg-tertiary hover:bg-opacity-20 shadow-sm p-2 hover:translate-y-[-2px] hover:shadow-md transition-all duration-200">
-            <Plus className="transition-all duration-200 group-hover:rotate-90" />
-          </div>
-        </Tooltip>
-      </motion.div>
+          <SortableContext items={localExercices.map((e) => e.id)}>
+            {localExercices.map((e) => (
+              <section className="w-full" key={e.id}>
+                <ExercicePlanCard
+                  exercice={e}
+                  onDelete={handleDelete}
+                  onUpdate={onUpdate}
+                />
+              </section>
+            ))}
+          </SortableContext>
+        </DndContext>
+        <Separator orientation="vertical" className="h-6" />
+        <motion.div
+          variants={itemVariants}
+          className="w-full flex justify-center items-center"
+        >
+          <DrawerExercice onCreate={handleCreate} />
+        </motion.div>
+      </section>
     </motion.section>
   );
 }

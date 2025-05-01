@@ -149,17 +149,19 @@ export default function WeekProgram({
               x: { type: "spring", stiffness: 400, damping: 35 },
               opacity: { duration: 0.15 },
             }}
-            className="flex gap-2 justify-center"
+            className="flex justify-center items-center w-full"
           >
-            {workouts.map((workout) => (
-              <WorkoutButton
-                key={workout.number}
-                number={workout.number}
-                isActive={activeDay === workout.number}
-                isSelected={workout.isSelected}
-                onClick={() => onDaySelect(workout.number)}
-              />
-            ))}
+            <section className="w-[90%] flex justify-center items-center gap-2">
+              {workouts.map((workout) => (
+                <WorkoutButton
+                  key={workout.number}
+                  number={workout.number}
+                  isActive={activeDay === workout.number}
+                  isSelected={workout.isSelected}
+                  onClick={() => onDaySelect(workout.number)}
+                />
+              ))}
+            </section>
           </motion.div>
         </AnimatePresence>
       </div>

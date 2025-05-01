@@ -1,4 +1,5 @@
-import { Field, InputType } from "type-graphql";
+import { Field, Float, InputType } from "type-graphql";
+import { ExerciceTypeData } from "./typeExercice";
 
 @InputType()
 export class TrainingPlanData {
@@ -22,4 +23,37 @@ export class getTrainingType {
 
   @Field()
   dayNumber!: number;
+}
+
+@InputType()
+export class AddExercicePlanInput {
+  @Field({ nullable: true })
+  id?: string;
+
+  @Field()
+  title!: string;
+
+  @Field({ nullable: true })
+  serie?: number;
+
+  @Field({ nullable: true })
+  rep?: number;
+
+  @Field({ nullable: true })
+  intensity?: number;
+
+  @Field(() => Float, { nullable: true })
+  weight?: number;
+
+  @Field({ nullable: true })
+  image?: string;
+
+  @Field({ nullable: true })
+  notes?: string;
+
+  @Field({ nullable: true })
+  position?: number;
+
+  @Field({ nullable: true })
+  type?: ExerciceTypeData;
 }

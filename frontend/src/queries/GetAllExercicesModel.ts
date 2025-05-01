@@ -10,6 +10,7 @@ export const GET_ALLEXERCICE_MODEL = gql`
       intensity
       weight
       notes
+      image
       type {
         id
         value

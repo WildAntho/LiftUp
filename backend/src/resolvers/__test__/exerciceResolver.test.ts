@@ -66,7 +66,7 @@ describe("ExerciceResolver", () => {
 
       const result = await exerciceResolver.deleteExercice("1");
       expect(mockExercice.remove).toHaveBeenCalled();
-      expect(result).toBe(JSON.stringify("L'exercice a bien été supprimé"));
+      expect(result).toBe("L'exercice a bien été supprimé");
     });
 
     it("should throw if exercice not found", async () => {

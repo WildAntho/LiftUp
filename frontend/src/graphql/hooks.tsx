@@ -23,6 +23,19 @@ export type ActiveMembershipType = {
   studentId: Scalars['String']['input'];
 };
 
+export type AddExercicePlanInput = {
+  id?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
+  intensity?: InputMaybe<Scalars['Float']['input']>;
+  notes?: InputMaybe<Scalars['String']['input']>;
+  position?: InputMaybe<Scalars['Float']['input']>;
+  rep?: InputMaybe<Scalars['Float']['input']>;
+  serie?: InputMaybe<Scalars['Float']['input']>;
+  title: Scalars['String']['input'];
+  type?: InputMaybe<ExerciceTypeData>;
+  weight?: InputMaybe<Scalars['Float']['input']>;
+};
+
 export type AddMessagetData = {
   content: Scalars['String']['input'];
   conversationId?: InputMaybe<Scalars['String']['input']>;
@@ -89,12 +102,15 @@ export type Crew = {
 export type Exercice = {
   __typename?: 'Exercice';
   id: Scalars['ID']['output'];
+  image?: Maybe<Scalars['String']['output']>;
   intensity?: Maybe<Scalars['Float']['output']>;
   notes?: Maybe<Scalars['String']['output']>;
+  position?: Maybe<Scalars['Float']['output']>;
   rep: Scalars['Float']['output'];
   serie: Scalars['Float']['output'];
   title: Scalars['String']['output'];
   training?: Maybe<Training>;
+  trainingPlan?: Maybe<TrainingPlan>;
   type?: Maybe<ExerciceType>;
   weight?: Maybe<Scalars['Float']['output']>;
 };
@@ -104,6 +120,7 @@ export type ExerciceData = {
   id?: InputMaybe<Scalars['String']['input']>;
   intensity?: InputMaybe<Scalars['Float']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
+  position?: InputMaybe<Scalars['Float']['input']>;
   rep: Scalars['Float']['input'];
   serie: Scalars['Float']['input'];
   title: Scalars['String']['input'];
@@ -114,10 +131,11 @@ export type ExerciceData = {
 export type ExerciceModel = {
   __typename?: 'ExerciceModel';
   id: Scalars['ID']['output'];
+  image?: Maybe<Scalars['String']['output']>;
   intensity?: Maybe<Scalars['Float']['output']>;
   notes?: Maybe<Scalars['String']['output']>;
-  rep: Scalars['Float']['output'];
-  serie: Scalars['Float']['output'];
+  rep?: Maybe<Scalars['Float']['output']>;
+  serie?: Maybe<Scalars['Float']['output']>;
   title: Scalars['String']['output'];
   type?: Maybe<ExerciceType>;
   user?: Maybe<User>;
@@ -128,8 +146,8 @@ export type ExerciceModelData = {
   id?: InputMaybe<Scalars['String']['input']>;
   intensity?: InputMaybe<Scalars['Float']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
-  rep: Scalars['Float']['input'];
-  serie: Scalars['Float']['input'];
+  rep?: InputMaybe<Scalars['Float']['input']>;
+  serie?: InputMaybe<Scalars['Float']['input']>;
   title: Scalars['String']['input'];
   type?: InputMaybe<ExerciceTypeData>;
   weight?: InputMaybe<Scalars['Float']['input']>;
@@ -220,6 +238,7 @@ export type Mutation = {
   addCategory: Scalars['String']['output'];
   addCoachProfile: Scalars['String']['output'];
   addExercice: Exercice;
+  addExerciceToProgram: Scalars['String']['output'];
   addFeedback: Scalars['String']['output'];
   addMessages: Scalars['String']['output'];
   addOffer: Scalars['String']['output'];
@@ -283,6 +302,12 @@ export type MutationAddCoachProfileArgs = {
 
 export type MutationAddExerciceArgs = {
   data: ExerciceData;
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationAddExerciceToProgramArgs = {
+  exercices: Array<AddExercicePlanInput>;
   id: Scalars['String']['input'];
 };
 
@@ -813,6 +838,7 @@ export type TrainingData = {
 export type TrainingPlan = {
   __typename?: 'TrainingPlan';
   dayNumber: Scalars['Float']['output'];
+  exercices?: Maybe<Array<Exercice>>;
   id: Scalars['ID']['output'];
   notes?: Maybe<Scalars['String']['output']>;
   program: Program;
@@ -927,6 +953,14 @@ export type AddExerciceMutationVariables = Exact<{
 
 
 export type AddExerciceMutation = { __typename?: 'Mutation', addExercice: { __typename?: 'Exercice', id: string, title: string, serie: number, intensity?: number | null, rep: number, weight?: number | null } };
+
+export type AddExerciceProgramMutationVariables = Exact<{
+  exercices: Array<AddExercicePlanInput> | AddExercicePlanInput;
+  trainingId: Scalars['String']['input'];
+}>;
+
+
+export type AddExerciceProgramMutation = { __typename?: 'Mutation', addExerciceToProgram: string };
 
 export type AddFeedbackMutationVariables = Exact<{
   data: FeedbackData;
@@ -1198,7 +1232,7 @@ export type GetAllExercicesModelQueryVariables = Exact<{
 }>;
 
 
-export type GetAllExercicesModelQuery = { __typename?: 'Query', getAllExercicesModel: Array<{ __typename?: 'ExerciceModel', id: string, title: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, notes?: string | null, type?: { __typename?: 'ExerciceType', id: string, value: string, label: string } | null }> };
+export type GetAllExercicesModelQuery = { __typename?: 'Query', getAllExercicesModel: Array<{ __typename?: 'ExerciceModel', id: string, title: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, notes?: string | null, image?: string | null, type?: { __typename?: 'ExerciceType', id: string, value: string, label: string } | null }> };
 
 export type GetChatUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1389,7 +1423,7 @@ export type GetTrainingPlanQueryVariables = Exact<{
 }>;
 
 
-export type GetTrainingPlanQuery = { __typename?: 'Query', getTrainingPlan: Array<{ __typename?: 'TrainingPlan', id: string, title: string, dayNumber: number, notes?: string | null }> };
+export type GetTrainingPlanQuery = { __typename?: 'Query', getTrainingPlan: Array<{ __typename?: 'TrainingPlan', id: string, title: string, dayNumber: number, notes?: string | null, exercices?: Array<{ __typename?: 'Exercice', id: string, title: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, notes?: string | null, image?: string | null, position?: number | null }> | null }> };
 
 export type SelectCoachQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1572,6 +1606,38 @@ export function useAddExerciceMutation(baseOptions?: Apollo.MutationHookOptions<
 export type AddExerciceMutationHookResult = ReturnType<typeof useAddExerciceMutation>;
 export type AddExerciceMutationResult = Apollo.MutationResult<AddExerciceMutation>;
 export type AddExerciceMutationOptions = Apollo.BaseMutationOptions<AddExerciceMutation, AddExerciceMutationVariables>;
+export const AddExerciceProgramDocument = gql`
+    mutation AddExerciceProgram($exercices: [AddExercicePlanInput!]!, $trainingId: String!) {
+  addExerciceToProgram(exercices: $exercices, id: $trainingId)
+}
+    `;
+export type AddExerciceProgramMutationFn = Apollo.MutationFunction<AddExerciceProgramMutation, AddExerciceProgramMutationVariables>;
+
+/**
+ * __useAddExerciceProgramMutation__
+ *
+ * To run a mutation, you first call `useAddExerciceProgramMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddExerciceProgramMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addExerciceProgramMutation, { data, loading, error }] = useAddExerciceProgramMutation({
+ *   variables: {
+ *      exercices: // value for 'exercices'
+ *      trainingId: // value for 'trainingId'
+ *   },
+ * });
+ */
+export function useAddExerciceProgramMutation(baseOptions?: Apollo.MutationHookOptions<AddExerciceProgramMutation, AddExerciceProgramMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddExerciceProgramMutation, AddExerciceProgramMutationVariables>(AddExerciceProgramDocument, options);
+      }
+export type AddExerciceProgramMutationHookResult = ReturnType<typeof useAddExerciceProgramMutation>;
+export type AddExerciceProgramMutationResult = Apollo.MutationResult<AddExerciceProgramMutation>;
+export type AddExerciceProgramMutationOptions = Apollo.BaseMutationOptions<AddExerciceProgramMutation, AddExerciceProgramMutationVariables>;
 export const AddFeedbackDocument = gql`
     mutation AddFeedback($data: FeedbackData!) {
   addFeedback(data: $data)
@@ -2777,6 +2843,7 @@ export const GetAllExercicesModelDocument = gql`
     intensity
     weight
     notes
+    image
     type {
       id
       value
@@ -4178,6 +4245,17 @@ export const GetTrainingPlanDocument = gql`
     title
     dayNumber
     notes
+    exercices {
+      id
+      title
+      serie
+      rep
+      intensity
+      weight
+      notes
+      image
+      position
+    }
   }
 }
     `;

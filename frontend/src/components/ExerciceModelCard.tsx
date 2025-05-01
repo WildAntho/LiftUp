@@ -26,9 +26,9 @@ export default function ExerciceModelCard({
   const [addExercice] = useAddExerciceMutation();
   const data = {
     title: exercice.title,
-    rep: exercice.rep,
-    serie: exercice.serie,
-    weight: exercice.weight,
+    rep: exercice.rep ?? 1,
+    serie: exercice.serie ?? 1,
+    weight: exercice.weight ?? 0,
     intensity: exercice.intensity,
     notes: exercice.notes,
     type: {
@@ -68,7 +68,8 @@ export default function ExerciceModelCard({
             {exercice.title}
           </p>
           <p className="text-xs text-gray-500">
-            {exercice.serie} {`série${exercice.serie > 1 ? "s" : ""}`}
+            {exercice.serie}{" "}
+            {`série${exercice.serie && exercice.serie > 1 ? "s" : ""}`}
           </p>
         </div>
       </div>

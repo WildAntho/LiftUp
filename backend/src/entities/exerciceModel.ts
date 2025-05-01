@@ -20,13 +20,13 @@ export class ExerciceModel extends BaseEntity {
   @Column()
   title!: string;
 
-  @Field()
-  @Column()
-  serie!: number;
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  serie?: number;
 
-  @Field()
-  @Column()
-  rep!: number;
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  rep?: number;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
@@ -39,6 +39,10 @@ export class ExerciceModel extends BaseEntity {
   @Field({ nullable: true })
   @Column({ nullable: true })
   notes?: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  image?: string;
 
   // Relation avec la table User
   @Field(() => User, { nullable: true })

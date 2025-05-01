@@ -37,6 +37,9 @@ export class ExerciceData {
   notes?: string;
 
   @Field({ nullable: true })
+  position?: number;
+
+  @Field({ nullable: true })
   type?: ExerciceTypeData;
 
   @Field({ nullable: true })

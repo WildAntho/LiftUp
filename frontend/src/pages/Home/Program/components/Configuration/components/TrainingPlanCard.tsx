@@ -10,6 +10,7 @@ type TrainingPlanProps = {
   id: string;
   title: string;
   notes: string;
+  exerciceLength: number;
   onUpdate: (id: string, title: string, notes: string) => void;
   onDelete: (id: string) => void;
 };
@@ -18,6 +19,7 @@ export default function TrainingPlanCard({
   id,
   title,
   notes,
+  exerciceLength,
   onUpdate,
   onDelete,
 }: TrainingPlanProps) {
@@ -92,7 +94,9 @@ export default function TrainingPlanCard({
           )}
           <div className="flex justify-start items-center gap-2 text-xs text-gray-500">
             <Dumbbell size={12} />
-            <p>4 exercices</p>
+            <p>
+              {exerciceLength} {`exercice${exerciceLength > 1 ? "s" : ""}`}
+            </p>
           </div>
         </div>
 

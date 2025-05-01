@@ -1,10 +1,16 @@
 import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 import { TrainingPlan } from "../entities/trainingPlan";
 import {
+  AddExercicePlanInput,
   getTrainingType,
   TrainingPlanData,
 } from "../InputType/trainingPlanType";
 import { Program } from "../entities/program";
+import { ExerciceModel } from "../entities/exerciceModel";
+import { createExerciceFromData } from "../services/trainingService";
+import { CreateMultipleExercicesFromModel } from "../services/exerciceService";
+import { Exercice } from "../entities/exercice";
+import { ExerciceModelData } from "../InputType/exerciceModelType";
 
 @Authorized("COACH")
 @Resolver(TrainingPlan)
@@ -16,7 +22,12 @@ export class TrainingPlanResolver {
         program: { id: data.programId },
         dayNumber: data.dayNumber,
       },
-      relations: { program: true },
+      order: {
+        exercices: {
+          position: "ASC",
+        },
+      },
+      relations: { program: true, exercices: true },
     });
     return trainings;
   }
@@ -67,5 +78,22 @@ export class TrainingPlanResolver {
     if (!training) throw new Error("Aucun entraînement n'a été trouvé");
     training.remove();
     return "L'entraînement a bien été supprimé";
+  }
+
+  @Mutation(() => String)
+  async addExerciceToProgram(
+    @Arg("id") trainingId: string,
+    @Arg("exercices", () => [AddExercicePlanInput])
+    exercices: AddExercicePlanInput[]
+  ) {
+    const training = await TrainingPlan.findOne({
+      where: { id: trainingId },
+      relations: { exercices: true },
+    });
+    if (!training) throw new Error("Aucun entraînement n'a été trouvé");
+    await CreateMultipleExercicesFromModel(exercices, training);
+    return exercices.length > 1
+      ? "Les exercices ont bien été ajouté"
+      : "L'exercice a bien été ajouté";
   }
 }
