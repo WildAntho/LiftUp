@@ -8,6 +8,7 @@ import {
 } from "typeorm";
 import { Training } from "./training";
 import { ExerciceType } from "./exerciceType";
+import { TrainingPlan } from "./trainingPlan";
 
 @ObjectType()
 @Entity()
@@ -40,11 +41,25 @@ export class Exercice extends BaseEntity {
   @Column({ nullable: true })
   notes?: string;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  image?: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  position?: number;
+
   @Field(() => Training, { nullable: true })
   @ManyToOne(() => Training, (training) => training.exercices, {
     onDelete: "CASCADE",
   })
   training?: Training;
+
+  @Field(() => TrainingPlan, { nullable: true })
+  @ManyToOne(() => TrainingPlan, (trainingPlan) => trainingPlan.exercices, {
+    onDelete: "CASCADE",
+  })
+  trainingPlan?: TrainingPlan;
 
   @Field(() => ExerciceType, { nullable: true })
   @ManyToOne(() => ExerciceType, (type) => type.exercices, { nullable: true })

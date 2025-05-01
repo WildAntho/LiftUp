@@ -4,9 +4,11 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Program } from "./program";
+import { Exercice } from "./exercice";
 
 @ObjectType()
 @Entity()
@@ -28,6 +30,12 @@ export class TrainingPlan extends BaseEntity {
   notes?: string;
 
   @Field(() => Program)
-  @ManyToOne(() => Program, (program) => program.trainingPlans, { onDelete: "CASCADE" })
+  @ManyToOne(() => Program, (program) => program.trainingPlans, {
+    onDelete: "CASCADE",
+  })
   program!: Program;
+
+  @Field(() => [Exercice], { nullable: true })
+  @OneToMany(() => Exercice, (exercice) => exercice.trainingPlan)
+  exercices?: Exercice[];
 }

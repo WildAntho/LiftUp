@@ -18,11 +18,11 @@ export class ExerciceModelData {
   @Field()
   title!: string;
 
-  @Field()
-  serie!: number;
+  @Field({ nullable: true })
+  serie?: number;
 
-  @Field()
-  rep!: number;
+  @Field({ nullable: true })
+  rep?: number;
 
   @Field({ nullable: true })
   intensity?: number;

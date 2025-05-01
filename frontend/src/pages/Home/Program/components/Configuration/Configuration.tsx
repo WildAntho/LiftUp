@@ -5,12 +5,17 @@ import { useNavigate } from "react-router-dom";
 import UpdateProgram from "./components/UpdateProgram";
 import TabChoice from "./components/TabChoice";
 import {
+  AddExercicePlanInput,
+  ExerciceData,
   TrainingPlan,
   UpdateProgramInput,
+  useAddExerciceProgramMutation,
   useCreateTrainingPlanMutation,
+  useDeleteExerciceMutation,
   useDeleteTrainingPlanMutation,
   useGetDayNumberTrainingQuery,
   useGetTrainingPlanQuery,
+  useUpdateExerciceMutation,
   useUpdateTrainingPlanMutation,
 } from "@/graphql/hooks";
 import CreateWorkout from "./components/CreateWorkout";
@@ -45,11 +50,15 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
           dayNumber: activeDay,
         },
       },
+      fetchPolicy: "cache-and-network",
     });
 
   const [createTraining] = useCreateTrainingPlanMutation();
   const [updateTraining] = useUpdateTrainingPlanMutation();
   const [deleteTraining] = useDeleteTrainingPlanMutation();
+  const [createExercice] = useAddExerciceProgramMutation();
+  const [deleteExercice] = useDeleteExerciceMutation();
+  const [updateExercice] = useUpdateExerciceMutation();
 
   const allDayNumberTraining = dataDayNumber?.getDayNumberTraining ?? [];
   const trainings = dataTraining?.getTrainingPlan ?? [];
@@ -125,6 +134,61 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
     }
   };
 
+  const handleCreateExercice = async (
+    id: string,
+    exercices: AddExercicePlanInput[]
+  ) => {
+    try {
+      const { data } = await createExercice({
+        variables: {
+          trainingId: id,
+          exercices,
+        },
+      });
+      successAction(data?.addExerciceToProgram ?? "");
+    } catch (error) {
+      console.error(error);
+      toast.error("Une erreur est survenue lors de l'ajout dex exercices");
+    }
+  };
+
+  const handleDeleteExercice = async (id: string) => {
+    try {
+      const { data } = await deleteExercice({ variables: { id } });
+      successAction(data?.deleteExercice ?? "");
+    } catch (error) {
+      console.error(error);
+      toast.error("Une erreur est survenue lors de l'ajout dex exercices");
+    }
+  };
+
+  const handleUpdateExercice = async (
+    id: string,
+    exercice: ExerciceData,
+    showToast: boolean = true
+  ) => {
+    try {
+      await updateExercice({
+        variables: {
+          id,
+          data: {
+            title: exercice.title,
+            rep: exercice.rep,
+            serie: exercice.serie,
+            intensity: exercice.intensity,
+            weight: exercice.weight,
+            notes: exercice.notes,
+            position: exercice.position,
+          },
+        },
+      });
+      if (showToast) successAction("L'exercice à bien été mis à jour");
+    } catch (error) {
+      console.error(error);
+      toast.error("Une erreur est survenue lors de l'ajout dex exercices");
+    }
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case "workouts":
@@ -134,6 +198,9 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
             onCreateTraining={handleCreateTraining}
             onUpdateTraining={handleUpdateTraining}
             onDeleteTraining={handleDeleteTraining}
+            onCreateExercice={handleCreateExercice}
+            onDeleteExercice={handleDeleteExercice}
+            onUpdateExercice={handleUpdateExercice}
           />
         );
       case "details":
@@ -145,7 +212,9 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
 
   return (
     <>
-      {activeTab === "workouts" && <FloatingDock onCreate={handleCreateTraining} />}
+      {activeTab === "workouts" && (
+        <FloatingDock onCreate={handleCreateTraining} />
+      )}
       <section className="relative w-full h-full flex flex-col justify-between items-center pt-[60px] overflow-y-scroll">
         <section className="w-full 2xl:w-[75%] h-full flex flex-col justify-start items-center gap-8">
           {activeTab === "workouts" && (

@@ -36,6 +36,7 @@ export class ExerciceResolver {
     if (data.intensity) exercice.intensity = data.intensity;
     if (data.weight) exercice.weight = data.weight;
     if (data.notes) exercice.notes = data.notes;
+    exercice.position = data.position;
     if (type) exercice.type = type;
     await exercice.save();
     return exercice;
@@ -46,7 +47,7 @@ export class ExerciceResolver {
     const exercice = await Exercice.findOneBy({ id });
     if (!exercice) throw new Error("Aucun exercice pour cet id");
     exercice.remove();
-    return JSON.stringify("L'exercice a bien été supprimé");
+    return "L'exercice a bien été supprimé";
   }
 
   @Mutation(() => Exercice)

@@ -1,7 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { TrainingPlan } from "@/graphql/hooks";
+import {
+  AddExercicePlanInput,
+  Exercice,
+  ExerciceData,
+  TrainingPlan,
+} from "@/graphql/hooks";
 import TrainingPlanCard from "./TrainingPlanCard";
 import ExerciceComponent from "./ExerciceComponent";
 
@@ -10,6 +15,9 @@ type CreateWorkoutProps = {
   onCreateTraining: () => void;
   onUpdateTraining: (id: string, title: string, notes?: string) => void;
   onDeleteTraining: (id: string) => void;
+  onCreateExercice: (id: string, exercices: AddExercicePlanInput[]) => void;
+  onDeleteExercice: (id: string) => void;
+  onUpdateExercice: (id: string, exercice: ExerciceData, showToast?: boolean) => void;
 };
 
 export default function CreateWorkout({
@@ -17,6 +25,9 @@ export default function CreateWorkout({
   onCreateTraining,
   onUpdateTraining,
   onDeleteTraining,
+  onCreateExercice,
+  onDeleteExercice,
+  onUpdateExercice,
 }: CreateWorkoutProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -46,7 +57,7 @@ export default function CreateWorkout({
     <section className="flex flex-col justify-between items-between gap-4 w-full h-full">
       {trainings.length === 0 ? (
         <motion.section
-          className="flex flex-col justify-center items-center gap-4 w-full h-full mt-10"
+          className="flex flex-col justify-start items-center gap-4 w-full h-full mt-10"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -81,17 +92,27 @@ export default function CreateWorkout({
           </motion.div>
         </motion.section>
       ) : (
-        <section className="flex flex-col justify-start items-center gap-10 w-full">
+        <section className="flex flex-col justify-start items-center w-full gap-5">
           {trainings.map((t) => (
-            <div key={t.id} className="w-full mb-10">
+            <div
+              key={t.id}
+              className="w-full p-4"
+            >
               <TrainingPlanCard
                 id={t.id}
                 title={t.title}
                 notes={t?.notes ?? ""}
+                exerciceLength={t?.exercices?.length ?? 0}
                 onUpdate={onUpdateTraining}
                 onDelete={onDeleteTraining}
               />
-              <ExerciceComponent />
+              <ExerciceComponent
+                onCreate={onCreateExercice}
+                onDelete={onDeleteExercice}
+                onUpdate={onUpdateExercice}
+                trainingId={t.id}
+                exercices={t.exercices as Exercice[]}
+              />
             </div>
           ))}
         </section>

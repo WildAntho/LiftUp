@@ -19,7 +19,7 @@ export default function WorkoutButton({
   return (
     <div
       onClick={onClick}
-      className={`relative min-w-36 w-auto h-auto p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer border ${activeClasses} hover:translate-y-[-2px] hover:border-orange-400 hover:bg-gray-50 active:scale-95`}
+      className={`relative w-[14%] h-auto p-4 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer border ${activeClasses} hover:translate-y-[-2px] hover:border-orange-400 hover:bg-gray-50 active:scale-95`}
     >
       <p className="text-gray-500 text-sm font-medium uppercase text-center">
         Jour
