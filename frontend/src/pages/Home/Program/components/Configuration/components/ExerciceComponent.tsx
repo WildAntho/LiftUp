@@ -12,12 +12,17 @@ import {
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { useEffect, useState } from "react";
-import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import { SortableContext } from "@dnd-kit/sortable";
 
 type ExerciceComponentProps = {
   onCreate: (id: string, exercices: AddExercicePlanInput[]) => void;
   onDelete: (id: string) => void;
   onUpdate: (id: string, exercice: ExerciceData, showToast?: boolean) => void;
+  onUpdateDrag: (
+    event: DragEndEvent,
+    localExercices: Exercice[],
+    setLocalExercices: (exercices: Exercice[]) => void
+  ) => void;
   trainingId: string;
   exercices: Exercice[];
 };
@@ -26,6 +31,7 @@ export default function ExerciceComponent({
   onCreate,
   onDelete,
   onUpdate,
+  onUpdateDrag,
   trainingId,
   exercices,
 }: ExerciceComponentProps) {
@@ -86,23 +92,7 @@ export default function ExerciceComponent({
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = localExercices.findIndex((item) => item.id === active.id);
-    const newIndex = localExercices.findIndex((item) => item.id === over.id);
-    if (oldIndex === -1 || newIndex === -1) return;
-
-    const newOrder = arrayMove(localExercices, oldIndex, newIndex);
-
-    setLocalExercices(newOrder);
-
-    newOrder.forEach((ex, index) => {
-      if (ex.position !== index) {
-        onUpdate(ex.id, { ...ex, position: index }, false);
-      }
-    });
+    onUpdateDrag(event, localExercices, setLocalExercices);
   };
 
   const sensors = useSensors(
