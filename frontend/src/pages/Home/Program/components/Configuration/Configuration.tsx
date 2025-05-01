@@ -6,6 +6,7 @@ import UpdateProgram from "./components/UpdateProgram";
 import TabChoice from "./components/TabChoice";
 import {
   AddExercicePlanInput,
+  Exercice,
   ExerciceData,
   TrainingPlan,
   UpdateProgramInput,
@@ -21,6 +22,8 @@ import {
 import CreateWorkout from "./components/CreateWorkout";
 import { toast } from "sonner";
 import FloatingDock from "./components/FloatingDock";
+import { DragEndEvent } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 
 type ConfigurationProps = {
   onUpdate: (id: string, program: UpdateProgramInput) => void;
@@ -50,7 +53,6 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
           dayNumber: activeDay,
         },
       },
-      fetchPolicy: "cache-and-network",
     });
 
   const [createTraining] = useCreateTrainingPlanMutation();
@@ -189,6 +191,31 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
     }
   };
 
+  const handleDragEnd = async (
+    event: DragEndEvent,
+    localExercices: Exercice[],
+    setLocalExercices: (exercices: Exercice[]) => void
+  ) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = localExercices.findIndex((item) => item.id === active.id);
+    const newIndex = localExercices.findIndex((item) => item.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const newOrder = arrayMove(localExercices, oldIndex, newIndex);
+    setLocalExercices(newOrder);
+    await Promise.all(
+      newOrder.map((ex, index) => {
+        if (ex.position !== index) {
+          return handleUpdateExercice(ex.id, { ...ex, position: index }, false);
+        }
+      })
+    );
+    refetchTraining();
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case "workouts":
@@ -201,6 +228,7 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
             onCreateExercice={handleCreateExercice}
             onDeleteExercice={handleDeleteExercice}
             onUpdateExercice={handleUpdateExercice}
+            onUpdateDrag={handleDragEnd}
           />
         );
       case "details":

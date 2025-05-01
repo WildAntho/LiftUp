@@ -9,6 +9,7 @@ import {
 } from "@/graphql/hooks";
 import TrainingPlanCard from "./TrainingPlanCard";
 import ExerciceComponent from "./ExerciceComponent";
+import { DragEndEvent } from "@dnd-kit/core";
 
 type CreateWorkoutProps = {
   trainings: TrainingPlan[];
@@ -17,7 +18,16 @@ type CreateWorkoutProps = {
   onDeleteTraining: (id: string) => void;
   onCreateExercice: (id: string, exercices: AddExercicePlanInput[]) => void;
   onDeleteExercice: (id: string) => void;
-  onUpdateExercice: (id: string, exercice: ExerciceData, showToast?: boolean) => void;
+  onUpdateExercice: (
+    id: string,
+    exercice: ExerciceData,
+    showToast?: boolean
+  ) => void;
+  onUpdateDrag: (
+    event: DragEndEvent,
+    localExercices: Exercice[],
+    setLocalExercices: (exercices: Exercice[]) => void
+  ) => void;
 };
 
 export default function CreateWorkout({
@@ -28,6 +38,7 @@ export default function CreateWorkout({
   onCreateExercice,
   onDeleteExercice,
   onUpdateExercice,
+  onUpdateDrag
 }: CreateWorkoutProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -94,10 +105,7 @@ export default function CreateWorkout({
       ) : (
         <section className="flex flex-col justify-start items-center w-full gap-5">
           {trainings.map((t) => (
-            <div
-              key={t.id}
-              className="w-full p-4"
-            >
+            <div key={t.id} className="w-full p-4">
               <TrainingPlanCard
                 id={t.id}
                 title={t.title}
@@ -112,6 +120,7 @@ export default function CreateWorkout({
                 onUpdate={onUpdateExercice}
                 trainingId={t.id}
                 exercices={t.exercices as Exercice[]}
+                onUpdateDrag={onUpdateDrag}
               />
             </div>
           ))}
