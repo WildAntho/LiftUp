@@ -20,6 +20,8 @@ import { useCrewStore } from "@/services/zustand/crewStore";
 import PaginationBar from "../PaginationBar";
 import { Search } from "lucide-react";
 import { Separator } from "../ui/separator";
+import { useDebouncedCallback } from "@/services/useDebouncedCallback";
+import SkeletonUser from "../SkeletonUser";
 
 type SelectStudentModalProps = {
   open: boolean;
@@ -33,6 +35,8 @@ export default function SelectStudentModal({
   closeNav,
 }: SelectStudentModalProps) {
   const [input, setInput] = useState<string>("");
+  const [debounceInput, setDebounceInput] = useState<string>("");
+  const [loading, setLoading] = useState(false);
   const currentUser = useUserStore((state) => state.user);
   const currentStudent = useStudentStore((state) => state.student);
   const setStudent = useStudentStore((state) => state.set);
@@ -43,7 +47,7 @@ export default function SelectStudentModal({
   const { data: dataStudents } = useGetStudentsQuery({
     variables: {
       id: currentUser ? currentUser.id.toString() : "",
-      input,
+      input: debounceInput,
       limit,
       page,
     },
@@ -57,6 +61,7 @@ export default function SelectStudentModal({
   const handleClose = () => {
     setOpen(false);
     setInput("");
+    setDebounceInput("");
     setSelected("");
   };
 
@@ -74,6 +79,13 @@ export default function SelectStudentModal({
       closeNav();
     }
   };
+
+  const skeletonLength = myStudents.length < 7 ? myStudents.length : 7;
+
+  const debouncedSearch = useDebouncedCallback((value?: string) => {
+    setDebounceInput(value ?? "");
+    setLoading(false);
+  }, 300);
 
   return (
     <Modal
@@ -96,7 +108,9 @@ export default function SelectStudentModal({
             placeholder="Rechercher"
             value={input}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setLoading(true);
               setInput(e.target.value);
+              debouncedSearch(e.target.value);
             }}
             startContent={
               <Search className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
@@ -105,20 +119,26 @@ export default function SelectStudentModal({
           />
         </ModalHeader>
         <ModalBody style={{ gap: "15px" }} className="min-h-[50vh]">
-          {myStudents.length > 0 ? (
-            <RadioGroup
-              value={selected}
-              onValueChange={setSelected}
-              className="w-full"
-            >
-              {myStudents.map((s) => (
-                <ListUser key={s.id} user={s as UserWithoutPassword} />
-              ))}
-            </RadioGroup>
+          {!loading ? (
+            <section>
+              {myStudents.length > 0 ? (
+                <RadioGroup
+                  value={selected}
+                  onValueChange={setSelected}
+                  className="w-full"
+                >
+                  {myStudents.map((s) => (
+                    <ListUser key={s.id} user={s as UserWithoutPassword} />
+                  ))}
+                </RadioGroup>
+              ) : (
+                <p className="w-full h-full text-center text-sm text-gray-600">
+                  Vous n'avez aucun élève.
+                </p>
+              )}
+            </section>
           ) : (
-            <p className="w-full h-full text-center text-sm text-gray-600">
-              Vous n'avez aucun élève.
-            </p>
+            <SkeletonUser skeletonLength={skeletonLength} />
           )}
         </ModalBody>
         <ModalFooter className="flex flex-col justify-end items-center gap-2">

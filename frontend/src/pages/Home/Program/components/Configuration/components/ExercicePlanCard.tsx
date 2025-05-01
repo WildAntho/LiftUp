@@ -1,5 +1,4 @@
 import { Exercice, ExerciceData } from "@/graphql/hooks";
-import { uploadURL } from "@/services/utils";
 import { Input, Textarea, Tooltip } from "@heroui/react";
 import { ChevronRight, Grip, Notebook, Save, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -74,7 +73,7 @@ export default function ExercicePlanCard({
               </div>
             </Tooltip>
             <img
-              src={uploadURL + exercice.image}
+              src={`/exercices${exercice.image}`}
               alt="Image Exercice"
               className="w-16 h-16 object-cover rounded-md"
             />
