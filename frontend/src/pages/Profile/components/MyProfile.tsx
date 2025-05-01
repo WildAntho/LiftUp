@@ -16,6 +16,8 @@ import { Input } from "@heroui/react";
 import { toast } from "sonner";
 import Saving from "@/components/Saving";
 
+const MAX_FILE_SIZE = 1 * 1024 * 1024;
+
 export default function MyProfile() {
   const [updateProfile] = useUpdateProfileMutation();
   const currentUser = useUserStore((state) => state.user);
@@ -31,6 +33,7 @@ export default function MyProfile() {
   const [lastname, setLastname] = useState<string | undefined>(
     currentUser?.lastname
   );
+  const [fileError, setFileError] = useState<string | null>(null);
 
   const data = {
     firstname: firstname as string,
@@ -45,6 +48,15 @@ export default function MyProfile() {
       fileInputRef.current.files[0];
     let avatarUrl = "";
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("L'image ne doit pas dépasser 1 Mo", {
+          style: {
+            backgroundColor: "#fee2e2",
+            color: "#b91c1c",
+          },
+        });
+        return;
+      }
       const formData = new FormData();
       formData.append("file", file);
       try {
@@ -55,26 +67,59 @@ export default function MyProfile() {
         if (response.ok) {
           const data = await response.json();
           avatarUrl = data.filename;
+        } else {
+          // Gestion des erreurs de réponse du serveur
+          const errorData = await response.json();
+          toast.error(
+            errorData.message || "Erreur lors de l'upload de l'image",
+            {
+              style: {
+                backgroundColor: "#fee2e2",
+                color: "#b91c1c",
+              },
+            }
+          );
+          return;
         }
       } catch (error) {
         console.error({ error });
+        toast.error("Erreur lors de l'upload de l'image", {
+          style: {
+            backgroundColor: "#fee2e2",
+            color: "#b91c1c",
+          },
+        });
+        return;
       }
     }
-    const user = await updateProfile({
-      variables: {
-        data: {
-          ...data,
-          avatar: avatarUrl,
+
+    try {
+      const user = await updateProfile({
+        variables: {
+          data: {
+            ...data,
+            avatar: avatarUrl || currentUser?.avatar || "",
+          },
         },
-      },
-    });
-    if (user.data) {
-      const newUser = user.data?.updateProfile;
-      setUser(newUser);
-      toast.success("Votre profil a bien été mis à jour", {
+      });
+
+      if (user.data) {
+        const newUser = user.data?.updateProfile;
+        setUser(newUser);
+        toast.success("Votre profil a bien été mis à jour", {
+          style: {
+            backgroundColor: "#dcfce7",
+            color: "#15803d",
+          },
+        });
+        setFileError(null);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur lors de la mise à jour du profil", {
         style: {
-          backgroundColor: "#dcfce7",
-          color: "#15803d",
+          backgroundColor: "#fee2e2",
+          color: "#b91c1c",
         },
       });
     }
@@ -83,8 +128,28 @@ export default function MyProfile() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        setFileError("L'image ne doit pas dépasser 1 Mo");
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+
+      setFileError(null);
       const imageUrl = URL.createObjectURL(file);
       setPreviewImage(imageUrl);
+    }
+  };
+
+  // Fonction pour formater la taille du fichier en KB ou MB
+  const formatFileSize = (size: number) => {
+    if (size < 1024) {
+      return `${size} octets`;
+    } else if (size < 1024 * 1024) {
+      return `${(size / 1024).toFixed(2)} Ko`;
+    } else {
+      return `${(size / (1024 * 1024)).toFixed(2)} Mo`;
     }
   };
 
@@ -133,6 +198,12 @@ export default function MyProfile() {
               <p className="text-xs text-gray-500">
                 Gérez vos informations personnelles
               </p>
+              <p className="text-xs text-gray-500 mt-1">
+                Taille maximale d'image : {formatFileSize(MAX_FILE_SIZE)}
+              </p>
+              {fileError && (
+                <p className="text-xs text-red-500 mt-1">{fileError}</p>
+              )}
             </div>
           </div>
         </div>
