@@ -1,5 +1,4 @@
 import { ExerciceModel } from "@/graphql/hooks";
-import { uploadURL } from "@/services/utils";
 
 type ChooseExerciceCardProps = {
   exercice: ExerciceModel;
@@ -12,7 +11,7 @@ export default function ChooseExerciceCard({
     <>
       <div className="w-full h-[80%] flex justify-center items-center">
         <img
-          src={uploadURL + exercice.image}
+          src={`/exercices${exercice.image}`}
           alt="Image Exercice"
           className="h-full object-cover"
         />
