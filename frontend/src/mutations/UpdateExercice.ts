@@ -9,11 +9,6 @@ export const UPDATE_EXERCICE = gql`
       intensity
       rep
       weight
-      type {
-        id
-        value
-        label
-      }
     }
   }
 `;

@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./user";
-import { ExerciceType } from "./exerciceType";
 
 @ObjectType()
 @Entity()
@@ -48,8 +47,4 @@ export class ExerciceModel extends BaseEntity {
   @Field(() => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.exerciceModels, { nullable: true })
   user?: User;
-
-  @Field(() => ExerciceType, { nullable: true })
-  @ManyToOne(() => ExerciceType, (type) => type.exercices, { nullable: true })
-  type?: ExerciceType;
 }

@@ -137,13 +137,13 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
   };
 
   const handleCreateExercice = async (
-    id: string,
-    exercices: AddExercicePlanInput[]
+    exercices: AddExercicePlanInput[],
+    id?: string
   ) => {
     try {
       const { data } = await createExercice({
         variables: {
-          trainingId: id,
+          trainingId: id as string,
           exercices,
         },
       });
@@ -164,11 +164,7 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
     }
   };
 
-  const handleUpdateExercice = async (
-    id: string,
-    exercice: ExerciceData,
-    showToast: boolean = true
-  ) => {
+  const handleUpdateExercice = async (id: string, exercice: ExerciceData) => {
     try {
       await updateExercice({
         variables: {
@@ -184,7 +180,8 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
           },
         },
       });
-      if (showToast) successAction("L'exercice à bien été mis à jour");
+      refetchDayNumber();
+      refetchTraining();
     } catch (error) {
       console.error(error);
       toast.error("Une erreur est survenue lors de l'ajout dex exercices");
@@ -209,7 +206,7 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
     await Promise.all(
       newOrder.map((ex, index) => {
         if (ex.position !== index) {
-          return handleUpdateExercice(ex.id, { ...ex, position: index }, false);
+          return handleUpdateExercice(ex.id, { ...ex, position: index });
         }
       })
     );

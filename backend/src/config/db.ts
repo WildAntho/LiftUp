@@ -5,7 +5,6 @@ import { Training } from "../entities/training";
 import { Feedback } from "../entities/feedback";
 import { Request } from "../entities/request";
 import { Exercice } from "../entities/exercice";
-import { ExerciceType } from "../entities/exerciceType";
 import { ExerciceModel } from "../entities/exerciceModel";
 import { Crew } from "../entities/crew";
 import { CoachProfile } from "../entities/coachProfile";
@@ -35,7 +34,6 @@ export const dataSource = new DataSource({
     Feedback,
     Request,
     Exercice,
-    ExerciceType,
     ExerciceModel,
     Crew,
     CoachProfile,

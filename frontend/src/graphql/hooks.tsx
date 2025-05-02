@@ -32,7 +32,6 @@ export type AddExercicePlanInput = {
   rep?: InputMaybe<Scalars['Float']['input']>;
   serie?: InputMaybe<Scalars['Float']['input']>;
   title: Scalars['String']['input'];
-  type?: InputMaybe<ExerciceTypeData>;
   weight?: InputMaybe<Scalars['Float']['input']>;
 };
 
@@ -111,20 +110,19 @@ export type Exercice = {
   title: Scalars['String']['output'];
   training?: Maybe<Training>;
   trainingPlan?: Maybe<TrainingPlan>;
-  type?: Maybe<ExerciceType>;
   weight?: Maybe<Scalars['Float']['output']>;
 };
 
 export type ExerciceData = {
   config?: InputMaybe<Config>;
   id?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
   intensity?: InputMaybe<Scalars['Float']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
   position?: InputMaybe<Scalars['Float']['input']>;
   rep: Scalars['Float']['input'];
   serie: Scalars['Float']['input'];
   title: Scalars['String']['input'];
-  type?: InputMaybe<ExerciceTypeData>;
   weight?: InputMaybe<Scalars['Float']['input']>;
 };
 
@@ -137,7 +135,6 @@ export type ExerciceModel = {
   rep?: Maybe<Scalars['Float']['output']>;
   serie?: Maybe<Scalars['Float']['output']>;
   title: Scalars['String']['output'];
-  type?: Maybe<ExerciceType>;
   user?: Maybe<User>;
   weight?: Maybe<Scalars['Float']['output']>;
 };
@@ -149,28 +146,12 @@ export type ExerciceModelData = {
   rep?: InputMaybe<Scalars['Float']['input']>;
   serie?: InputMaybe<Scalars['Float']['input']>;
   title: Scalars['String']['input'];
-  type?: InputMaybe<ExerciceTypeData>;
   weight?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type ExerciceModelInput = {
   id?: InputMaybe<Scalars['String']['input']>;
   input?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type ExerciceType = {
-  __typename?: 'ExerciceType';
-  exercices?: Maybe<Array<Exercice>>;
-  exercicesModels?: Maybe<Array<ExerciceModel>>;
-  id: Scalars['ID']['output'];
-  label: Scalars['String']['output'];
-  value: Scalars['String']['output'];
-};
-
-export type ExerciceTypeData = {
-  id?: InputMaybe<Scalars['String']['input']>;
-  label?: InputMaybe<Scalars['String']['input']>;
-  value: Scalars['String']['input'];
 };
 
 export type Feedback = {
@@ -237,7 +218,7 @@ export type Mutation = {
   activeMembership: Scalars['String']['output'];
   addCategory: Scalars['String']['output'];
   addCoachProfile: Scalars['String']['output'];
-  addExercice: Exercice;
+  addExercice: Scalars['String']['output'];
   addExerciceToProgram: Scalars['String']['output'];
   addFeedback: Scalars['String']['output'];
   addMessages: Scalars['String']['output'];
@@ -301,7 +282,7 @@ export type MutationAddCoachProfileArgs = {
 
 
 export type MutationAddExerciceArgs = {
-  data: ExerciceData;
+  exercices: Array<AddExercicePlanInput>;
   id: Scalars['String']['input'];
 };
 
@@ -594,7 +575,6 @@ export type Query = {
   getConversations: Array<Conversation>;
   getCrewTraining: Array<Training>;
   getDayNumberTraining: Array<Scalars['Float']['output']>;
-  getExerciceTypes: Array<ExerciceType>;
   getExercices: Array<Exercice>;
   getFeedbacks: Array<Feedback>;
   getListUsersCrew: Array<User>;
@@ -947,12 +927,12 @@ export type AddCoachProfileMutationVariables = Exact<{
 export type AddCoachProfileMutation = { __typename?: 'Mutation', addCoachProfile: string };
 
 export type AddExerciceMutationVariables = Exact<{
-  data: ExerciceData;
+  exercices: Array<AddExercicePlanInput> | AddExercicePlanInput;
   id: Scalars['String']['input'];
 }>;
 
 
-export type AddExerciceMutation = { __typename?: 'Mutation', addExercice: { __typename?: 'Exercice', id: string, title: string, serie: number, intensity?: number | null, rep: number, weight?: number | null } };
+export type AddExerciceMutation = { __typename?: 'Mutation', addExercice: string };
 
 export type AddExerciceProgramMutationVariables = Exact<{
   exercices: Array<AddExercicePlanInput> | AddExercicePlanInput;
@@ -1166,7 +1146,7 @@ export type UpdateExerciceMutationVariables = Exact<{
 }>;
 
 
-export type UpdateExerciceMutation = { __typename?: 'Mutation', updateExercice: { __typename?: 'Exercice', id: string, title: string, serie: number, intensity?: number | null, rep: number, weight?: number | null, type?: { __typename?: 'ExerciceType', id: string, value: string, label: string } | null } };
+export type UpdateExerciceMutation = { __typename?: 'Mutation', updateExercice: { __typename?: 'Exercice', id: string, title: string, serie: number, intensity?: number | null, rep: number, weight?: number | null } };
 
 export type UpdateFeedbackMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1232,7 +1212,7 @@ export type GetAllExercicesModelQueryVariables = Exact<{
 }>;
 
 
-export type GetAllExercicesModelQuery = { __typename?: 'Query', getAllExercicesModel: Array<{ __typename?: 'ExerciceModel', id: string, title: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, notes?: string | null, image?: string | null, type?: { __typename?: 'ExerciceType', id: string, value: string, label: string } | null }> };
+export type GetAllExercicesModelQuery = { __typename?: 'Query', getAllExercicesModel: Array<{ __typename?: 'ExerciceModel', id: string, title: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, notes?: string | null, image?: string | null }> };
 
 export type GetChatUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1283,7 +1263,7 @@ export type GetCrewTrainingQueryVariables = Exact<{
 }>;
 
 
-export type GetCrewTrainingQuery = { __typename?: 'Query', getCrewTraining: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, color: string, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, notes?: string | null, type?: { __typename?: 'ExerciceType', id: string, value: string, label: string } | null }> | null }> };
+export type GetCrewTrainingQuery = { __typename?: 'Query', getCrewTraining: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, color: string, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, notes?: string | null, image?: string | null, position?: number | null }> | null }> };
 
 export type GetDayNumberTrainingQueryVariables = Exact<{
   programId: Scalars['String']['input'];
@@ -1291,18 +1271,6 @@ export type GetDayNumberTrainingQueryVariables = Exact<{
 
 
 export type GetDayNumberTrainingQuery = { __typename?: 'Query', getDayNumberTraining: Array<number> };
-
-export type GetExerciceTypesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetExerciceTypesQuery = { __typename?: 'Query', getExerciceTypes: Array<{ __typename?: 'ExerciceType', id: string, value: string, label: string }> };
-
-export type GetExercicesQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type GetExercicesQuery = { __typename?: 'Query', getExercices: Array<{ __typename?: 'Exercice', id: string, title: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, notes?: string | null, type?: { __typename?: 'ExerciceType', id: string, value: string, label: string } | null }> };
 
 export type GetFeedbacksQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1351,7 +1319,7 @@ export type GetMyTrainingQueryVariables = Exact<{
 }>;
 
 
-export type GetMyTrainingQuery = { __typename?: 'Query', getTrainingsById: Array<{ __typename?: 'Training', createdByCoach?: string | null, id: string, title: string, date: any, notes?: string | null, editable: boolean, validate: boolean, color: string, crew?: { __typename?: 'Crew', id: string } | null, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, notes?: string | null, type?: { __typename?: 'ExerciceType', id: string, value: string, label: string } | null }> | null }> };
+export type GetMyTrainingQuery = { __typename?: 'Query', getTrainingsById: Array<{ __typename?: 'Training', createdByCoach?: string | null, id: string, title: string, date: any, notes?: string | null, editable: boolean, validate: boolean, color: string, crew?: { __typename?: 'Crew', id: string } | null, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, notes?: string | null, image?: string | null, position?: number | null }> | null }> };
 
 export type GetNotificationQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1393,7 +1361,7 @@ export type GetStudentTrainingsQueryVariables = Exact<{
 }>;
 
 
-export type GetStudentTrainingsQuery = { __typename?: 'Query', getStudentTrainings: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, color: string, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, notes?: string | null, type?: { __typename?: 'ExerciceType', id: string, value: string, label: string } | null }> | null }> };
+export type GetStudentTrainingsQuery = { __typename?: 'Query', getStudentTrainings: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, color: string, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, notes?: string | null, image?: string | null, position?: number | null }> | null }> };
 
 export type GetStudentsQueryVariables = Exact<{
   input?: InputMaybe<Scalars['String']['input']>;
@@ -1568,15 +1536,8 @@ export type AddCoachProfileMutationHookResult = ReturnType<typeof useAddCoachPro
 export type AddCoachProfileMutationResult = Apollo.MutationResult<AddCoachProfileMutation>;
 export type AddCoachProfileMutationOptions = Apollo.BaseMutationOptions<AddCoachProfileMutation, AddCoachProfileMutationVariables>;
 export const AddExerciceDocument = gql`
-    mutation AddExercice($data: ExerciceData!, $id: String!) {
-  addExercice(data: $data, id: $id) {
-    id
-    title
-    serie
-    intensity
-    rep
-    weight
-  }
+    mutation AddExercice($exercices: [AddExercicePlanInput!]!, $id: String!) {
+  addExercice(exercices: $exercices, id: $id)
 }
     `;
 export type AddExerciceMutationFn = Apollo.MutationFunction<AddExerciceMutation, AddExerciceMutationVariables>;
@@ -1594,7 +1555,7 @@ export type AddExerciceMutationFn = Apollo.MutationFunction<AddExerciceMutation,
  * @example
  * const [addExerciceMutation, { data, loading, error }] = useAddExerciceMutation({
  *   variables: {
- *      data: // value for 'data'
+ *      exercices: // value for 'exercices'
  *      id: // value for 'id'
  *   },
  * });
@@ -2529,11 +2490,6 @@ export const UpdateExerciceDocument = gql`
     intensity
     rep
     weight
-    type {
-      id
-      value
-      label
-    }
   }
 }
     `;
@@ -2844,11 +2800,6 @@ export const GetAllExercicesModelDocument = gql`
     weight
     notes
     image
-    type {
-      id
-      value
-      label
-    }
   }
 }
     `;
@@ -3246,11 +3197,8 @@ export const GetCrewTrainingDocument = gql`
       intensity
       weight
       notes
-      type {
-        id
-        value
-        label
-      }
+      image
+      position
     }
   }
 }
@@ -3327,98 +3275,6 @@ export type GetDayNumberTrainingQueryHookResult = ReturnType<typeof useGetDayNum
 export type GetDayNumberTrainingLazyQueryHookResult = ReturnType<typeof useGetDayNumberTrainingLazyQuery>;
 export type GetDayNumberTrainingSuspenseQueryHookResult = ReturnType<typeof useGetDayNumberTrainingSuspenseQuery>;
 export type GetDayNumberTrainingQueryResult = Apollo.QueryResult<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>;
-export const GetExerciceTypesDocument = gql`
-    query GetExerciceTypes {
-  getExerciceTypes {
-    id
-    value
-    label
-  }
-}
-    `;
-
-/**
- * __useGetExerciceTypesQuery__
- *
- * To run a query within a React component, call `useGetExerciceTypesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetExerciceTypesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetExerciceTypesQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetExerciceTypesQuery(baseOptions?: Apollo.QueryHookOptions<GetExerciceTypesQuery, GetExerciceTypesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetExerciceTypesQuery, GetExerciceTypesQueryVariables>(GetExerciceTypesDocument, options);
-      }
-export function useGetExerciceTypesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetExerciceTypesQuery, GetExerciceTypesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetExerciceTypesQuery, GetExerciceTypesQueryVariables>(GetExerciceTypesDocument, options);
-        }
-export function useGetExerciceTypesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetExerciceTypesQuery, GetExerciceTypesQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetExerciceTypesQuery, GetExerciceTypesQueryVariables>(GetExerciceTypesDocument, options);
-        }
-export type GetExerciceTypesQueryHookResult = ReturnType<typeof useGetExerciceTypesQuery>;
-export type GetExerciceTypesLazyQueryHookResult = ReturnType<typeof useGetExerciceTypesLazyQuery>;
-export type GetExerciceTypesSuspenseQueryHookResult = ReturnType<typeof useGetExerciceTypesSuspenseQuery>;
-export type GetExerciceTypesQueryResult = Apollo.QueryResult<GetExerciceTypesQuery, GetExerciceTypesQueryVariables>;
-export const GetExercicesDocument = gql`
-    query GetExercices($id: String!) {
-  getExercices(id: $id) {
-    id
-    title
-    serie
-    rep
-    intensity
-    weight
-    notes
-    type {
-      id
-      value
-      label
-    }
-  }
-}
-    `;
-
-/**
- * __useGetExercicesQuery__
- *
- * To run a query within a React component, call `useGetExercicesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetExercicesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetExercicesQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetExercicesQuery(baseOptions: Apollo.QueryHookOptions<GetExercicesQuery, GetExercicesQueryVariables> & ({ variables: GetExercicesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetExercicesQuery, GetExercicesQueryVariables>(GetExercicesDocument, options);
-      }
-export function useGetExercicesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetExercicesQuery, GetExercicesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetExercicesQuery, GetExercicesQueryVariables>(GetExercicesDocument, options);
-        }
-export function useGetExercicesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetExercicesQuery, GetExercicesQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetExercicesQuery, GetExercicesQueryVariables>(GetExercicesDocument, options);
-        }
-export type GetExercicesQueryHookResult = ReturnType<typeof useGetExercicesQuery>;
-export type GetExercicesLazyQueryHookResult = ReturnType<typeof useGetExercicesLazyQuery>;
-export type GetExercicesSuspenseQueryHookResult = ReturnType<typeof useGetExercicesSuspenseQuery>;
-export type GetExercicesQueryResult = Apollo.QueryResult<GetExercicesQuery, GetExercicesQueryVariables>;
 export const GetFeedbacksDocument = gql`
     query GetFeedbacks($id: String!, $rangeDate: RangeDate!) {
   getFeedbacks(id: $id, rangeDate: $rangeDate) {
@@ -3734,11 +3590,8 @@ export const GetMyTrainingDocument = gql`
       intensity
       weight
       notes
-      type {
-        id
-        value
-        label
-      }
+      image
+      position
     }
   }
 }
@@ -4045,11 +3898,8 @@ export const GetStudentTrainingsDocument = gql`
       intensity
       weight
       notes
-      type {
-        id
-        value
-        label
-      }
+      image
+      position
     }
   }
 }

@@ -11,11 +11,6 @@ export const GET_ALLEXERCICE_MODEL = gql`
       weight
       notes
       image
-      type {
-        id
-        value
-        label
-      }
     }
   }
 `;

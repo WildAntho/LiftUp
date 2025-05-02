@@ -1,5 +1,14 @@
-import { Field, Float, InputType } from "type-graphql";
-import { ExerciceTypeData } from "./typeExercice";
+import { Field, Float, InputType, registerEnumType } from "type-graphql";
+
+export enum ScopeExercice {
+  CALENDAR = "CALENDAR",
+  PROGRAM = "PROGRAM",
+}
+
+registerEnumType(ScopeExercice, {
+  name: "Scope",
+  description: "Scope de la provenance d'un exercice",
+});
 
 @InputType()
 class Config {
@@ -37,10 +46,11 @@ export class ExerciceData {
   notes?: string;
 
   @Field({ nullable: true })
-  position?: number;
+  image?: string;
 
   @Field({ nullable: true })
-  type?: ExerciceTypeData;
+  position?: number;
+
 
   @Field({ nullable: true })
   config?: Config;

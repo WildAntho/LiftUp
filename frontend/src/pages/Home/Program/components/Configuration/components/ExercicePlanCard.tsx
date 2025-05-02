@@ -1,6 +1,6 @@
 import { Exercice, ExerciceData } from "@/graphql/hooks";
 import { Input, Textarea, Tooltip } from "@heroui/react";
-import { ChevronRight, Grip, Notebook, Save, Trash2 } from "lucide-react";
+import { ChevronRight, Grip, Notebook, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import LogoAction from "./LogoActions";
 import PulsingCircle from "./PulsingCircle";
@@ -38,6 +38,10 @@ export default function ExercicePlanCard({
     { leading: true }
   );
 
+  const saveChanges = () => {
+    debouncedUpdate();
+  };
+
   useEffect(() => {
     setCurrentExercice(exercice);
   }, [exercice]);
@@ -52,7 +56,7 @@ export default function ExercicePlanCard({
 
   return (
     <div ref={setNodeRef} style={style}>
-      <section className="w-full h-full flex flex-col items-center justify-center p-4 gap-5 rounded-2xl bg-white border border-gray-200 transition-all duration-200 ease-in-out hover:shadow-md hover:-translate-y-1">
+      <section className="w-full h-full flex flex-col items-center justify-center p-4 gap-3 rounded-2xl bg-white border border-gray-200 transition-all duration-200 ease-in-out hover:shadow-md hover:-translate-y-1">
         <section
           className="w-full flex items-center justify-between cursor-pointer"
           onClick={toggleShowAll}
@@ -92,19 +96,12 @@ export default function ExercicePlanCard({
               <div className="group relative transition-all duration-200 ease-in-out hover:-translate-y-0.5">
                 <LogoAction
                   logo={<Notebook size={20} />}
-                  title="Note d'entraînement"
+                  title="Note d'exercice"
                   onClick={toggleShowAll}
                 />
                 {exercice.notes && exercice.notes.length > 0 && (
                   <PulsingCircle />
                 )}
-              </div>
-              <div className="group relative transition-all duration-200 ease-in-out hover:-translate-y-0.5">
-                <LogoAction
-                  logo={<Save size={20} />}
-                  title="Enregistrer"
-                  onClick={debouncedUpdate}
-                />
               </div>
               <div className="group relative transition-all duration-200 ease-in-out hover:-translate-y-0.5">
                 <LogoAction
@@ -139,6 +136,7 @@ export default function ExercicePlanCard({
                   serie: Number(e.target.value),
                 }))
               }
+              onBlur={saveChanges}
             />
             <Separator orientation="vertical" className="h-12" />
             <Input
@@ -152,6 +150,7 @@ export default function ExercicePlanCard({
                   rep: Number(e.target.value),
                 }))
               }
+              onBlur={saveChanges}
             />
             <Separator orientation="vertical" className="h-12" />
             <Input
@@ -165,6 +164,7 @@ export default function ExercicePlanCard({
                   weight: Number(e.target.value),
                 }))
               }
+              onBlur={saveChanges}
             />
             <Separator orientation="vertical" className="h-12" />
             <Input
@@ -178,6 +178,7 @@ export default function ExercicePlanCard({
                   intensity: Number(e.target.value),
                 }))
               }
+              onBlur={saveChanges}
             />
           </div>
           <Separator />
@@ -190,6 +191,7 @@ export default function ExercicePlanCard({
                 notes: e.target.value,
               }))
             }
+            onBlur={saveChanges}
           />
         </section>
       </section>

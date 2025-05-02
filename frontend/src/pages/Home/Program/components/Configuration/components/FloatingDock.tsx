@@ -1,5 +1,5 @@
 import FloatingDockDesktop from "./FloatingMenu";
-import { Home, Undo2, Copy, PlusCircle } from "lucide-react";
+import { Home, Undo2, Copy, PlusCircle, ClipboardCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 type FloatingDockProps = {
@@ -26,6 +26,13 @@ export default function FloatingDock({ onCreate }: FloatingDockProps) {
     {
       title: "Copier la séance",
       icon: <Copy className="h-full w-full" />,
+      action: () => {
+        console.log("clicked");
+      },
+    },
+    {
+      title: "Coller la séance",
+      icon: <ClipboardCheck className="h-full w-full" />,
       action: () => {
         console.log("clicked");
       },

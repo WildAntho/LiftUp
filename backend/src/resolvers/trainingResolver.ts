@@ -10,9 +10,7 @@ import { Between } from "typeorm";
 import { CtxUser } from "../InputType/coachType";
 import { Feedback } from "../entities/feedback";
 import { Crew } from "../entities/crew";
-import {
-  createTrainingsForDates,
-} from "../services/trainingService";
+import { createTrainingsForDates } from "../services/trainingService";
 
 @Resolver(Training)
 export class TrainingResolver {
@@ -46,8 +44,11 @@ export class TrainingResolver {
       relations: {
         user: true,
         crew: true,
+        exercices: true,
+      },
+      order: {
         exercices: {
-          type: true,
+          position: "ASC",
         },
       },
     });
@@ -109,7 +110,13 @@ export class TrainingResolver {
         await feedback.save();
       }
       if (data.date && data.date.length > 1) {
-        await createTrainingsForDates(data.date, data as TrainingData, user, {}, true);
+        await createTrainingsForDates(
+          data.date,
+          data as TrainingData,
+          user,
+          {},
+          true
+        );
       }
     }
     return JSON.stringify("La mise à jour a bien été effectuée");

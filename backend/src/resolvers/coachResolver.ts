@@ -216,9 +216,6 @@ export class CoachResolver {
       },
       relations: {
         user: true,
-        exercices: {
-          type: true,
-        },
       },
     });
     return trainings;
@@ -253,9 +250,6 @@ export class CoachResolver {
       },
       relations: {
         crew: true,
-        exercices: {
-          type: true,
-        },
       },
     });
     return trainings;

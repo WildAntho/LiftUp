@@ -9,8 +9,8 @@ import {
   NotepadTextDashed,
   Archive,
 } from "lucide-react";
-import { useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import ProgramCard from "./components/ProgramCard";
 import {
   ProgramLevel,
@@ -25,9 +25,12 @@ import { Input } from "@heroui/react";
 import { toast } from "sonner";
 import StatusCard from "./components/StatusCard";
 import { useProgramStore } from "@/services/zustand/programStore";
+import { useUserStore } from "@/services/zustand/userStore";
 
 export default function Program() {
+  const currentUser = useUserStore((state) => state.user);
   const setProgram = useProgramStore((state) => state.set);
+  const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const activeSection = searchParams.get("section");
@@ -47,6 +50,12 @@ export default function Program() {
   const [archiveProgram] = useArchiveProgramMutation();
   const [validateProgram] = useValidateProgramMutation();
   const myPrograms = data?.getPrograms ?? [];
+
+  useEffect(() => {
+    if (currentUser?.roles !== "COACH") {
+      navigate("/home");
+    }
+  }, [currentUser, navigate]);
 
   const handleArchiveProgram = async (id: string) => {
     try {

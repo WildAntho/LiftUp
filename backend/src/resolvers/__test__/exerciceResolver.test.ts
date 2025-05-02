@@ -1,19 +1,14 @@
 import { Exercice } from "../../entities/exercice";
-import { ExerciceType } from "../../entities/exerciceType";
 import { Training } from "../../entities/training";
-import {
-  createMockExerciceInput,
-} from "../../factory/exerciceFactory";
-import { createMockExerciceTypeEntity } from "../../factory/exerciceTypeFactory";
+import { createMockExerciceInput } from "../../factory/exerciceFactory";
 import { ExerciceResolver } from "../exerciceResolver";
 
 jest.mock("../../entities/exercice");
 jest.mock("../../entities/training");
-jest.mock("../../entities/exerciceType");
 
 describe("ExerciceResolver", () => {
   let exerciceResolver: ExerciceResolver;
-  let mockExercice: Exercice
+  let mockExercice: Exercice;
   const data = createMockExerciceInput();
   beforeEach(() => {
     exerciceResolver = new ExerciceResolver();
@@ -31,7 +26,7 @@ describe("ExerciceResolver", () => {
       const result = await exerciceResolver.getExercices("training-id");
       expect(Exercice.find).toHaveBeenCalledWith({
         where: { training: { id: "training-id" } },
-        relations: { training: true, type: true },
+        relations: { training: true },
       });
       expect(result).toEqual(mockExercices);
     });
@@ -41,8 +36,6 @@ describe("ExerciceResolver", () => {
     it("should update and return the exercice", async () => {
       mockExercice.id = "1";
       (Exercice.findOneBy as jest.Mock).mockResolvedValue(mockExercice);
-      const mockType = createMockExerciceTypeEntity();
-      (ExerciceType.findOneBy as jest.Mock).mockResolvedValue(mockType);
       (Exercice.save as jest.Mock).mockResolvedValue(mockExercice);
 
       const result = await exerciceResolver.updateExercice("1", data);
@@ -79,25 +72,44 @@ describe("ExerciceResolver", () => {
   });
 
   describe("addExercice", () => {
-    it("should create and return a new exercice", async () => {
+    it("should create multiple exercices and return success message", async () => {
+      // Mock de l'entité Training avec relation exercices
       const mockTraining = new Training();
+      mockTraining.id = "training-id";
       mockTraining.exercices = [];
-      mockTraining.save = jest.fn().mockResolvedValue(mockTraining);
+      mockTraining.save = jest.fn();
 
+      // Mock de Training.findOne
       (Training.findOne as jest.Mock).mockResolvedValue(mockTraining);
 
-      const mockType = createMockExerciceTypeEntity();
-      (ExerciceType.findOneBy as jest.Mock).mockResolvedValue(mockType);
+      // Mocks des exercices à ajouter
+      const mockExerciceInput = createMockExerciceInput(); // doit retourner un AddExercicePlanInput
+      const exercicesToAdd = [mockExerciceInput, mockExerciceInput]; // deux exercices
 
-      const mockExercice = new Exercice();
-      mockExercice.save = jest.fn().mockResolvedValue(mockExercice);
-      jest.spyOn(Exercice.prototype, "save").mockResolvedValue(mockExercice);
+      // Mock de Exercice.create et .save
+      const mockExerciceInstance = new Exercice();
+      mockExerciceInstance.save = jest
+        .fn()
+        .mockResolvedValue(mockExerciceInstance);
+      jest.spyOn(Exercice, "create").mockReturnValue(mockExerciceInstance);
+      jest
+        .spyOn(Exercice.prototype, "save")
+        .mockResolvedValue(mockExerciceInstance);
 
-      const data = createMockExerciceInput();
+      // Appel du resolver
+      const result = await exerciceResolver.addExercice(
+        "training-id",
+        exercicesToAdd
+      );
 
-      const result = await exerciceResolver.addExercice("training-id", data);
-      expect(result.title).toBe(data.title);
-      expect(mockTraining.exercices?.length).toBe(1);
+      // Vérification du résultat
+      expect(result).toBe("Les exercices ont bien été ajouté");
+      expect(Training.findOne).toHaveBeenCalledWith({
+        where: { id: "training-id" },
+        relations: { exercices: true },
+      });
+      expect(Exercice.create).toHaveBeenCalledTimes(2);
+      expect(mockExerciceInstance.save).toHaveBeenCalledTimes(2);
     });
 
     it("should throw if training not found", async () => {
@@ -105,7 +117,7 @@ describe("ExerciceResolver", () => {
 
       await expect(
         exerciceResolver.addExercice("bad-id", {} as any)
-      ).rejects.toThrow("Aucune entraînement correspond à cet id");
+      ).rejects.toThrow("Aucun entraînement n'a été trouvé");
     });
   });
 });

@@ -5,7 +5,6 @@ import {
   ExerciceModelInput,
 } from "../InputType/exerciceModelType";
 import { ILike } from "typeorm";
-import { ExerciceType } from "../entities/exerciceType";
 
 @Resolver(ExerciceModel)
 export class ExerciceModelResolver {
@@ -25,7 +24,6 @@ export class ExerciceModelResolver {
     const exerciceModels = await ExerciceModel.find({
       where,
       relations: {
-        type: true,
         user: true,
       },
     });
@@ -34,7 +32,6 @@ export class ExerciceModelResolver {
 
   @Mutation(() => String)
   async createExerciceModel(@Arg("data") data: ExerciceModelData) {
-    const type = await ExerciceType.findOneBy({ value: data.type?.value });
     const newModel = new ExerciceModel();
     newModel.rep = data.rep;
     newModel.serie = data.serie;
@@ -42,7 +39,6 @@ export class ExerciceModelResolver {
     newModel.notes = data.notes;
     newModel.intensity = data.intensity;
     newModel.weight = data.weight;
-    if (type) newModel.type = type;
     await newModel.save()
   }
 }

@@ -22,11 +22,8 @@ export const GET_MYTRAINING = gql`
         intensity
         weight
         notes
-        type {
-          id
-          value
-          label
-        }
+        image
+        position
       }
     }
   }
