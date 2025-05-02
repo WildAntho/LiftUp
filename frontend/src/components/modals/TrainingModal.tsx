@@ -289,7 +289,6 @@ export default function TrainingModal({
   };
 
   const handleUpdateExercice = async (id: string, exercice: ExerciceData) => {
-    console.log(exercice);
     setExercices((prev) =>
       prev.map((ex) =>
         ex.id === id
