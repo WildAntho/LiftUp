@@ -441,17 +441,19 @@ export default function TrainingModal({
               {isShow && (
                 <div className="w-[90%] h-full flex flex-col gap-2">
                   {exercices.map((e: Exercice) => (
-                    <ExerciceCard
-                      key={e.id}
-                      id={e.id}
-                      title={e.title}
-                      rep={e.rep}
-                      serie={e.serie}
-                      weight={e.weight}
-                      intensity={e.intensity}
-                      notes={e.notes}
-                      image={e.image}
-                    />
+                    <div className="w-full min-h-28">
+                      <ExerciceCard
+                        key={e.id}
+                        id={e.id}
+                        title={e.title}
+                        rep={e.rep}
+                        serie={e.serie}
+                        weight={e.weight}
+                        intensity={e.intensity}
+                        notes={e.notes}
+                        image={e.image}
+                      />
+                    </div>
                   ))}
                 </div>
               )}
