@@ -16,7 +16,7 @@ type CreateWorkoutProps = {
   onCreateTraining: () => void;
   onUpdateTraining: (id: string, title: string, notes?: string) => void;
   onDeleteTraining: (id: string) => void;
-  onCreateExercice: (id: string, exercices: AddExercicePlanInput[]) => void;
+  onCreateExercice: (exercices: AddExercicePlanInput[], id?: string) => void;
   onDeleteExercice: (id: string) => void;
   onUpdateExercice: (
     id: string,
@@ -38,7 +38,7 @@ export default function CreateWorkout({
   onCreateExercice,
   onDeleteExercice,
   onUpdateExercice,
-  onUpdateDrag
+  onUpdateDrag,
 }: CreateWorkoutProps) {
   const containerVariants = {
     hidden: { opacity: 0 },

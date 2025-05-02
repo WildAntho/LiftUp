@@ -11,6 +11,7 @@ import { createExerciceFromData } from "../services/trainingService";
 import { CreateMultipleExercicesFromModel } from "../services/exerciceService";
 import { Exercice } from "../entities/exercice";
 import { ExerciceModelData } from "../InputType/exerciceModelType";
+import { ScopeExercice } from "../InputType/exerciceType";
 
 @Authorized("COACH")
 @Resolver(TrainingPlan)
@@ -91,7 +92,7 @@ export class TrainingPlanResolver {
       relations: { exercices: true },
     });
     if (!training) throw new Error("Aucun entraînement n'a été trouvé");
-    await CreateMultipleExercicesFromModel(exercices, training);
+    await CreateMultipleExercicesFromModel(exercices, training, ScopeExercice.PROGRAM);
     return exercices.length > 1
       ? "Les exercices ont bien été ajouté"
       : "L'exercice a bien été ajouté";

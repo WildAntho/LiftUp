@@ -1,5 +1,4 @@
 import { faker } from "@faker-js/faker/.";
-import { createMockExerciceTypeEntity } from "./exerciceTypeFactory";
 
 export const createMockExerciceInput = () => ({
   title: faker.lorem.words(2),
@@ -11,7 +10,6 @@ export const createMockExerciceInput = () => ({
   training: {
     id: faker.string.uuid(),
   },
-  type: createMockExerciceTypeEntity(),
 });
 
 export const createMockExerciceEntity = (overrides = {}) => ({
@@ -25,6 +23,5 @@ export const createMockExerciceEntity = (overrides = {}) => ({
   training: {
     id: faker.string.uuid(),
   },
-  type: createMockExerciceTypeEntity(),
   ...overrides,
 });

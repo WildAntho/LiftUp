@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Input } from "@/components/ui/input"; // Shadcn Input
-import { Textarea } from "@heroui/react";
-import { Dumbbell, Notebook, Pen, Save, Trash2 } from "lucide-react";
+import { Input, Textarea } from "@heroui/react";
+import { Dumbbell, Notebook, Pen, Trash2 } from "lucide-react";
 import LogoAction from "./LogoActions";
 import { useDebouncedCallback } from "@/services/useDebouncedCallback";
 import PulsingCircle from "./PulsingCircle";
@@ -41,7 +40,9 @@ export default function TrainingPlanCard({
         inputRef.current &&
         !inputRef.current.contains(event.target as Node)
       ) {
-        setIsEditingTitle(false);
+        setTimeout(() => {
+          setIsEditingTitle(false);
+        }, 0);
       }
     };
 
@@ -64,6 +65,17 @@ export default function TrainingPlanCard({
     { leading: true }
   );
 
+  // Fonction spécifique pour l'Input
+  const handleInputBlur = () => {
+    debouncedUpdate();
+    setIsEditingTitle(false);
+  };
+
+  // Fonction pour le Textarea
+  const handleTextareaBlur = () => {
+    debouncedUpdate();
+  };
+
   return (
     <section className="w-full flex flex-col items-center justify-center gap-4 px-4 py-6 rounded-2xl bg-white border border-gray-200 transition-all duration-200 ease-in-out hover:shadow-md hover:-translate-y-1">
       <section className="w-full flex items-center justify-between">
@@ -75,6 +87,7 @@ export default function TrainingPlanCard({
               onChange={(e) => setCurrentTitle(e.target.value)}
               className="text-base w-full"
               autoFocus
+              onBlur={handleInputBlur}
             />
           ) : (
             <div
@@ -111,16 +124,6 @@ export default function TrainingPlanCard({
           </div>
           <div className="group relative transition-all duration-200 ease-in-out hover:-translate-y-0.5">
             <LogoAction
-              logo={<Save size={20} />}
-              title="Enregistrer"
-              onClick={() => {
-                debouncedUpdate();
-                setShowDescription(false);
-              }}
-            />
-          </div>
-          <div className="group relative transition-all duration-200 ease-in-out hover:-translate-y-0.5">
-            <LogoAction
               logo={<Trash2 size={20} />}
               title="Supprimer"
               onClick={() => onDelete(id)}
@@ -137,6 +140,7 @@ export default function TrainingPlanCard({
           label="Ajouter des notes"
           value={currentNotes}
           onChange={(e) => setCurrentNotes(e.target.value)}
+          onBlur={handleTextareaBlur}
         />
       </div>
     </section>

@@ -7,15 +7,17 @@ import { useStudentStore } from "@/services/zustand/studentStore";
 import FeedbackModal from "./FeedbackModal";
 import useIsDesktop from "@/pages/UnsupportedScreen/useIsDesktop";
 import {
+  AddExercicePlanInput,
   Exercice,
-  ExerciceModel,
+  ExerciceData,
   Training,
+  useAddExerciceMutation,
   useAddTrainingCrewMutation,
   useAddTrainingMutation,
   useAddTrainingStudentMutation,
   useDeleteExerciceMutation,
   useDeleteTrainingMutation,
-  useGetAllExercicesModelQuery,
+  useUpdateExerciceMutation,
   useUpdateTrainingMutation,
 } from "@/graphql/hooks";
 import {
@@ -31,25 +33,16 @@ import {
 } from "@heroui/react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Tooltip } from "@heroui/react";
-import { Dumbbell, Loader2, Plus, SlidersHorizontal } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Delete from "../Delete";
 import Edit from "../Edit";
-import ExerciceModal from "./ExerciceModal";
 import ExerciceCard from "../ExerciceCard";
-import ExerciceModelCard from "../ExerciceModelCard";
-import {
-  DndContext,
-  DragEndEvent,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { SortableContext, arrayMove } from "@dnd-kit/sortable";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import { DragEndEvent } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 import { useCrewStore } from "@/services/zustand/crewStore";
 import { Separator } from "../ui/separator";
 import { TextInputField } from "evergreen-ui";
+import ExerciceComponent from "@/pages/Home/Program/components/Configuration/components/ExerciceComponent";
 
 interface Config {
   rep: number;
@@ -100,9 +93,10 @@ export default function TrainingModal({
   const [updateTraining, { loading: loadingUpdate }] =
     useUpdateTrainingMutation();
   const [deleteExercice] = useDeleteExerciceMutation();
+  const [updateExercice] = useUpdateExerciceMutation();
+  const [addExercice] = useAddExerciceMutation();
   const [openFeedback, setOpenFeedback] = useState<boolean>(false);
   const [openRecurrent, setOpenRecurrent] = useState<boolean>(false);
-  const [openExerciceModal, setOpenExerciceModal] = useState(false);
   const [title, setTitle] = useState<string>(training ? training.title : "");
   const [notes, setNotes] = useState<string>(
     training && training.notes ? training.notes : ""
@@ -125,24 +119,7 @@ export default function TrainingModal({
   const [exerciceConfigs, setExerciceConfigs] = useState<
     Record<string, Config>
   >({});
-  const [editingExercice, setEditingExercice] = useState<Exercice | null>(null);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
-
-  const [modelInput, setModelInput] = useState<string>("");
-  const [myModel, setMyModel] = useState<boolean>(false);
-  const { data: dataExerciceModel } = useGetAllExercicesModelQuery({
-    variables: {
-      data: {
-        id: myModel ? currentUser?.id : null,
-        input: modelInput ? modelInput : null,
-      },
-    },
-  });
-
-  const exerciceModels =
-    dataExerciceModel && dataExerciceModel.getAllExercicesModel
-      ? dataExerciceModel.getAllExercicesModel
-      : [];
 
   useEffect(() => {
     if (open) {
@@ -158,7 +135,9 @@ export default function TrainingModal({
         setTitle(training?.title || "");
         setNotes(training?.notes || "");
         setSelectedDate(
-          format(training?.date, "yyyy-MM-dd") || format(date, "yyyy-MM-dd")
+          training?.date
+            ? format(new Date(training.date), "yyyy-MM-dd")
+            : format(date, "yyyy-MM-dd")
         );
         setExercices(training?.exercices || []);
       }
@@ -281,43 +260,80 @@ export default function TrainingModal({
     close();
   };
 
+  const handleCreateExercice = async (
+    exercicesToAdd: AddExercicePlanInput[]
+  ) => {
+    const newExercices = [...exercices];
+    exercicesToAdd.forEach((e) => newExercices.push(e as Exercice));
+    setExercices(newExercices);
+    if (!isNew) {
+      await addExercice({
+        variables: {
+          id: training?.id as string,
+          exercices: exercicesToAdd,
+        },
+      });
+    }
+  };
+
   const handleDeleteExercice = async (exerciceId: string) => {
-    if (isNew) {
-      const newExercices = exercices.filter((e) => e.id !== exerciceId);
-      setExercices(newExercices);
-    } else {
+    const newExercices = exercices.filter((e) => e.id !== exerciceId);
+    setExercices(newExercices);
+    if (!isNew) {
       await deleteExercice({
         variables: {
           id: exerciceId,
         },
       });
-      const newExercices = exercices.filter((e) => e.id !== exerciceId);
-      setExercices(newExercices);
     }
   };
 
-  const handleUpdateExercice = async (exerciceId: string) => {
-    const exerciceToEdit = exercices.find((e) => e.id === exerciceId);
-    setEditingExercice(exerciceToEdit || null);
-    setOpenExerciceModal(true);
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      setExercices((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
+  const handleUpdateExercice = async (id: string, exercice: ExerciceData) => {
+    console.log(exercice);
+    setExercices((prev) =>
+      prev.map((ex) =>
+        ex.id === id
+          ? ({
+              ...ex,
+              ...exercice,
+            } as Exercice)
+          : ex
+      )
+    );
+    if (!isNew) {
+      await updateExercice({
+        variables: {
+          data: exercice,
+          id,
+        },
       });
     }
   };
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 10 },
-    })
-  );
+  const handleDragEnd = async (
+    event: DragEndEvent,
+    localExercices: Exercice[],
+    setLocalExercices: (exercices: Exercice[]) => void
+  ) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = localExercices.findIndex((item) => item.id === active.id);
+    const newIndex = localExercices.findIndex((item) => item.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const newOrder = arrayMove(localExercices, oldIndex, newIndex);
+    setLocalExercices(newOrder);
+    setExercices(newOrder);
+    await Promise.all(
+      newOrder.map((ex, index) => {
+        if (ex.position !== index) {
+          return handleUpdateExercice(ex.id, { ...ex, position: index });
+        }
+      })
+    );
+  };
 
   const isDesktop = useIsDesktop(1920);
 
@@ -327,7 +343,7 @@ export default function TrainingModal({
       isOpen={open}
       onOpenChange={() => close()}
       isDismissable={false}
-      size={!isShow ? "full" : "3xl"}
+      size="5xl"
       style={{ backgroundColor: "#FFFFFF" }}
       classNames={{
         closeButton: "text-white hover:bg-white/5 active:bg-white/10",
@@ -364,52 +380,6 @@ export default function TrainingModal({
             height: "100%",
           }}
         >
-          {!isShow && (
-            <section className="sticky top-0 h-full w-[50%] bg-white border border-gray-300 rounded-lg p-4 overflow-y-auto flex flex-col gap-4">
-              <p className="font-bold">Modèles d'exercices</p>
-              <div className="w-full flex items-center justify-between gap-2">
-                <div className="flex-1">
-                  <Input
-                    label="Recherche un exercice"
-                    className="placeholder:text-xs"
-                    value={modelInput}
-                    onChange={(e) => setModelInput(e.target.value)}
-                  />
-                </div>
-                <div className="hover:bg-black/5 p-2 rounded-full cursor-pointer">
-                  <Tooltip
-                    content="Filtres"
-                    showArrow={true}
-                    color="foreground"
-                    className="text-xs"
-                  >
-                    <SlidersHorizontal size={18} />
-                  </Tooltip>
-                </div>
-              </div>
-              <Switch size="sm" isSelected={myModel} onValueChange={setMyModel}>
-                <p className="text-xs">Uniquement mes exercices</p>
-              </Switch>
-              {exerciceModels.length > 0 ? (
-                exerciceModels.map((e: ExerciceModel) => (
-                  <ExerciceModelCard
-                    key={e.id}
-                    exercice={e}
-                    setExercices={setExercices}
-                    exercices={exercices}
-                    isNew={isNew}
-                    trainingId={training?.id}
-                  />
-                ))
-              ) : (
-                <p className="text-xs items-start w-full text-gray-400">
-                  {myModel
-                    ? "Vous n'avez aucun modèle d'exercice"
-                    : "Aucun exercice trouvé"}
-                </p>
-              )}
-            </section>
-          )}
           <section className="flex flex-col gap-2 w-full h-full">
             <section className="flex-none flex flex-col justify-center items-center gap-3 p-4 rounded-lg min-h-[15%]">
               <p className="w-full items-start font-bold">
@@ -468,77 +438,34 @@ export default function TrainingModal({
             <Separator />
             <section className="flex flex-col justify-start items-center gap-3 w-full p-4 flex-1">
               <p className="w-full items-start font-bold">Exercices</p>
-              <DndContext
-                modifiers={[restrictToVerticalAxis]}
-                onDragEnd={handleDragEnd}
-                sensors={sensors}
-              >
-                <SortableContext items={exercices}>
-                  <div className="w-full h-full flex flex-col gap-3">
-                    {exercices.map((e: Exercice) => (
-                      <ExerciceCard
-                        key={e.id}
-                        id={e.id}
-                        title={e.title}
-                        rep={e.rep}
-                        serie={e.serie}
-                        weight={e.weight}
-                        intensity={e.intensity}
-                        notes={e.notes}
-                        type={e.type}
-                        isShow={isShow}
-                        onDelete={handleDeleteExercice}
-                        onUpdate={handleUpdateExercice}
-                      />
-                    ))}
-                    <ExerciceModal
-                      open={openExerciceModal}
-                      onClose={() => setOpenExerciceModal(false)}
-                      setExercices={setExercices}
-                      exercices={exercices}
-                      exerciceToEdit={editingExercice}
-                      isNew={isNew}
-                      trainingId={training?.id}
+              {isShow && (
+                <div className="w-[90%] h-full flex flex-col gap-2">
+                  {exercices.map((e: Exercice) => (
+                    <ExerciceCard
+                      key={e.id}
+                      id={e.id}
+                      title={e.title}
+                      rep={e.rep}
+                      serie={e.serie}
+                      weight={e.weight}
+                      intensity={e.intensity}
+                      notes={e.notes}
+                      image={e.image}
                     />
-                    {!isShow && (
-                      <div className="w-full h-full flex flex-col justify-center items-center gap-4">
-                        {exercices.length === 0 && (
-                          <div className="flex flex-col items-center justify-center gap-2">
-                            <p className="text-sm text-gray-600">
-                              Aucun exercice ajouté pour le moment
-                            </p>
-                            <p className="text-xs text-gray-500 flex items-center justify-center gap-2">
-                              <Dumbbell className="text-gray-500 w-4 h-4" />
-                              Ajouter un nouvel exercice
-                            </p>
-                          </div>
-                        )}
-                        <Tooltip
-                          content="Ajouter un exercice"
-                          className="text-xs"
-                          showArrow={true}
-                          color="foreground"
-                        >
-                          <div
-                            className="group flex justify-center items-center w-12 h-12 rounded-full my-2 cursor-pointer text-tertiary border border-tertiary border-opacity-20 bg-tertiary bg-opacity-20 hover:bg-tertiary hover:bg-opacity-20 shadow-sm p-2 hover:translate-y-[-2px] hover:shadow-md transition-all duration-200"
-                            onClick={() => {
-                              setEditingExercice(null);
-                              setOpenExerciceModal(true);
-                            }}
-                          >
-                            <Plus className="transition-all duration-200 group-hover:rotate-90" />
-                          </div>
-                        </Tooltip>
-                      </div>
-                    )}
-                    {exercices.length === 0 && isShow && (
-                      <p className="text-xs items-start w-full text-gray-400">
-                        Aucun exercice
-                      </p>
-                    )}
-                  </div>
-                </SortableContext>
-              </DndContext>
+                  ))}
+                </div>
+              )}
+              {!isShow && (
+                <ExerciceComponent
+                  exercices={exercices}
+                  trainingId={training?.id ?? "1"}
+                  onDelete={handleDeleteExercice}
+                  onUpdate={handleUpdateExercice}
+                  onCreate={handleCreateExercice}
+                  onUpdateDrag={handleDragEnd}
+                  fromCalendar
+                />
+              )}
             </section>
             <Separator />
             <section className="flex-none flex flex-col justify-start gap-3 w-full p-4">

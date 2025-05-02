@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Training } from "./training";
-import { ExerciceType } from "./exerciceType";
 import { TrainingPlan } from "./trainingPlan";
 
 @ObjectType()
@@ -60,8 +59,4 @@ export class Exercice extends BaseEntity {
     onDelete: "CASCADE",
   })
   trainingPlan?: TrainingPlan;
-
-  @Field(() => ExerciceType, { nullable: true })
-  @ManyToOne(() => ExerciceType, (type) => type.exercices, { nullable: true })
-  type?: ExerciceType;
 }

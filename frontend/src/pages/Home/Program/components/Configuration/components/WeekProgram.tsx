@@ -4,7 +4,7 @@ import {
   Calendar,
   ChevronLeftIcon,
   ChevronRightIcon,
-  Copy,
+  Repeat2,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { AnimatePresence, motion } from "framer-motion";
@@ -129,7 +129,7 @@ export default function WeekProgram({
               className="text-[10px]"
             >
               <div className="hover:bg-black/5 p-2 rounded-full cursor-pointer">
-                <Copy className="size-5 text-black active:text-gray-500" />
+                <Repeat2 className="size-5 text-black active:text-gray-500" />
               </div>
             </Tooltip>
           </div>

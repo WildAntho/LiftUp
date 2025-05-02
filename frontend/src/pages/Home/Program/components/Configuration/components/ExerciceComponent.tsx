@@ -15,9 +15,9 @@ import { useEffect, useState } from "react";
 import { SortableContext } from "@dnd-kit/sortable";
 
 type ExerciceComponentProps = {
-  onCreate: (id: string, exercices: AddExercicePlanInput[]) => void;
+  onCreate: (exercices: AddExercicePlanInput[], id?: string) => void;
   onDelete: (id: string) => void;
-  onUpdate: (id: string, exercice: ExerciceData, showToast?: boolean) => void;
+  onUpdate: (id: string, exercice: ExerciceData) => void;
   onUpdateDrag: (
     event: DragEndEvent,
     localExercices: Exercice[],
@@ -25,6 +25,7 @@ type ExerciceComponentProps = {
   ) => void;
   trainingId: string;
   exercices: Exercice[];
+  fromCalendar?: boolean;
 };
 
 export default function ExerciceComponent({
@@ -34,6 +35,7 @@ export default function ExerciceComponent({
   onUpdateDrag,
   trainingId,
   exercices,
+  fromCalendar = false,
 }: ExerciceComponentProps) {
   const [localExercices, setLocalExercices] = useState<Exercice[]>(exercices);
 
@@ -74,7 +76,7 @@ export default function ExerciceComponent({
         position: lastPosition + i,
       };
     });
-    onCreate(trainingId, allExercicesWithPosition);
+    onCreate(allExercicesWithPosition, trainingId);
   };
 
   const handleDelete = (deletedId: string) => {
@@ -87,7 +89,7 @@ export default function ExerciceComponent({
     onDelete(deletedId);
     setLocalExercices(updatedExercices);
     updatedExercices.forEach((e) => {
-      onUpdate(e.id, e, false);
+      onUpdate(e.id, e);
     });
   };
 
@@ -109,7 +111,7 @@ export default function ExerciceComponent({
       initial="hidden"
       animate="visible"
     >
-      <Separator orientation="vertical" className="h-12" />
+      {!fromCalendar && <Separator orientation="vertical" className="h-12" />}
       {!hasExercice && (
         <>
           <motion.h2
@@ -146,7 +148,7 @@ export default function ExerciceComponent({
             ))}
           </SortableContext>
         </DndContext>
-        <Separator orientation="vertical" className="h-6" />
+        {!fromCalendar && <Separator orientation="vertical" className="h-6" />}
         <motion.div
           variants={itemVariants}
           className="w-full flex justify-center items-center"

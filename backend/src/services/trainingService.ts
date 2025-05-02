@@ -2,7 +2,6 @@ import { ExerciceData } from "../InputType/exerciceType";
 import { TrainingData } from "../InputType/trainingType";
 import { Crew } from "../entities/crew";
 import { Exercice } from "../entities/exercice";
-import { ExerciceType } from "../entities/exerciceType";
 import { Training } from "../entities/training";
 import { User } from "../entities/user";
 
@@ -16,9 +15,6 @@ export async function createExerciceFromData(
     serie: exData.config?.serie ? exData.config.serie : 0,
     intensity: exData.config?.intensity ? exData.config.intensity : 0,
   };
-  const type =
-    exData.type &&
-    (await ExerciceType.findOneBy({ value: exData?.type.value }));
   const exercice = Exercice.create({
     rep: Math.max(exData.rep + index * config.rep, 1),
     serie: Math.max(exData.serie + index * config.serie, 1),
@@ -28,7 +24,8 @@ export async function createExerciceFromData(
       ? Math.min(exData.intensity + index * config.intensity, 10)
       : 0,
     notes: exData.notes,
-    type: type as ExerciceType,
+    image: exData.image,
+    position: exData.position,
   });
   await exercice.save();
   return exercice;

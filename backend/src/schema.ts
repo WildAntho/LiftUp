@@ -6,7 +6,6 @@ import { FeedbackResolver } from "./resolvers/feedbackResolver";
 import { RequestResolver } from "./resolvers/requestResolver";
 import { StudentResolver } from "./resolvers/studentResolver";
 import { ExerciceResolver } from "./resolvers/exerciceResolver";
-import { ExerciceTypeResolver } from "./resolvers/exerciceTypeResolver";
 import { ExerciceModelResolver } from "./resolvers/exerciceModelResolver";
 import { CoachProfileResolver } from "./resolvers/coachProfileResolver";
 import { OfferCategoryResolver } from "./resolvers/offerCategoryResolver";
@@ -41,7 +40,6 @@ export const createSchema = async (pubsub: PubSubType) => {
       RequestResolver,
       StudentResolver,
       ExerciceResolver,
-      ExerciceTypeResolver,
       ExerciceModelResolver,
       CoachProfileResolver,
       OfferCategoryResolver,

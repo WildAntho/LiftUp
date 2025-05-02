@@ -83,7 +83,7 @@ export default function ProgramModal({
     if (form.public) {
       baseSteps.push({
         title: "Informations complémentaires",
-        isCompleted: form.price > 0,
+        isCompleted: form.price > 0 && form.level.length > 0,
       });
     }
 
@@ -107,7 +107,7 @@ export default function ProgramModal({
   const canContinue = () => {
     if (currentStep === 1) return true;
     if (currentStep === 2) return form.title !== "" && form.description !== "";
-    if (currentStep === 3) return form.price > 0;
+    if (currentStep === 3) return form.price > 0 && form.level;
     return false;
   };
 
@@ -117,6 +117,7 @@ export default function ProgramModal({
         variables: {
           data: {
             ...form,
+            level: form.level ? form.level : ProgramLevel.Beginner,
           },
         },
       });
