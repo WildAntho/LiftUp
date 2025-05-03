@@ -25,6 +25,7 @@ services:
     build: ./frontend
     volumes: 
       - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
       - ./frontend/tailwind.config.js:/app/tailwind.config.js
     environment:
       VITE_GATEWAY_PORT: ${GATEWAY_PORT}

@@ -39,7 +39,7 @@ export default function Renew({
           color="foreground"
           className="text-xs"
         >
-          <div className="hover:bg-blue-500 hover:bg-opacity-10 p-2 rounded-full cursor-pointer">
+          <div className="hover:bg-black/5 p-2 rounded-full cursor-pointer">
             <RefreshCcw className={`size-4 text-black`} />
           </div>
         </Tooltip>

@@ -34,3 +34,10 @@ export type Receiver = {
 };
 
 export type ExerciceWithoutId = Omit<Exercice, "id">;
+
+export enum StatusStudent {
+  active = "ACTIVE",
+  waiting = "WAITING",
+  end_7 = "END_7",
+  expired = "EXPIRED",
+}

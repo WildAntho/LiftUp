@@ -4,6 +4,8 @@ import { useProgramStore } from "@/services/zustand/programStore";
 import { Clock, Lock, Globe2, PlayCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PopEllipsis from "./PopEllipsis";
+import ConfirmModal from "@/components/modals/ConfirmModal";
+import { useState } from "react";
 
 type ProgramCardProps = {
   id: string;
@@ -31,6 +33,7 @@ export default function ProgramCard({
   onValidate,
 }: ProgramCardProps) {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
   const setProgram = useProgramStore((state) => state.set);
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -58,6 +61,10 @@ export default function ProgramCard({
     }
   };
 
+  const handleOpenConfirm = () => {
+    setOpen(true);
+  };
+
   const handleDelete = () => {
     onDelete(id);
   };
@@ -71,9 +78,13 @@ export default function ProgramCard({
       status,
       public: isPublic,
       price: price ?? 0,
-      level
+      level,
     });
     navigate(`/home?tab=program&section=configuration`);
+  };
+
+  const handleCloseConfirm = () => {
+    setOpen(false);
   };
 
   const handleValidate = () => {
@@ -90,7 +101,7 @@ export default function ProgramCard({
             {title}
           </h1>
           <PopEllipsis
-            onDelete={handleDelete}
+            onDelete={handleOpenConfirm}
             status={status}
             navigate={handleNavigate}
             onValidate={handleValidate}
@@ -133,6 +144,12 @@ export default function ProgramCard({
           </div>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={open}
+        onClose={handleCloseConfirm}
+        onConfirm={handleDelete}
+        description="Êtes-vous sûr de vouloir archiver ce programme ?"
+      />
     </article>
   );
 }

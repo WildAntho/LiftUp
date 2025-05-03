@@ -29,6 +29,8 @@ export default function TrainingPlanCard({
   const [currentNotes, setCurrentNotes] = useState(notes);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const prevInputRef = useRef<string>(title);
+  const prevTextAreaRef = useRef<string>(notes);
 
   const toggleDescription = () => {
     setShowDescription((prev) => !prev);
@@ -67,13 +69,19 @@ export default function TrainingPlanCard({
 
   // Fonction spécifique pour l'Input
   const handleInputBlur = () => {
-    debouncedUpdate();
+    if (prevInputRef.current !== currentTitle) {
+      debouncedUpdate();
+      prevInputRef.current = currentTitle;
+    }
     setIsEditingTitle(false);
   };
 
   // Fonction pour le Textarea
   const handleTextareaBlur = () => {
-    debouncedUpdate();
+    if (prevTextAreaRef.current !== currentNotes) {
+      debouncedUpdate();
+      prevTextAreaRef.current = currentNotes;
+    }
   };
 
   return (

@@ -21,13 +21,26 @@ import {
   Select,
   SelectItem,
 } from "@heroui/react";
-import { BadgeEuro, Handshake, Loader2, SearchIcon } from "lucide-react";
+import {
+  AlarmClock,
+  AlarmClockOff,
+  BadgeEuro,
+  CircleCheckBig,
+  Handshake,
+  Hourglass,
+  Loader2,
+  SearchIcon,
+  Users,
+} from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import imgDefault from "../../../public/default.jpg";
 import { uploadURL } from "@/services/utils";
 import Activate from "@/components/Activate";
 import { addMonths, differenceInDays } from "date-fns";
 import Renew from "@/components/Renew";
+import StatusStudentCard from "./components/StatusStudentCard";
+import { StatusStudent } from "@/type";
+import ConfirmModal from "@/components/modals/ConfirmModal";
 
 type UserType = {
   id: string;
@@ -50,21 +63,49 @@ type TabStudentProps = {
 
 export default function TabStudent({ refetch }: TabStudentProps) {
   const currentUser = useUserStore((state) => state.user);
+  const [openConfirm, setOpenConfirm] = useState<boolean>(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [activeCard, setActiveCard] = useState<StatusStudent | null>(null);
   const [input, setInput] = useState<string>("");
   const [offer, setOffer] = useState<string>("");
   const [crew, setCrew] = useState<string>("");
   const [page, setPage] = useState<number>(1);
-  const limit = 20;
+  const [limit, setLimit] = useState<number>(20);
+  const tabLimitStudent = [
+    {
+      key: 10,
+      label: "10",
+    },
+    {
+      key: 20,
+      label: "20",
+    },
+    {
+      key: 30,
+      label: "30",
+    },
+    {
+      key: 40,
+      label: "40",
+    },
+    {
+      key: 50,
+      label: "50",
+    },
+  ];
   const [sortRemaining, setSortRemaining] = useState<boolean>(false);
   const { data: dataOffers } = useGetOneCoachOffersQuery({
     variables: { id: currentUser?.id.toString() as string },
+    fetchPolicy: "cache-and-network",
   });
   const allOffers = dataOffers?.getOneCoachOffers ?? [];
   const noCrew = {
     id: "none",
     name: "Aucune",
   };
-  const { data: dataCrews } = useGetCoachCrewsQuery();
+  const { data: dataCrews } = useGetCoachCrewsQuery({
+    fetchPolicy: "cache-and-network",
+  });
   const allCrews = [noCrew, ...(dataCrews?.getCoachCrews ?? [])];
   const {
     data: dataStudents,
@@ -76,6 +117,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
       input: input,
       offerId: offer,
       crewId: crew,
+      status: activeCard,
       sortRemaining,
       page,
       limit,
@@ -149,7 +191,10 @@ export default function TabStudent({ refetch }: TabStudentProps) {
       student.memberships[0].endDate &&
       student.memberships[0].endDate
         ? addMonths(
-            new Date(student.memberships[0].endDate),
+            new Date(student.memberships[0].endDate).getTime() >
+              new Date().getTime()
+              ? new Date(student.memberships[0].endDate).getTime()
+              : new Date(),
             student.studentOffer?.durability
           ).toISOString()
         : "",
@@ -218,10 +263,10 @@ export default function TabStudent({ refetch }: TabStudentProps) {
           return (
             <div className="relative flex items-center gap-2">
               <Delete
-                onDelete={() => handleDeleteStudent(user.id)}
-                loading={loading}
-                title="Supprimer l'élève"
-                description="Êtes-vous sûr de vouloir supprimer cet élève ?"
+                onClick={() => {
+                  setSelectedUserId(user.id);
+                  setOpenConfirm(true);
+                }}
               />
               {!user.remaining && !user.memberShipId && (
                 <Activate
@@ -327,6 +372,62 @@ export default function TabStudent({ refetch }: TabStudentProps) {
 
   return (
     <section className="w-full h-full flex flex-col items-center justify-start gap-5">
+      <ConfirmModal
+        isOpen={openConfirm}
+        onClose={() => {
+          setOpenConfirm(false);
+          setSelectedUserId(null);
+        }}
+        description="Êtes-vous sûr de vouloir supprimer cet élève ?"
+        onConfirm={() => handleDeleteStudent(selectedUserId as string)}
+        loading={loading}
+      />
+      <section className="w-full flex justify-start items-center gap-4">
+        <div onClick={() => setActiveCard(null)}>
+          <StatusStudentCard
+            icon={<Users />}
+            title="Tous"
+            description="Tous les élèves"
+            isActive={!activeCard}
+          />
+        </div>
+        <div onClick={() => setActiveCard(StatusStudent.active)}>
+          <StatusStudentCard
+            icon={<CircleCheckBig />}
+            title="Actifs"
+            description="Coaching en cours"
+            type={StatusStudent.active}
+            isActive={activeCard === StatusStudent.active}
+          />
+        </div>
+        <div onClick={() => setActiveCard(StatusStudent.waiting)}>
+          <StatusStudentCard
+            icon={<Hourglass />}
+            title="En attente"
+            description="Inscription à valider"
+            type={StatusStudent.waiting}
+            isActive={activeCard === StatusStudent.waiting}
+          />
+        </div>
+        <div onClick={() => setActiveCard(StatusStudent.end_7)}>
+          <StatusStudentCard
+            icon={<AlarmClock />}
+            title="Fin proche"
+            description="Fin dans moins de 8 jours"
+            type={StatusStudent.end_7}
+            isActive={activeCard === StatusStudent.end_7}
+          />
+        </div>
+        <div onClick={() => setActiveCard(StatusStudent.expired)}>
+          <StatusStudentCard
+            icon={<AlarmClockOff />}
+            title="Expirés"
+            description="Coaching terminés"
+            type={StatusStudent.expired}
+            isActive={activeCard === StatusStudent.expired}
+          />
+        </div>
+      </section>
       <Table
         isHeaderSticky
         onSortChange={handleSortChange}
@@ -335,13 +436,28 @@ export default function TabStudent({ refetch }: TabStudentProps) {
           direction: sortRemaining ? "ascending" : "descending",
         }}
         bottomContent={
-          <div className="flex w-full justify-center">
+          <div className="relative flex w-full justify-center items-center">
             <PaginationBar setPage={setPage} page={page} total={totalPage} />
+            <div className="w-[30%] absolute right-0 flex justify-end items-center gap-2">
+              <p className="text-xs">Elèves par page</p>
+              <Select
+                className="w-20"
+                size="sm"
+                aria-label="Nombre d'élève affiché"
+                labelPlacement="outside-left"
+                selectedKeys={[limit.toString()]}
+                defaultSelectedKeys={["20"]}
+                onChange={(e) => setLimit(Number(e.target.value))}
+              >
+                {tabLimitStudent.map((t) => (
+                  <SelectItem key={t.key}>{t.label}</SelectItem>
+                ))}
+              </Select>
+            </div>
           </div>
         }
         topContent={topContent}
         classNames={{
-          //base: "max-h-[520px]",
           table: "min-h-[200px]",
         }}
         aria-label="Table élèves"

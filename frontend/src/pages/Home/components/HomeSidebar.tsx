@@ -179,14 +179,11 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
               <motion.div
                 whileTap={{ scale: 0.99 }}
                 transition={{ type: "spring", stiffness: 600 }}
-                className={`group ${
-                  s.withArrow
-                    ? "hover:bg-primary hover:bg-opacity-10 hover:text-primary"
-                    : "hover:bg-none"
+                className={`group hover:bg-dark/5
                 } rounded-md py-2 cursor-pointer ${
                   ((!params && s.value === "dashboard") ||
                     s.value === params) &&
-                  "bg-primary bg-opacity-10 text-primary"
+                  "bg-primary/10 text-primary"
                 }`}
                 onClick={s.get}
               >

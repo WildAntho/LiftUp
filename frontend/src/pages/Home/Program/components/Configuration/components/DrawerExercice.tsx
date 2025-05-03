@@ -45,11 +45,11 @@ export default function DrawerExercice({ onCreate }: DrawerExerciceProps) {
       </DrawerTrigger>
       <DrawerContent>
         <div className="flex flex-col h-[80vh] w-full items-center">
-          <div className="px-4 sticky top-0 bg-white z-10 w-[70%] h-20 flex justify-between items-end pb-2">
+          <div className="px-4 sticky top-0 bg-white z-10 w-[80%] h-20 flex justify-between items-end pb-2">
             <div className="flex items-center mb-2">
               <div className="flex-shrink-0">
                 <DrawerTitle>Tous les exercices</DrawerTitle>
-                <DrawerDescription>Choisissez un exercices</DrawerDescription>
+                <DrawerDescription>Choisissez un exercice</DrawerDescription>
               </div>
             </div>
 
@@ -66,8 +66,8 @@ export default function DrawerExercice({ onCreate }: DrawerExerciceProps) {
               </Button>
             )}
           </div>
-          <Separator className="w-[70%]" />
-          <div className="flex-1 overflow-y-auto px-4 w-[70%]">
+          <Separator className="w-[80%]" />
+          <div className="flex-1 overflow-y-auto px-4 w-[80%]">
             <div className="w-full flex flex-col items-center justify-start gap-10 py-4">
               <TabExercices
                 activeExercices={activeExercices}

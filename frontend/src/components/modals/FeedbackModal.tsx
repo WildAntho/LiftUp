@@ -5,7 +5,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "evergreen-ui";
 import IntensityComponent from "../IntensityComponent";
 import { ChangeEvent, useState } from "react";
@@ -16,10 +15,12 @@ import {
   useDeleteFeedbackMutation,
   useUpdateFeedbackMutation,
 } from "@/graphql/hooks";
-import { Loader2 } from "lucide-react";
 import Edit from "../Edit";
 import Delete from "../Delete";
 import { useStudentStore } from "@/services/zustand/studentStore";
+import ConfirmModal from "./ConfirmModal";
+import ConfirmButton from "../ConfirmButton";
+import Cancel from "../Cancel";
 
 type FeedbackModalProps = {
   isOpen: boolean;
@@ -48,6 +49,7 @@ export default function FeedbackModal({
   refetch,
 }: FeedbackModalProps) {
   const currentStudent = useStudentStore((state) => state.student);
+  const [openConfirm, setOpenConfirm] = useState<boolean>(false);
   const [addFeedback, { loading: loadingAddFeedback }] =
     useAddFeedbackMutation();
   const [deleteFeedback, { loading: loadingDelete }] =
@@ -159,53 +161,46 @@ export default function FeedbackModal({
             )}
           </section>
         </ModalBody>
-        <ModalFooter className="items-center">
+        <ModalFooter>
           {!currentStudent && isShow && <Edit onClick={switchView} />}
           {!currentStudent && isShow && (
-            <Delete
-              onDelete={handleDeleteFeedback}
-              loading={loadingDelete}
-              description="Souhaitez-vous vraiment supprimer ce debrief ?"
-              title="Suppresion d'un debrief"
-            />
+            <Delete onClick={() => setOpenConfirm(true)} />
           )}
-          {((isShow && event) || (!isShow && !event)) && (
-            <Button
-              color="danger"
-              variant="outline"
-              onClick={() => {
-                setOpen(false);
-                if (setIsShow) setIsShow(true);
-              }}
-            >
-              Fermer
-            </Button>
-          )}
-          {!isShow && event && (
-            <Button
-              color="danger"
-              variant="outline"
-              onClick={() => {
-                if (setIsShow) setIsShow(true);
-              }}
-            >
-              Annuler
-            </Button>
-          )}
-          {!isShow && (
-            <Button
-              type="submit"
-              className="bg-primary hover:bg-blue-600 transition duration-150"
-              onClick={handleFeedback}
-              disabled={loadingAddFeedback || loadingUpdateFeedback}
-            >
-              {loadingAddFeedback ||
-                (loadingUpdateFeedback && <Loader2 className="animate-spin" />)}
-              Valider le debrief
-            </Button>
-          )}
+          <div className="w-[1000px] flex justify-end items-center gap-2">
+            {((isShow && event) || (!isShow && !event)) && (
+              <Cancel
+                onClick={() => {
+                  setOpen(false);
+                  if (setIsShow) setIsShow(true);
+                }}
+                title="Fermer"
+              />
+            )}
+            {!isShow && event && (
+              <Cancel
+                onClick={() => {
+                  if (setIsShow) setIsShow(true);
+                }}
+                title="Annuler"
+              />
+            )}
+            {!isShow && (
+              <ConfirmButton
+                onClick={handleFeedback}
+                title="Valider le debrief"
+                loading={loadingAddFeedback || loadingUpdateFeedback}
+              />
+            )}
+          </div>
         </ModalFooter>
       </ModalContent>
+      <ConfirmModal
+        isOpen={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        description="Êtes-vous sûr de vouloir supprimer ce debrief ?"
+        onConfirm={handleDeleteFeedback}
+        loading={loadingDelete}
+      />
     </Modal>
   );
 }

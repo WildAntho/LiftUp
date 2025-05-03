@@ -5,6 +5,7 @@ import Edit from "./Edit";
 import Delete from "./Delete";
 import { useState } from "react";
 import OfferModal from "./modals/OfferModal";
+import ConfirmModal from "./modals/ConfirmModal";
 
 type OfferProps = {
   offer: Omit<Offer, "user"> | undefined;
@@ -17,8 +18,9 @@ export default function OfferCard({
   refetch,
   isMyOffer = false,
 }: OfferProps) {
-  const [deleteOffer] = useDeleteOfferMutation();
+  const [deleteOffer, { loading }] = useDeleteOfferMutation();
   const [open, setOpen] = useState<boolean>(false);
+  const [openConfirm, setOpenConfirm] = useState<boolean>(false);
   const openModal = () => {
     setOpen(true);
   };
@@ -59,11 +61,7 @@ export default function OfferCard({
             {isMyOffer && (
               <div className="flex justify-center items-center">
                 <Edit onClick={openModal} />
-                <Delete
-                  description="Ëtes vous sur de vouloir supprimer cette prestation ?"
-                  title="Suppression d'une prestation"
-                  onDelete={handleDelete}
-                />
+                <Delete onClick={() => setOpenConfirm(true)} />
               </div>
             )}
           </section>
@@ -88,6 +86,13 @@ export default function OfferCard({
         onClose={closeModal}
         refetch={refetch}
         offer={offer}
+      />
+      <ConfirmModal
+        isOpen={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        description="Êtes-vous sûr de vouloir supprimer cette offre ?"
+        onConfirm={handleDelete}
+        loading={loading}
       />
     </>
   );

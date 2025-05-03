@@ -15,6 +15,7 @@ import { uploadURL } from "@/services/utils";
 import { Input } from "@heroui/react";
 import { toast } from "sonner";
 import Saving from "@/components/Saving";
+import { useDebouncedCallback } from "@/services/useDebouncedCallback";
 
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
 
@@ -125,6 +126,14 @@ export default function MyProfile() {
     }
   };
 
+  const debouncedUpdate = useDebouncedCallback(
+    async () => {
+      handleUpdate();
+    },
+    2000,
+    { leading: true }
+  );
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -230,7 +239,7 @@ export default function MyProfile() {
               isDisabled
               startContent={<MailIcon size={20} className="text-gray-500" />}
             />
-            <Saving onClick={handleUpdate} />
+            <Saving onClick={debouncedUpdate} />
           </div>
         </section>
       </section>

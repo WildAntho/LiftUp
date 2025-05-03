@@ -1,5 +1,5 @@
-import { Loader2, Save } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "@heroui/react";
+import { Save } from "lucide-react";
 
 type SavingProps = {
   onClick: () => void;
@@ -9,13 +9,12 @@ type SavingProps = {
 export default function Saving({ onClick, loading }: SavingProps) {
   return (
     <Button
-      className="group shadow-none text-white h-[55px] w-[25%] rounded-xl bg-dark hover:translate-y-[-2px] hover:shadow-lg transition-all duration-200"
-      onClick={onClick}
-      disabled={loading}
+      className="group shadow-none text-white h-[55px] w-[230px] rounded-xl bg-dark hover:translate-y-[-2px] hover:shadow-lg transition-all duration-200"
+      onPress={onClick}
+      startContent={<Save size={16} />}
+      isLoading={loading}
     >
-      <Save />
       <p className="text-sm transition-all duration-200 group-hover:translate-x-1">
-        {loading && <Loader2 className="animate-spin" />}
         Sauvegarder
       </p>
     </Button>

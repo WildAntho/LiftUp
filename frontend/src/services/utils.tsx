@@ -158,3 +158,5 @@ export const allLevel = [
     startContent: <Flame className="w-4 h-4" />,
   },
 ];
+
+export const exercicesURL = "/exercices/men";

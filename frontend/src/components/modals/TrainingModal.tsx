@@ -31,9 +31,7 @@ import {
   Input,
   Textarea,
 } from "@heroui/react";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
 import Delete from "../Delete";
 import Edit from "../Edit";
 import ExerciceCard from "../ExerciceCard";
@@ -43,6 +41,10 @@ import { useCrewStore } from "@/services/zustand/crewStore";
 import { Separator } from "../ui/separator";
 import { TextInputField } from "evergreen-ui";
 import ExerciceComponent from "@/pages/Home/Program/components/Configuration/components/ExerciceComponent";
+import ConfirmModal from "./ConfirmModal";
+import Saving from "../Saving";
+import Cancel from "../Cancel";
+import ConfirmButton from "../ConfirmButton";
 
 interface Config {
   rep: number;
@@ -97,6 +99,7 @@ export default function TrainingModal({
   const [addExercice] = useAddExerciceMutation();
   const [openFeedback, setOpenFeedback] = useState<boolean>(false);
   const [openRecurrent, setOpenRecurrent] = useState<boolean>(false);
+  const [openConfirm, setOpenConfirm] = useState<boolean>(false);
   const [title, setTitle] = useState<string>(training ? training.title : "");
   const [notes, setNotes] = useState<string>(
     training && training.notes ? training.notes : ""
@@ -273,6 +276,9 @@ export default function TrainingModal({
           exercices: exercicesToAdd,
         },
       });
+      if (currentStudent) refetch.refetchStudentTraining();
+      if (currentCrew) refetch.refetchCrewTraining();
+      refetch.refetchMyTraining();
     }
   };
 
@@ -344,6 +350,7 @@ export default function TrainingModal({
       isDismissable={false}
       size="5xl"
       style={{ backgroundColor: "#FFFFFF" }}
+      className="rounded-xl overflow-hidden"
       classNames={{
         closeButton: "text-white hover:bg-white/5 active:bg-white/10",
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
@@ -440,9 +447,8 @@ export default function TrainingModal({
               {isShow && (
                 <div className="w-[90%] h-full flex flex-col gap-2">
                   {exercices.map((e: Exercice) => (
-                    <div className="w-full min-h-28">
+                    <div className="w-full min-h-28" key={e.id}>
                       <ExerciceCard
-                        key={e.id}
                         id={e.id}
                         title={e.title}
                         rep={e.rep}
@@ -621,7 +627,7 @@ export default function TrainingModal({
           </section>
         </ModalBody>
         <ModalFooter
-          className={`flex ${
+          className={`flex w-full ${
             isShow ? "justify-end" : "justify-between"
           } items-center w-full`}
         >
@@ -632,76 +638,58 @@ export default function TrainingModal({
               </p>
             </div>
           )}
-          <div className="flex justify-center items-center gap-2">
+          <div className="flex flex-1 justify-end items-center gap-2">
             {(training?.editable || isCoach) && (
               <div className="flex justify-center items-center">
                 {isShow && <Edit onClick={switchView} />}
-                {isShow && (
-                  <Delete
-                    onDelete={handleDelete}
-                    loading={loadingDelete}
-                    description="Souhaitez-vous vraiment supprimer cet entraînement ?"
-                    title="Suppresion d'un entraînement"
-                  />
-                )}
+                {isShow && <Delete onClick={() => setOpenConfirm(true)} />}
               </div>
             )}
             {isShow ? (
-              <Button
-                type="button"
-                variant="outline"
+              <Cancel
+                title="Fermer"
                 onClick={() => {
                   close();
                 }}
-              >
-                Fermer
-              </Button>
+              />
             ) : (
-              <Button
-                type="button"
-                variant="outline"
+              <Cancel
+                title="Annuler"
                 onClick={() => {
                   if (setIsShow && training) setIsShow(true);
                   if (!training) {
                     close();
                   }
                 }}
-              >
-                Annuler
-              </Button>
+              />
             )}
             {!isShow ? (
-              <Button
-                type="button"
-                className="bg-primary hover:bg-blue-600"
+              <Saving
                 onClick={handleSave}
-                disabled={
+                loading={
                   loading || loadingStudent || loadingUpdate || loadingCrew
                 }
-              >
-                {(loading ||
-                  loadingStudent ||
-                  loadingCrew ||
-                  loadingUpdate) && <Loader2 className="animate-spin" />}
-                Sauvegarder
-              </Button>
+              />
             ) : (
               !currentStudent &&
               !currentCrew &&
               training?.crew === null && (
-                <Button
-                  type="submit"
-                  className="bg-primary hover:bg-blue-600 transition duration-150"
-                  disabled={training?.validate}
+                <ConfirmButton
                   onClick={() => setOpenFeedback(true)}
-                >
-                  Valider l'entraînement
-                </Button>
+                  title="Valider l'entraînement"
+                />
               )
             )}
           </div>
         </ModalFooter>
       </ModalContent>
+      <ConfirmModal
+        isOpen={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        description="Êtes-vous sîr de vouloir supprimer cet entraînement ?"
+        onConfirm={handleDelete}
+        loading={loadingDelete}
+      />
     </Modal>
   );
 }
