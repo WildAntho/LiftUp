@@ -16,6 +16,7 @@ import { Feedback } from "../entities/feedback";
 import { Crew } from "../entities/crew";
 import { StudentsResponse } from "../InputType/coachProfileType";
 import { createTrainingsForDates } from "../services/trainingService";
+import { StatusStudent } from "../InputType/memberShipType";
 
 @Resolver(User)
 export class CoachResolver {
@@ -79,6 +80,7 @@ export class CoachResolver {
     @Arg("offerId", { nullable: true }) offerId?: string,
     @Arg("crewId", { nullable: true }) crewId?: string,
     @Arg("sortRemaining", { nullable: true }) sortRemaining?: boolean,
+    @Arg("status", { nullable: true }) status?: StatusStudent,
     @Arg("page", { nullable: true, defaultValue: 1 }) page?: number,
     @Arg("limit", { nullable: true, defaultValue: 10 }) limit?: number
   ) {
@@ -116,6 +118,29 @@ export class CoachResolver {
       query.addOrderBy("membership.endDate", "ASC", "NULLS LAST");
     } else {
       query.addOrderBy("user.firstname", "ASC");
+    }
+
+    if (status === StatusStudent.active) {
+      query.andWhere(
+        "membership.isActive = true AND membership.endDate > NOW()"
+      );
+    }
+
+    if (status === StatusStudent.waiting) {
+      query.andWhere("membership.id IS NULL");
+    }
+
+    if (status === StatusStudent.end_7) {
+      query.andWhere(`
+        membership.isActive = true 
+        AND membership.endDate BETWEEN NOW() AND NOW() + INTERVAL '7 days'
+      `);
+    }
+
+    if (status === StatusStudent.expired) {
+      query.andWhere(
+        "membership.isActive = true AND membership.endDate < NOW()"
+      );
     }
 
     const totalCount = await query.getCount();

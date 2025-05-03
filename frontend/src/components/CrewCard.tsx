@@ -6,6 +6,7 @@ import Edit from "./Edit";
 import { useState } from "react";
 import { UserWithoutPassword } from "@/services/zustand/userStore";
 import UserAvatar from "./UserAvatar";
+import ConfirmModal from "./modals/ConfirmModal";
 
 type CrewCardProps = {
   id: string;
@@ -23,6 +24,7 @@ export default function CrewCard({
   isEditable = false,
 }: CrewCardProps) {
   const [open, setOpen] = useState<boolean>(false);
+  const [openConfirm, setOpenConfirm] = useState<boolean>(false);
   const onClose = () => {
     setOpen(false);
   };
@@ -56,14 +58,16 @@ export default function CrewCard({
       {isEditable && (
         <div className="flex justify-center items-center absolute top-0 right-0">
           <Edit onClick={handleOpen} />
-          <Delete
-            onDelete={handleDelete}
-            loading={loadingDelete}
-            description="Souhaitez-vous vraiment supprimer cette équipe ?"
-            title="Suppresion d'une équipe"
-          />
+          <Delete onClick={() => setOpenConfirm(true)} />
         </div>
       )}
+      <ConfirmModal
+        isOpen={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        description="Êtes-vous sûr de vouloir supprimer cette équipe ?"
+        onConfirm={handleDelete}
+        loading={loadingDelete}
+      />
     </section>
   );
 }

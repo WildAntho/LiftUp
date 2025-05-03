@@ -9,6 +9,7 @@ import {
 import { Maybe } from "@/graphql/hooks";
 import { Popover, PopoverContent, PopoverTrigger } from "@heroui/react";
 import { useState } from "react";
+import { exercicesURL } from "@/services/utils";
 
 type ExerciceCardProps = {
   id: string;
@@ -42,9 +43,9 @@ export default function ExerciceCard({
       >
         <div className="flex justify-start items-center gap-3">
           <img
-            src={`/exercices${image}`}
+            src={`${exercicesURL}${image}`}
             alt="Image Exercice"
-            className="w-16 h-16 object-cover rounded-md"
+            className="w-16 h-16 object-cover object-top rounded-md"
           />
           <div className="flex flex-col justify-center items-start gap-1">
             <p className="text-md font-semibold text-gray-800">{title}</p>

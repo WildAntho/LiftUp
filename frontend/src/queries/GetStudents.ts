@@ -7,6 +7,7 @@ export const GET_STUDENTS = gql`
     $crewId: String
     $offerId: String
     $sortRemaining: Boolean
+    $status: String
     $page: Float
     $limit: Float
   ) {
@@ -16,6 +17,7 @@ export const GET_STUDENTS = gql`
       crewId: $crewId
       offerId: $offerId
       sortRemaining: $sortRemaining
+      status: $status
       page: $page
       limit: $limit
     ) {

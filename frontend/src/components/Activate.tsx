@@ -34,7 +34,7 @@ export default function Activate({
           color="foreground"
           className="text-xs"
         >
-          <div className="hover:bg-green-500 hover:bg-opacity-10 p-2 rounded-full cursor-pointer">
+          <div className="hover:bg-black/5 p-2 rounded-full cursor-pointer">
             <Play className={`size-4 text-black`} />
           </div>
         </Tooltip>

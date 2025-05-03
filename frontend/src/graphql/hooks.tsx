@@ -696,6 +696,7 @@ export type QueryGetStudentsArgs = {
   offerId?: InputMaybe<Scalars['String']['input']>;
   page?: InputMaybe<Scalars['Float']['input']>;
   sortRemaining?: InputMaybe<Scalars['Boolean']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1369,6 +1370,7 @@ export type GetStudentsQueryVariables = Exact<{
   crewId?: InputMaybe<Scalars['String']['input']>;
   offerId?: InputMaybe<Scalars['String']['input']>;
   sortRemaining?: InputMaybe<Scalars['Boolean']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
   page?: InputMaybe<Scalars['Float']['input']>;
   limit?: InputMaybe<Scalars['Float']['input']>;
 }>;
@@ -3939,13 +3941,14 @@ export type GetStudentTrainingsLazyQueryHookResult = ReturnType<typeof useGetStu
 export type GetStudentTrainingsSuspenseQueryHookResult = ReturnType<typeof useGetStudentTrainingsSuspenseQuery>;
 export type GetStudentTrainingsQueryResult = Apollo.QueryResult<GetStudentTrainingsQuery, GetStudentTrainingsQueryVariables>;
 export const GetStudentsDocument = gql`
-    query getStudents($input: String, $id: String!, $crewId: String, $offerId: String, $sortRemaining: Boolean, $page: Float, $limit: Float) {
+    query getStudents($input: String, $id: String!, $crewId: String, $offerId: String, $sortRemaining: Boolean, $status: String, $page: Float, $limit: Float) {
   getStudents(
     input: $input
     id: $id
     crewId: $crewId
     offerId: $offerId
     sortRemaining: $sortRemaining
+    status: $status
     page: $page
     limit: $limit
   ) {
@@ -3993,6 +3996,7 @@ export const GetStudentsDocument = gql`
  *      crewId: // value for 'crewId'
  *      offerId: // value for 'offerId'
  *      sortRemaining: // value for 'sortRemaining'
+ *      status: // value for 'status'
  *      page: // value for 'page'
  *      limit: // value for 'limit'
  *   },

@@ -5,7 +5,7 @@ type EditProps = {
   onClick: () => void;
 };
 
-export default function Close({ onClick }: EditProps) {
+export default function Edit({ onClick }: EditProps) {
   const handleSwitch = () => {
     onClick();
   };

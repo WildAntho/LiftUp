@@ -35,7 +35,7 @@ export class MembershipResolver {
     });
     if (!memberShip) throw new Error("Aucune souscription n'a été trouvée");
     let endDate: Date;
-    if (memberShip.endDate.getTime() < new Date().getTime()) {
+    if (memberShip.endDate.getTime() > new Date().getTime()) {
       endDate = addMonths(memberShip.endDate, memberShip.offer.durability);
     } else {
       endDate = addMonths(new Date(), memberShip.offer.durability);

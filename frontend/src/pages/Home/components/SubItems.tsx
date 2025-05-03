@@ -28,7 +28,7 @@ export default function SubItems(props: SubItemProps) {
 
   return (
     <section
-      className={`group flex items-center justify-between w-full h-5 cursor-pointer px-4 py-5 rounded-r-md hover:bg-dark hover:bg-opacity-5`}
+      className={`group flex items-center justify-between w-full h-5 cursor-pointer px-4 py-5 rounded-r-md hover:bg-dark/5`}
       onClick={props.get}
     >
       <div className="h-full flex justify-center items-center gap-5">

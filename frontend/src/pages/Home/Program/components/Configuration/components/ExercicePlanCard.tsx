@@ -1,13 +1,14 @@
-import { Exercice, ExerciceData } from "@/graphql/hooks";
+import { Exercice, ExerciceData, Maybe } from "@/graphql/hooks";
 import { Input, Textarea, Tooltip } from "@heroui/react";
 import { ChevronRight, Grip, Notebook, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LogoAction from "./LogoActions";
 import PulsingCircle from "./PulsingCircle";
 import { Separator } from "@/components/ui/separator";
 import { useDebouncedCallback } from "@/services/useDebouncedCallback";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { exercicesURL } from "@/services/utils";
 
 type ExercicePlanCardProps = {
   exercice: Exercice;
@@ -22,6 +23,14 @@ export default function ExercicePlanCard({
 }: ExercicePlanCardProps) {
   const [showAll, setShowAll] = useState(false);
   const [currentExercice, setCurrentExercice] = useState(exercice);
+  const prevSerieRef = useRef<number>(currentExercice.serie);
+  const prevRepRef = useRef<number>(currentExercice.rep);
+  const prevWeightRef = useRef<Maybe<number>>(currentExercice.weight ?? null);
+  const prevIntensityRef = useRef<Maybe<number>>(
+    currentExercice.intensity ?? null
+  );
+  const prevNoteRef = useRef<Maybe<string>>(currentExercice.notes ?? "");
+
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
   };
@@ -71,15 +80,15 @@ export default function ExercicePlanCard({
               <div
                 {...attributes}
                 {...listeners}
-                className="hover:bg-gray-200 p-3 rounded-full cursor-move"
+                className="hover:bg-gray-200 p-3 rounded-full cursor-grab active:cursor-grabbing"
               >
                 <Grip size={18} className="text-gray-500" />
               </div>
             </Tooltip>
             <img
-              src={`/exercices${exercice.image}`}
+              src={`${exercicesURL}${exercice.image}`}
               alt="Image Exercice"
-              className="w-16 h-16 object-cover rounded-md"
+              className="w-16 h-16 object-cover object-top rounded-md"
             />
             <div className="flex flex-col items-start justify-center gap-2">
               <p className="text-sm font-semibold">{exercice.title}</p>
@@ -136,7 +145,12 @@ export default function ExercicePlanCard({
                   serie: Number(e.target.value),
                 }))
               }
-              onBlur={saveChanges}
+              onBlur={() => {
+                if (prevSerieRef.current !== currentExercice.serie) {
+                  saveChanges();
+                  prevSerieRef.current = currentExercice.serie;
+                }
+              }}
             />
             <Separator orientation="vertical" className="h-12" />
             <Input
@@ -150,21 +164,31 @@ export default function ExercicePlanCard({
                   rep: Number(e.target.value),
                 }))
               }
-              onBlur={saveChanges}
+              onBlur={() => {
+                if (prevRepRef.current !== currentExercice.rep) {
+                  saveChanges();
+                  prevRepRef.current = currentExercice.rep;
+                }
+              }}
             />
             <Separator orientation="vertical" className="h-12" />
             <Input
               label="Poids"
               radius="sm"
               type="number"
-              value={(currentExercice.weight ?? 1).toString()}
+              value={(currentExercice.weight ?? 0).toString()}
               onChange={(e) =>
                 setCurrentExercice((prev) => ({
                   ...prev,
                   weight: Number(e.target.value),
                 }))
               }
-              onBlur={saveChanges}
+              onBlur={() => {
+                if (prevWeightRef.current !== currentExercice.weight) {
+                  saveChanges();
+                  prevWeightRef.current = currentExercice.weight ?? 0;
+                }
+              }}
             />
             <Separator orientation="vertical" className="h-12" />
             <Input
@@ -178,7 +202,12 @@ export default function ExercicePlanCard({
                   intensity: Number(e.target.value),
                 }))
               }
-              onBlur={saveChanges}
+              onBlur={() => {
+                if (prevIntensityRef.current !== currentExercice.intensity) {
+                  saveChanges();
+                  prevIntensityRef.current = currentExercice.intensity ?? 1;
+                }
+              }}
             />
           </div>
           <Separator />
@@ -191,7 +220,12 @@ export default function ExercicePlanCard({
                 notes: e.target.value,
               }))
             }
-            onBlur={saveChanges}
+            onBlur={() => {
+              if (prevNoteRef.current !== currentExercice.notes) {
+                saveChanges();
+                prevNoteRef.current = currentExercice.notes ?? "";
+              }
+            }}
           />
         </section>
       </section>
