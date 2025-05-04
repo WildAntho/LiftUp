@@ -107,7 +107,7 @@ export default function SelectStudentModal({
             labelPlacement="outside"
             placeholder="Rechercher"
             value={input}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            onChange={(e) => {
               setLoading(true);
               setInput(e.target.value);
               debouncedSearch(e.target.value);

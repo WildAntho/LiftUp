@@ -136,6 +136,7 @@ export type ExerciceModel = {
   serie?: Maybe<Scalars['Float']['output']>;
   title: Scalars['String']['output'];
   user?: Maybe<User>;
+  userFavorites?: Maybe<Array<User>>;
   weight?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -147,11 +148,6 @@ export type ExerciceModelData = {
   serie?: InputMaybe<Scalars['Float']['input']>;
   title: Scalars['String']['input'];
   weight?: InputMaybe<Scalars['Float']['input']>;
-};
-
-export type ExerciceModelInput = {
-  id?: InputMaybe<Scalars['String']['input']>;
-  input?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Feedback = {
@@ -219,6 +215,7 @@ export type Mutation = {
   addCategory: Scalars['String']['output'];
   addCoachProfile: Scalars['String']['output'];
   addExercice: Scalars['String']['output'];
+  addExerciceFavorite: Scalars['String']['output'];
   addExerciceToProgram: Scalars['String']['output'];
   addFeedback: Scalars['String']['output'];
   addMessages: Scalars['String']['output'];
@@ -234,6 +231,7 @@ export type Mutation = {
   createTrainingPlan: Scalars['String']['output'];
   deleteCrew: Scalars['String']['output'];
   deleteExercice: Scalars['String']['output'];
+  deleteExerciceFavorite: Scalars['String']['output'];
   deleteFeedback: Scalars['String']['output'];
   deleteOffer: Scalars['String']['output'];
   deleteStudent: Scalars['String']['output'];
@@ -283,6 +281,11 @@ export type MutationAddCoachProfileArgs = {
 
 export type MutationAddExerciceArgs = {
   exercices: Array<AddExercicePlanInput>;
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationAddExerciceFavoriteArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -360,6 +363,11 @@ export type MutationDeleteCrewArgs = {
 
 
 export type MutationDeleteExerciceArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteExerciceFavoriteArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -489,9 +497,14 @@ export type Notification = {
   id: Scalars['ID']['output'];
   isRead: Scalars['Boolean']['output'];
   request?: Maybe<Request>;
-  type: Scalars['String']['output'];
+  type: NotificationType;
   user: User;
 };
+
+export enum NotificationType {
+  AcceptRequest = 'ACCEPT_REQUEST',
+  NewRequest = 'NEW_REQUEST'
+}
 
 export type Offer = {
   __typename?: 'Offer';
@@ -576,6 +589,7 @@ export type Query = {
   getCrewTraining: Array<Training>;
   getDayNumberTraining: Array<Scalars['Float']['output']>;
   getExercices: Array<Exercice>;
+  getFavoriteExercicesId: Array<Scalars['String']['output']>;
   getFeedbacks: Array<Feedback>;
   getListUsersCrew: Array<User>;
   getMessages: MessageResult;
@@ -603,7 +617,9 @@ export type Query = {
 
 
 export type QueryGetAllExercicesModelArgs = {
-  data?: InputMaybe<ExerciceModelInput>;
+  getFavorite?: InputMaybe<Scalars['Boolean']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  input?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -869,6 +885,7 @@ export type User = {
   crew?: Maybe<Crew>;
   email: Scalars['String']['output'];
   exerciceModels?: Maybe<Array<ExerciceModel>>;
+  favoriteExercices?: Maybe<Array<ExerciceModel>>;
   firstname: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   lastname: Scalars['String']['output'];
@@ -934,6 +951,13 @@ export type AddExerciceMutationVariables = Exact<{
 
 
 export type AddExerciceMutation = { __typename?: 'Mutation', addExercice: string };
+
+export type AddExerciceFavoriteMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type AddExerciceFavoriteMutation = { __typename?: 'Mutation', addExerciceFavorite: string };
 
 export type AddExerciceProgramMutationVariables = Exact<{
   exercices: Array<AddExercicePlanInput> | AddExercicePlanInput;
@@ -1034,6 +1058,13 @@ export type DeleteExerciceMutationVariables = Exact<{
 
 
 export type DeleteExerciceMutation = { __typename?: 'Mutation', deleteExercice: string };
+
+export type DeleteExerciceFavoriteMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteExerciceFavoriteMutation = { __typename?: 'Mutation', deleteExerciceFavorite: string };
 
 export type DeleteFeedbackMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1209,7 +1240,9 @@ export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetAllCategoriesQuery = { __typename?: 'Query', getAllCategories: Array<{ __typename?: 'OfferCategory', id: string, label: string }> };
 
 export type GetAllExercicesModelQueryVariables = Exact<{
-  data?: InputMaybe<ExerciceModelInput>;
+  input?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  getFavorite?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
@@ -1273,6 +1306,11 @@ export type GetDayNumberTrainingQueryVariables = Exact<{
 
 export type GetDayNumberTrainingQuery = { __typename?: 'Query', getDayNumberTraining: Array<number> };
 
+export type GetFavoriteExercicesIdQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetFavoriteExercicesIdQuery = { __typename?: 'Query', getFavoriteExercicesId: Array<string> };
+
 export type GetFeedbacksQueryVariables = Exact<{
   id: Scalars['String']['input'];
   rangeDate: RangeDate;
@@ -1325,7 +1363,7 @@ export type GetMyTrainingQuery = { __typename?: 'Query', getTrainingsById: Array
 export type GetNotificationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetNotificationQuery = { __typename?: 'Query', getNotification: Array<{ __typename?: 'Notification', id: string, type: string, isRead: boolean, hasBeenSeen: boolean, createdAt: any, request?: { __typename?: 'Request', sender: { __typename?: 'User', firstname: string, lastname: string, roles: string, avatar?: string | null }, receiver: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } } | null }> };
+export type GetNotificationQuery = { __typename?: 'Query', getNotification: Array<{ __typename?: 'Notification', id: string, type: NotificationType, isRead: boolean, hasBeenSeen: boolean, createdAt: any, request?: { __typename?: 'Request', sender: { __typename?: 'User', firstname: string, lastname: string, roles: string, avatar?: string | null }, receiver: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } } | null }> };
 
 export type GetOneTrainingQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1433,7 +1471,7 @@ export type SubNewNotificationSubscriptionVariables = Exact<{
 }>;
 
 
-export type SubNewNotificationSubscription = { __typename?: 'Subscription', newNotification: { __typename?: 'Notification', id: string, type: string, hasBeenSeen: boolean, isRead: boolean, createdAt: any, request?: { __typename?: 'Request', id: string, sender: { __typename?: 'User', firstname: string, lastname: string, roles: string }, receiver: { __typename?: 'User', firstname: string, lastname: string } } | null } };
+export type SubNewNotificationSubscription = { __typename?: 'Subscription', newNotification: { __typename?: 'Notification', id: string, type: NotificationType, hasBeenSeen: boolean, isRead: boolean, createdAt: any, request?: { __typename?: 'Request', id: string, sender: { __typename?: 'User', firstname: string, lastname: string, roles: string }, receiver: { __typename?: 'User', firstname: string, lastname: string } } | null } };
 
 export type TotalUnreadMessageSubSubscriptionVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1569,6 +1607,37 @@ export function useAddExerciceMutation(baseOptions?: Apollo.MutationHookOptions<
 export type AddExerciceMutationHookResult = ReturnType<typeof useAddExerciceMutation>;
 export type AddExerciceMutationResult = Apollo.MutationResult<AddExerciceMutation>;
 export type AddExerciceMutationOptions = Apollo.BaseMutationOptions<AddExerciceMutation, AddExerciceMutationVariables>;
+export const AddExerciceFavoriteDocument = gql`
+    mutation AddExerciceFavorite($id: String!) {
+  addExerciceFavorite(id: $id)
+}
+    `;
+export type AddExerciceFavoriteMutationFn = Apollo.MutationFunction<AddExerciceFavoriteMutation, AddExerciceFavoriteMutationVariables>;
+
+/**
+ * __useAddExerciceFavoriteMutation__
+ *
+ * To run a mutation, you first call `useAddExerciceFavoriteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddExerciceFavoriteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addExerciceFavoriteMutation, { data, loading, error }] = useAddExerciceFavoriteMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useAddExerciceFavoriteMutation(baseOptions?: Apollo.MutationHookOptions<AddExerciceFavoriteMutation, AddExerciceFavoriteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddExerciceFavoriteMutation, AddExerciceFavoriteMutationVariables>(AddExerciceFavoriteDocument, options);
+      }
+export type AddExerciceFavoriteMutationHookResult = ReturnType<typeof useAddExerciceFavoriteMutation>;
+export type AddExerciceFavoriteMutationResult = Apollo.MutationResult<AddExerciceFavoriteMutation>;
+export type AddExerciceFavoriteMutationOptions = Apollo.BaseMutationOptions<AddExerciceFavoriteMutation, AddExerciceFavoriteMutationVariables>;
 export const AddExerciceProgramDocument = gql`
     mutation AddExerciceProgram($exercices: [AddExercicePlanInput!]!, $trainingId: String!) {
   addExerciceToProgram(exercices: $exercices, id: $trainingId)
@@ -2014,6 +2083,37 @@ export function useDeleteExerciceMutation(baseOptions?: Apollo.MutationHookOptio
 export type DeleteExerciceMutationHookResult = ReturnType<typeof useDeleteExerciceMutation>;
 export type DeleteExerciceMutationResult = Apollo.MutationResult<DeleteExerciceMutation>;
 export type DeleteExerciceMutationOptions = Apollo.BaseMutationOptions<DeleteExerciceMutation, DeleteExerciceMutationVariables>;
+export const DeleteExerciceFavoriteDocument = gql`
+    mutation DeleteExerciceFavorite($id: String!) {
+  deleteExerciceFavorite(id: $id)
+}
+    `;
+export type DeleteExerciceFavoriteMutationFn = Apollo.MutationFunction<DeleteExerciceFavoriteMutation, DeleteExerciceFavoriteMutationVariables>;
+
+/**
+ * __useDeleteExerciceFavoriteMutation__
+ *
+ * To run a mutation, you first call `useDeleteExerciceFavoriteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteExerciceFavoriteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteExerciceFavoriteMutation, { data, loading, error }] = useDeleteExerciceFavoriteMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteExerciceFavoriteMutation(baseOptions?: Apollo.MutationHookOptions<DeleteExerciceFavoriteMutation, DeleteExerciceFavoriteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteExerciceFavoriteMutation, DeleteExerciceFavoriteMutationVariables>(DeleteExerciceFavoriteDocument, options);
+      }
+export type DeleteExerciceFavoriteMutationHookResult = ReturnType<typeof useDeleteExerciceFavoriteMutation>;
+export type DeleteExerciceFavoriteMutationResult = Apollo.MutationResult<DeleteExerciceFavoriteMutation>;
+export type DeleteExerciceFavoriteMutationOptions = Apollo.BaseMutationOptions<DeleteExerciceFavoriteMutation, DeleteExerciceFavoriteMutationVariables>;
 export const DeleteFeedbackDocument = gql`
     mutation DeleteFeedback($id: String!) {
   deleteFeedback(id: $id)
@@ -2792,8 +2892,8 @@ export type GetAllCategoriesLazyQueryHookResult = ReturnType<typeof useGetAllCat
 export type GetAllCategoriesSuspenseQueryHookResult = ReturnType<typeof useGetAllCategoriesSuspenseQuery>;
 export type GetAllCategoriesQueryResult = Apollo.QueryResult<GetAllCategoriesQuery, GetAllCategoriesQueryVariables>;
 export const GetAllExercicesModelDocument = gql`
-    query GetAllExercicesModel($data: ExerciceModelInput) {
-  getAllExercicesModel(data: $data) {
+    query GetAllExercicesModel($input: String, $id: String, $getFavorite: Boolean) {
+  getAllExercicesModel(input: $input, id: $id, getFavorite: $getFavorite) {
     id
     title
     serie
@@ -2818,7 +2918,9 @@ export const GetAllExercicesModelDocument = gql`
  * @example
  * const { data, loading, error } = useGetAllExercicesModelQuery({
  *   variables: {
- *      data: // value for 'data'
+ *      input: // value for 'input'
+ *      id: // value for 'id'
+ *      getFavorite: // value for 'getFavorite'
  *   },
  * });
  */
@@ -3277,6 +3379,43 @@ export type GetDayNumberTrainingQueryHookResult = ReturnType<typeof useGetDayNum
 export type GetDayNumberTrainingLazyQueryHookResult = ReturnType<typeof useGetDayNumberTrainingLazyQuery>;
 export type GetDayNumberTrainingSuspenseQueryHookResult = ReturnType<typeof useGetDayNumberTrainingSuspenseQuery>;
 export type GetDayNumberTrainingQueryResult = Apollo.QueryResult<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>;
+export const GetFavoriteExercicesIdDocument = gql`
+    query GetFavoriteExercicesId {
+  getFavoriteExercicesId
+}
+    `;
+
+/**
+ * __useGetFavoriteExercicesIdQuery__
+ *
+ * To run a query within a React component, call `useGetFavoriteExercicesIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFavoriteExercicesIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFavoriteExercicesIdQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetFavoriteExercicesIdQuery(baseOptions?: Apollo.QueryHookOptions<GetFavoriteExercicesIdQuery, GetFavoriteExercicesIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFavoriteExercicesIdQuery, GetFavoriteExercicesIdQueryVariables>(GetFavoriteExercicesIdDocument, options);
+      }
+export function useGetFavoriteExercicesIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFavoriteExercicesIdQuery, GetFavoriteExercicesIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFavoriteExercicesIdQuery, GetFavoriteExercicesIdQueryVariables>(GetFavoriteExercicesIdDocument, options);
+        }
+export function useGetFavoriteExercicesIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetFavoriteExercicesIdQuery, GetFavoriteExercicesIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetFavoriteExercicesIdQuery, GetFavoriteExercicesIdQueryVariables>(GetFavoriteExercicesIdDocument, options);
+        }
+export type GetFavoriteExercicesIdQueryHookResult = ReturnType<typeof useGetFavoriteExercicesIdQuery>;
+export type GetFavoriteExercicesIdLazyQueryHookResult = ReturnType<typeof useGetFavoriteExercicesIdLazyQuery>;
+export type GetFavoriteExercicesIdSuspenseQueryHookResult = ReturnType<typeof useGetFavoriteExercicesIdSuspenseQuery>;
+export type GetFavoriteExercicesIdQueryResult = Apollo.QueryResult<GetFavoriteExercicesIdQuery, GetFavoriteExercicesIdQueryVariables>;
 export const GetFeedbacksDocument = gql`
     query GetFeedbacks($id: String!, $rangeDate: RangeDate!) {
   getFeedbacks(id: $id, rangeDate: $rangeDate) {

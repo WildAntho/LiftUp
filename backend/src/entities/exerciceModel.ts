@@ -3,6 +3,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
@@ -47,4 +48,8 @@ export class ExerciceModel extends BaseEntity {
   @Field(() => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.exerciceModels, { nullable: true })
   user?: User;
+
+  @Field(() => [User], { nullable: true })
+  @ManyToMany(() => User, (user) => user.favoriteExercices)
+  userFavorites?: User[];
 }

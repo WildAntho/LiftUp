@@ -1,14 +1,4 @@
 import { Field, Float, InputType } from "type-graphql";
-
-@InputType()
-export class ExerciceModelInput {
-  @Field({ nullable: true })
-  id?: string;
-
-  @Field({ nullable: true })
-  input?: string;
-}
-
 @InputType()
 export class ExerciceModelData {
   @Field({ nullable: true })

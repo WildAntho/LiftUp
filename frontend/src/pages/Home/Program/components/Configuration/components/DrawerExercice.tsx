@@ -45,17 +45,19 @@ export default function DrawerExercice({ onCreate }: DrawerExerciceProps) {
       </DrawerTrigger>
       <DrawerContent>
         <div className="flex flex-col h-[80vh] w-full items-center">
-          <div className="px-4 sticky top-0 bg-white z-10 w-[80%] h-20 flex justify-between items-end pb-2">
+          <div className="px-4 sticky top-0 bg-white z-10 w-[80%] 2xl:w-[60%] flex justify-between items-end pb-2">
             <div className="flex items-center mb-2">
               <div className="flex-shrink-0">
                 <DrawerTitle>Tous les exercices</DrawerTitle>
-                <DrawerDescription>Choisissez un exercice</DrawerDescription>
+                <DrawerDescription>
+                  Choisissez un/des exercice(s)
+                </DrawerDescription>
               </div>
             </div>
 
             {activeExercices && activeExercices.length > 0 && (
               <Button
-                className="h-full flex items-center justify-center gap-2 text-dark bg-white rounded-xl shadow-md border border-gray-300 transition-all duration-200 ease-in-out hover:bg-gray-100 hover:-translate-y-1"
+                className="h-full flex items-center justify-center gap-2 text-dark bg-white rounded-xl shadow-sm border border-gray-300 transition-all duration-200 ease-in-out hover:bg-gray-100 hover:-translate-y-1"
                 onClick={handleCreate}
               >
                 <PlusCircle size={16} />
@@ -66,15 +68,17 @@ export default function DrawerExercice({ onCreate }: DrawerExerciceProps) {
               </Button>
             )}
           </div>
-          <Separator className="w-[80%]" />
-          <div className="flex-1 overflow-y-auto px-4 w-[80%]">
-            <div className="w-full flex flex-col items-center justify-start gap-10 py-4">
-              <TabExercices
-                activeExercices={activeExercices}
-                setActiveExercices={setActiveExercices}
-              />
+          <Separator className="w-[80%] 2xl:w-[60%]" />
+          <section className="w-full flex justify-center items-start overflow-y-auto">
+            <div className="overflow-y-auto px-4 w-[80%] 2xl:w-[60%]">
+              <div className="w-full flex flex-col items-center justify-start gap-10 py-4">
+                <TabExercices
+                  activeExercices={activeExercices}
+                  setActiveExercices={setActiveExercices}
+                />
+              </div>
             </div>
-          </div>
+          </section>
         </div>
       </DrawerContent>
     </Drawer>

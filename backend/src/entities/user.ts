@@ -3,6 +3,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -86,6 +87,13 @@ export class User extends BaseEntity {
   @Field(() => [ExerciceModel], { nullable: true })
   @OneToMany(() => ExerciceModel, (exerciceModel) => exerciceModel.user)
   exerciceModels?: ExerciceModel[];
+
+  @Field(() => [ExerciceModel], { nullable: true })
+  @ManyToMany(() => ExerciceModel, (ex) => ex.userFavorites, {
+    cascade: true,
+  })
+  @JoinTable()
+  favoriteExercices?: ExerciceModel[];
 
   @Field(() => Crew, { nullable: true })
   @ManyToOne(() => Crew, (crew) => crew.students, {
