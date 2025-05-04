@@ -8,7 +8,8 @@ services:
     build: ./backend
     volumes:
       - ./backend/src:/app/src
-      - ./backend/migrations:/app/migrations
+      - ./backend/src/migrations:/app/src/migrations
+      - ./backend/make-migration.js:/app/make-migration.js 
     environment:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_SCHEMA: ${DB_SCHEMA}

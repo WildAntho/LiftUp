@@ -20,6 +20,7 @@ import {
   Input,
   Select,
   SelectItem,
+  Spinner,
 } from "@heroui/react";
 import {
   AlarmClock,
@@ -28,7 +29,6 @@ import {
   CircleCheckBig,
   Handshake,
   Hourglass,
-  Loader2,
   SearchIcon,
   Users,
 } from "lucide-react";
@@ -370,6 +370,21 @@ export default function TabStudent({ refetch }: TabStudentProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [input, myStudents]);
 
+  const getEmptyMessage = () => {
+    switch (activeCard) {
+      case StatusStudent.active:
+        return "Aucun élève actif pour le moment.";
+      case StatusStudent.waiting:
+        return "Aucun élève en attente d'activation.";
+      case StatusStudent.end_7:
+        return "Aucun élève dont le suivi se termine bientôt.";
+      case StatusStudent.expired:
+        return "Aucun élève avec un coaching expiré.";
+      default:
+        return "Vous n'avez pas d'élève pour le moment.";
+    }
+  };
+
   return (
     <section className="w-full h-full flex flex-col items-center justify-start gap-5">
       <ConfirmModal
@@ -385,7 +400,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
       <section className="w-full flex justify-start items-center gap-4">
         <div onClick={() => setActiveCard(null)}>
           <StatusStudentCard
-            icon={<Users />}
+            icon={<Users size={20} />}
             title="Tous"
             description="Tous les élèves"
             isActive={!activeCard}
@@ -393,7 +408,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
         </div>
         <div onClick={() => setActiveCard(StatusStudent.active)}>
           <StatusStudentCard
-            icon={<CircleCheckBig />}
+            icon={<CircleCheckBig size={20} />}
             title="Actifs"
             description="Coaching en cours"
             type={StatusStudent.active}
@@ -402,7 +417,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
         </div>
         <div onClick={() => setActiveCard(StatusStudent.waiting)}>
           <StatusStudentCard
-            icon={<Hourglass />}
+            icon={<Hourglass size={20} />}
             title="En attente"
             description="Inscription à valider"
             type={StatusStudent.waiting}
@@ -411,16 +426,16 @@ export default function TabStudent({ refetch }: TabStudentProps) {
         </div>
         <div onClick={() => setActiveCard(StatusStudent.end_7)}>
           <StatusStudentCard
-            icon={<AlarmClock />}
+            icon={<AlarmClock size={20} />}
             title="Fin proche"
-            description="Fin dans moins de 8 jours"
+            description="Moins de 8 jours"
             type={StatusStudent.end_7}
             isActive={activeCard === StatusStudent.end_7}
           />
         </div>
         <div onClick={() => setActiveCard(StatusStudent.expired)}>
           <StatusStudentCard
-            icon={<AlarmClockOff />}
+            icon={<AlarmClockOff size={20} />}
             title="Expirés"
             description="Coaching terminés"
             type={StatusStudent.expired}
@@ -477,7 +492,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
         {users.length ? (
           <TableBody
             items={users}
-            loadingContent={<Loader2 />}
+            loadingContent={<Spinner />}
             loadingState={loadingState}
           >
             {(item) => (
@@ -491,9 +506,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
             )}
           </TableBody>
         ) : (
-          <TableBody emptyContent={"Vous n'avez pas d'élève pour le moment"}>
-            {[]}
-          </TableBody>
+          <TableBody emptyContent={getEmptyMessage()}>{[]}</TableBody>
         )}
       </Table>
     </section>
