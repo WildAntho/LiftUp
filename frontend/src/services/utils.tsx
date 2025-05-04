@@ -159,4 +159,11 @@ export const allLevel = [
   },
 ];
 
+export enum FilterCardEnum {
+  ALL = "ALL",
+  MINE = "MINE",
+  FAVORITE = "FAVORITE",
+  NEW = "NEW",
+}
+
 export const exercicesURL = "/exercices/men";

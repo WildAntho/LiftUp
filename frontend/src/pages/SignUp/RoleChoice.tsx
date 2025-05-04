@@ -19,7 +19,7 @@ export default function RoleChoice() {
         >
           <div className="flex justify-center">
             <img
-              src="/icon_coach.png"
+              src="/icon_coach.webp"
               alt="Image Fixe"
               className="object-cover h-[250px]"
             />
@@ -32,7 +32,7 @@ export default function RoleChoice() {
         >
           <div className="flex justify-center">
             <img
-              src="/icon_student.png"
+              src="/icon_student.webp"
               alt="Image Fixe"
               className="object-cover h-[250px]"
             />

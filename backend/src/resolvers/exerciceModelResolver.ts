@@ -1,32 +1,41 @@
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { ExerciceModel } from "../entities/exerciceModel";
-import {
-  ExerciceModelData,
-  ExerciceModelInput,
-} from "../InputType/exerciceModelType";
+import { ExerciceModelData } from "../InputType/exerciceModelType";
 import { ILike } from "typeorm";
+import { CtxUser } from "../InputType/coachType";
+import { User } from "../entities/user";
+import { dataSource } from "../config/db";
 
 @Resolver(ExerciceModel)
 export class ExerciceModelResolver {
   @Query(() => [ExerciceModel])
   async getAllExercicesModel(
-    @Arg("data", { nullable: true }) data?: ExerciceModelInput
+    @Ctx() context: { user: CtxUser },
+    @Arg("id", { nullable: true }) id?: string,
+    @Arg("input", { nullable: true }) input?: string,
+    @Arg("getFavorite", { nullable: true }) getFavorite?: boolean
   ) {
-    const where: Record<string, any> = {};
+    const query = ExerciceModel.createQueryBuilder(
+      "exercice"
+    ).leftJoinAndSelect("exercice.user", "user");
 
-    if (data && data.id) {
-      where.user = { id: data.id };
+    if (id) {
+      query.andWhere("user.id = :id", { id });
     }
 
-    if (data && data.input) {
-      where.title = ILike(`%${data.input}%`);
+    if (input) {
+      query.andWhere("unaccent(exercice.title) ILIKE unaccent(:input)", {
+        input: `%${input}%`,
+      });
     }
-    const exerciceModels = await ExerciceModel.find({
-      where,
-      relations: {
-        user: true,
-      },
-    });
+
+    if (getFavorite) {
+      query
+        .leftJoin("exercice.userFavorites", "userFavorites")
+        .andWhere("userFavorites.id = :userId", { userId: context.user.id });
+    }
+
+    const exerciceModels = await query.getMany();
     return exerciceModels;
   }
 
@@ -39,6 +48,80 @@ export class ExerciceModelResolver {
     newModel.notes = data.notes;
     newModel.intensity = data.intensity;
     newModel.weight = data.weight;
-    await newModel.save()
+    await newModel.save();
+  }
+
+  @Query(() => [String])
+  async getFavoriteExercicesId(@Ctx() context: { user: CtxUser }) {
+    const exercices = await ExerciceModel.find({
+      where: {
+        userFavorites: {
+          id: context.user.id,
+        },
+      },
+      select: ["id"],
+      relations: ["userFavorites"],
+    });
+
+    return exercices.map((e) => e.id);
+  }
+
+  @Mutation(() => String)
+  async addExerciceFavorite(
+    @Arg("id") id: string,
+    @Ctx() context: { user: CtxUser }
+  ) {
+    const exercice = await ExerciceModel.findOne({
+      where: {
+        id,
+      },
+    });
+    const user = await User.findOne({
+      where: { id: context.user.id },
+      relations: { favoriteExercices: true },
+    });
+    if (!exercice) throw new Error("Aucun n'exercice ne correspond à cet id");
+    if (!user) throw new Error("Aucun utilisateur ne correspond à cet id");
+    const isFavorited = user.favoriteExercices?.some(
+      (e) => e.id === exercice.id
+    );
+    if (isFavorited) {
+      throw new Error("Cet exercice a déjà été marqué comme favoris");
+    }
+    user.favoriteExercices?.push(exercice);
+    await user.save();
+    return "L'exercice a bien été ajouté aux favoris";
+  }
+
+  @Mutation(() => String)
+  async deleteExerciceFavorite(
+    @Arg("id") id: string,
+    @Ctx() context: { user: CtxUser }
+  ) {
+    const exercice = await ExerciceModel.findOne({
+      where: {
+        id,
+      },
+    });
+    const user = await User.findOne({
+      where: { id: context.user.id },
+      relations: { favoriteExercices: true },
+    });
+    if (!exercice) throw new Error("Aucun n'exercice ne correspond à cet id");
+    if (!user) throw new Error("Aucun utilisateur ne correspond à cet id");
+    if (!user.favoriteExercices)
+      throw new Error("Vous n'avez pas d'exercice en favoris");
+    const isFavorited = user.favoriteExercices?.some(
+      (e) => e.id === exercice.id
+    );
+    if (!isFavorited) {
+      throw new Error("Cet exercice ne fait pas partie de vos favoris");
+    }
+    await dataSource
+      .createQueryBuilder()
+      .relation(User, "favoriteExercices")
+      .of(user.id)
+      .remove(exercice.id);
+    return "L'exercice a bien été retiré des favoris";
   }
 }
