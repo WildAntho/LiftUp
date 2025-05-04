@@ -20,8 +20,11 @@ export class Notification extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: string;
 
-  @Field()
-  @Column()
+  @Field(() => NotificationType)
+  @Column({
+    type: "enum",
+    enum: NotificationType,
+  })
   type!: NotificationType;
 
   @Field()
