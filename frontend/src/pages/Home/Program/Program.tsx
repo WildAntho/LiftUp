@@ -129,7 +129,7 @@ export default function Program() {
             <section className="flex justify-start items-start gap-4">
               <div onClick={() => setActiveCard(ProgramStatus.Published)}>
                 <StatusCard
-                  icon={<CircleCheckBig />}
+                  icon={<CircleCheckBig size={20} />}
                   title="Terminés"
                   description="Programmes terminés"
                   type={ProgramStatus.Published}
@@ -138,7 +138,7 @@ export default function Program() {
               </div>
               <div onClick={() => setActiveCard(ProgramStatus.Draft)}>
                 <StatusCard
-                  icon={<NotepadTextDashed />}
+                  icon={<NotepadTextDashed size={20} />}
                   title="Brouillon"
                   description="Programmes en cours"
                   type={ProgramStatus.Draft}
@@ -147,7 +147,7 @@ export default function Program() {
               </div>
               <div onClick={() => setActiveCard(ProgramStatus.Archived)}>
                 <StatusCard
-                  icon={<Archive />}
+                  icon={<Archive size={20} />}
                   title="Archivés"
                   description="Programmes archivés"
                   type={ProgramStatus.Archived}

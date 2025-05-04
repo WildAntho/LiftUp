@@ -56,7 +56,7 @@ export default function ProgramModal({
     description: "",
     duration: 1,
     price: 0,
-    level: "",
+    level: ProgramLevel.Beginner,
   });
 
   const resetForm = () => {
@@ -66,7 +66,7 @@ export default function ProgramModal({
       description: "",
       duration: 1,
       price: 0,
-      level: "",
+      level: ProgramLevel.Beginner,
     });
     setCurrentStep(1);
   };

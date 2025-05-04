@@ -50,20 +50,20 @@ export default function StatusStudentCard({
 
   return (
     <div
-      className={`w-50 h-15 ${
+      className={`w-36 h-14 ${
         isActive ? colors.bg : "bg-gray-50 hover:bg-gray-100"
-      } rounded-xl p-3 flex items-center justify-center gap-3 border border-gray-100 cursor-pointer transition-all duration-200`}
+      } rounded-lg p-2 flex items-center justify-start gap-2 border border-gray-100 cursor-pointer transition-all duration-200`}
     >
-      <div className={colors.text}>{icon}</div>
+      <div className={`text-sm ${colors.text}`}>{icon}</div>
       <div>
         <h3
           className={`${
             isActive ? colors.text : "text-gray-700"
-          } text-sm font-medium`}
+          } text-xs font-medium leading-tight`}
         >
           {title}
         </h3>
-        <p className="text-gray-500 text-xs">{description}</p>
+        <p className="text-gray-500 text-[10px] leading-snug">{description}</p>
       </div>
     </div>
   );
