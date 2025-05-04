@@ -47,6 +47,6 @@ export const dataSource = new DataSource({
     TrainingPlan,
   ],
   synchronize: true,
-  migrations: ["dist/src/migrations/*.js"],
+  migrations: ["build/migrations/*.js"],
   migrationsTableName: "migrations_typeorm",
 });
