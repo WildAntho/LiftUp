@@ -27,7 +27,11 @@ export class Program extends BaseEntity {
   description?: string;
 
   @Field(() => ProgramStatus)
-  @Column({ default: ProgramStatus.DRAFT })
+  @Column({
+    type: "enum",
+    enum: ProgramStatus,
+    default: ProgramStatus.DRAFT,
+  })
   status!: ProgramStatus;
 
   @Field()
@@ -43,7 +47,11 @@ export class Program extends BaseEntity {
   price?: number;
 
   @Field(() => ProgramLevel)
-  @Column({ nullable: true })
+  @Column({
+    type: "enum",
+    enum: ProgramLevel,
+    nullable: true,
+  })
   level?: ProgramLevel;
 
   @Field(() => [TrainingPlan])
