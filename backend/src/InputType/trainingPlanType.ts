@@ -1,4 +1,5 @@
 import { Field, Float, InputType } from "type-graphql";
+import { IntensityFormat, RepFormat, WeightFormat } from "./exerciceType";
 
 @InputType()
 export class TrainingPlanData {
@@ -46,6 +47,18 @@ export class AddExercicePlanInput {
 
   @Field({ nullable: true })
   image?: string;
+
+  @Field({ nullable: true })
+  tempo?: string;
+
+  @Field({ nullable: true })
+  repFormat?: RepFormat;
+
+  @Field({ nullable: true })
+  weightFormat?: WeightFormat;
+
+  @Field({ nullable: true })
+  intensityFormat?: IntensityFormat;
 
   @Field({ nullable: true })
   notes?: string;

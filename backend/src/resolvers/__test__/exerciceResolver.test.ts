@@ -1,6 +1,8 @@
 import { Exercice } from "../../entities/exercice";
 import { Training } from "../../entities/training";
 import { createMockExerciceInput } from "../../factory/exerciceFactory";
+import { ScopeExercice } from "../../InputType/exerciceType";
+import { CreateMultipleExercicesFromModel } from "../../services/exerciceService";
 import { ExerciceResolver } from "../exerciceResolver";
 
 jest.mock("../../entities/exercice");
@@ -74,49 +76,53 @@ describe("ExerciceResolver", () => {
   describe("addExercice", () => {
     it("should create multiple exercices and return success message", async () => {
       // Mock de l'entité Training avec relation exercices
-      const mockTraining = new Training();
-      mockTraining.id = "training-id";
-      mockTraining.exercices = [];
-      mockTraining.save = jest.fn();
-
-      // Mock de Training.findOne
-      (Training.findOne as jest.Mock).mockResolvedValue(mockTraining);
-
-      // Mocks des exercices à ajouter
       const mockExerciceInput = createMockExerciceInput(); // doit retourner un AddExercicePlanInput
-      const exercicesToAdd = [mockExerciceInput, mockExerciceInput]; // deux exercices
+      const exercicesToAdd = [mockExerciceInput, mockExerciceInput];
 
-      // Mock de Exercice.create et .save
-      const mockExerciceInstance = new Exercice();
-      mockExerciceInstance.save = jest
-        .fn()
-        .mockResolvedValue(mockExerciceInstance);
-      jest.spyOn(Exercice, "create").mockReturnValue(mockExerciceInstance);
-      jest
-        .spyOn(Exercice.prototype, "save")
-        .mockResolvedValue(mockExerciceInstance);
+      // Scope utilisé
+      const scope = ScopeExercice.CALENDAR;
+
+      // Mock de l'entité TrainingPlan avec relation exercices
+      const mockTrainingPlan = new Training();
+      mockTrainingPlan.id = "training-id";
+      mockTrainingPlan.exercices = [];
+
+      // Mock de TrainingPlan.findOne
+      jest.spyOn(Training, "findOne").mockResolvedValue(mockTrainingPlan);
+
+      // Spy sur CreateMultipleExercicesFromModel
+      const mockCreateMultiple = jest.fn();
+      (CreateMultipleExercicesFromModel as jest.Mock) = mockCreateMultiple;
+      mockCreateMultiple.mockResolvedValue(undefined);
 
       // Appel du resolver
       const result = await exerciceResolver.addExercice(
         "training-id",
-        exercicesToAdd
+        exercicesToAdd,
+        scope
       );
 
-      // Vérification du résultat
-      expect(result).toBe("Les exercices ont bien été ajouté");
+      // ✅ Assertions
+      expect(result).toBe("Les exercices ont bien été ajoutés");
+
       expect(Training.findOne).toHaveBeenCalledWith({
         where: { id: "training-id" },
         relations: { exercices: true },
       });
-      expect(Exercice.create).toHaveBeenCalledTimes(2);
-      expect(mockExerciceInstance.save).toHaveBeenCalledTimes(2);
+
+      expect(CreateMultipleExercicesFromModel).toHaveBeenCalledWith(
+        exercicesToAdd,
+        mockTrainingPlan,
+        scope
+      );
     });
 
     it("should throw if training not found", async () => {
-      (Training.findOne as jest.Mock).mockResolvedValue(null);
+      // Mock de TrainingPlan.findOne qui renvoie null
+      jest.spyOn(Training, "findOne").mockResolvedValue(null);
 
       await expect(
-        exerciceResolver.addExercice("bad-id", {} as any)
+        exerciceResolver.addExercice("bad-id", [] as any, ScopeExercice.CALENDAR)
       ).rejects.toThrow("Aucun entraînement n'a été trouvé");
     });
   });

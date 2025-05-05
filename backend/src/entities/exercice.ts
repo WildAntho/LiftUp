@@ -8,6 +8,11 @@ import {
 } from "typeorm";
 import { Training } from "./training";
 import { TrainingPlan } from "./trainingPlan";
+import {
+  IntensityFormat,
+  RepFormat,
+  WeightFormat,
+} from "../InputType/exerciceType";
 
 @ObjectType()
 @Entity()
@@ -47,6 +52,22 @@ export class Exercice extends BaseEntity {
   @Field({ nullable: true })
   @Column({ nullable: true })
   position?: number;
+
+  @Field(() => IntensityFormat, { nullable: true })
+  @Column({ type: "enum", enum: IntensityFormat, nullable: true })
+  intensityFormat?: IntensityFormat;
+
+  @Field(() => WeightFormat, { nullable: true })
+  @Column({ type: "enum", enum: WeightFormat, nullable: true })
+  weightFormat?: WeightFormat;
+
+  @Field(() => RepFormat, { nullable: true })
+  @Column({ type: "enum", enum: RepFormat, nullable: true })
+  repFormat?: RepFormat;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  tempo?: number;
 
   @Field(() => Training, { nullable: true })
   @ManyToOne(() => Training, (training) => training.exercices, {

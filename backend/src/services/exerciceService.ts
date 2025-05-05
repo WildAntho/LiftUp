@@ -2,7 +2,12 @@ import { Exercice } from "../entities/exercice";
 import { ExerciceModel } from "../entities/exerciceModel";
 import { Training } from "../entities/training";
 import { TrainingPlan } from "../entities/trainingPlan";
-import { ScopeExercice } from "../InputType/exerciceType";
+import {
+  IntensityFormat,
+  RepFormat,
+  ScopeExercice,
+  WeightFormat,
+} from "../InputType/exerciceType";
 import { AddExercicePlanInput } from "../InputType/trainingPlanType";
 
 export async function CreateMultipleExercicesFromModel(
@@ -18,6 +23,9 @@ export async function CreateMultipleExercicesFromModel(
         serie: e.serie,
         intensity: e.intensity,
         weight: e.weight,
+        intensityFormat: IntensityFormat.RPE,
+        weightFormat: WeightFormat.KG,
+        repFormat: RepFormat.STANDARD,
         image: e.image,
         notes: e.notes,
         position: e.position,

@@ -25,6 +25,10 @@ export async function createExerciceFromData(
       : 0,
     notes: exData.notes,
     image: exData.image,
+    tempo: exData.tempo,
+    repFormat: exData.repFormat,
+    weightFormat: exData.weightFormat,
+    intensityFormat: exData.intensityFormat,
     position: exData.position,
   });
   await exercice.save();

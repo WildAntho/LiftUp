@@ -6,8 +6,44 @@ export enum ScopeExercice {
 }
 
 registerEnumType(ScopeExercice, {
-  name: "Scope",
+  name: "ScopeExercice",
   description: "Scope de la provenance d'un exercice",
+});
+
+export enum IntensityFormat {
+  RPE = "RPE",
+  RIR = "RIR",
+}
+
+registerEnumType(IntensityFormat, {
+  name: "IntensityFormat",
+  description: "Format d'intensité",
+});
+
+export enum WeightFormat {
+  KG = "KG",
+  LBS = "LBS",
+  PERCENTAGE = "PERCENTAGE", // % of 1RM
+  BODYWEIGHT = "BODYWEIGHT",
+  CHOICE = "CHOICE", // Choose your weight
+}
+
+registerEnumType(WeightFormat, {
+  name: "WeightFormat",
+  description: "Format de poids",
+});
+
+export enum RepFormat {
+  STANDARD = "STANDARD", // juste un nombre
+  AMRAP = "AMRAP", // As Many Reps As Possible
+  TIME = "TIME", // Time to hold
+  EMOM = "EMOM",
+  E2MOM = "E2MOM",
+}
+
+registerEnumType(RepFormat, {
+  name: "RepFormat",
+  description: "Format de répétions",
 });
 
 @InputType()
@@ -51,6 +87,17 @@ export class ExerciceData {
   @Field({ nullable: true })
   position?: number;
 
+  @Field({ nullable: true })
+  tempo?: number;
+
+  @Field({ nullable: true })
+  repFormat?: RepFormat;
+
+  @Field({ nullable: true })
+  weightFormat?: WeightFormat;
+
+  @Field({ nullable: true })
+  intensityFormat?: IntensityFormat;
 
   @Field({ nullable: true })
   config?: Config;

@@ -111,7 +111,7 @@ export default function ExerciceComponent({
       initial="hidden"
       animate="visible"
     >
-      {!fromCalendar && <Separator orientation="vertical" className="h-12" />}
+      {!fromCalendar && <Separator orientation="vertical" className="h-4" />}
       {!hasExercice && (
         <>
           <motion.h2

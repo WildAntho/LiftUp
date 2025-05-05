@@ -1,4 +1,11 @@
-import { Message, ProgramLevel, ProgramStatus } from "@/graphql/hooks";
+import {
+  IntensityFormat,
+  Message,
+  ProgramLevel,
+  ProgramStatus,
+  RepFormat,
+  WeightFormat,
+} from "@/graphql/hooks";
 import { Image } from "@heroui/react";
 import {
   Archive,
@@ -159,6 +166,63 @@ export const allLevel = [
   },
 ];
 
+export const allFormatReps = [
+  {
+    key: RepFormat.Standard,
+    label: "Standard",
+  },
+  {
+    key: RepFormat.Amrap,
+    label: "AMRAP",
+  },
+  {
+    key: RepFormat.Emom,
+    label: "EMOM",
+  },
+  {
+    key: RepFormat.E2Mom,
+    label: "E2MOM",
+  },
+  {
+    key: RepFormat.Time,
+    label: "Temps(sec)",
+  },
+];
+
+export const allFormatWeight = [
+  {
+    key: WeightFormat.Kg,
+    label: "Kg",
+  },
+  {
+    key: WeightFormat.Lbs,
+    label: "Lbs",
+  },
+  {
+    key: WeightFormat.Bodyweight,
+    label: "Poids du corps",
+  },
+  {
+    key: WeightFormat.Choice,
+    label: "Au choix",
+  },
+  {
+    key: WeightFormat.Percentage,
+    label: "%RM",
+  },
+];
+
+export const allFormatIntensity = [
+  {
+    key: IntensityFormat.Rpe,
+    label: "RPE",
+  },
+  {
+    key: IntensityFormat.Rir,
+    label: "RIR",
+  },
+];
+
 export enum FilterCardEnum {
   ALL = "ALL",
   MINE = "MINE",
@@ -166,4 +230,4 @@ export enum FilterCardEnum {
   NEW = "NEW",
 }
 
-export const exercicesURL = "/exercices/men";
+export const exercicesURL = "/exercices/women";
