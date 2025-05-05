@@ -15,6 +15,10 @@ export const GET_TRAINING_PLAN = gql`
         intensity
         weight
         notes
+        tempo
+        repFormat
+        weightFormat
+        intensityFormat
         image
         position
       }

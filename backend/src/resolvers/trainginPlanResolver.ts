@@ -80,21 +80,4 @@ export class TrainingPlanResolver {
     training.remove();
     return "L'entraînement a bien été supprimé";
   }
-
-  @Mutation(() => String)
-  async addExerciceToProgram(
-    @Arg("id") trainingId: string,
-    @Arg("exercices", () => [AddExercicePlanInput])
-    exercices: AddExercicePlanInput[]
-  ) {
-    const training = await TrainingPlan.findOne({
-      where: { id: trainingId },
-      relations: { exercices: true },
-    });
-    if (!training) throw new Error("Aucun entraînement n'a été trouvé");
-    await CreateMultipleExercicesFromModel(exercices, training, ScopeExercice.PROGRAM);
-    return exercices.length > 1
-      ? "Les exercices ont bien été ajouté"
-      : "L'exercice a bien été ajouté";
-  }
 }

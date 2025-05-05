@@ -8,9 +8,10 @@ import {
   AddExercicePlanInput,
   Exercice,
   ExerciceData,
+  ScopeExercice,
   TrainingPlan,
   UpdateProgramInput,
-  useAddExerciceProgramMutation,
+  useAddExerciceMutation,
   useCreateTrainingPlanMutation,
   useDeleteExerciceMutation,
   useDeleteTrainingPlanMutation,
@@ -58,7 +59,7 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
   const [createTraining] = useCreateTrainingPlanMutation();
   const [updateTraining] = useUpdateTrainingPlanMutation();
   const [deleteTraining] = useDeleteTrainingPlanMutation();
-  const [createExercice] = useAddExerciceProgramMutation();
+  const [createExercice] = useAddExerciceMutation();
   const [deleteExercice] = useDeleteExerciceMutation();
   const [updateExercice] = useUpdateExerciceMutation();
 
@@ -143,11 +144,12 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
     try {
       const { data } = await createExercice({
         variables: {
-          trainingId: id as string,
+          id: id as string,
           exercices,
+          scope: ScopeExercice.Program,
         },
       });
-      successAction(data?.addExerciceToProgram ?? "");
+      successAction(data?.addExercice ?? "");
     } catch (error) {
       console.error(error);
       toast.error("Une erreur est survenue lors de l'ajout dex exercices");
@@ -169,22 +171,14 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
       await updateExercice({
         variables: {
           id,
-          data: {
-            title: exercice.title,
-            rep: exercice.rep,
-            serie: exercice.serie,
-            intensity: exercice.intensity,
-            weight: exercice.weight,
-            notes: exercice.notes,
-            position: exercice.position,
-          },
+          data: exercice,
         },
       });
       refetchDayNumber();
       refetchTraining();
     } catch (error) {
       console.error(error);
-      toast.error("Une erreur est survenue lors de l'ajout dex exercices");
+      toast.error("Une erreur est survenue lors de l'ajout des exercices");
     }
   };
 

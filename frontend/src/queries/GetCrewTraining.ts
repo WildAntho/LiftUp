@@ -18,6 +18,10 @@ export const GET_CREW_TRAINING = gql`
         rep
         intensity
         weight
+        tempo
+        repFormat
+        weightFormat
+        intensityFormat
         notes
         image
         position

@@ -10,6 +10,7 @@ import {
   AddExercicePlanInput,
   Exercice,
   ExerciceData,
+  ScopeExercice,
   Training,
   useAddExerciceMutation,
   useAddTrainingCrewMutation,
@@ -274,6 +275,7 @@ export default function TrainingModal({
         variables: {
           id: training?.id as string,
           exercices: exercicesToAdd,
+          scope: ScopeExercice.Calendar,
         },
       });
       if (currentStudent) refetch.refetchStudentTraining();

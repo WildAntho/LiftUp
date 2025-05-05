@@ -21,6 +21,10 @@ export const GET_MYTRAINING = gql`
         rep
         intensity
         weight
+        tempo
+        repFormat
+        weightFormat
+        intensityFormat
         notes
         image
         position

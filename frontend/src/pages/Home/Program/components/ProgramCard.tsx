@@ -149,6 +149,7 @@ export default function ProgramCard({
         onClose={handleCloseConfirm}
         onConfirm={handleDelete}
         description="Êtes-vous sûr de vouloir archiver ce programme ?"
+        title="Archivage"
       />
     </article>
   );

@@ -4,6 +4,7 @@ import { ExerciceData, ScopeExercice } from "../InputType/exerciceType";
 import { Training } from "../entities/training";
 import { CreateMultipleExercicesFromModel } from "../services/exerciceService";
 import { AddExercicePlanInput } from "../InputType/trainingPlanType";
+import { TrainingPlan } from "../entities/trainingPlan";
 
 @Resolver(Exercice)
 export class ExerciceResolver {
@@ -32,9 +33,13 @@ export class ExerciceResolver {
     exercice.title = data.title;
     exercice.rep = data.rep;
     exercice.serie = data.serie;
-    if (data.intensity) exercice.intensity = data.intensity;
-    if (data.weight) exercice.weight = data.weight;
-    if (data.notes) exercice.notes = data.notes;
+    exercice.intensity = data.intensity;
+    exercice.weight = data.weight;
+    exercice.notes = data.notes;
+    exercice.tempo = data.tempo;
+    exercice.repFormat = data.repFormat;
+    exercice.weightFormat = data.weightFormat;
+    exercice.intensityFormat = data.intensityFormat;
     exercice.position = data.position;
     await exercice.save();
     return exercice;
@@ -52,20 +57,31 @@ export class ExerciceResolver {
   async addExercice(
     @Arg("id") id: string,
     @Arg("exercices", () => [AddExercicePlanInput])
-    exercices: AddExercicePlanInput[]
+    exercices: AddExercicePlanInput[],
+    @Arg("scope", () => ScopeExercice) scope: ScopeExercice
   ) {
-    const training = await Training.findOne({
-      where: { id },
-      relations: { exercices: true },
-    });
+    let training: Training | TrainingPlan | null = null;
+
+    switch (scope) {
+      case ScopeExercice.CALENDAR:
+        training = await Training.findOne({
+          where: { id },
+          relations: { exercices: true },
+        });
+        break;
+      case ScopeExercice.PROGRAM:
+        training = await TrainingPlan.findOne({
+          where: { id },
+          relations: { exercices: true },
+        });
+        break;
+      default:
+        throw new Error("Scope invalide pour la création d'exercices.");
+    }
     if (!training) throw new Error("Aucun entraînement n'a été trouvé");
-    await CreateMultipleExercicesFromModel(
-      exercices,
-      training,
-      ScopeExercice.CALENDAR
-    );
+    await CreateMultipleExercicesFromModel(exercices, training, scope);
     return exercices.length > 1
-      ? "Les exercices ont bien été ajouté"
+      ? "Les exercices ont bien été ajoutés"
       : "L'exercice a bien été ajouté";
   }
 }
