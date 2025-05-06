@@ -31,7 +31,7 @@ export default function Delete({ onClick, loading, id, title }: DeleteProps) {
         isOpen={open}
         title="Suppression"
         onClose={() => setOpen(false)}
-        description={`Êtes-vous sûr de vouloir supprimer cet ${title} ?`}
+        description={title}
         onConfirm={() => onClick(id as string)}
         loading={loading}
       />

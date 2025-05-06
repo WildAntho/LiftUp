@@ -263,7 +263,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
                 onClick={handleDeleteStudent}
                 loading={loading}
                 id={user.id}
-                title="élève"
+                title="Êtes-vous sûr de vouloir supprimer cet élève"
               />
               {!user.remaining && !user.memberShipId && (
                 <Activate

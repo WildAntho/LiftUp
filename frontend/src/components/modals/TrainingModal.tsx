@@ -656,7 +656,7 @@ export default function TrainingModal({
                     onClick={handleDelete}
                     loading={loadingDelete}
                     id={training?.id as string}
-                    title="entraînement"
+                    title="Êtes vous sûr de vouloir supprimer cet entraînement"
                   />
                 )}
               </div>

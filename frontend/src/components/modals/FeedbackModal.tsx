@@ -18,7 +18,6 @@ import {
 import Edit from "../Edit";
 import Delete from "../Delete";
 import { useStudentStore } from "@/services/zustand/studentStore";
-import ConfirmModal from "./ConfirmModal";
 import ConfirmButton from "../ConfirmButton";
 import Cancel from "../Cancel";
 
@@ -49,7 +48,6 @@ export default function FeedbackModal({
   refetch,
 }: FeedbackModalProps) {
   const currentStudent = useStudentStore((state) => state.student);
-  const [openConfirm, setOpenConfirm] = useState<boolean>(false);
   const [addFeedback, { loading: loadingAddFeedback }] =
     useAddFeedbackMutation();
   const [deleteFeedback, { loading: loadingDelete }] =
@@ -77,7 +75,7 @@ export default function FeedbackModal({
       await updateFeedback({
         variables: {
           data,
-          id: event?.id,
+          id: event.id,
         },
       });
       setIsShow(true);
@@ -96,10 +94,10 @@ export default function FeedbackModal({
     setOpen(false);
   };
 
-  const handleDeleteFeedback = async () => {
+  const handleDeleteFeedback = async (id: string) => {
     await deleteFeedback({
       variables: {
-        id: event?.id as string,
+        id,
       },
     });
     refetch.refetchMyFeedbacks();
@@ -162,11 +160,16 @@ export default function FeedbackModal({
           </section>
         </ModalBody>
         <ModalFooter>
-          {!currentStudent && isShow && <Edit onClick={switchView} />}
-          {!currentStudent && isShow && (
-            <Delete onClick={() => setOpenConfirm(true)} />
-          )}
           <div className="w-[1000px] flex justify-end items-center gap-2">
+            {!currentStudent && isShow && <Edit onClick={switchView} />}
+            {!currentStudent && isShow && (
+              <Delete
+                onClick={handleDeleteFeedback}
+                id={event?.id as string}
+                title="Êtes vous sûr de vouloir supprimer ce debrief ?"
+                loading={loadingDelete}
+              />
+            )}
             {((isShow && event) || (!isShow && !event)) && (
               <Cancel
                 onClick={() => {
@@ -194,13 +197,6 @@ export default function FeedbackModal({
           </div>
         </ModalFooter>
       </ModalContent>
-      <ConfirmModal
-        isOpen={openConfirm}
-        onClose={() => setOpenConfirm(false)}
-        description="Êtes-vous sûr de vouloir supprimer ce debrief ?"
-        onConfirm={handleDeleteFeedback}
-        loading={loadingDelete}
-      />
     </Modal>
   );
 }
