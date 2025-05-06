@@ -6,7 +6,6 @@ import Edit from "./Edit";
 import { useState } from "react";
 import { UserWithoutPassword } from "@/services/zustand/userStore";
 import UserAvatar from "./UserAvatar";
-import ConfirmModal from "./modals/ConfirmModal";
 
 type CrewCardProps = {
   id: string;
@@ -24,12 +23,11 @@ export default function CrewCard({
   isEditable = false,
 }: CrewCardProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [openConfirm, setOpenConfirm] = useState<boolean>(false);
   const onClose = () => {
     setOpen(false);
   };
   const [deleteCrew, { loading: loadingDelete }] = useDeleteCrewMutation();
-  const handleDelete = async () => {
+  const handleDelete = async (id: string) => {
     await deleteCrew({
       variables: {
         id,
@@ -58,16 +56,14 @@ export default function CrewCard({
       {isEditable && (
         <div className="flex justify-center items-center absolute top-0 right-0">
           <Edit onClick={handleOpen} />
-          <Delete onClick={() => setOpenConfirm(true)} />
+          <Delete
+            onClick={handleDelete}
+            id={id}
+            loading={loadingDelete}
+            title="Êtes-vous sûr de vouloir supprimer cette équipe ?"
+          />
         </div>
       )}
-      <ConfirmModal
-        isOpen={openConfirm}
-        onClose={() => setOpenConfirm(false)}
-        description="Êtes-vous sûr de vouloir supprimer cette équipe ?"
-        onConfirm={handleDelete}
-        loading={loadingDelete}
-      />
     </section>
   );
 }
