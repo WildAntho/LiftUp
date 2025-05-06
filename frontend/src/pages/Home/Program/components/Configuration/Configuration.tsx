@@ -17,6 +17,7 @@ import {
   useDeleteTrainingPlanMutation,
   useGetDayNumberTrainingQuery,
   useGetTrainingPlanQuery,
+  usePasteTrainingMutation,
   useUpdateExerciceMutation,
   useUpdateTrainingPlanMutation,
 } from "@/graphql/hooks";
@@ -25,6 +26,7 @@ import { toast } from "sonner";
 import FloatingDock from "./components/FloatingDock";
 import { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import { useTrainingStore } from "@/services/zustand/trainingStore";
 
 type ConfigurationProps = {
   onUpdate: (id: string, program: UpdateProgramInput) => void;
@@ -35,6 +37,9 @@ type TabKey = "workouts" | "details";
 export default function Configuration({ onUpdate }: ConfigurationProps) {
   const navigate = useNavigate();
   const currentProgram = useProgramStore((state) => state.program);
+  const copyTraining = useTrainingStore((state) => state.set);
+  const clearTraining = useTrainingStore((state) => state.clear);
+  const currentCopy = useTrainingStore((state) => state.ids);
   const numberOfDays = (currentProgram?.duration || 0) * 7;
   const [activeTab, setActiveTab] = useState<TabKey>("workouts");
   const [activeDay, setActiveDay] = useState<number>(1);
@@ -62,6 +67,7 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
   const [createExercice] = useAddExerciceMutation();
   const [deleteExercice] = useDeleteExerciceMutation();
   const [updateExercice] = useUpdateExerciceMutation();
+  const [pasteTraining] = usePasteTrainingMutation();
 
   const allDayNumberTraining = dataDayNumber?.getDayNumberTraining ?? [];
   const trainings = dataTraining?.getTrainingPlan ?? [];
@@ -70,6 +76,9 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
     if (!currentProgram) {
       navigate("/home?tab=program");
     }
+    return () => {
+      clearTraining();
+    };
   }, [currentProgram, navigate]);
 
   if (!currentProgram) return null;
@@ -207,6 +216,27 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
     refetchTraining();
   };
 
+  const handleCopyTraining = () => {
+    const ids = trainings.map((t) => t.id);
+
+    copyTraining(ids);
+  };
+
+  const handlePasteTraining = async () => {
+    try {
+      const { data } = await pasteTraining({
+        variables: {
+          ids: currentCopy as string[],
+          day: activeDay,
+        },
+      });
+      successAction(data?.pasteTraining ?? "");
+    } catch (error) {
+      console.error(error);
+      toast.error("Une erreur est survenue lors de l'ajout des exercices");
+    }
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case "workouts":
@@ -232,7 +262,12 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
   return (
     <>
       {activeTab === "workouts" && (
-        <FloatingDock onCreate={handleCreateTraining} />
+        <FloatingDock
+          onCreate={handleCreateTraining}
+          onCopy={handleCopyTraining}
+          onPaste={handlePasteTraining}
+          trainings={trainings as TrainingPlan[]}
+        />
       )}
       <section className="relative w-full h-full flex flex-col justify-between items-center pt-[60px] overflow-y-scroll">
         <section className="w-full 2xl:w-[75%] h-full flex flex-col justify-start items-center gap-8">

@@ -50,20 +50,25 @@ export default function Profile() {
     setActive(key as string);
     navigate(`?tab=${key}`, { replace: true });
   };
+
   return (
     <section className="w-full h-full flex justify-center items-center p-4">
       <section className="h-full w-full pt-8 px-10 pb-2 flex flex-col items-start justify-start bg-white rounded-2xl">
-        <div className="min-w-[50%] pb-4">
+        <div className="min-w-[40%] pb-0">
           <Tabs
             selectedKey={active}
             onSelectionChange={handleSelectionChange}
             fullWidth={true}
+            variant="underlined"
+            classNames={{
+              tabList: "pb-0",
+            }}
           >
             {navigation.map((n) => (
               <Tab
                 key={n.key}
                 title={
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 pb-4">
                     {n.icon}
                     <span>{n.label}</span>
                   </div>
@@ -72,8 +77,10 @@ export default function Profile() {
             ))}
           </Tabs>
         </div>
-        <Separator />
-        <section className="h-full w-full overflow-y-scroll flex-1">
+        <div className="w-full flex justify-center items-center">
+          <Separator className="w-[97%]" />
+        </div>
+        <section className="h-full w-full overflow-y-scroll flex-1 pt-4">
           <section className="min-h-full w-full">
             {active === "informations" && <MyProfile />}
             {active === "about" && isCoach && <About />}
