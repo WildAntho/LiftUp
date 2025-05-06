@@ -143,13 +143,17 @@ export type ExerciceModel = {
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   intensity?: Maybe<Scalars['Float']['output']>;
+  intensityFormat?: Maybe<IntensityFormat>;
   notes?: Maybe<Scalars['String']['output']>;
   rep?: Maybe<Scalars['Float']['output']>;
+  repFormat?: Maybe<RepFormat>;
   serie?: Maybe<Scalars['Float']['output']>;
+  tempo?: Maybe<Scalars['Float']['output']>;
   title: Scalars['String']['output'];
   user?: Maybe<User>;
   userFavorites?: Maybe<Array<User>>;
   weight?: Maybe<Scalars['Float']['output']>;
+  weightFormat?: Maybe<WeightFormat>;
 };
 
 export type ExerciceModelData = {
@@ -234,7 +238,6 @@ export type Mutation = {
   addCoachProfile: Scalars['String']['output'];
   addExercice: Scalars['String']['output'];
   addExerciceFavorite: Scalars['String']['output'];
-  addExerciceToProgram: Scalars['String']['output'];
   addFeedback: Scalars['String']['output'];
   addMessages: Scalars['String']['output'];
   addOffer: Scalars['String']['output'];
@@ -305,12 +308,6 @@ export type MutationAddExerciceArgs = {
 
 
 export type MutationAddExerciceFavoriteArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type MutationAddExerciceToProgramArgs = {
-  exercices: Array<AddExercicePlanInput>;
   id: Scalars['String']['input'];
 };
 
@@ -1282,7 +1279,7 @@ export type GetAllExercicesModelQueryVariables = Exact<{
 }>;
 
 
-export type GetAllExercicesModelQuery = { __typename?: 'Query', getAllExercicesModel: Array<{ __typename?: 'ExerciceModel', id: string, title: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, notes?: string | null, image?: string | null }> };
+export type GetAllExercicesModelQuery = { __typename?: 'Query', getAllExercicesModel: Array<{ __typename?: 'ExerciceModel', id: string, title: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, notes?: string | null, image?: string | null, weightFormat?: WeightFormat | null, repFormat?: RepFormat | null, intensityFormat?: IntensityFormat | null, tempo?: number | null }> };
 
 export type GetChatUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2907,6 +2904,10 @@ export const GetAllExercicesModelDocument = gql`
     weight
     notes
     image
+    weightFormat
+    repFormat
+    intensityFormat
+    tempo
   }
 }
     `;

@@ -1,13 +1,13 @@
 import { Breadcrumbs, BreadcrumbItem } from "@heroui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
+  BadgeEuro,
   BicepsFlexed,
   Calendar,
   ChartNoAxesCombined,
   Dumbbell,
   Gauge,
   Home,
-  NotepadText,
   Settings,
 } from "lucide-react";
 import { motion } from "framer-motion"; // <--- ✅ import Framer
@@ -15,7 +15,7 @@ import { motion } from "framer-motion"; // <--- ✅ import Framer
 const translations: { [key: string]: string } = {
   calendar: "Calendrier",
   program: "Programmes",
-  training: "Entraînements",
+  offers: "Offres",
   exercices: "Exercices",
   statistics: "Statistiques",
   configuration: "Configuration",
@@ -35,8 +35,8 @@ export default function PathBreadcrumbs() {
         return <Calendar size={14} />;
       case "programmes":
         return <BicepsFlexed size={14} />;
-      case "entraînements":
-        return <NotepadText size={14} />;
+      case "offres":
+        return <BadgeEuro size={14} />;
       case "exercices":
         return <Dumbbell size={14} />;
       case "statistiques":

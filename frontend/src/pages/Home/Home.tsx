@@ -5,9 +5,9 @@ import Program from "./Program/Program";
 import Dashboard from "./Dashboard/Dashboard";
 import ExerciceModel from "./ExerciceModel/ExerciceModel";
 import Statistics from "./Statistics/Statistics";
-import TrainingModel from "./TrainingModel/TrainingModel";
 import Calendar from "./components/Calendar";
 import PathBreadcrumbs from "./components/PathBreadcrumbs";
+import Offers from "./Offers/Offers";
 
 export default function Home() {
   const currentUser = useUserStore((state) => state.user);
@@ -24,9 +24,7 @@ export default function Home() {
         {!activeTab && <Dashboard currentUser={currentUser} />}
         {activeTab === "calendar" && <Calendar currentUser={currentUser} />}
         {activeTab === "program" && <Program />}
-        {activeTab === "training" && (
-          <TrainingModel currentUser={currentUser} />
-        )}
+        {activeTab === "offers" && <Offers />}
         {activeTab === "exercices" && (
           <ExerciceModel currentUser={currentUser} />
         )}

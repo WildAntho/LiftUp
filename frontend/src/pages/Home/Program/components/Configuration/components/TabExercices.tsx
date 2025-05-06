@@ -114,7 +114,7 @@ export default function TabExercices({
   const tabChoice = [
     {
       id: 1,
-      icon: <LayoutGrid size={16} />,
+      icon: <LayoutGrid size={20} />,
       title: "Tous",
       description: "Tous les exercices",
       type: FilterCardEnum.ALL,
@@ -122,7 +122,7 @@ export default function TabExercices({
     },
     {
       id: 2,
-      icon: <UserCircle size={16} />,
+      icon: <UserCircle size={20} />,
       title: "Mes exercices",
       description: "Exercices personnalisés",
       type: FilterCardEnum.MINE,
@@ -130,7 +130,7 @@ export default function TabExercices({
     },
     {
       id: 3,
-      icon: <Heart size={16} />,
+      icon: <Heart size={20} />,
       title: "Favoris",
       description: "Exercices favoris",
       type: FilterCardEnum.FAVORITE,
@@ -138,7 +138,7 @@ export default function TabExercices({
     },
     {
       id: 4,
-      icon: <PlusCircle size={16} />,
+      icon: <PlusCircle size={20} />,
       title: "Créer",
       description: "Créer un nouvel exercice",
       type: FilterCardEnum.NEW,
@@ -175,12 +175,14 @@ export default function TabExercices({
         />
         <div className="flex items-center gap-1 flex-1">
           <Select
+            aria-label="Muscle principal"
             placeholder="Muscle principal"
             startContent={<BicepsFlexed size={20} className="text-gray-500" />}
           >
             <SelectItem>En attente</SelectItem>
           </Select>
           <Select
+            aria-label="Muscle secondaire"
             placeholder="Muscle secondaire"
             startContent={<Handshake size={20} className="text-gray-500" />}
           >

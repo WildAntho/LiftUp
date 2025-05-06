@@ -1,63 +1,39 @@
 import { Tooltip } from "@heroui/tooltip";
-import { Check, Loader2 } from "lucide-react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Check } from "lucide-react";
+import ConfirmModal from "@/components/modals/ConfirmModal";
+import { useState } from "react";
 
 type AcceptProps = {
-  onAccept: () => void;
+  onClick: () => void;
   loading?: boolean;
-  description: string;
-  title: string;
 };
 
-export default function Accept({
-  onAccept,
-  loading,
-  description,
-  title,
-}: AcceptProps) {
+export default function Accept({ onClick, loading }: AcceptProps) {
+  const [open, setOpen] = useState<boolean>(false);
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <div className="hover:bg-black/5 p-2 rounded-full cursor-pointer">
-          <Tooltip
-            content="Accepter"
-            showArrow={true}
-            color="foreground"
-            className="text-xs"
-          >
-            <Check className={`size-4 text-green-500 active:text-green-700`} />
-          </Tooltip>
-        </div>
-      </DialogTrigger>
-      <DialogContent aria-describedby="dialog-description">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="sm:justify-end">
-          <DialogClose asChild>
-            <Button
-              type="button"
-              className="bg-primary hover:bg-blue-600 w-[20%]"
-              onClick={onAccept}
-              disabled={loading}
-            >
-              {loading && <Loader2 className="animate-spin" />}
-              Oui
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <>
+      <div
+        className="hover:bg-black/5 p-2 rounded-full cursor-pointer"
+        onClick={() => setOpen(true)}
+      >
+        <Tooltip
+          content="Accepter"
+          showArrow={true}
+          color="foreground"
+          className="text-xs"
+        >
+          <Check className={`size-4 text-green-500 active:text-green-700`} />
+        </Tooltip>
+      </div>
+      <ConfirmModal
+        isOpen={open}
+        title="Validation"
+        type="success"
+        onClose={() => setOpen(false)}
+        description="Êtes-vous sûr de vouloir accepter cette demande ?"
+        onConfirm={onClick}
+        loading={loading}
+      />
+    </>
   );
 }

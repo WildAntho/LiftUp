@@ -146,17 +146,13 @@ export default function TabRequests({ requests, refetch }: TabRequestsProps) {
                 </DialogContent>
               </Dialog>
               <Accept
-                title="Accepter la demande"
-                description="Êtes-vous sûr de vouloir accepter cette demande ?"
-                onAccept={() =>
+                onClick={() =>
                   handleAcceptRequest(user.senderId, user.requestId)
                 }
                 loading={loadingAccept}
               />
               <Reject
-                title="Refuser la demande"
-                description="Êtes-vous sûr de vouloir refuser cette demande ?"
-                onDelete={() => handleRejectRequest(user.requestId)}
+                onClick={() => handleRejectRequest(user.requestId)}
                 loading={loadingReject}
               />
             </div>

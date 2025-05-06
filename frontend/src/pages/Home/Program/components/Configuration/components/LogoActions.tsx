@@ -19,7 +19,7 @@ export default function LogoAction({ logo, onClick, title }: LogoActionProps) {
         className=" hover:bg-black/5 p-2 rounded-full cursor-pointer"
         onClick={onClick}
       >
-        <span className="transition-all duration-200 ease-in-out text-gray-400 group-hover:text-gray-600">
+        <span className="transition-all duration-200 ease-in-out text-gray-500 group-hover:text-dark">
           {logo}
         </span>
       </div>

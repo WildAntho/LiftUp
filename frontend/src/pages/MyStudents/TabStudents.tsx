@@ -40,7 +40,6 @@ import { addMonths, differenceInDays } from "date-fns";
 import Renew from "@/components/Renew";
 import StatusStudentCard from "./components/StatusStudentCard";
 import { StatusStudent } from "@/type";
-import ConfirmModal from "@/components/modals/ConfirmModal";
 
 type UserType = {
   id: string;
@@ -63,8 +62,6 @@ type TabStudentProps = {
 
 export default function TabStudent({ refetch }: TabStudentProps) {
   const currentUser = useUserStore((state) => state.user);
-  const [openConfirm, setOpenConfirm] = useState<boolean>(false);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [activeCard, setActiveCard] = useState<StatusStudent | null>(null);
   const [input, setInput] = useState<string>("");
   const [offer, setOffer] = useState<string>("");
@@ -263,26 +260,25 @@ export default function TabStudent({ refetch }: TabStudentProps) {
           return (
             <div className="relative flex items-center gap-2">
               <Delete
-                onClick={() => {
-                  setSelectedUserId(user.id);
-                  setOpenConfirm(true);
-                }}
+                onClick={handleDeleteStudent}
+                loading={loading}
+                id={user.id}
+                title="élève"
               />
               {!user.remaining && !user.memberShipId && (
                 <Activate
-                  onActive={() => handleActiveMemberShip(user.id, user.offerId)}
+                  onClick={handleActiveMemberShip}
                   loading={loadingActivate}
-                  title="Démarrer le suivi"
-                  description="Êtes-vous sûr de vouloir démarrer le suivi de cet élève ?"
+                  id={user.id}
+                  offerId={user.offerId}
                 />
               )}
               {user.memberShipId && (
                 <Renew
-                  title="Renouveler le suivi"
-                  description="Êtes-vous sûr de vouloir renouveler le suivi ?"
-                  loading={loadingRenew}
-                  onRenew={() => handleRenewMembership(user.memberShipId!)}
+                  onClick={handleRenewMembership}
+                  id={user.memberShipId}
                   endDate={user.endMembership}
+                  loading={loadingRenew}
                 />
               )}
             </div>
@@ -387,17 +383,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
 
   return (
     <section className="w-full h-full flex flex-col items-center justify-start gap-5">
-      <ConfirmModal
-        isOpen={openConfirm}
-        onClose={() => {
-          setOpenConfirm(false);
-          setSelectedUserId(null);
-        }}
-        description="Êtes-vous sûr de vouloir supprimer cet élève ?"
-        onConfirm={() => handleDeleteStudent(selectedUserId as string)}
-        loading={loading}
-      />
-      <section className="w-full flex justify-start items-center gap-4">
+      <section className="w-full flex justify-start items-center gap-2 overflow-x-scroll">
         <div onClick={() => setActiveCard(null)}>
           <StatusStudentCard
             icon={<Users size={20} />}
@@ -419,7 +405,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
           <StatusStudentCard
             icon={<Hourglass size={20} />}
             title="En attente"
-            description="Inscription à valider"
+            description="Coaching à valider"
             type={StatusStudent.waiting}
             isActive={activeCard === StatusStudent.waiting}
           />

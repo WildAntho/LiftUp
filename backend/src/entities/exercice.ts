@@ -54,15 +54,30 @@ export class Exercice extends BaseEntity {
   position?: number;
 
   @Field(() => IntensityFormat, { nullable: true })
-  @Column({ type: "enum", enum: IntensityFormat, nullable: true })
+  @Column({
+    type: "enum",
+    enum: IntensityFormat,
+    nullable: true,
+    default: IntensityFormat.RPE,
+  })
   intensityFormat?: IntensityFormat;
 
   @Field(() => WeightFormat, { nullable: true })
-  @Column({ type: "enum", enum: WeightFormat, nullable: true })
+  @Column({
+    type: "enum",
+    enum: WeightFormat,
+    nullable: true,
+    default: WeightFormat.KG,
+  })
   weightFormat?: WeightFormat;
 
   @Field(() => RepFormat, { nullable: true })
-  @Column({ type: "enum", enum: RepFormat, nullable: true })
+  @Column({
+    type: "enum",
+    enum: RepFormat,
+    nullable: true,
+    default: RepFormat.STANDARD,
+  })
   repFormat?: RepFormat;
 
   @Field({ nullable: true })

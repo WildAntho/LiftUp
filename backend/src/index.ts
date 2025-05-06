@@ -67,9 +67,7 @@ async function StartGraphQLServer() {
   // Démarrer le serveur HTTP
   httpServer.listen(4100, () => {
     console.log(`🚀 Server ready at http://localhost:4100/`);
-    console.log(
-      `🚀 WebSocket server ready at ws://localhost:4100/subscriptions`
-    );
+    console.log(`🚀 WebSocket server ready at ws://localhost:4100/`);
     console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
     console.log(
       `Apollo Playground: ${

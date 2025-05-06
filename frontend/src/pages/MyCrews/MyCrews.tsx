@@ -27,9 +27,8 @@ export default function MyCrews() {
                 <Info size={40} />
                 Si vous souhaitez assigner une offre à une équipe, vous pouvez
                 créer une équipe sans élève et ensuite assigner une offre à
-                cette équipe dans la section "Profil / Mes offres". Les élèves
-                qui souscriront à l'offre seront automatiquement ajoutés à
-                l'équipe.
+                cette équipe dans la section "Offres". Les élèves qui
+                souscriront à l'offre seront automatiquement ajoutés à l'équipe.
               </p>
               <Button
                 className="group h-12 w-[300px] text-black bg-gray-100 hover:bg-gray-200 border border-black rounded-xl hover:translate-y-[-2px] hover:shadow-md transition-all duration-200"

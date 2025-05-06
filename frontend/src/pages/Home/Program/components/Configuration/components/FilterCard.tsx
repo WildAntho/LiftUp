@@ -45,20 +45,20 @@ export default function FilterCard({
 
   return (
     <div
-      className={`max-w-44 min-w-40 h-14 ${
+      className={`w-48 h-16 ${
         isActive ? colors.bg : "bg-gray-50 hover:bg-gray-100"
       } rounded-lg p-2 flex items-center justify-start gap-2 border border-gray-100 cursor-pointer transition-all duration-200`}
     >
-      <div className={`text-sm ${colors.text}`}>{icon}</div>
+      <div className={`${colors.text}`}>{icon}</div>
       <div>
         <h3
           className={`${
             isActive ? colors.text : "text-gray-700"
-          } text-xs font-medium leading-tight`}
+          } text-sm font-medium leading-tight`}
         >
           {title}
         </h3>
-        <p className="text-gray-500 text-[10px] leading-snug">{description}</p>
+        <p className="text-gray-500 text-xs leading-snug">{description}</p>
       </div>
     </div>
   );

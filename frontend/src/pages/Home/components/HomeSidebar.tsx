@@ -4,13 +4,13 @@ import { useState } from "react";
 import CollapseItem from "./CollapseItem";
 import { SidebarComponent } from "@/type";
 import {
+  BadgeEuro,
   BicepsFlexed,
   Calendar,
   ChartNoAxesCombined,
   Dumbbell,
   Gauge,
   HandCoins,
-  NotepadText,
 } from "lucide-react";
 import UserProfile from "./UserProfile";
 import { UserWithoutPassword } from "@/services/zustand/userStore";
@@ -126,11 +126,11 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
         ]
       : []),
     {
-      title: "Entraînements",
-      value: "training",
-      get: () => navigate("/home?tab=training"),
+      title: "Offres",
+      value: "offers",
+      get: () => navigate("/home?tab=offers"),
       withArrow: true,
-      icon: <NotepadText className="size-5" />,
+      icon: <BadgeEuro className="size-5" />,
       type: "content",
     },
     {

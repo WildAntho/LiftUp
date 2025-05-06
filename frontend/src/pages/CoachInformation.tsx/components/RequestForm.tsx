@@ -1,14 +1,5 @@
+import ConfirmModal from "@/components/modals/ConfirmModal";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Offer, useAddRequestMutation } from "@/graphql/hooks";
 import { useUserStore } from "@/services/zustand/userStore";
@@ -24,6 +15,7 @@ type RequestFormProps = {
 
 export default function RequestForm({ offers, coachId }: RequestFormProps) {
   const currentUser = useUserStore((state) => state.user);
+  const [openConfirm, setOpenConfirm] = useState<boolean>(false);
   const navigate = useNavigate();
   const [formState, setFormState] = useState({
     phone: "",
@@ -92,36 +84,14 @@ export default function RequestForm({ offers, coachId }: RequestFormProps) {
             }))
           }
         />
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              className="bg-primary hover:bg-blue-600 w-full flex items-center gap-5"
-              disabled={formState.offerId.length === 0}
-            >
-              <Send />
-              Envoyer la demande
-            </Button>
-          </DialogTrigger>
-          <DialogContent aria-describedby="dialog-description">
-            <DialogHeader>
-              <DialogTitle>Demande de coaching</DialogTitle>
-              <DialogDescription>
-                Souhaitez-vous vraiment envoyer la demande de coaching ?
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="sm:justify-end">
-              <DialogClose asChild>
-                <Button
-                  type="button"
-                  className="bg-primary hover:bg-blue-600 w-[20%]"
-                  onClick={handleAddRequest}
-                >
-                  Oui
-                </Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Button
+          className="bg-primary hover:bg-blue-600 w-full flex items-center gap-5"
+          disabled={formState.offerId.length === 0}
+          onClick={() => setOpenConfirm(true)}
+        >
+          <Send />
+          Envoyer la demande
+        </Button>
         <div className="flex justify-start items-center gap-2 text-primary mt-2">
           <ShieldAlert />
           <p className="text-xs">
@@ -132,6 +102,14 @@ export default function RequestForm({ offers, coachId }: RequestFormProps) {
           <p className="flex-1 text-xs text-gray-600">* Champs obligatoires</p>
         </div>
       </section>
+      <ConfirmModal
+        title="Souscription"
+        type="success"
+        isOpen={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        description="Êtes vous sûr de vouloir souscrire à cette offre ?"
+        onConfirm={handleAddRequest}
+      />
     </section>
   );
 }

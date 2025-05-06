@@ -44,7 +44,7 @@ export default function OfferCard({
           <section className="w-full flex justify-between items-center">
             <div className="flex justify-start items-center gap-5">
               <Badge
-                className={`text-sm font-semibold ${
+                className={`text-sm font-semibold truncate ${
                   !offer?.availability && "text-gray-500"
                 }`}
               >
