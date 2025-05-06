@@ -12,6 +12,8 @@ import { CreateMultipleExercicesFromModel } from "../services/exerciceService";
 import { Exercice } from "../entities/exercice";
 import { ExerciceModelData } from "../InputType/exerciceModelType";
 import { ScopeExercice } from "../InputType/exerciceType";
+import { In } from "typeorm";
+import { copyTrainings } from "../services/TrainingPlanService";
 
 @Authorized("COACH")
 @Resolver(TrainingPlan)
@@ -79,5 +81,28 @@ export class TrainingPlanResolver {
     if (!training) throw new Error("Aucun entraînement n'a été trouvé");
     training.remove();
     return "L'entraînement a bien été supprimé";
+  }
+
+  @Mutation(() => String)
+  async pasteTraining(
+    @Arg("ids", () => [String]) ids: string[],
+    @Arg("day") day: number
+  ) {
+    if (ids.length === 0) throw new Error("Aucune séance n'a été fourni")
+    const trainings = await TrainingPlan.find({
+      where: {
+        id: In(ids),
+      },
+      relations: {
+        exercices: true,
+        program: true,
+      },
+    });
+    if (trainings.length === 0)
+      throw new Error("Aucun entraînement n'a été trouvé");
+    await copyTrainings(trainings, day);
+    return ids.length > 1
+      ? "Les séances ont bien été collées"
+      : "La séance a bien été collée";
   }
 }

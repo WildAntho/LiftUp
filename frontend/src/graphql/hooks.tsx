@@ -263,6 +263,7 @@ export type Mutation = {
   login: Scalars['String']['output'];
   logout: Scalars['Boolean']['output'];
   markAsRead: MarkAsReadResponse;
+  pasteTraining: Scalars['String']['output'];
   publishProgram: Scalars['String']['output'];
   rejectRequest: Scalars['String']['output'];
   renewMemberShip: Scalars['String']['output'];
@@ -430,6 +431,12 @@ export type MutationLoginArgs = {
 
 export type MutationMarkAsReadArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type MutationPasteTrainingArgs = {
+  day: Scalars['Float']['input'];
+  ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -1166,6 +1173,14 @@ export type HasBeenseenMutationVariables = Exact<{
 
 
 export type HasBeenseenMutation = { __typename?: 'Mutation', hasBeenSeen: string };
+
+export type PasteTrainingMutationVariables = Exact<{
+  day: Scalars['Float']['input'];
+  ids: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type PasteTrainingMutation = { __typename?: 'Mutation', pasteTraining: string };
 
 export type RejectRequestMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2427,6 +2442,38 @@ export function useHasBeenseenMutation(baseOptions?: Apollo.MutationHookOptions<
 export type HasBeenseenMutationHookResult = ReturnType<typeof useHasBeenseenMutation>;
 export type HasBeenseenMutationResult = Apollo.MutationResult<HasBeenseenMutation>;
 export type HasBeenseenMutationOptions = Apollo.BaseMutationOptions<HasBeenseenMutation, HasBeenseenMutationVariables>;
+export const PasteTrainingDocument = gql`
+    mutation PasteTraining($day: Float!, $ids: [String!]!) {
+  pasteTraining(day: $day, ids: $ids)
+}
+    `;
+export type PasteTrainingMutationFn = Apollo.MutationFunction<PasteTrainingMutation, PasteTrainingMutationVariables>;
+
+/**
+ * __usePasteTrainingMutation__
+ *
+ * To run a mutation, you first call `usePasteTrainingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePasteTrainingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [pasteTrainingMutation, { data, loading, error }] = usePasteTrainingMutation({
+ *   variables: {
+ *      day: // value for 'day'
+ *      ids: // value for 'ids'
+ *   },
+ * });
+ */
+export function usePasteTrainingMutation(baseOptions?: Apollo.MutationHookOptions<PasteTrainingMutation, PasteTrainingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<PasteTrainingMutation, PasteTrainingMutationVariables>(PasteTrainingDocument, options);
+      }
+export type PasteTrainingMutationHookResult = ReturnType<typeof usePasteTrainingMutation>;
+export type PasteTrainingMutationResult = Apollo.MutationResult<PasteTrainingMutation>;
+export type PasteTrainingMutationOptions = Apollo.BaseMutationOptions<PasteTrainingMutation, PasteTrainingMutationVariables>;
 export const RejectRequestDocument = gql`
     mutation RejectRequest($id: String!) {
   rejectRequest(id: $id)
