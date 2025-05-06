@@ -60,7 +60,7 @@ export default function TrainingCard({
           {event.exercices && (
             <p>
               {event?.exercices?.length}{" "}
-              {`exercice${event?.exercices?.length > 0 ? "s" : ""}`}
+              {`exercice${event?.exercices?.length > 1 ? "s" : ""}`}
             </p>
           )}
         </div>

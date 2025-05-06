@@ -1,3 +1,4 @@
+import { DeepPartial } from "typeorm";
 import { Exercice } from "../entities/exercice";
 import { ExerciceModel } from "../entities/exerciceModel";
 import { Training } from "../entities/training";
@@ -14,28 +15,21 @@ export async function CreateMultipleExercicesFromModel(
   exercices: AddExercicePlanInput[],
   training: TrainingPlan | Training,
   scope: ScopeExercice
-) {
-  await Promise.all(
+): Promise<Exercice[]> {
+  const defaultValues = {
+    intensityFormat: IntensityFormat.RPE,
+    weightFormat: WeightFormat.KG,
+    repFormat: RepFormat.STANDARD,
+  };
+  return await Promise.all(
     exercices.map(async (e) => {
-      const commonData = {
-        title: e.title,
-        rep: e.rep,
-        serie: e.serie,
-        intensity: e.intensity,
-        weight: e.weight,
-        intensityFormat: IntensityFormat.RPE,
-        weightFormat: WeightFormat.KG,
-        repFormat: RepFormat.STANDARD,
-        image: e.image,
-        notes: e.notes,
-        position: e.position,
-      };
-
-      const exercice = Exercice.create({
-        ...commonData,
-        ...(scope === "CALENDAR" ? { training } : { trainingPlan: training }),
-      });
-
+      const relationField = scope === "CALENDAR" ? "training" : "trainingPlan";
+      const exerciceData = {
+        ...defaultValues,
+        ...e,
+        [relationField]: training,
+      } as DeepPartial<Exercice>;
+      const exercice = Exercice.create(exerciceData);
       await exercice.save();
       return exercice;
     })

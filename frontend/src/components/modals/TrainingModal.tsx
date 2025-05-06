@@ -10,6 +10,8 @@ import {
   AddExercicePlanInput,
   Exercice,
   ExerciceData,
+  IntensityFormat,
+  RepFormat,
   ScopeExercice,
   Training,
   useAddExerciceMutation,
@@ -20,6 +22,7 @@ import {
   useDeleteTrainingMutation,
   useUpdateExerciceMutation,
   useUpdateTrainingMutation,
+  WeightFormat,
 } from "@/graphql/hooks";
 import {
   Modal,
@@ -268,7 +271,14 @@ export default function TrainingModal({
     exercicesToAdd: AddExercicePlanInput[]
   ) => {
     const newExercices = [...exercices];
-    exercicesToAdd.forEach((e) => newExercices.push(e as Exercice));
+    exercicesToAdd.forEach((e) =>
+      newExercices.push({
+        ...e,
+        intensityFormat: IntensityFormat.Rpe,
+        repFormat: RepFormat.Standard,
+        weightFormat: WeightFormat.Kg,
+      } as Exercice)
+    );
     setExercices(newExercices);
     if (!isNew) {
       await addExercice({
@@ -293,6 +303,9 @@ export default function TrainingModal({
           id: exerciceId,
         },
       });
+      if (currentStudent) refetch.refetchStudentTraining();
+      if (currentCrew) refetch.refetchCrewTraining();
+      refetch.refetchMyTraining();
     }
   };
 
@@ -314,6 +327,9 @@ export default function TrainingModal({
           id,
         },
       });
+      if (currentStudent) refetch.refetchStudentTraining();
+      if (currentCrew) refetch.refetchCrewTraining();
+      refetch.refetchMyTraining();
     }
   };
 
@@ -450,16 +466,7 @@ export default function TrainingModal({
                 <div className="w-[90%] h-full flex flex-col gap-2">
                   {exercices.map((e: Exercice) => (
                     <div className="w-full min-h-28" key={e.id}>
-                      <ExerciceCard
-                        id={e.id}
-                        title={e.title}
-                        rep={e.rep}
-                        serie={e.serie}
-                        weight={e.weight}
-                        intensity={e.intensity}
-                        notes={e.notes}
-                        image={e.image}
-                      />
+                      <ExerciceCard exercice={e} />
                     </div>
                   ))}
                 </div>
@@ -644,7 +651,14 @@ export default function TrainingModal({
             {(training?.editable || isCoach) && (
               <div className="flex justify-center items-center">
                 {isShow && <Edit onClick={switchView} />}
-                {isShow && <Delete onClick={() => setOpenConfirm(true)} />}
+                {isShow && (
+                  <Delete
+                    onClick={handleDelete}
+                    loading={loadingDelete}
+                    id={training?.id as string}
+                    title="entraînement"
+                  />
+                )}
               </div>
             )}
             {isShow ? (

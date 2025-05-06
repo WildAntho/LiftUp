@@ -1,14 +1,8 @@
 import MyProfile from "./components/MyProfile";
 import { useUserStore } from "@/services/zustand/userStore";
-import {
-  BadgeEuro,
-  MessageCircleQuestion,
-  NotebookPen,
-  Settings,
-} from "lucide-react";
+import { MessageCircleQuestion, NotebookPen, Settings } from "lucide-react";
 import { useState, Key, useEffect } from "react";
 import About from "./components/About";
-import Offers from "./components/Offers";
 import Plans from "./components/Plans";
 import { Tab, Tabs } from "@heroui/tabs";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -42,11 +36,6 @@ export default function Profile() {
             icon: (
               <MessageCircleQuestion size={18} className="text-green-500" />
             ),
-          },
-          {
-            key: "offers",
-            label: "Mes offres",
-            icon: <BadgeEuro size={18} className="text-blue-500" />,
           },
         ]
       : []),
@@ -88,7 +77,6 @@ export default function Profile() {
           <section className="min-h-full w-full">
             {active === "informations" && <MyProfile />}
             {active === "about" && isCoach && <About />}
-            {active === "offers" && isCoach && <Offers />}
             {active === "plans" && isCoach && <Plans />}
           </section>
         </section>

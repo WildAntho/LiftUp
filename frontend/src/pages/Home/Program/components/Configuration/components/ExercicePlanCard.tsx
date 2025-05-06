@@ -43,21 +43,19 @@ export default function ExercicePlanCard({
 }: ExercicePlanCardProps) {
   const [showAll, setShowAll] = useState(false);
   const [currentExercice, setCurrentExercice] = useState(exercice);
-  const prevSerieRef = useRef<number>(currentExercice.serie);
-  const prevRepRef = useRef<number>(currentExercice.rep);
-  const prevWeightRef = useRef<Maybe<number>>(currentExercice.weight ?? null);
-  const prevIntensityRef = useRef<Maybe<number>>(
-    currentExercice.intensity ?? null
-  );
-  const prevNoteRef = useRef<Maybe<string>>(currentExercice.notes ?? "");
-  const prevTempoRef = useRef<Maybe<number>>(currentExercice.tempo ?? 2020);
-  const prevRepFormat = useRef<Maybe<RepFormat>>(
+  const serieRef = useRef<number>(currentExercice.serie);
+  const repRef = useRef<number>(currentExercice.rep);
+  const weightRef = useRef<Maybe<number>>(currentExercice.weight ?? null);
+  const intensityRef = useRef<Maybe<number>>(currentExercice.intensity ?? null);
+  const noteRef = useRef<Maybe<string>>(currentExercice.notes ?? "");
+  const tempoRef = useRef<Maybe<number>>(currentExercice.tempo ?? null);
+  const repFormat = useRef<Maybe<RepFormat>>(
     currentExercice.repFormat ?? RepFormat.Standard
   );
-  const prevWeightFormat = useRef<Maybe<WeightFormat>>(
+  const weightFormat = useRef<Maybe<WeightFormat>>(
     currentExercice.weightFormat ?? WeightFormat.Kg
   );
-  const prevIntensityFormat = useRef<Maybe<IntensityFormat>>(
+  const intensityFormat = useRef<Maybe<IntensityFormat>>(
     currentExercice.intensityFormat ?? IntensityFormat.Rpe
   );
 
@@ -77,17 +75,24 @@ export default function ExercicePlanCard({
     onDelete(exercice.id);
   };
 
-  const debouncedUpdate = useDebouncedCallback(
-    async () => {
-      const cleanExercice = {
-        ...currentExercice,
-        tempo: withTempo ? currentExercice.tempo : null,
-      };
-      onUpdate(exercice.id, cleanExercice);
-    },
-    2000,
-    { leading: true }
-  );
+  const debouncedUpdate = useDebouncedCallback(async () => {
+    const refExercice = {
+      serie: serieRef.current,
+      rep: repRef.current,
+      repFormat: repFormat.current,
+      weight: weightRef.current,
+      weightFormat: weightFormat.current,
+      intensity: intensityRef.current,
+      intensityFormat: intensityFormat.current,
+      notes: noteRef.current,
+      tempo: tempoRef.current,
+    };
+    const cleanExercice = {
+      ...currentExercice,
+      ...refExercice,
+    };
+    onUpdate(exercice.id, cleanExercice);
+  }, 2000);
 
   const saveChanges = () => {
     debouncedUpdate();
@@ -103,6 +108,25 @@ export default function ExercicePlanCard({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+  };
+
+  // Handlers pour les mises à jour de champs
+  const handleUpdateField = <
+    T extends
+      | number
+      | string
+      | null
+      | RepFormat
+      | WeightFormat
+      | IntensityFormat
+  >(
+    field: string,
+    value: T,
+    ref: React.MutableRefObject<T>
+  ) => {
+    setCurrentExercice((prev) => ({ ...prev, [field]: value }));
+    ref.current = value;
+    saveChanges();
   };
 
   const renderInfoReps = () => {
@@ -215,32 +239,25 @@ export default function ExercicePlanCard({
           }`}
         >
           <div className="w-full h-full flex justify-center items-end gap-1">
-            <Input
-              label="Série"
-              radius="none"
-              type="number"
-              className="flex-1"
-              variant="bordered"
-              classNames={{ inputWrapper: "border-1" }}
-              value={(currentExercice.serie ?? 1).toString()}
-              onChange={(e) =>
-                setCurrentExercice((prev) => ({
-                  ...prev,
-                  serie: Number(e.target.value),
-                }))
-              }
-              onClick={(e) => e.stopPropagation()}
-              onBlur={() => {
-                if (prevSerieRef.current !== currentExercice.serie) {
-                  saveChanges();
-                  prevSerieRef.current = currentExercice.serie;
+            <div className="flex-1" onClick={(e) => e.stopPropagation()}>
+              <Input
+                label="Série"
+                radius="none"
+                type="number"
+                className="flex-1"
+                variant="bordered"
+                classNames={{ inputWrapper: "border-1" }}
+                value={(currentExercice.serie ?? 1).toString()}
+                onChange={(e) =>
+                  handleUpdateField("serie", Number(e.target.value), serieRef)
                 }
-              }}
-            />
+              />
+            </div>
             <Separator orientation="vertical" className="h-24" />
             <div className="flex-1">
               <Select
                 placeholder="Format répétitions"
+                aria-label="Format répétitions"
                 radius="none"
                 selectedKeys={
                   currentExercice.repFormat
@@ -248,18 +265,12 @@ export default function ExercicePlanCard({
                     : [RepFormat.Standard]
                 }
                 onChange={(e) =>
-                  setCurrentExercice((prev) => ({
-                    ...prev,
-                    repFormat: e.target.value as RepFormat,
-                  }))
+                  handleUpdateField(
+                    "repFormat",
+                    e.target.value as RepFormat,
+                    repFormat
+                  )
                 }
-                onBlur={() => {
-                  if (prevRepFormat.current !== currentExercice.repFormat) {
-                    saveChanges();
-                    prevRepFormat.current =
-                      currentExercice.repFormat as RepFormat;
-                  }
-                }}
               >
                 {allFormatReps.map((r) => (
                   <SelectItem key={r.key} className="text-xs">
@@ -267,62 +278,53 @@ export default function ExercicePlanCard({
                   </SelectItem>
                 ))}
               </Select>
-              <Input
-                label="Répétitions"
-                radius="none"
-                type={`${
-                  currentExercice.repFormat === RepFormat.Amrap
-                    ? "string"
-                    : "number"
-                }`}
-                variant="bordered"
-                readOnly={currentExercice.repFormat === RepFormat.Amrap}
-                endContent={renderInfoReps()}
-                classNames={{ inputWrapper: "border-1" }}
-                value={
-                  currentExercice.repFormat === RepFormat.Amrap
-                    ? "-"
-                    : (currentExercice.rep ?? 1).toString()
-                }
-                onClick={(e) => e.stopPropagation()}
-                onChange={(e) =>
-                  setCurrentExercice((prev) => ({
-                    ...prev,
-                    rep: Number(e.target.value),
-                  }))
-                }
-                onBlur={() => {
-                  if (prevRepRef.current !== currentExercice.rep) {
-                    saveChanges();
-                    prevRepRef.current = currentExercice.rep;
+              <div className="flex-1" onClick={(e) => e.stopPropagation()}>
+                <Input
+                  label="Répétitions"
+                  radius="none"
+                  type={`${
+                    currentExercice.repFormat === RepFormat.Amrap
+                      ? "string"
+                      : "number"
+                  }`}
+                  variant="bordered"
+                  readOnly={currentExercice.repFormat === RepFormat.Amrap}
+                  endContent={renderInfoReps()}
+                  classNames={{ inputWrapper: "border-1" }}
+                  value={
+                    currentExercice.repFormat === RepFormat.Amrap
+                      ? "-"
+                      : (currentExercice.rep ?? 1).toString()
                   }
-                }}
-              />
+                  onChange={(e) =>
+                    handleUpdateField("rep", Number(e.target.value), repRef)
+                  }
+                />
+              </div>
             </div>
             <Separator orientation="vertical" className="h-24" />
             <div className="flex-1">
               <Select
                 placeholder="Format de poids"
+                aria-label="Format poids"
                 radius="none"
                 selectedKeys={
                   currentExercice.weightFormat
                     ? [currentExercice.weightFormat]
                     : [WeightFormat.Kg]
                 }
-                onChange={(e) =>
+                onChange={(e) => {
                   setCurrentExercice((prev) => ({
                     ...prev,
                     weightFormat: e.target.value as WeightFormat,
-                  }))
-                }
-                onBlur={() => {
+                  }));
+                  weightFormat.current = e.target.value as WeightFormat;
                   if (
-                    prevWeightFormat.current !== currentExercice.weightFormat
-                  ) {
-                    saveChanges();
-                    prevWeightFormat.current =
-                      currentExercice.weightFormat as WeightFormat;
-                  }
+                    weightFormat.current === WeightFormat.Bodyweight ||
+                    weightFormat.current === WeightFormat.Choice
+                  )
+                    weightRef.current = null;
+                  saveChanges();
                 }}
               >
                 {allFormatWeight.map((w) => (
@@ -331,38 +333,35 @@ export default function ExercicePlanCard({
                   </SelectItem>
                 ))}
               </Select>
-              <Input
-                label="Poids"
-                radius="none"
-                type={`${disabledWeight ? "string" : "number"}`}
-                variant="bordered"
-                readOnly={disabledWeight}
-                endContent={renderUnitWeight()}
-                classNames={{ inputWrapper: "border-1" }}
-                value={
-                  disabledWeight
-                    ? "-"
-                    : (currentExercice.weight ?? 0).toString()
-                }
-                onClick={(e) => e.stopPropagation()}
-                onChange={(e) =>
-                  setCurrentExercice((prev) => ({
-                    ...prev,
-                    weight: Number(e.target.value),
-                  }))
-                }
-                onBlur={() => {
-                  if (prevWeightRef.current !== currentExercice.weight) {
-                    saveChanges();
-                    prevWeightRef.current = currentExercice.weight ?? 0;
+              <div className="flex-1" onClick={(e) => e.stopPropagation()}>
+                <Input
+                  label="Poids"
+                  radius="none"
+                  type={`${disabledWeight ? "string" : "number"}`}
+                  variant="bordered"
+                  readOnly={disabledWeight}
+                  endContent={renderUnitWeight()}
+                  classNames={{ inputWrapper: "border-1" }}
+                  value={
+                    disabledWeight
+                      ? "-"
+                      : (currentExercice.weight ?? 0).toString()
                   }
-                }}
-              />
+                  onChange={(e) =>
+                    handleUpdateField(
+                      "weight",
+                      Number(e.target.value),
+                      weightRef
+                    )
+                  }
+                />
+              </div>
             </div>
             <Separator orientation="vertical" className="h-24" />
             <div className="flex-1">
               <Select
                 placeholder="Format d'intensité"
+                aria-label="Format intensité"
                 radius="none"
                 selectedKeys={
                   currentExercice.intensityFormat
@@ -370,21 +369,12 @@ export default function ExercicePlanCard({
                     : [IntensityFormat.Rpe]
                 }
                 onChange={(e) =>
-                  setCurrentExercice((prev) => ({
-                    ...prev,
-                    intensityFormat: e.target.value as IntensityFormat,
-                  }))
+                  handleUpdateField(
+                    "intensityFormat",
+                    e.target.value as IntensityFormat,
+                    intensityFormat
+                  )
                 }
-                onBlur={() => {
-                  if (
-                    prevIntensityFormat.current !==
-                    currentExercice.intensityFormat
-                  ) {
-                    saveChanges();
-                    prevIntensityFormat.current =
-                      currentExercice.intensityFormat as IntensityFormat;
-                  }
-                }}
               >
                 {allFormatIntensity.map((i) => (
                   <SelectItem key={i.key} className="text-xs">
@@ -392,95 +382,73 @@ export default function ExercicePlanCard({
                   </SelectItem>
                 ))}
               </Select>
-              <Input
-                label="Intensité"
-                radius="none"
-                type="number"
-                variant="bordered"
-                classNames={{ inputWrapper: "border-1" }}
-                value={(currentExercice.intensity ?? 1).toString()}
-                onClick={(e) => e.stopPropagation()}
-                onChange={(e) =>
-                  setCurrentExercice((prev) => ({
-                    ...prev,
-                    intensity: Number(e.target.value),
-                  }))
-                }
-                onBlur={() => {
-                  if (prevIntensityRef.current !== currentExercice.intensity) {
-                    saveChanges();
-                    prevIntensityRef.current = currentExercice.intensity ?? 1;
+              <div className="flex-1" onClick={(e) => e.stopPropagation()}>
+                <Input
+                  label="Intensité"
+                  radius="none"
+                  type="number"
+                  variant="bordered"
+                  classNames={{ inputWrapper: "border-1" }}
+                  value={(currentExercice.intensity ?? 1).toString()}
+                  onChange={(e) =>
+                    handleUpdateField(
+                      "intensity",
+                      Number(e.target.value),
+                      intensityRef
+                    )
                   }
-                }}
-              />
+                />
+              </div>
             </div>
             <Separator orientation="vertical" className="h-24" />
             <div className="flex-1">
               <div className="mb-2">
                 <Checkbox
+                  aria-label="Tempo"
                   isSelected={withTempo}
                   onValueChange={(isSelected) => {
                     setWithTempo(isSelected);
                     const updatedTempo = isSelected ? 2020 : null;
-                    setCurrentExercice((prev) => ({
-                      ...prev,
-                      tempo: updatedTempo,
-                    }));
+                    handleUpdateField("tempo", updatedTempo, tempoRef);
                   }}
-                  onBlur={saveChanges}
                 >
                   <p className="text-xs">Ajouter un tempo</p>
                 </Checkbox>
               </div>
-              <Input
-                label="Tempo"
-                radius="none"
-                type="number"
-                variant="bordered"
-                className="flex-1"
-                isDisabled={!withTempo}
-                classNames={{ inputWrapper: "border-1" }}
-                value={(currentExercice.tempo ?? "").toString()}
-                endContent={
-                  <InfoPopUp
-                    title="EPCP"
-                    description="Excentrique, Pause, Contentrique, Pause"
-                  />
-                }
-                onClick={(e) => e.stopPropagation()}
-                onChange={(e) =>
-                  setCurrentExercice((prev) => ({
-                    ...prev,
-                    tempo: Number(e.target.value),
-                  }))
-                }
-                onBlur={() => {
-                  if (prevTempoRef.current !== currentExercice.tempo) {
-                    saveChanges();
-                    prevTempoRef.current = currentExercice.tempo ?? 2020;
+              <div className="flex-1" onClick={(e) => e.stopPropagation()}>
+                <Input
+                  label="Tempo"
+                  radius="none"
+                  type="number"
+                  variant="bordered"
+                  className="flex-1"
+                  isDisabled={!withTempo}
+                  classNames={{ inputWrapper: "border-1" }}
+                  value={(currentExercice.tempo ?? "").toString()}
+                  endContent={
+                    <InfoPopUp
+                      title="EPCP"
+                      description="Excentrique, Pause, Contentrique, Pause"
+                    />
                   }
-                }}
-              />
+                  onChange={(e) =>
+                    handleUpdateField("tempo", Number(e.target.value), tempoRef)
+                  }
+                />
+              </div>
             </div>
           </div>
           <Separator className="mt-2" />
-          <Textarea
-            label="Ajouter des notes"
-            className="mt-2"
-            value={currentExercice.notes ?? ""}
-            onChange={(e) =>
-              setCurrentExercice((prev) => ({
-                ...prev,
-                notes: e.target.value,
-              }))
-            }
-            onBlur={() => {
-              if (prevNoteRef.current !== currentExercice.notes) {
-                saveChanges();
-                prevNoteRef.current = currentExercice.notes ?? "";
+          <div className="w-full" onClick={(e) => e.stopPropagation()}>
+            <Textarea
+              label="Ajouter des notes"
+              className="mt-2"
+              value={currentExercice.notes ?? ""}
+              onChange={(e) =>
+                handleUpdateField("notes", e.target.value, noteRef)
               }
-            }}
-          />
+            />
+          </div>
         </section>
       </section>
     </div>

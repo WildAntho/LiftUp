@@ -11,6 +11,10 @@ export const GET_ALLEXERCICE_MODEL = gql`
       weight
       notes
       image
+      weightFormat
+      repFormat
+      intensityFormat
+      tempo
     }
   }
 `;

@@ -74,7 +74,7 @@ export default function Chat() {
   };
 
   return (
-    <section className="h-full 2xl:mx-[15%] p-4 gap-4 flex justify-start align-items-center">
+    <section className="h-full 2xl:mx-[10%] p-4 gap-4 flex justify-start align-items-center">
       <ChatModal
         open={openModal}
         onClose={handleClose}
@@ -82,7 +82,7 @@ export default function Chat() {
         setActiveUser={setActiveUser}
         setSearch={setSearch}
       />
-      <section className="flex flex-col justify-start items-start bg-white rounded-2xl h-full 2xl:w-[550px] w-[400px]">
+      <section className="flex flex-col justify-start items-start bg-white rounded-2xl h-full 2xl:w-[450px] w-[400px]">
         <section className="w-full flex flex-col items-start justify-start">
           <div className="w-full px-6 pt-6 pb-2">
             <div className="w-full flex justify-between items-center mb-2">

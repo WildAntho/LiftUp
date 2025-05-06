@@ -1,63 +1,46 @@
-import { Loader2, Play } from "lucide-react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
+import { Play } from "lucide-react";
 import { Tooltip } from "@heroui/tooltip";
-import { Button } from "./ui/button";
+import ConfirmModal from "./modals/ConfirmModal";
+import { useState } from "react";
 
 type ActivateProps = {
-  onActive: () => void;
-  loading?: boolean;
-  description: string;
-  title: string;
+  loading: boolean;
+  onClick: (id: string, offerId: string) => void;
+  id: string;
+  offerId: string;
 };
 
 export default function Activate({
-  onActive,
   loading,
-  description,
-  title,
+  onClick,
+  id,
+  offerId,
 }: ActivateProps) {
+  const [open, setOpen] = useState<boolean>(false);
   return (
-    <Dialog>
-      <DialogTrigger>
-        <Tooltip
-          content="Démarrer le suivi"
-          showArrow={true}
-          color="foreground"
-          className="text-xs"
+    <>
+      <Tooltip
+        content="Démarrer le suivi"
+        showArrow={true}
+        color="foreground"
+        className="text-xs"
+      >
+        <div
+          className="hover:bg-black/5 p-2 rounded-full cursor-pointer"
+          onClick={() => setOpen(true)}
         >
-          <div className="hover:bg-black/5 p-2 rounded-full cursor-pointer">
-            <Play className={`size-4 text-black`} />
-          </div>
-        </Tooltip>
-      </DialogTrigger>
-      <DialogContent aria-describedby="dialog-description">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="sm:justify-end">
-          <DialogClose asChild>
-            <Button
-              type="button"
-              className="bg-primary hover:bg-blue-600 w-[20%]"
-              onClick={onActive}
-              disabled={loading}
-            >
-              {loading && <Loader2 className="animate-spin" />}
-              Oui
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <Play className={`size-4 text-black`} />
+        </div>
+      </Tooltip>
+      <ConfirmModal
+        isOpen={open}
+        title="Activation"
+        type="info"
+        onClose={() => setOpen(false)}
+        description="Êtes-vous sûr de vouloir démarrer le suivi de cet élève ?"
+        onConfirm={() => onClick(id as string, offerId)}
+        loading={loading}
+      />
+    </>
   );
 }
