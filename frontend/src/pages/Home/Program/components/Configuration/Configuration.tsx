@@ -15,6 +15,7 @@ import {
   useCreateTrainingPlanMutation,
   useDeleteExerciceMutation,
   useDeleteTrainingPlanMutation,
+  useDuplicateWeekTrainingMutation,
   useGetDayNumberTrainingQuery,
   useGetTrainingPlanQuery,
   usePasteTrainingMutation,
@@ -59,6 +60,7 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
           dayNumber: activeDay,
         },
       },
+      fetchPolicy: "cache-and-network",
     });
 
   const [createTraining] = useCreateTrainingPlanMutation();
@@ -68,6 +70,7 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
   const [deleteExercice] = useDeleteExerciceMutation();
   const [updateExercice] = useUpdateExerciceMutation();
   const [pasteTraining] = usePasteTrainingMutation();
+  const [duplicateWeek] = useDuplicateWeekTrainingMutation();
 
   const allDayNumberTraining = dataDayNumber?.getDayNumberTraining ?? [];
   const trainings = dataTraining?.getTrainingPlan ?? [];
@@ -237,6 +240,25 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
     }
   };
 
+  const handleDuplicateWeek = async (
+    repetition: number,
+    currentWeek: number
+  ) => {
+    try {
+      const { data } = await duplicateWeek({
+        variables: {
+          programId: currentProgram.id.toString() as string,
+          currentWeek,
+          repetition,
+        },
+      });
+      successAction(data?.duplicateWeekTraining ?? "");
+    } catch (error) {
+      console.error(error);
+      toast.error("Une erreur est survenue lors de l'ajout des exercices");
+    }
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case "workouts":
@@ -277,6 +299,7 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
               activeDay={activeDay}
               onDaySelect={setActiveDay}
               allDayNumber={allDayNumberTraining}
+              onDuplicate={handleDuplicateWeek}
             />
           )}
           <div className="w-[80%] h-full flex justify-center items-center">

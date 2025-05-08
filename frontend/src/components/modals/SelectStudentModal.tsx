@@ -2,8 +2,9 @@ import {
   UserWithoutPassword,
   useUserStore,
 } from "@/services/zustand/userStore";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import {
+  CheckboxGroup,
   Input,
   Modal,
   ModalBody,
@@ -26,13 +27,21 @@ import SkeletonUser from "../SkeletonUser";
 type SelectStudentModalProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  closeNav: () => void;
+  closeNav?: () => void;
+  isMulti?: boolean;
+  setMultiSelect?: (value: string[]) => void;
+  multiSelect?: string[];
+  customButton?: ReactElement;
 };
 
 export default function SelectStudentModal({
   open,
   setOpen,
   closeNav,
+  isMulti = false,
+  multiSelect,
+  setMultiSelect,
+  customButton,
 }: SelectStudentModalProps) {
   const [input, setInput] = useState<string>("");
   const [debounceInput, setDebounceInput] = useState<string>("");
@@ -63,6 +72,7 @@ export default function SelectStudentModal({
     setInput("");
     setDebounceInput("");
     setSelected("");
+    if (setMultiSelect) setMultiSelect([]);
   };
 
   const handleSelectStudent = () => {
@@ -76,7 +86,7 @@ export default function SelectStudentModal({
         email: selectedStudent.email,
       });
       handleClose();
-      closeNav();
+      if (closeNav) closeNav();
     }
   };
 
@@ -101,7 +111,11 @@ export default function SelectStudentModal({
     >
       <ModalContent>
         <ModalHeader className="w-full h-full flex flex-col items-center justify-center gap-4">
-          <p>Sélectionner un élève</p>
+          <p>
+            {!isMulti
+              ? "Sélectionner un élève"
+              : "Sélectionner un ou plusieurs élèves"}
+          </p>
           <Separator />
           <Input
             labelPlacement="outside"
@@ -122,15 +136,30 @@ export default function SelectStudentModal({
           {!loading ? (
             <section>
               {myStudents.length > 0 ? (
-                <RadioGroup
-                  value={selected}
-                  onValueChange={setSelected}
-                  className="w-full"
-                >
-                  {myStudents.map((s) => (
-                    <ListUser key={s.id} user={s as UserWithoutPassword} />
-                  ))}
-                </RadioGroup>
+                !isMulti ? (
+                  <RadioGroup
+                    value={selected}
+                    onValueChange={setSelected}
+                    className="w-full"
+                  >
+                    {myStudents.map((s) => (
+                      <ListUser key={s.id} user={s as UserWithoutPassword} />
+                    ))}
+                  </RadioGroup>
+                ) : (
+                  <CheckboxGroup
+                    value={multiSelect}
+                    onValueChange={setMultiSelect}
+                  >
+                    {myStudents.map((s) => (
+                      <ListUser
+                        key={s.id}
+                        user={s as UserWithoutPassword}
+                        isMulti
+                      />
+                    ))}
+                  </CheckboxGroup>
+                )
               ) : (
                 <p className="w-full h-full text-center text-sm text-gray-600">
                   Vous n'avez aucun élève.
@@ -147,14 +176,22 @@ export default function SelectStudentModal({
               <PaginationBar setPage={setPage} page={page} total={totalPage} />
             </div>
           )}
-          <Button
-            type="button"
-            className="bg-primary hover:bg-blue-600 w-full"
-            disabled={selected.length === 0}
-            onClick={handleSelectStudent}
-          >
-            Sélectionner
-          </Button>
+          {customButton ? (
+            multiSelect && multiSelect.length ? (
+              customButton
+            ) : (
+              ""
+            )
+          ) : (
+            <Button
+              type="button"
+              className="bg-primary hover:bg-blue-600 w-full"
+              disabled={selected.length === 0}
+              onClick={handleSelectStudent}
+            >
+              Sélectionner
+            </Button>
+          )}
         </ModalFooter>
       </ModalContent>
     </Modal>

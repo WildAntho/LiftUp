@@ -1,11 +1,14 @@
 import { Separator } from "@/components/ui/separator";
 import { ProgramLevel, ProgramStatus } from "@/graphql/hooks";
 import { useProgramStore } from "@/services/zustand/programStore";
-import { Clock, Lock, Globe2, PlayCircle } from "lucide-react";
+import { Clock, Lock, Globe2, PlayCircle, Workflow } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PopEllipsis from "./PopEllipsis";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import { useState } from "react";
+import SelectStudentModal from "@/components/modals/SelectStudentModal";
+import ChooseDateModal from "@/components/modals/ChooseDateModal";
+import { format } from "date-fns";
 
 type ProgramCardProps = {
   id: string;
@@ -18,6 +21,8 @@ type ProgramCardProps = {
   isPublic: boolean;
   onDelete: (id: string) => void;
   onValidate: (id: string) => void;
+  onArchive: (id: string) => void;
+  onGenerate: (programId: string, startDate: Date, userIds: string[]) => void;
 };
 
 export default function ProgramCard({
@@ -31,9 +36,18 @@ export default function ProgramCard({
   isPublic,
   onDelete,
   onValidate,
+  onArchive,
+  onGenerate,
 }: ProgramCardProps) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [openDateModal, setOpenDateModal] = useState<boolean>(false);
+  const [openGenerationModal, setOpenGenerationModal] = useState(false);
+  const [multiSelect, setMultiSelect] = useState<string[]>([]);
+  const [startDate, setStartDate] = useState<string>(
+    format(new Date(), "yyyy-MM-dd")
+  );
   const setProgram = useProgramStore((state) => state.set);
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -65,8 +79,22 @@ export default function ProgramCard({
     setOpen(true);
   };
 
+  const handleOpenDelete = () => {
+    setOpenDelete(true);
+  };
+
+  const handleArchive = () => {
+    onArchive(id);
+  };
+
   const handleDelete = () => {
     onDelete(id);
+  };
+
+  const handleGenerate = () => {
+    onGenerate(id, new Date(startDate), multiSelect);
+    setOpenDateModal(false);
+    setOpenGenerationModal(false);
   };
 
   const handleNavigate = () => {
@@ -83,10 +111,6 @@ export default function ProgramCard({
     navigate(`/home?tab=program&section=configuration`);
   };
 
-  const handleCloseConfirm = () => {
-    setOpen(false);
-  };
-
   const handleValidate = () => {
     onValidate(id);
   };
@@ -101,10 +125,12 @@ export default function ProgramCard({
             {title}
           </h1>
           <PopEllipsis
-            onDelete={handleOpenConfirm}
+            onArchive={handleOpenConfirm}
             status={status}
             navigate={handleNavigate}
             onValidate={handleValidate}
+            onDelete={handleOpenDelete}
+            openGeneration={() => setOpenGenerationModal(true)}
           />
         </div>
         <div className="h-[80%] w-full relative">
@@ -146,10 +172,43 @@ export default function ProgramCard({
       </div>
       <ConfirmModal
         isOpen={open}
-        onClose={handleCloseConfirm}
-        onConfirm={handleDelete}
+        onClose={() => setOpen(false)}
+        onConfirm={handleArchive}
         description="Êtes-vous sûr de vouloir archiver ce programme ?"
         title="Archivage"
+      />
+      <ConfirmModal
+        isOpen={openDelete}
+        onClose={() => setOpenDelete(false)}
+        onConfirm={handleDelete}
+        description="Êtes-vous sûr de vouloir supprimer ce programme ? Tous les entraînements seront supprimés également."
+        title="Suppression"
+      />
+      <SelectStudentModal
+        open={openGenerationModal}
+        setOpen={setOpenGenerationModal}
+        isMulti
+        multiSelect={multiSelect}
+        setMultiSelect={setMultiSelect}
+        customButton={
+          <button
+            className="w-full relative inline-flex h-12 overflow-hidden rounded-md p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
+            onClick={() => setOpenDateModal(true)}
+          >
+            <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
+            <span className="inline-flex h-full w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-white hover:bg-gray-100 px-3 py-1 text-sm font-medium text-dark backdrop-blur-3xl">
+              <Workflow className="w-4 h-4" />
+              <p>Choisir une date de début !</p>
+            </span>
+          </button>
+        }
+      />
+      <ChooseDateModal
+        isOpen={openDateModal}
+        onClose={() => setOpenDateModal(false)}
+        setStartDate={setStartDate}
+        startDate={startDate}
+        onGenerate={handleGenerate}
       />
     </article>
   );

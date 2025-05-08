@@ -110,6 +110,14 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
             type: "content",
             get: () => navigate("/home?tab=program"),
           },
+          {
+            title: "Offres",
+            value: "offers",
+            get: () => navigate("/home?tab=offers"),
+            withArrow: true,
+            icon: <BadgeEuro className="size-5" />,
+            type: "content",
+          },
         ]
       : []),
     ...(!isCoach
@@ -125,14 +133,6 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
           },
         ]
       : []),
-    {
-      title: "Offres",
-      value: "offers",
-      get: () => navigate("/home?tab=offers"),
-      withArrow: true,
-      icon: <BadgeEuro className="size-5" />,
-      type: "content",
-    },
     {
       title: "Exercices",
       value: "exercices",

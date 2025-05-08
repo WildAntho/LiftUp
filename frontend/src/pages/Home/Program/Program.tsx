@@ -17,6 +17,8 @@ import {
   ProgramStatus,
   UpdateProgramInput,
   useArchiveProgramMutation,
+  useDeleteProgramMutation,
+  useGenerateProgramMutation,
   useGetMyProgramsQuery,
   useUpdateProgramMutation,
   useValidateProgramMutation,
@@ -49,6 +51,8 @@ export default function Program() {
   const [updateProgram] = useUpdateProgramMutation();
   const [archiveProgram] = useArchiveProgramMutation();
   const [validateProgram] = useValidateProgramMutation();
+  const [deleteProgram] = useDeleteProgramMutation();
+  const [generateProgram] = useGenerateProgramMutation();
   const myPrograms = data?.getPrograms ?? [];
 
   useEffect(() => {
@@ -70,6 +74,24 @@ export default function Program() {
     } catch (error) {
       console.error(error);
       toast.error("Une erreur est survenue lors de l'archivage du programme");
+    }
+  };
+
+  const handleDeleteProgram = async (id: string) => {
+    try {
+      const { data } = await deleteProgram({ variables: { id } });
+      toast.success(data?.deleteProgram, {
+        style: {
+          backgroundColor: "#dcfce7",
+          color: "#15803d",
+        },
+      });
+      refetch();
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        "Une erreur est survenue lors de la suppression du programme"
+      );
     }
   };
 
@@ -115,6 +137,32 @@ export default function Program() {
         level: program.level as ProgramLevel,
       });
       refetch();
+    } catch (error) {
+      console.error(error);
+      toast.error("Une erreur est survenue lors de la validation du programme");
+    }
+  };
+
+  const handleGenerateProgram = async (
+    programId: string,
+    startDate: Date,
+    userIds: string[]
+  ) => {
+    try {
+      const { data } = await generateProgram({
+        variables: {
+          userIds,
+          programId,
+          coachId: currentUser?.id.toString() as string,
+          startDate,
+        },
+      });
+      toast.success(data?.generateProgram, {
+        style: {
+          backgroundColor: "#dcfce7",
+          color: "#15803d",
+        },
+      });
     } catch (error) {
       console.error(error);
       toast.error("Une erreur est survenue lors de la validation du programme");
@@ -196,8 +244,10 @@ export default function Program() {
                       price={program.price}
                       level={program.level}
                       isPublic={program.public}
-                      onDelete={handleArchiveProgram}
+                      onArchive={handleArchiveProgram}
                       onValidate={handleValidateProgram}
+                      onDelete={handleDeleteProgram}
+                      onGenerate={handleGenerateProgram}
                     />
                   </div>
                 ))}

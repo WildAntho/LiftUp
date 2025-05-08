@@ -1,19 +1,12 @@
 import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 import { TrainingPlan } from "../entities/trainingPlan";
 import {
-  AddExercicePlanInput,
   getTrainingType,
   TrainingPlanData,
 } from "../InputType/trainingPlanType";
 import { Program } from "../entities/program";
-import { ExerciceModel } from "../entities/exerciceModel";
-import { createExerciceFromData } from "../services/trainingService";
-import { CreateMultipleExercicesFromModel } from "../services/exerciceService";
-import { Exercice } from "../entities/exercice";
-import { ExerciceModelData } from "../InputType/exerciceModelType";
-import { ScopeExercice } from "../InputType/exerciceType";
-import { In } from "typeorm";
-import { copyTrainings } from "../services/TrainingPlanService";
+import { Between, In } from "typeorm";
+import { copyTrainings, duplicateWeek } from "../services/trainingPlanService";
 
 @Authorized("COACH")
 @Resolver(TrainingPlan)
@@ -88,7 +81,7 @@ export class TrainingPlanResolver {
     @Arg("ids", () => [String]) ids: string[],
     @Arg("day") day: number
   ) {
-    if (ids.length === 0) throw new Error("Aucune séance n'a été fourni")
+    if (ids.length === 0) throw new Error("Aucune séance n'a été fourni");
     const trainings = await TrainingPlan.find({
       where: {
         id: In(ids),
@@ -104,5 +97,32 @@ export class TrainingPlanResolver {
     return ids.length > 1
       ? "Les séances ont bien été collées"
       : "La séance a bien été collée";
+  }
+
+  @Mutation(() => String)
+  async duplicateWeekTraining(
+    @Arg("programId") programId: string,
+    @Arg("currentWeek") currentWeek: number,
+    @Arg("repetition") repetition: number
+  ) {
+    const program = await Program.findOne({ where: { id: programId } });
+    if (!program) throw new Error("Aucun programme n'a été trouvé");
+    if (program?.duration - currentWeek < repetition)
+      throw new Error("Le programme ne comporte pas assez de semaines");
+    const days = [(currentWeek - 1) * 7 + 1, (currentWeek - 1) * 7 + 7];
+
+    const trainings = await TrainingPlan.find({
+      where: {
+        program: { id: programId },
+        dayNumber: Between(days[0], days[1]),
+      },
+      relations: { program: true, exercices: true },
+    });
+    if (trainings.length === 0)
+      throw new Error("Aucun entraînement à dupliquer");
+    await duplicateWeek(repetition, trainings);
+    return repetition > 1
+      ? "Les semaines ont bien été dupliquées"
+      : "La semaine a bien été dupliquée";
   }
 }

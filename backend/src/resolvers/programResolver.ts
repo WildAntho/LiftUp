@@ -7,6 +7,8 @@ import {
 } from "../InputType/programType";
 import { CtxUser } from "../InputType/coachType";
 import { User } from "../entities/user";
+import { TrainingPlan } from "../entities/trainingPlan";
+import { generateTraining } from "../services/programService";
 
 @Authorized("COACH")
 @Resolver(Program)
@@ -89,5 +91,43 @@ export class ProgramResolver {
     program.status = ProgramStatus.PUBLISHED;
     await program.save();
     return "Le programme a été validé avec succès";
+  }
+
+  @Mutation(() => String)
+  async deleteProgram(@Arg("id") id: string) {
+    const program = await Program.findOneBy({ id });
+    if (!program) throw new Error("Aucun programme n'a été trouvé");
+    program.remove();
+    return "Le programme a bien été supprimé";
+  }
+
+  @Mutation(() => String)
+  async generateProgram(
+    @Arg("programId") programId: string,
+    @Arg("userIds", () => [String]) userIds: string[],
+    @Arg("coachId") coachId: string,
+    @Arg("startDate") startDate: Date
+  ) {
+    const trainings = await TrainingPlan.find({
+      where: {
+        program: { id: programId },
+      },
+      relations: {
+        program: true,
+        exercices: true,
+      },
+    });
+    const coach = await User.findOneBy({ id: coachId });
+    if (trainings.length === 0)
+      throw new Error("Aucun entraînement n'est disponible pour ce programme");
+    if (!coach) throw new Error("Aucun coach n'a été trouvé");
+    await Promise.all(
+      userIds.map(async (u) => {
+        const user = await User.findOneBy({ id: u });
+        if (!user) throw new Error("Aucun utilisateur n'a été trouvé");
+        await generateTraining(trainings, user, coachId, startDate);
+      })
+    );
+    return "Programme généré avec succès";
   }
 }
