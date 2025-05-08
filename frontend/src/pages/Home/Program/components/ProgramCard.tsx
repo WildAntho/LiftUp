@@ -18,6 +18,7 @@ type ProgramCardProps = {
   isPublic: boolean;
   onDelete: (id: string) => void;
   onValidate: (id: string) => void;
+  onArchive: (id: string) => void;
 };
 
 export default function ProgramCard({
@@ -31,9 +32,11 @@ export default function ProgramCard({
   isPublic,
   onDelete,
   onValidate,
+  onArchive,
 }: ProgramCardProps) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
   const setProgram = useProgramStore((state) => state.set);
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -65,6 +68,14 @@ export default function ProgramCard({
     setOpen(true);
   };
 
+  const handleOpenDelete = () => {
+    setOpenDelete(true);
+  };
+
+  const handleArchive = () => {
+    onArchive(id);
+  };
+
   const handleDelete = () => {
     onDelete(id);
   };
@@ -83,10 +94,6 @@ export default function ProgramCard({
     navigate(`/home?tab=program&section=configuration`);
   };
 
-  const handleCloseConfirm = () => {
-    setOpen(false);
-  };
-
   const handleValidate = () => {
     onValidate(id);
   };
@@ -101,10 +108,11 @@ export default function ProgramCard({
             {title}
           </h1>
           <PopEllipsis
-            onDelete={handleOpenConfirm}
+            onArchive={handleOpenConfirm}
             status={status}
             navigate={handleNavigate}
             onValidate={handleValidate}
+            onDelete={handleOpenDelete}
           />
         </div>
         <div className="h-[80%] w-full relative">
@@ -146,10 +154,17 @@ export default function ProgramCard({
       </div>
       <ConfirmModal
         isOpen={open}
-        onClose={handleCloseConfirm}
-        onConfirm={handleDelete}
+        onClose={() => setOpen(false)}
+        onConfirm={handleArchive}
         description="Êtes-vous sûr de vouloir archiver ce programme ?"
         title="Archivage"
+      />
+      <ConfirmModal
+        isOpen={openDelete}
+        onClose={() => setOpenDelete(false)}
+        onConfirm={handleDelete}
+        description="Êtes-vous sûr de vouloir supprimer ce programme ? Tous les entraînements seront supprimés également."
+        title="Suppression"
       />
     </article>
   );

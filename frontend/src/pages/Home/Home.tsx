@@ -8,6 +8,7 @@ import Statistics from "./Statistics/Statistics";
 import Calendar from "./components/Calendar";
 import PathBreadcrumbs from "./components/PathBreadcrumbs";
 import Offers from "./Offers/Offers";
+import ProtectedRoute from "@/services/ProtectedRoutes";
 
 export default function Home() {
   const currentUser = useUserStore((state) => state.user);
@@ -23,8 +24,16 @@ export default function Home() {
       <div className="relative w-full h-full">
         {!activeTab && <Dashboard currentUser={currentUser} />}
         {activeTab === "calendar" && <Calendar currentUser={currentUser} />}
-        {activeTab === "program" && <Program />}
-        {activeTab === "offers" && <Offers />}
+        {activeTab === "program" && (
+          <ProtectedRoute requiredRole="COACH">
+            <Program />
+          </ProtectedRoute>
+        )}
+        {activeTab === "offers" && (
+          <ProtectedRoute requiredRole="COACH">
+            <Offers />
+          </ProtectedRoute>
+        )}
         {activeTab === "exercices" && (
           <ExerciceModel currentUser={currentUser} />
         )}

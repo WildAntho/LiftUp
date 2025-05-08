@@ -17,6 +17,7 @@ import {
   ProgramStatus,
   UpdateProgramInput,
   useArchiveProgramMutation,
+  useDeleteProgramMutation,
   useGetMyProgramsQuery,
   useUpdateProgramMutation,
   useValidateProgramMutation,
@@ -49,6 +50,7 @@ export default function Program() {
   const [updateProgram] = useUpdateProgramMutation();
   const [archiveProgram] = useArchiveProgramMutation();
   const [validateProgram] = useValidateProgramMutation();
+  const [deleteProgram] = useDeleteProgramMutation();
   const myPrograms = data?.getPrograms ?? [];
 
   useEffect(() => {
@@ -70,6 +72,24 @@ export default function Program() {
     } catch (error) {
       console.error(error);
       toast.error("Une erreur est survenue lors de l'archivage du programme");
+    }
+  };
+
+  const handleDeleteProgram = async (id: string) => {
+    try {
+      const { data } = await deleteProgram({ variables: { id } });
+      toast.success(data?.deleteProgram, {
+        style: {
+          backgroundColor: "#dcfce7",
+          color: "#15803d",
+        },
+      });
+      refetch();
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        "Une erreur est survenue lors de la suppression du programme"
+      );
     }
   };
 
@@ -196,8 +216,9 @@ export default function Program() {
                       price={program.price}
                       level={program.level}
                       isPublic={program.public}
-                      onDelete={handleArchiveProgram}
+                      onArchive={handleArchiveProgram}
                       onValidate={handleValidateProgram}
+                      onDelete={handleDeleteProgram}
                     />
                   </div>
                 ))}

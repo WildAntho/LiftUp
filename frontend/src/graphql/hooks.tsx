@@ -255,9 +255,12 @@ export type Mutation = {
   deleteExerciceFavorite: Scalars['String']['output'];
   deleteFeedback: Scalars['String']['output'];
   deleteOffer: Scalars['String']['output'];
+  deleteProgram: Scalars['String']['output'];
   deleteStudent: Scalars['String']['output'];
   deleteTraining: Scalars['String']['output'];
   deleteTrainingPlan: Scalars['String']['output'];
+  duplicateWeekTraining: Scalars['String']['output'];
+  generateProgram: Scalars['String']['output'];
   hasBeenSeen: Scalars['String']['output'];
   isRead: Scalars['String']['output'];
   login: Scalars['String']['output'];
@@ -399,6 +402,11 @@ export type MutationDeleteOfferArgs = {
 };
 
 
+export type MutationDeleteProgramArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteStudentArgs = {
   data: StudentCoach;
 };
@@ -411,6 +419,21 @@ export type MutationDeleteTrainingArgs = {
 
 export type MutationDeleteTrainingPlanArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type MutationDuplicateWeekTrainingArgs = {
+  currentWeek: Scalars['Float']['input'];
+  programId: Scalars['String']['input'];
+  repetition: Scalars['Float']['input'];
+};
+
+
+export type MutationGenerateProgramArgs = {
+  coachId: Scalars['String']['input'];
+  programId: Scalars['String']['input'];
+  startDate: Scalars['DateTimeISO']['input'];
+  userIds: Array<Scalars['String']['input']>;
 };
 
 
@@ -1120,6 +1143,13 @@ export type DeleteOfferMutationVariables = Exact<{
 
 export type DeleteOfferMutation = { __typename?: 'Mutation', deleteOffer: string };
 
+export type DeleteProgramMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteProgramMutation = { __typename?: 'Mutation', deleteProgram: string };
+
 export type DeleteStudentMutationVariables = Exact<{
   data: StudentCoach;
 }>;
@@ -1140,6 +1170,25 @@ export type DeleteTrainingPlanMutationVariables = Exact<{
 
 
 export type DeleteTrainingPlanMutation = { __typename?: 'Mutation', deleteTrainingPlan: string };
+
+export type DuplicateWeekTrainingMutationVariables = Exact<{
+  repetition: Scalars['Float']['input'];
+  currentWeek: Scalars['Float']['input'];
+  programId: Scalars['String']['input'];
+}>;
+
+
+export type DuplicateWeekTrainingMutation = { __typename?: 'Mutation', duplicateWeekTraining: string };
+
+export type GenerateProgramMutationVariables = Exact<{
+  startDate: Scalars['DateTimeISO']['input'];
+  coachId: Scalars['String']['input'];
+  programId: Scalars['String']['input'];
+  userIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type GenerateProgramMutation = { __typename?: 'Mutation', generateProgram: string };
 
 export type LoginMutationVariables = Exact<{
   data: UserLogin;
@@ -2193,6 +2242,37 @@ export function useDeleteOfferMutation(baseOptions?: Apollo.MutationHookOptions<
 export type DeleteOfferMutationHookResult = ReturnType<typeof useDeleteOfferMutation>;
 export type DeleteOfferMutationResult = Apollo.MutationResult<DeleteOfferMutation>;
 export type DeleteOfferMutationOptions = Apollo.BaseMutationOptions<DeleteOfferMutation, DeleteOfferMutationVariables>;
+export const DeleteProgramDocument = gql`
+    mutation DeleteProgram($id: String!) {
+  deleteProgram(id: $id)
+}
+    `;
+export type DeleteProgramMutationFn = Apollo.MutationFunction<DeleteProgramMutation, DeleteProgramMutationVariables>;
+
+/**
+ * __useDeleteProgramMutation__
+ *
+ * To run a mutation, you first call `useDeleteProgramMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteProgramMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteProgramMutation, { data, loading, error }] = useDeleteProgramMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteProgramMutation(baseOptions?: Apollo.MutationHookOptions<DeleteProgramMutation, DeleteProgramMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteProgramMutation, DeleteProgramMutationVariables>(DeleteProgramDocument, options);
+      }
+export type DeleteProgramMutationHookResult = ReturnType<typeof useDeleteProgramMutation>;
+export type DeleteProgramMutationResult = Apollo.MutationResult<DeleteProgramMutation>;
+export type DeleteProgramMutationOptions = Apollo.BaseMutationOptions<DeleteProgramMutation, DeleteProgramMutationVariables>;
 export const DeleteStudentDocument = gql`
     mutation DeleteStudent($data: StudentCoach!) {
   deleteStudent(data: $data)
@@ -2286,6 +2366,82 @@ export function useDeleteTrainingPlanMutation(baseOptions?: Apollo.MutationHookO
 export type DeleteTrainingPlanMutationHookResult = ReturnType<typeof useDeleteTrainingPlanMutation>;
 export type DeleteTrainingPlanMutationResult = Apollo.MutationResult<DeleteTrainingPlanMutation>;
 export type DeleteTrainingPlanMutationOptions = Apollo.BaseMutationOptions<DeleteTrainingPlanMutation, DeleteTrainingPlanMutationVariables>;
+export const DuplicateWeekTrainingDocument = gql`
+    mutation DuplicateWeekTraining($repetition: Float!, $currentWeek: Float!, $programId: String!) {
+  duplicateWeekTraining(
+    repetition: $repetition
+    currentWeek: $currentWeek
+    programId: $programId
+  )
+}
+    `;
+export type DuplicateWeekTrainingMutationFn = Apollo.MutationFunction<DuplicateWeekTrainingMutation, DuplicateWeekTrainingMutationVariables>;
+
+/**
+ * __useDuplicateWeekTrainingMutation__
+ *
+ * To run a mutation, you first call `useDuplicateWeekTrainingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDuplicateWeekTrainingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [duplicateWeekTrainingMutation, { data, loading, error }] = useDuplicateWeekTrainingMutation({
+ *   variables: {
+ *      repetition: // value for 'repetition'
+ *      currentWeek: // value for 'currentWeek'
+ *      programId: // value for 'programId'
+ *   },
+ * });
+ */
+export function useDuplicateWeekTrainingMutation(baseOptions?: Apollo.MutationHookOptions<DuplicateWeekTrainingMutation, DuplicateWeekTrainingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DuplicateWeekTrainingMutation, DuplicateWeekTrainingMutationVariables>(DuplicateWeekTrainingDocument, options);
+      }
+export type DuplicateWeekTrainingMutationHookResult = ReturnType<typeof useDuplicateWeekTrainingMutation>;
+export type DuplicateWeekTrainingMutationResult = Apollo.MutationResult<DuplicateWeekTrainingMutation>;
+export type DuplicateWeekTrainingMutationOptions = Apollo.BaseMutationOptions<DuplicateWeekTrainingMutation, DuplicateWeekTrainingMutationVariables>;
+export const GenerateProgramDocument = gql`
+    mutation GenerateProgram($startDate: DateTimeISO!, $coachId: String!, $programId: String!, $userIds: [String!]!) {
+  generateProgram(
+    startDate: $startDate
+    coachId: $coachId
+    programId: $programId
+    userIds: $userIds
+  )
+}
+    `;
+export type GenerateProgramMutationFn = Apollo.MutationFunction<GenerateProgramMutation, GenerateProgramMutationVariables>;
+
+/**
+ * __useGenerateProgramMutation__
+ *
+ * To run a mutation, you first call `useGenerateProgramMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useGenerateProgramMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [generateProgramMutation, { data, loading, error }] = useGenerateProgramMutation({
+ *   variables: {
+ *      startDate: // value for 'startDate'
+ *      coachId: // value for 'coachId'
+ *      programId: // value for 'programId'
+ *      userIds: // value for 'userIds'
+ *   },
+ * });
+ */
+export function useGenerateProgramMutation(baseOptions?: Apollo.MutationHookOptions<GenerateProgramMutation, GenerateProgramMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<GenerateProgramMutation, GenerateProgramMutationVariables>(GenerateProgramDocument, options);
+      }
+export type GenerateProgramMutationHookResult = ReturnType<typeof useGenerateProgramMutation>;
+export type GenerateProgramMutationResult = Apollo.MutationResult<GenerateProgramMutation>;
+export type GenerateProgramMutationOptions = Apollo.BaseMutationOptions<GenerateProgramMutation, GenerateProgramMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($data: userLogin!) {
   login(data: $data)

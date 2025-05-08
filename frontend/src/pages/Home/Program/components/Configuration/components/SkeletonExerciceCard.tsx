@@ -15,7 +15,7 @@ export default function SkeletonExerciceCard({
             key={index}
             className="flex flex-col items-start justify-center gap-2"
           >
-            <Skeleton className="w-[200px] h-[175px] rounded-2xl" />
+            <Skeleton className="w-[250px] h-[225px] rounded-2xl" />
             <Skeleton className="w-[175px] h-[15px] rounded-2xl" />
           </div>
         );

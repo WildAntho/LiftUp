@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import WorkoutButton from "./WorkoutButton";
 import {
   Calendar,
@@ -10,12 +10,15 @@ import { Separator } from "@/components/ui/separator";
 import { AnimatePresence, motion } from "framer-motion";
 import { useProgramStore } from "@/services/zustand/programStore";
 import { Tooltip } from "@heroui/tooltip";
+import DuplicationModal from "@/components/modals/DuplicationModal";
+import { toast } from "sonner";
 
 type WeekProgramProps = {
   numberOfDays: number;
   activeDay: number;
   onDaySelect: (day: number) => void;
   allDayNumber: number[];
+  onDuplicate: (currentWeek: number, repetition: number) => void;
 };
 
 type WorkoutDay = {
@@ -28,12 +31,15 @@ export default function WeekProgram({
   activeDay,
   onDaySelect,
   allDayNumber,
+  onDuplicate,
 }: WeekProgramProps) {
   const currentProgram = useProgramStore((state) => state.program);
   const [currentWeek, setCurrentWeek] = useState(1);
   const [direction, setDirection] = useState(0);
   const DAYS_PER_WEEK = 7;
   const totalWeeks = Math.ceil(numberOfDays / DAYS_PER_WEEK);
+  const [openDuplicate, setOpenDuplicate] = useState<boolean>(false);
+  const [repetition, setRepetition] = useState<number>(1);
 
   // Exemple de données (à remplacer par vos vraies données)
   const generateWeekWorkouts = (): WorkoutDay[] => {
@@ -50,19 +56,19 @@ export default function WeekProgram({
     });
   };
 
-  const handlePrevWeek = () => {
+  const handlePrevWeek = useCallback(() => {
     if (currentWeek > 1) {
       setDirection(-1);
       setCurrentWeek((prev) => prev - 1);
     }
-  };
+  }, [currentWeek]);
 
-  const handleNextWeek = () => {
+  const handleNextWeek = useCallback(() => {
     if (currentWeek < totalWeeks) {
       setDirection(1);
       setCurrentWeek((prev) => prev + 1);
     }
-  };
+  }, [currentWeek, totalWeeks]);
 
   useEffect(() => {
     onDaySelect(currentWeek * 7 - 6);
@@ -88,6 +94,14 @@ export default function WeekProgram({
       x: direction < 0 ? 500 : -500,
       opacity: 0,
     }),
+  };
+
+  const handleDuplicateWeek = () => {
+    if (repetition === 0) {
+      toast.error("Vous devez dupliquer au moins une semaine");
+      return;
+    }
+    onDuplicate(repetition, currentWeek);
   };
 
   return (
@@ -121,7 +135,10 @@ export default function WeekProgram({
               {currentProgram?.title}
             </p>
           </div>
-          <div className="flex items-center justify-end w-1/3 mr-5">
+          <div
+            className="flex items-center justify-end w-1/3 mr-5"
+            onClick={() => setOpenDuplicate(true)}
+          >
             <Tooltip
               content="Dupliquer la semaine"
               showArrow={true}
@@ -165,6 +182,14 @@ export default function WeekProgram({
           </motion.div>
         </AnimatePresence>
       </div>
+      <DuplicationModal
+        isOpen={openDuplicate}
+        onClose={() => setOpenDuplicate(false)}
+        max={(currentProgram && currentProgram?.duration - currentWeek) ?? 1}
+        count={repetition}
+        setCount={setRepetition}
+        onDuplicate={handleDuplicateWeek}
+      />
     </div>
   );
 }
