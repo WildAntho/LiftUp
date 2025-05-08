@@ -6,7 +6,7 @@ import {
 } from "../InputType/trainingPlanType";
 import { Program } from "../entities/program";
 import { Between, In } from "typeorm";
-import { copyTrainings, duplicateWeek } from "../services/trainingPlanService";
+import { copyTrainings, duplicateWeek } from "../services/trainingProgramService";
 
 @Authorized("COACH")
 @Resolver(TrainingPlan)
