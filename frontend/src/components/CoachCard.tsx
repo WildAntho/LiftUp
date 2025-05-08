@@ -1,7 +1,7 @@
 import { ChevronRight } from "lucide-react";
 import { UserWithoutPassword } from "@/services/zustand/userStore";
 import { Badge } from "./ui/badge";
-import StarRating from "./ReactStars";
+//import StarRating from "./ReactStars";
 import { useNavigate } from "react-router-dom";
 import UserAvatar from "./UserAvatar";
 
@@ -33,7 +33,7 @@ export default function CoachCard({ coach }: CoachCardProps) {
             </div>
           </div>
           <p className="opacity-50 text-xs">{coach?.coachProfile?.name}</p>
-          <StarRating rating={4.5} review={18} />
+          {/* <StarRating rating={4.5} review={18} /> */}
         </section>
       </section>
       <section className="flex justify-center items-center gap-5">

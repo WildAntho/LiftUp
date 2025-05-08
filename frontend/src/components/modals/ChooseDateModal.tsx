@@ -38,7 +38,14 @@ export default function ChooseDateModal({
           <p className="pt-2">Choisissez la date de début du programme</p>
         </ModalHeader>
         <ModalBody>
-          <Input type="date" value={startDate} onValueChange={setStartDate} />
+          <Input
+            placeholder="Date de début"
+            label="Date de début"
+            isRequired
+            type="date"
+            value={startDate}
+            onValueChange={setStartDate}
+          />
         </ModalBody>
         <ModalFooter className="justify-end gap-2">
           <Button

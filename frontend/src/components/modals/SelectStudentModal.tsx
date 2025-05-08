@@ -111,7 +111,11 @@ export default function SelectStudentModal({
     >
       <ModalContent>
         <ModalHeader className="w-full h-full flex flex-col items-center justify-center gap-4">
-          <p>Sélectionner un élève</p>
+          <p>
+            {!isMulti
+              ? "Sélectionner un élève"
+              : "Sélectionner un ou plusieurs élèves"}
+          </p>
           <Separator />
           <Input
             labelPlacement="outside"
