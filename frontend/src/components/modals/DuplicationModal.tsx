@@ -35,9 +35,11 @@ export default function DuplicationModal({
       }}
     >
       <ModalContent>
-        <ModalHeader>Dupliquer la semaine</ModalHeader>
+        <ModalHeader>
+          <p className="pt-2">Dupliquer la semaine</p>
+        </ModalHeader>
         <ModalBody>
-          <section className="w-full flex flex-col items-start justify-start gap-4 my-5">
+          <section className="w-full flex flex-col items-start justify-start gap-4 my-4">
             <Input
               label={`Nombre de semaines max: ${max}`}
               type="number"

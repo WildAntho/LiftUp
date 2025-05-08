@@ -9,6 +9,7 @@ type PopEllipsisProps = {
   navigate: () => void;
   onValidate: () => void;
   onDelete: () => void;
+  openGeneration: () => void;
 };
 
 export default function PopEllipsis({
@@ -17,6 +18,7 @@ export default function PopEllipsis({
   navigate,
   onValidate,
   onDelete,
+  openGeneration,
 }: PopEllipsisProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -55,7 +57,13 @@ export default function PopEllipsis({
       <PopoverContent className="rounded-md p-0">
         <div className="flex flex-col items-start min-w-[170px]">
           {status === ProgramStatus.Published && (
-            <button className="w-full relative inline-flex h-12 overflow-hidden rounded-md p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
+            <button
+              className="w-full relative inline-flex h-12 overflow-hidden rounded-md p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
+              onClick={() => {
+                setIsOpen(false);
+                openGeneration();
+              }}
+            >
               <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
               <span className="inline-flex h-full w-full cursor-pointer items-center justify-start gap-2 rounded-md bg-white hover:bg-gray-100 px-3 py-1 text-sm font-medium text-dark backdrop-blur-3xl">
                 <Workflow className="w-4 h-4" />

@@ -2,7 +2,24 @@ import { Exercice } from "../entities/exercice";
 import { Program } from "../entities/program";
 import { TrainingPlan } from "../entities/trainingPlan";
 
-export async function copyTrainings(trainings: TrainingPlan[], day: number) {
+export async function duplicateWeek(
+  repetition: number,
+  trainings: TrainingPlan[]
+) {
+  await Promise.all(
+    Array.from({ length: repetition }, (_, index) => index + 1).map(
+      async (i) => {
+        await copyTrainings(trainings, i * 7, true);
+      }
+    )
+  );
+}
+
+export async function copyTrainings(
+  trainings: TrainingPlan[],
+  day: number,
+  duplicateWeek?: boolean
+) {
   await Promise.all(
     trainings.map(async (t) => {
       const program = await Program.findOneBy({ id: t.program.id });
@@ -12,7 +29,7 @@ export async function copyTrainings(trainings: TrainingPlan[], day: number) {
         title: t.title,
         notes: t.notes,
         program: program,
-        dayNumber: day,
+        dayNumber: duplicateWeek ? t.dayNumber + day : day,
       });
       await trainingCopy.save();
 

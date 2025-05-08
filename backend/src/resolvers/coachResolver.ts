@@ -241,6 +241,7 @@ export class CoachResolver {
       },
       relations: {
         user: true,
+        exercices: true,
       },
     });
     return trainings;

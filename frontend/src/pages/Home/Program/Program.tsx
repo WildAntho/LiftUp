@@ -18,6 +18,7 @@ import {
   UpdateProgramInput,
   useArchiveProgramMutation,
   useDeleteProgramMutation,
+  useGenerateProgramMutation,
   useGetMyProgramsQuery,
   useUpdateProgramMutation,
   useValidateProgramMutation,
@@ -51,6 +52,7 @@ export default function Program() {
   const [archiveProgram] = useArchiveProgramMutation();
   const [validateProgram] = useValidateProgramMutation();
   const [deleteProgram] = useDeleteProgramMutation();
+  const [generateProgram] = useGenerateProgramMutation();
   const myPrograms = data?.getPrograms ?? [];
 
   useEffect(() => {
@@ -141,6 +143,32 @@ export default function Program() {
     }
   };
 
+  const handleGenerateProgram = async (
+    programId: string,
+    startDate: Date,
+    userIds: string[]
+  ) => {
+    try {
+      const { data } = await generateProgram({
+        variables: {
+          userIds,
+          programId,
+          coachId: currentUser?.id.toString() as string,
+          startDate,
+        },
+      });
+      toast.success(data?.generateProgram, {
+        style: {
+          backgroundColor: "#dcfce7",
+          color: "#15803d",
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Une erreur est survenue lors de la validation du programme");
+    }
+  };
+
   return (
     <section className="relative w-full h-full flex flex-col justify-start items-center rounded-2xl px-4 pt-10 gap-4">
       {!isConfiguration && (
@@ -219,6 +247,7 @@ export default function Program() {
                       onArchive={handleArchiveProgram}
                       onValidate={handleValidateProgram}
                       onDelete={handleDeleteProgram}
+                      onGenerate={handleGenerateProgram}
                     />
                   </div>
                 ))}
