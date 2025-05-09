@@ -4,6 +4,7 @@ import {
   BadgeHelp,
   Info,
   MailIcon,
+  Shield,
   Upload,
   User,
   UserRound,
@@ -12,7 +13,7 @@ import { useRef, useState } from "react";
 import CardRole from "./CardRole";
 import { useUpdateProfileMutation } from "@/graphql/hooks";
 import { uploadURL } from "@/services/utils";
-import { Input } from "@heroui/react";
+import { Input, Select, SelectItem } from "@heroui/react";
 import { toast } from "sonner";
 import Saving from "@/components/Saving";
 import { useDebouncedCallback } from "@/services/useDebouncedCallback";
@@ -34,11 +35,17 @@ export default function MyProfile() {
   const [lastname, setLastname] = useState<string | undefined>(
     currentUser?.lastname
   );
+  const [sex, setSex] = useState(currentUser?.sex ?? "");
+  const allSex = [
+    { key: "female", label: "Femme" },
+    { key: "male", label: "Homme" },
+  ];
   const [fileError, setFileError] = useState<string | null>(null);
 
   const data = {
     firstname: firstname as string,
     lastname: lastname as string,
+    sex,
   };
 
   const handleUpdate = async () => {
@@ -231,14 +238,29 @@ export default function MyProfile() {
             value={lastname}
             onChange={(e) => setLastname(e.target.value)}
           />
+          <Input
+            label="Email"
+            type="text"
+            value={currentUser?.email}
+            isDisabled
+            startContent={<MailIcon size={20} className="text-gray-500" />}
+          />
           <div className="w-full h-full flex justify-start items-center gap-2">
-            <Input
-              label="Email"
-              type="text"
-              value={currentUser?.email}
-              isDisabled
-              startContent={<MailIcon size={20} className="text-gray-500" />}
-            />
+            <Select
+              label="Genre"
+              placeholder="Quel est votre genre ?"
+              startContent={<Shield size={20} className="text-gray-500" />}
+              selectedKeys={[sex]}
+              onChange={(e) => {
+                setSex(e.target.value);
+              }}
+            >
+              {allSex.map((s) => (
+                <SelectItem key={s.key} value={s.key}>
+                  {s.label}
+                </SelectItem>
+              ))}
+            </Select>
             <Saving onClick={debouncedUpdate} />
           </div>
         </section>

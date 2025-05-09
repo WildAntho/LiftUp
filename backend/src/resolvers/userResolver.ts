@@ -66,6 +66,7 @@ export class UserResolver {
     newUser.email = userData.email;
     newUser.roles = userData.roles;
     newUser.password = hashPaswword;
+    newUser.sex = userData.sex;
     await newUser.save();
     const token = jwt.sign(
       { id: newUser.id, roles: newUser.roles },
@@ -85,6 +86,7 @@ export class UserResolver {
       firstname: newUser.firstname,
       lastname: newUser.lastname,
       roles: newUser.roles,
+      sex: newUser.sex,
       avatar: newUser.avatar,
     });
   }
@@ -118,6 +120,7 @@ export class UserResolver {
       firstname: user.firstname,
       lastname: user.lastname,
       roles: user.roles,
+      sex: user.sex,
       avatar: user.avatar,
     });
   }
@@ -138,6 +141,7 @@ export class UserResolver {
     user.firstname = data.firstname;
     user.lastname = data.lastname;
     if (data.avatar) user.avatar = data.avatar;
+    if (data.sex) user.sex = data.sex;
     await user.save();
     return user;
   }

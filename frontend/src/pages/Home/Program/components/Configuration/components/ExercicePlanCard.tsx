@@ -26,9 +26,9 @@ import {
   allFormatIntensity,
   allFormatReps,
   allFormatWeight,
-  exercicesURL,
 } from "@/services/utils";
 import InfoPopUp from "./InfoPopUp";
+import { useExerciceURL } from "@/services/zustand/useExerciceUrl";
 
 type ExercicePlanCardProps = {
   exercice: Exercice;
@@ -41,6 +41,7 @@ export default function ExercicePlanCard({
   onDelete,
   onUpdate,
 }: ExercicePlanCardProps) {
+  const exercicesURL = useExerciceURL();
   const [showAll, setShowAll] = useState(false);
   const [currentExercice, setCurrentExercice] = useState(exercice);
   const serieRef = useRef<number>(currentExercice.serie);
@@ -207,7 +208,7 @@ export default function ExercicePlanCard({
               className="flex justify-center items-center gap-2 px-3 py-2 bg-gray-50 rounded-full"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="group relative transition-all duration-200 ease-in-out hover:-translate-y-0.5">
+              <section className="group relative transition-all duration-200 ease-in-out hover:-translate-y-0.5">
                 <LogoAction
                   logo={<Notebook size={20} />}
                   title="Note d'exercice"
@@ -216,7 +217,7 @@ export default function ExercicePlanCard({
                 {exercice.notes && exercice.notes.length > 0 && (
                   <PulsingCircle />
                 )}
-              </div>
+              </section>
               <div className="group relative transition-all duration-200 ease-in-out hover:-translate-y-0.5">
                 <LogoAction
                   logo={<Trash2 size={20} />}

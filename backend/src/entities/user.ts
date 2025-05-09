@@ -52,6 +52,10 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   avatar?: string;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  sex?: "male" | "female";
+
   @Field(() => [User], { nullable: true })
   @OneToMany(() => User, (user) => user.coach)
   students?: User[];

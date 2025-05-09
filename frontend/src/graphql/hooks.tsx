@@ -914,6 +914,7 @@ export type UpdateProfile = {
   avatar?: InputMaybe<Scalars['String']['input']>;
   firstname: Scalars['String']['input'];
   lastname: Scalars['String']['input'];
+  sex?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateProgramInput = {
@@ -959,6 +960,7 @@ export type User = {
   roles: Scalars['String']['output'];
   sentMessages?: Maybe<Array<Message>>;
   sentRequests?: Maybe<Array<Request>>;
+  sex?: Maybe<Scalars['String']['output']>;
   studentOffer?: Maybe<Offer>;
   students?: Maybe<Array<User>>;
   trainings?: Maybe<Array<Training>>;
@@ -971,6 +973,7 @@ export type UserInput = {
   lastname: Scalars['String']['input'];
   password: Scalars['String']['input'];
   roles: Scalars['String']['input'];
+  sex?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Format de poids */
@@ -1298,7 +1301,7 @@ export type UpdateProfileMutationVariables = Exact<{
 }>;
 
 
-export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null } };
+export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, sex?: string | null, roles: string, avatar?: string | null } };
 
 export type UpdateProgramMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2898,6 +2901,7 @@ export const UpdateProfileDocument = gql`
     email
     firstname
     lastname
+    sex
     roles
     avatar
   }

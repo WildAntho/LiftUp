@@ -1,8 +1,8 @@
 import { ExerciceModel } from "@/graphql/hooks";
-import { exercicesURL } from "@/services/utils";
 import { Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useExerciceURL } from "@/services/zustand/useExerciceUrl";
 
 type ChooseExerciceCardProps = {
   exercice: ExerciceModel;
@@ -18,6 +18,7 @@ export default function ChooseExerciceCard({
   onDelete,
 }: ChooseExerciceCardProps) {
   const [currentIsFavorite, setCurrentIsFavorite] = useState(isFavorite);
+  const exercicesURL = useExerciceURL();
 
   const handleChange = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.stopPropagation();
