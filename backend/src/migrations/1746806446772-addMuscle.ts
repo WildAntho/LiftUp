@@ -2,6 +2,22 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class AddMuscle1746806446772 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`INSERT INTO muscle_group ("key", "label") VALUES
+        ('back', 'Dos'),
+        ('pecs', 'Pectoraux'),
+        ('biceps', 'Biceps'),
+        ('triceps', 'Triceps'),
+        ('shoulders', 'Epaules'),
+        ('forearm', 'Avant-bras'),
+        ('traps', 'Trapèzes'),
+        ('abs', 'Abdominaux'),
+        ('oblics', 'Obliques'),
+        ('hamstring', 'Ischio-jambiers'),
+        ('quads', 'Quadriceps'),
+        ('adds', 'Adducteurs'),
+        ('abds', 'Abducteurs'),
+        ('calves', 'Mollets'),
+        ('glutes', 'Fessiers');`);
     await queryRunner.query(`
         UPDATE "exercice_model" SET "primaryMuscleId" = 10, "secondaryMuscleId" = 15 WHERE title = 'Soulevé de terre jambes tendues';
         UPDATE "exercice_model" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE title = 'Développé couché barre';
