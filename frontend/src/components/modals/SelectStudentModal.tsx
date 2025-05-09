@@ -84,6 +84,7 @@ export default function SelectStudentModal({
         firstname: selectedStudent.firstname,
         lastname: selectedStudent.lastname,
         email: selectedStudent.email,
+        avatar: selectedStudent.avatar ?? "",
       });
       handleClose();
       if (closeNav) closeNav();

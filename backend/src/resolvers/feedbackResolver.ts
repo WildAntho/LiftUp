@@ -37,7 +37,12 @@ export class FeedbackResolver {
       where: {
         id: feedbackData.trainingId,
       },
+      relations: {
+        crew: true,
+      },
     });
+    console.log(training);
+
     if (!training) throw new Error("Pas d'entraînement pour cet ID");
     if (training.crew !== null)
       throw new Error(

@@ -6,6 +6,7 @@ export type StudentStore = {
   firstname: string;
   lastname: string;
   email: string;
+  avatar: string
 };
 
 type StudentState = {

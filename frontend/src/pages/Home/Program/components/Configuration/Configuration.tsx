@@ -28,6 +28,7 @@ import FloatingDock from "./components/FloatingDock";
 import { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useTrainingStore } from "@/services/zustand/trainingStore";
+import SkeletonTraining from "./components/SkeletonTraining";
 
 type ConfigurationProps = {
   onUpdate: (id: string, program: UpdateProgramInput) => void;
@@ -44,6 +45,7 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
   const numberOfDays = (currentProgram?.duration || 0) * 7;
   const [activeTab, setActiveTab] = useState<TabKey>("workouts");
   const [activeDay, setActiveDay] = useState<number>(1);
+  const [isChangingWeek, setIsChangingWeek] = useState<boolean>(false);
 
   const { data: dataDayNumber, refetch: refetchDayNumber } =
     useGetDayNumberTrainingQuery({
@@ -82,7 +84,7 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
     return () => {
       clearTraining();
     };
-  }, [currentProgram, navigate]);
+  }, [currentProgram, navigate, clearTraining]);
 
   if (!currentProgram) return null;
 
@@ -300,11 +302,18 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
               onDaySelect={setActiveDay}
               allDayNumber={allDayNumberTraining}
               onDuplicate={handleDuplicateWeek}
+              setIsChangingWeek={setIsChangingWeek}
             />
           )}
-          <div className="w-[80%] h-full flex justify-center items-center">
-            {renderContent()}
-          </div>
+          {!isChangingWeek ? (
+            <div className="w-[80%] h-full flex justify-center items-center">
+              {renderContent()}
+            </div>
+          ) : (
+            <div className="w-[80%] h-full flex justify-center items-start">
+              <SkeletonTraining />
+            </div>
+          )}
         </section>
         <section className="absolute top-0 w-full flex justify-center items-center z-10">
           <TabChoice activeTab={activeTab} setActiveTab={setActiveTab} />
