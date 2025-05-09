@@ -17,6 +17,9 @@ export class UserInput {
   @Field()
   roles!: string;
 
+  @Field({ nullable: true })
+  sex?: "male" | "female";
+
   @Field()
   confirmedPassword!: string;
 }
@@ -38,6 +41,9 @@ export class UpdateProfile {
   @Field()
   lastname!: string;
 
-  @Field({ nullable: true})
-  avatar?: string
+  @Field({ nullable: true })
+  sex?: "male" | "female";
+
+  @Field({ nullable: true })
+  avatar?: string;
 }

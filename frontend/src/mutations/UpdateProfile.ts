@@ -7,6 +7,7 @@ export const UPDATE_PROFILE = gql`
       email
       firstname
       lastname
+      sex
       roles
       avatar
     }

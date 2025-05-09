@@ -9,13 +9,14 @@ import {
 import { Exercice, RepFormat, WeightFormat } from "@/graphql/hooks";
 import { Input } from "@heroui/react";
 import { useState } from "react";
-import { exercicesURL } from "@/services/utils";
+import { useExerciceURL } from "@/services/zustand/useExerciceUrl";
 
 type ExerciceCardProps = {
   exercice: Exercice;
 };
 
 export default function ExerciceCard({ exercice }: ExerciceCardProps) {
+  const exercicesURL = useExerciceURL();
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
   };

@@ -56,16 +56,7 @@ export default function Login() {
   return (
     <section className="relative flex items-center justify-center w-screen h-screen bg-white">
       <Toaster />
-      <div className="flex justify-center items-center fixed left-0 top-0 w-1/2 h-full z-0">
-        <div className="w-full h-full overflow-hidden">
-          <img
-            src="/login.webp"
-            alt="Image Fixe"
-            className="object-cover w-full h-full"
-          />
-        </div>
-      </div>
-      <form className="relative flex flex-col justify-center items-center gap-10 shadow-2xl rounded-xl min-w-[600px] py-28 z-10 bg-white">
+      <form className="w-1/2 h-full relative flex flex-col justify-center items-center gap-10 bg-white">
         <div className="w-[150px]">
           <p className="font-logo text-primary text-7xl">LiftUp</p>
         </div>
@@ -132,6 +123,15 @@ export default function Login() {
           </div>
         </section>
       </form>
+      <div className="flex justify-center items-center w-1/2 h-full">
+        <div className="w-full h-full overflow-hidden">
+          <img
+            src="/login.webp"
+            alt="Image Fixe"
+            className="object-cover w-full h-full"
+          />
+        </div>
+      </div>
       <Toaster />
     </section>
   );

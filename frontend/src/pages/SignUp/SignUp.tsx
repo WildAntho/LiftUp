@@ -1,7 +1,7 @@
 import { useSignupMutation } from "@/graphql/hooks";
 import { useUserStore } from "@/services/zustand/userStore";
 import { ApolloError } from "@apollo/client";
-import { Button, Input } from "@heroui/react";
+import { Button, Input, Select, SelectItem } from "@heroui/react";
 import { Tooltip } from "@heroui/tooltip";
 import {
   ArrowRightToLine,
@@ -13,6 +13,7 @@ import {
   Loader2,
   Lock,
   Mail,
+  Shield,
   User,
 } from "lucide-react";
 import { useRef, useState } from "react";
@@ -28,6 +29,11 @@ export default function SignUp() {
   const password = useRef<HTMLInputElement>(null);
   const firstname = useRef<HTMLInputElement>(null);
   const lastname = useRef<HTMLInputElement>(null);
+  const [sex, setSex] = useState("");
+  const allSex = [
+    { key: "female", label: "Femme" },
+    { key: "male", label: "Homme" },
+  ];
   const confirmedPassword = useRef<HTMLInputElement>(null);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
@@ -49,6 +55,7 @@ export default function SignUp() {
             lastname: lastname?.current?.value as string,
             password: password?.current?.value as string,
             confirmedPassword: confirmedPassword?.current?.value as string,
+            sex: sex,
             roles: role?.toLocaleUpperCase() as string,
           },
         },
@@ -73,7 +80,7 @@ export default function SignUp() {
   return (
     <section className="flex items-center justify-center w-screen h-screen">
       <Toaster />
-      <div className="flex justify-center items-center fixed right-0 top-0 w-1/2 h-full z-0">
+      <div className="flex justify-center items-center w-1/2 h-full">
         <div className="w-full h-full overflow-hidden">
           <img
             src="/imagesignup.webp"
@@ -82,7 +89,7 @@ export default function SignUp() {
           />
         </div>
       </div>
-      <form className="relative flex flex-col justify-center items-center gap-10 shadow-2xl rounded-xl min-w-[600px] py-20 h-auto z-10 bg-white">
+      <form className="relative w-1/2 flex flex-col justify-center items-center gap-10 h-full bg-white">
         <div className="w-[150px]">
           <p className="font-logo text-primary text-7xl">LiftUp</p>
         </div>
@@ -105,6 +112,21 @@ export default function SignUp() {
               startContent={<User size={20} className="text-gray-500" />}
             />
           </div>
+          <Select
+            label="Genre"
+            placeholder="Quel est votre genre ?"
+            startContent={<Shield size={20} className="text-gray-500" />}
+            selectedKeys={[sex]}
+            onChange={(e) => {
+              setSex(e.target.value);
+            }}
+          >
+            {allSex.map((s) => (
+              <SelectItem key={s.key} value={s.key}>
+                {s.label}
+              </SelectItem>
+            ))}
+          </Select>
           <Input
             ref={email}
             label="Email"
