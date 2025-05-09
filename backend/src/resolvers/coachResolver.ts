@@ -8,7 +8,7 @@ import {
   Resolver,
 } from "type-graphql";
 import { User } from "../entities/user";
-import { Between, ILike, IsNull } from "typeorm";
+import { Between } from "typeorm";
 import { CtxUser, StudentCoach } from "../InputType/coachType";
 import { RangeDate, TrainingData } from "../InputType/trainingType";
 import { Training } from "../entities/training";
@@ -17,10 +17,16 @@ import { Crew } from "../entities/crew";
 import { StudentsResponse } from "../InputType/coachProfileType";
 import { createTrainingsForDates } from "../services/trainingService";
 import { StatusStudent } from "../InputType/memberShipType";
+import { Membership } from "../entities/memberShip";
+import {
+  deleteFromCrew,
+  deleteStudent,
+  desactivateMemberShip,
+} from "../services/coachService";
 
+@Authorized("COACH")
 @Resolver(User)
 export class CoachResolver {
-  @Authorized("COACH")
   @Mutation(() => String)
   async deleteStudent(@Arg("data") { coach_id, student_id }: StudentCoach) {
     // Récupération du coach
@@ -38,26 +44,33 @@ export class CoachResolver {
         studentOffer: true,
       },
     });
-
+    // Récupération du memberShip de l'élève
+    const memberShip = await Membership.findOne({
+      where: {
+        student: { id: student_id },
+        isActive: true,
+        offer: { id: student?.studentOffer?.id },
+      },
+      relations: {
+        student: true,
+        offer: true,
+      },
+    });
+    // Désactivation du membership
+    if (memberShip) {
+      desactivateMemberShip(memberShip);
+    }
     // Si l'élève est dans un Crew (appartenant au coach) on le supprime de ce Crew
     if (student) {
-      student.crew = null;
-      student.studentOffer = null;
-      await student.save();
+      deleteFromCrew(student);
     }
     // On supprime ensuite l'élève de la liste d'élève du coach
-    if (coach && coach.students) {
-      const newStudents = coach.students.filter(
-        (s: User) => s.id != student_id
-      );
-      coach.students = newStudents;
-      await coach.save();
-      return JSON.stringify("L'élève a bien été supprimé");
+    if (coach && student) {
+      deleteStudent(student.id, coach);
     }
     return JSON.stringify("La suppression n'a pas abouti");
   }
 
-  @Authorized("COACH")
   @Query(() => Int)
   async getTotalStudents(@Ctx() context: { user: CtxUser }) {
     const coach = await User.findOne({
@@ -72,7 +85,6 @@ export class CoachResolver {
     if (coach.students) return coach.students.length;
   }
 
-  @Authorized("COACH")
   @Query(() => StudentsResponse)
   async getStudents(
     @Arg("id") id: string,
@@ -151,68 +163,6 @@ export class CoachResolver {
     return { students, totalCount };
   }
 
-  @Authorized("COACH")
-  @Query(() => [User])
-  async selectUsers(
-    @Arg("id") id: string,
-    @Arg("input", { nullable: true }) input?: string
-  ) {
-    const whereClause = input
-      ? [
-          {
-            roles: "STUDENT",
-            firstname: ILike(`%${input}%`),
-            coach: IsNull(),
-          },
-          {
-            roles: "STUDENT",
-            lastname: ILike(`%${input}%`),
-            coach: IsNull(),
-          },
-        ]
-      : {
-          roles: "STUDENT",
-          coach: IsNull(),
-        };
-    const users = await User.find({
-      where: whereClause,
-      relations: {
-        receivedRequests: {
-          sender: true,
-        },
-        sentRequests: {
-          receiver: true,
-        },
-      },
-      order: {
-        firstname: "ASC",
-      },
-    });
-
-    const newUsers: User[] = [];
-    users.forEach((user) => {
-      let filteredOnReceive = [];
-      let filteredOnSent = [];
-      if (user.receivedRequests && user.receivedRequests.length > 0) {
-        filteredOnReceive = user.receivedRequests.filter((r) => {
-          return r.sender.id.toString() === id && r.status === "PENDING";
-        });
-      }
-      if (user.sentRequests && user.sentRequests.length > 0) {
-        filteredOnSent = user.sentRequests.filter((r) => {
-          return r.receiver.id.toString() === id && r.status === "PENDING";
-        });
-      }
-      if (filteredOnReceive.length === 0 && filteredOnSent.length === 0) {
-        newUsers.push(user);
-      } else {
-        if (!user.receivedRequests && !user.sentRequests) newUsers.push(user);
-      }
-    });
-    return newUsers;
-  }
-
-  @Authorized("COACH")
   @Query(() => [Training])
   async getStudentTrainings(
     @Arg("id") id: string,
@@ -247,7 +197,6 @@ export class CoachResolver {
     return trainings;
   }
 
-  @Authorized("COACH")
   @Query(() => [Training])
   async getCrewTraining(
     @Arg("id") id: string,
@@ -281,7 +230,6 @@ export class CoachResolver {
     return trainings;
   }
 
-  @Authorized("COACH")
   @Mutation(() => String)
   async addTrainingStudent(
     @Arg("data") data: TrainingData,
@@ -305,7 +253,6 @@ export class CoachResolver {
     );
   }
 
-  @Authorized("COACH")
   @Mutation(() => String)
   async addTrainingCrew(
     @Arg("data") data: TrainingData,
@@ -331,7 +278,6 @@ export class CoachResolver {
     );
   }
 
-  @Authorized("COACH")
   @Mutation(() => String)
   async deleteTraining(
     @Arg("id") id: string,
@@ -361,7 +307,6 @@ export class CoachResolver {
     }
   }
 
-  @Authorized("COACH")
   @Query(() => [Feedback])
   async getStudentFeedback(
     @Arg("id") id: string,
