@@ -11,7 +11,7 @@ import {
 } from "typeorm";
 import { User } from "./user";
 import { Request } from "./request";
-import { NotificationType } from "../type";
+import { NotificationType } from "../InputType/notificationType";
 
 @ObjectType()
 @Entity()

@@ -17,6 +17,7 @@ import { Input, Select, SelectItem } from "@heroui/react";
 import { toast } from "sonner";
 import Saving from "@/components/Saving";
 import { useDebouncedCallback } from "@/services/useDebouncedCallback";
+import { FaMars, FaVenus } from "react-icons/fa";
 
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
 
@@ -40,6 +41,16 @@ export default function MyProfile() {
     { key: "female", label: "Femme" },
     { key: "male", label: "Homme" },
   ];
+  const renderIconSex = () => {
+    switch (sex) {
+      case "female":
+        return <FaVenus size={20} className="text-gray-500" />;
+      case "male":
+        return <FaMars size={20} className="text-gray-500" />;
+      default:
+        <Shield size={20} className="text-gray-500" />;
+    }
+  };
   const [fileError, setFileError] = useState<string | null>(null);
 
   const data = {
@@ -249,7 +260,7 @@ export default function MyProfile() {
             <Select
               label="Genre"
               placeholder="Quel est votre genre ?"
-              startContent={<Shield size={20} className="text-gray-500" />}
+              startContent={renderIconSex()}
               selectedKeys={[sex]}
               onChange={(e) => {
                 setSex(e.target.value);
