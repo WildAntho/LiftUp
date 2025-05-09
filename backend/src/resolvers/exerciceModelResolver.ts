@@ -13,11 +13,14 @@ export class ExerciceModelResolver {
     @Ctx() context: { user: CtxUser },
     @Arg("id", { nullable: true }) id?: string,
     @Arg("input", { nullable: true }) input?: string,
-    @Arg("getFavorite", { nullable: true }) getFavorite?: boolean
+    @Arg("getFavorite", { nullable: true }) getFavorite?: boolean,
+    @Arg("primary", { nullable: true }) primary?: string,
+    @Arg("secondary", { nullable: true }) secondary?: string
   ) {
-    const query = ExerciceModel.createQueryBuilder(
-      "exercice"
-    ).leftJoinAndSelect("exercice.user", "user");
+    const query = ExerciceModel.createQueryBuilder("exercice")
+      .leftJoinAndSelect("exercice.user", "user")
+      .leftJoinAndSelect("exercice.primaryMuscle", "primaryMuscle")
+      .leftJoinAndSelect("exercice.secondaryMuscle", "secondaryMuscle");
 
     if (id) {
       query.andWhere("user.id = :id", { id });
@@ -33,6 +36,18 @@ export class ExerciceModelResolver {
       query
         .leftJoin("exercice.userFavorites", "userFavorites")
         .andWhere("userFavorites.id = :userId", { userId: context.user.id });
+    }
+
+    if (primary) {
+      query.andWhere("primaryMuscle.id = :primaryMuscleId", {
+        primaryMuscleId: primary,
+      });
+    }
+
+    if (secondary) {
+      query.andWhere("secondaryMuscle.id = :secondaryMuscleId", {
+        secondaryMuscleId: secondary,
+      });
     }
 
     const exerciceModels = await query.getMany();

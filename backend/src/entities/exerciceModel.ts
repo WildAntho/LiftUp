@@ -13,6 +13,7 @@ import {
   RepFormat,
   WeightFormat,
 } from "../InputType/exerciceType";
+import { MuscleGroup } from "./muscleGroup";
 
 @ObjectType()
 @Entity()
@@ -88,4 +89,12 @@ export class ExerciceModel extends BaseEntity {
   @Field(() => [User], { nullable: true })
   @ManyToMany(() => User, (user) => user.favoriteExercices)
   userFavorites?: User[];
+
+  @Field(() => MuscleGroup, { nullable: true })
+  @ManyToOne(() => MuscleGroup, { nullable: true })
+  primaryMuscle?: MuscleGroup;
+
+  @Field(() => MuscleGroup, { nullable: true })
+  @ManyToOne(() => MuscleGroup, { nullable: true })
+  secondaryMuscle?: MuscleGroup;
 }
