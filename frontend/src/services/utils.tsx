@@ -230,4 +230,4 @@ export enum FilterCardEnum {
   NEW = "NEW",
 }
 
-export const exercicesURL = "/exercices/women";
+export const exercicesURL = "/exercices/men";

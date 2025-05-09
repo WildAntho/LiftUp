@@ -19,6 +19,7 @@ type WeekProgramProps = {
   onDaySelect: (day: number) => void;
   allDayNumber: number[];
   onDuplicate: (currentWeek: number, repetition: number) => void;
+  setIsChangingWeek: (value: boolean) => void;
 };
 
 type WorkoutDay = {
@@ -32,6 +33,7 @@ export default function WeekProgram({
   onDaySelect,
   allDayNumber,
   onDuplicate,
+  setIsChangingWeek,
 }: WeekProgramProps) {
   const currentProgram = useProgramStore((state) => state.program);
   const [currentWeek, setCurrentWeek] = useState(1);
@@ -58,21 +60,27 @@ export default function WeekProgram({
 
   const handlePrevWeek = useCallback(() => {
     if (currentWeek > 1) {
+      setIsChangingWeek(true);
       setDirection(-1);
       setCurrentWeek((prev) => prev - 1);
     }
-  }, [currentWeek]);
+  }, [currentWeek, setIsChangingWeek]);
 
   const handleNextWeek = useCallback(() => {
     if (currentWeek < totalWeeks) {
+      setIsChangingWeek(true);
       setDirection(1);
       setCurrentWeek((prev) => prev + 1);
     }
-  }, [currentWeek, totalWeeks]);
+  }, [currentWeek, totalWeeks, setIsChangingWeek]);
 
   useEffect(() => {
-    onDaySelect(currentWeek * 7 - 6);
-  }, [currentWeek]);
+    const timeOut = setTimeout(() => {
+      onDaySelect(currentWeek * 7 - 6);
+      setIsChangingWeek(false)
+    }, 300);
+    return () => clearTimeout(timeOut);
+  }, [currentWeek, onDaySelect, setIsChangingWeek]);
 
   const workouts = generateWeekWorkouts();
 

@@ -1,13 +1,15 @@
-import { Badge } from "@/components/ui/badge";
-import { Tooltip } from "@heroui/react";
+import { Tooltip, User } from "@heroui/react";
 import { useStudentStore } from "@/services/zustand/studentStore";
 import { X } from "lucide-react";
+import { uploadURL } from "@/services/utils";
+import imgDefault from "../../../../public/default.jpg";
 
 type BadgeStudentProps = {
   student: {
     id: string;
     firstname: string;
     lastname: string;
+    avatar: string;
   } | null;
 };
 
@@ -18,8 +20,16 @@ export default function BadgeStudent({ student }: BadgeStudentProps) {
   };
 
   return (
-    <section className="flex justify-center items-center gap-2">
-      <Badge className="bg-black text-white">{`${student?.firstname} ${student?.lastname}`}</Badge>
+    <section className="absolute -top-[55px] right-0 flex justify-center items-center gap-2 bg-dark text-white p-2 rounded-full">
+      <User
+        avatarProps={{
+          src:
+            student && student.avatar
+              ? `${uploadURL + student.avatar}`
+              : imgDefault,
+        }}
+        name={student && student.firstname + " " + student.lastname}
+      />
       <Tooltip
         content="Revenir à ma programmation"
         color="foreground"
@@ -27,7 +37,7 @@ export default function BadgeStudent({ student }: BadgeStudentProps) {
         className="text-xs"
       >
         <X
-          className="size-5 text-gray-400 hover:text-gray-600 cursor-pointer"
+          className="size-5 text-white hover:text-gray-200 cursor-pointer"
           onClick={handleClearStudent}
         />
       </Tooltip>
