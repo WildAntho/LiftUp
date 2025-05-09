@@ -3,12 +3,12 @@ import HomeSidebar from "./components/HomeSidebar";
 import { useLocation } from "react-router-dom";
 import Program from "./Program/Program";
 import Dashboard from "./Dashboard/Dashboard";
-import ExerciceModel from "./ExerciceModel/ExerciceModel";
 import Statistics from "./Statistics/Statistics";
 import Calendar from "./components/Calendar";
 import PathBreadcrumbs from "./components/PathBreadcrumbs";
 import Offers from "./Offers/Offers";
 import ProtectedRoute from "@/services/ProtectedRoutes";
+import ExerciceModelSection from "./ExerciceModel/ExerciceModelSection";
 
 export default function Home() {
   const currentUser = useUserStore((state) => state.user);
@@ -34,9 +34,7 @@ export default function Home() {
             <Offers />
           </ProtectedRoute>
         )}
-        {activeTab === "exercices" && (
-          <ExerciceModel currentUser={currentUser} />
-        )}
+        {activeTab === "exercices" && <ExerciceModelSection />}
         {activeTab === "statistics" && <Statistics currentUser={currentUser} />}
       </div>
     </div>

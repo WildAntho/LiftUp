@@ -44,7 +44,7 @@ export default function DrawerExercice({ onCreate }: DrawerExerciceProps) {
         placement="bottom"
         size="5xl"
       >
-        <DrawerContent>
+        <DrawerContent className="pt-2">
           <div className="flex flex-col h-[80vh] w-full items-center">
             <div className="px-4 sticky top-0 bg-white z-10 w-[80%] 2xl:w-[60%] flex justify-between items-end pb-2">
               <div className="flex items-center mb-2">
