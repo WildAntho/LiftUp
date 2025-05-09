@@ -3,12 +3,14 @@ import {
   useAddExerciceFavoriteMutation,
   useDeleteExerciceFavoriteMutation,
   useGetAllExercicesModelQuery,
+  useGetAllMuscleGroupQuery,
   useGetFavoriteExercicesIdQuery,
 } from "@/graphql/hooks";
 import ChooseExerciceCard from "./ChooseExerciceCard";
 import {
   BicepsFlexed,
   Check,
+  CookingPot,
   Handshake,
   Heart,
   LayoutGrid,
@@ -18,7 +20,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Input, Select, SelectItem } from "@heroui/react";
+import { Input, Select, SelectItem, Tooltip } from "@heroui/react";
 import { useDebouncedCallback } from "@/services/useDebouncedCallback";
 import SkeletonExerciceCard from "./SkeletonExerciceCard";
 import { useUserStore } from "@/services/zustand/userStore";
@@ -40,6 +42,8 @@ export default function TabExercices({
   const [input, setInput] = useState<string>("");
   const [debounceInput, setDebounceInput] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [primary, setPrimary] = useState("");
+  const [secondary, setSecondary] = useState("");
   const { data: dataFavorite, refetch: refetchFavorite } =
     useGetFavoriteExercicesIdQuery();
   const [addFavorite] = useAddExerciceFavoriteMutation();
@@ -49,11 +53,15 @@ export default function TabExercices({
       input: debounceInput,
       id: activeTabId === 2 ? currentUser?.id.toString() : "",
       getFavorite: activeTabId === 3,
+      primary,
+      secondary,
     },
     fetchPolicy: "cache-and-network",
   });
+  const { data: dataMuscleGroup } = useGetAllMuscleGroupQuery();
   const allExercices = data?.getAllExercicesModel ?? [];
   const favoriteExercices = dataFavorite?.getFavoriteExercicesId ?? [];
+  const allMuscleGroup = dataMuscleGroup?.getAllMuscleGroup ?? [];
 
   const handleClick = (e: ExerciceModel) => {
     if (activeExercices === null) {
@@ -177,17 +185,45 @@ export default function TabExercices({
           <Select
             aria-label="Muscle principal"
             placeholder="Muscle principal"
+            selectedKeys={primary ? [primary] : []}
+            onChange={(e) => setPrimary(e.target.value)}
             startContent={<BicepsFlexed size={20} className="text-gray-500" />}
           >
-            <SelectItem>En attente</SelectItem>
+            {allMuscleGroup.map((m) => (
+              <SelectItem key={m.id} value={m.key}>
+                {m.label}
+              </SelectItem>
+            ))}
           </Select>
           <Select
             aria-label="Muscle secondaire"
             placeholder="Muscle secondaire"
+            selectedKeys={secondary ? [secondary] : []}
+            onChange={(e) => setSecondary(e.target.value)}
             startContent={<Handshake size={20} className="text-gray-500" />}
           >
-            <SelectItem>En attente</SelectItem>
+            {allMuscleGroup.map((m) => (
+              <SelectItem key={m.id} value={m.key}>
+                {m.label}
+              </SelectItem>
+            ))}
           </Select>
+          <Tooltip
+            content="Réinitialiser"
+            className="text-xs"
+            showArrow={true}
+            color="foreground"
+          >
+            <div
+              className="hover:bg-black/5 hover:bg-opacity-10 p-2 rounded-full cursor-pointer"
+              onClick={() => {
+                setPrimary("");
+                setSecondary("");
+              }}
+            >
+              <CookingPot size={20} className="text-gray-500" />
+            </div>
+          </Tooltip>
         </div>
       </section>
       {allExercices.length > 0 ? (

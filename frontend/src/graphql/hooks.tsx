@@ -145,8 +145,10 @@ export type ExerciceModel = {
   intensity?: Maybe<Scalars['Float']['output']>;
   intensityFormat?: Maybe<IntensityFormat>;
   notes?: Maybe<Scalars['String']['output']>;
+  primaryMuscle?: Maybe<MuscleGroup>;
   rep?: Maybe<Scalars['Float']['output']>;
   repFormat?: Maybe<RepFormat>;
+  secondaryMuscle?: Maybe<MuscleGroup>;
   serie?: Maybe<Scalars['Float']['output']>;
   tempo?: Maybe<Scalars['Float']['output']>;
   title: Scalars['String']['output'];
@@ -228,6 +230,15 @@ export type MessageResult = {
   __typename?: 'MessageResult';
   messages: Array<Message>;
   totalCount: Scalars['Int']['output'];
+};
+
+export type MuscleGroup = {
+  __typename?: 'MuscleGroup';
+  id: Scalars['ID']['output'];
+  key: Scalars['String']['output'];
+  label: Scalars['String']['output'];
+  primaryExercises?: Maybe<Array<ExerciceModel>>;
+  secondaryExercises?: Maybe<Array<ExerciceModel>>;
 };
 
 export type Mutation = {
@@ -626,6 +637,7 @@ export type Query = {
   __typename?: 'Query';
   getAllCategories: Array<OfferCategory>;
   getAllExercicesModel: Array<ExerciceModel>;
+  getAllMuscleGroup: Array<MuscleGroup>;
   getChatUsers: Array<User>;
   getCoachCrews: Array<Crew>;
   getCoachOffers: Array<Offer>;
@@ -666,6 +678,8 @@ export type QueryGetAllExercicesModelArgs = {
   getFavorite?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   input?: InputMaybe<Scalars['String']['input']>;
+  primary?: InputMaybe<Scalars['String']['input']>;
+  secondary?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1343,10 +1357,17 @@ export type GetAllExercicesModelQueryVariables = Exact<{
   input?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   getFavorite?: InputMaybe<Scalars['Boolean']['input']>;
+  secondary?: InputMaybe<Scalars['String']['input']>;
+  primary?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
 export type GetAllExercicesModelQuery = { __typename?: 'Query', getAllExercicesModel: Array<{ __typename?: 'ExerciceModel', id: string, title: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, notes?: string | null, image?: string | null, weightFormat?: WeightFormat | null, repFormat?: RepFormat | null, intensityFormat?: IntensityFormat | null, tempo?: number | null }> };
+
+export type GetAllMuscleGroupQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllMuscleGroupQuery = { __typename?: 'Query', getAllMuscleGroup: Array<{ __typename?: 'MuscleGroup', id: string, key: string, label: string }> };
 
 export type GetChatUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3101,8 +3122,14 @@ export type GetAllCategoriesLazyQueryHookResult = ReturnType<typeof useGetAllCat
 export type GetAllCategoriesSuspenseQueryHookResult = ReturnType<typeof useGetAllCategoriesSuspenseQuery>;
 export type GetAllCategoriesQueryResult = Apollo.QueryResult<GetAllCategoriesQuery, GetAllCategoriesQueryVariables>;
 export const GetAllExercicesModelDocument = gql`
-    query GetAllExercicesModel($input: String, $id: String, $getFavorite: Boolean) {
-  getAllExercicesModel(input: $input, id: $id, getFavorite: $getFavorite) {
+    query GetAllExercicesModel($input: String, $id: String, $getFavorite: Boolean, $secondary: String, $primary: String) {
+  getAllExercicesModel(
+    input: $input
+    id: $id
+    getFavorite: $getFavorite
+    secondary: $secondary
+    primary: $primary
+  ) {
     id
     title
     serie
@@ -3134,6 +3161,8 @@ export const GetAllExercicesModelDocument = gql`
  *      input: // value for 'input'
  *      id: // value for 'id'
  *      getFavorite: // value for 'getFavorite'
+ *      secondary: // value for 'secondary'
+ *      primary: // value for 'primary'
  *   },
  * });
  */
@@ -3153,6 +3182,47 @@ export type GetAllExercicesModelQueryHookResult = ReturnType<typeof useGetAllExe
 export type GetAllExercicesModelLazyQueryHookResult = ReturnType<typeof useGetAllExercicesModelLazyQuery>;
 export type GetAllExercicesModelSuspenseQueryHookResult = ReturnType<typeof useGetAllExercicesModelSuspenseQuery>;
 export type GetAllExercicesModelQueryResult = Apollo.QueryResult<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>;
+export const GetAllMuscleGroupDocument = gql`
+    query GetAllMuscleGroup {
+  getAllMuscleGroup {
+    id
+    key
+    label
+  }
+}
+    `;
+
+/**
+ * __useGetAllMuscleGroupQuery__
+ *
+ * To run a query within a React component, call `useGetAllMuscleGroupQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllMuscleGroupQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllMuscleGroupQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllMuscleGroupQuery(baseOptions?: Apollo.QueryHookOptions<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>(GetAllMuscleGroupDocument, options);
+      }
+export function useGetAllMuscleGroupLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>(GetAllMuscleGroupDocument, options);
+        }
+export function useGetAllMuscleGroupSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>(GetAllMuscleGroupDocument, options);
+        }
+export type GetAllMuscleGroupQueryHookResult = ReturnType<typeof useGetAllMuscleGroupQuery>;
+export type GetAllMuscleGroupLazyQueryHookResult = ReturnType<typeof useGetAllMuscleGroupLazyQuery>;
+export type GetAllMuscleGroupSuspenseQueryHookResult = ReturnType<typeof useGetAllMuscleGroupSuspenseQuery>;
+export type GetAllMuscleGroupQueryResult = Apollo.QueryResult<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>;
 export const GetChatUsersDocument = gql`
     query GetChatUsers {
   getChatUsers {

@@ -16,6 +16,7 @@ import { Conversation } from "../entities/conversation";
 import { Membership } from "../entities/memberShip";
 import { Program } from "../entities/program";
 import { TrainingPlan } from "../entities/trainingPlan";
+import { MuscleGroup } from "../entities/muscleGroup";
 
 config();
 
@@ -45,6 +46,7 @@ export const dataSource = new DataSource({
     Membership,
     Program,
     TrainingPlan,
+    MuscleGroup,
   ],
   synchronize: true,
   migrations: ["build/migrations/*.js"],
