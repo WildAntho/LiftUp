@@ -22,23 +22,23 @@ export class Musclegroup1746798777703 implements MigrationInterface {
         `);
 
     await queryRunner.query(`
-        UPDATE "exercice_model" SET "primaryMuscleId" = 10, "secondaryMuscleId" = 15 WHERE id = 16;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE id = 17;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 1, "secondaryMuscleId" = 3 WHERE id = 1;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 11 WHERE id = 19;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE id = 20;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE id = 21;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 4 WHERE id = 13;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE id = 22;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE id = 18;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 1, "secondaryMuscleId" = 3 WHERE id = 4;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 5, "secondaryMuscleId" = 4 WHERE id = 11;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 4, "secondaryMuscleId" = 2 WHERE id = 2;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 11, "secondaryMuscleId" = 15 WHERE id = 3;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE id = 10;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE id = 12;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 3, "secondaryMuscleId" = 6 WHERE id = 14;
-        UPDATE "exercice_model" SET "primaryMuscleId" = 5 WHERE id = 15;
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 10, "secondaryMuscleId" = 15 WHERE title = 'Soulevé de terre jambes tendues';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE title = 'Développé couché barre';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 1, "secondaryMuscleId" = 3 WHERE title = 'Tractions pronation';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 11 WHERE title = 'Extensions quadriceps';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE title = 'Pompes';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE title = 'Pompes inclinées';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 4 WHERE title = 'Extensions triceps corde';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE title = 'Pompes déclinées';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE title = 'Développé couché altères';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 1, "secondaryMuscleId" = 3 WHERE title = 'Muscle up';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 5, "secondaryMuscleId" = 4 WHERE title = 'Développé militaire altères';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 4, "secondaryMuscleId" = 2 WHERE title = 'Dips';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 11, "secondaryMuscleId" = 15 WHERE title = 'Squat';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE title = 'Développé incliné barre';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 2, "secondaryMuscleId" = 4 WHERE title = 'Développé incliné altères';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 3, "secondaryMuscleId" = 6 WHERE title = 'Curl poulie barre';
+        UPDATE "ExerciceModel" SET "primaryMuscleId" = 5 WHERE title = 'Elévations latérales altères';
         `);
   }
 
