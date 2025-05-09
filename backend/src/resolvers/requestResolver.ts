@@ -3,10 +3,10 @@ import { Request } from "../entities/request";
 import { AddRequestData } from "../InputType/requestType";
 import { User } from "../entities/user";
 import { createNotification } from "../services/notificationsService";
-import { NotificationType } from "../type";
 import { checkRequest } from "../services/requestService";
 import { Offer } from "../entities/offer";
 import { Crew } from "../entities/crew";
+import { NotificationType } from "../InputType/notificationType";
 
 @Resolver(Request)
 export class RequestResolver {
@@ -61,6 +61,7 @@ export class RequestResolver {
       await newRequest.save();
 
       const newNotification = await createNotification(
+        "request",
         newRequest.id,
         NotificationType.NEW_REQUEST,
         receiverId
@@ -180,6 +181,7 @@ export class RequestResolver {
     // Création d'une notification
     if (requestNotification) {
       const newNotification = await createNotification(
+        "request",
         requestNotification.id,
         NotificationType.ACCEPT_REQUEST,
         senderId
