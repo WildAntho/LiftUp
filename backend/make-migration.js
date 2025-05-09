@@ -3,7 +3,7 @@
 const readline = require("readline");
 const { exec } = require("child_process");
 
-const isAuto = process.argv.includes("auto");
+const isAuto = process.argv.includes("--auto");
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
