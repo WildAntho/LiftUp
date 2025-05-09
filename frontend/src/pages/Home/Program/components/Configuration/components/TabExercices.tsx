@@ -10,7 +10,6 @@ import ChooseExerciceCard from "./ChooseExerciceCard";
 import {
   BicepsFlexed,
   Check,
-  CookingPot,
   Handshake,
   Heart,
   LayoutGrid,
@@ -20,7 +19,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Input, Select, SelectItem, Tooltip } from "@heroui/react";
+import { Input, Select, SelectItem } from "@heroui/react";
 import { useDebouncedCallback } from "@/services/useDebouncedCallback";
 import SkeletonExerciceCard from "./SkeletonExerciceCard";
 import { useUserStore } from "@/services/zustand/userStore";
@@ -31,11 +30,13 @@ import { FilterCardEnum } from "@/services/utils";
 type TabExercicesProps = {
   activeExercices: ExerciceModel[] | null;
   setActiveExercices: (exercice: ExerciceModel[] | null) => void;
+  disableSelection?: boolean;
 };
 
 export default function TabExercices({
   activeExercices,
   setActiveExercices,
+  disableSelection = false,
 }: TabExercicesProps) {
   const currentUser = useUserStore((state) => state.user);
   const [activeTabId, setActiveTabId] = useState<number>(1);
@@ -64,6 +65,7 @@ export default function TabExercices({
   const allMuscleGroup = dataMuscleGroup?.getAllMuscleGroup ?? [];
 
   const handleClick = (e: ExerciceModel) => {
+    if (disableSelection) return;
     if (activeExercices === null) {
       setActiveExercices([e]);
     } else {
@@ -208,24 +210,17 @@ export default function TabExercices({
               </SelectItem>
             ))}
           </Select>
-          <Tooltip
-            content="Réinitialiser"
-            className="text-xs"
-            showArrow={true}
-            color="foreground"
-          >
-            <div
-              className="hover:bg-black/5 hover:bg-opacity-10 p-2 rounded-full cursor-pointer"
-              onClick={() => {
-                setPrimary("");
-                setSecondary("");
-              }}
-            >
-              <CookingPot size={20} className="text-gray-500" />
-            </div>
-          </Tooltip>
         </div>
       </section>
+      <p
+        className="w-full text-end text-xs text-grat-500 hover:underline hover:text-dark cursor-pointer"
+        onClick={() => {
+          setPrimary("");
+          setSecondary("");
+        }}
+      >
+        Réinitialiser les filtres
+      </p>
       {allExercices.length > 0 ? (
         !loading ? (
           <section className="flex flex-wrap justify-center w-full gap-4">
@@ -245,7 +240,7 @@ export default function TabExercices({
                     onFavorite={handleAddFavorite}
                     onDelete={handleDeleteFavorite}
                   />
-                  {isActive && (
+                  {isActive && !disableSelection && (
                     <div className="w-full h-full flex justify-center items-center absolute top-0 bg-green-400/20 rounded-2xl">
                       <motion.div
                         className="w-10 h-10 flex justify-center items-center rounded-full bg-green-400"
