@@ -8,7 +8,9 @@ export type Student = {
 
 export type ViewMode = "month" | "week";
 
-export type CalendarEvent = Omit<Training, "user"> | Omit<Feedback, "training">;
+export type CalendarEvent =
+  | Omit<Training, "user">
+  | Omit<Feedback, "training" | "user">;
 
 export type SidebarComponent = {
   title: string;
