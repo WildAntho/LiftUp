@@ -1,4 +1,4 @@
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Mutation, PubSub, Query, Resolver } from "type-graphql";
 import { Feedback } from "../entities/feedback";
 import {
   FeedbackData,
@@ -7,6 +7,10 @@ import {
 import { Training } from "../entities/training";
 import { RangeDate } from "../InputType/trainingType";
 import { Between } from "typeorm";
+import { CtxUser } from "../InputType/coachType";
+import { User } from "../entities/user";
+import { createNotification } from "../services/notificationsService";
+import { NotificationType } from "../InputType/notificationType";
 
 @Resolver(Feedback)
 export class FeedbackResolver {
@@ -32,7 +36,10 @@ export class FeedbackResolver {
   }
 
   @Mutation(() => String)
-  async addFeedback(@Arg("data") feedbackData: FeedbackData) {
+  async addFeedback(
+    @Arg("data") feedbackData: FeedbackData,
+    @Ctx() context: { pubsub: PubSub; user: CtxUser }
+  ) {
     const training = await Training.findOne({
       where: {
         id: feedbackData.trainingId,
@@ -41,13 +48,17 @@ export class FeedbackResolver {
         crew: true,
       },
     });
-    console.log(training);
 
     if (!training) throw new Error("Pas d'entraînement pour cet ID");
     if (training.crew !== null)
       throw new Error(
         "Il n'est pas possible de renseigner un feedback pour un entrainement d'équipe"
       );
+    const connectedUser = await User.findOne({
+      where: { id: context.user.id },
+      relations: { coach: true },
+    });
+    if (!connectedUser) throw new Error("Aucun utilisateur ne correspond");
     const newFeedback = new Feedback();
     newFeedback.title = training.title;
     newFeedback.date = training.date;
@@ -55,9 +66,25 @@ export class FeedbackResolver {
     newFeedback.feeling = feedbackData.feeling;
     newFeedback.comment = feedbackData.comment;
     newFeedback.training = training;
+    newFeedback.user = connectedUser;
     await newFeedback.save();
     training.validate = true;
     await training.save();
+    if (
+      connectedUser.coach &&
+      connectedUser?.coach.id.toString() === training.createdByCoach?.toString()
+    ) {
+      const newNotification = await createNotification(
+        "feedback",
+        newFeedback.id,
+        NotificationType.NEW_FEEDBACK,
+        connectedUser.coach.id
+      );
+      context.pubsub.publish("NEW_FEEDBACK", {
+        newNotification,
+        topic: "NEW_FEEDBACK",
+      });
+    }
     return JSON.stringify("Le feedback a bien été enregistré");
   }
 

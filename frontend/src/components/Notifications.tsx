@@ -1,8 +1,11 @@
-import { Popover, PopoverContent, PopoverTrigger } from "@heroui/react";
-import { Bell } from "lucide-react";
+import { Drawer, DrawerContent, Tab, Tabs, Tooltip } from "@heroui/react";
+import { Bell, CheckCheck, Dumbbell, Layers, NotebookTabs } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import {
+  Notification,
+  NotificationGroup,
   useGetNotificationQuery,
   useHasBeenseenMutation,
   useIsReadMutation,
@@ -16,11 +19,19 @@ import UserAvatar from "./UserAvatar";
 
 export default function Notifications() {
   const currentUser = useUserStore((state) => state.user);
+  const [tabRead, setTabread] = useState("all");
+  const [activeGroup, setActiveGroup] = useState<NotificationGroup | null>(
+    null
+  );
   const { data: dataSub } = useSubNewNotificationSubscription({
     variables: { id: currentUser?.id.toString() as string },
     fetchPolicy: "no-cache",
   });
   const { data: dataNotif, refetch } = useGetNotificationQuery({
+    variables: {
+      unread: tabRead === "unread",
+      group: activeGroup,
+    },
     fetchPolicy: "no-cache",
   });
   const [hasBeenSeen] = useHasBeenseenMutation();
@@ -33,13 +44,16 @@ export default function Notifications() {
 
   // Récupère les requêtes non lues depuis la requête HTTP
   const [allNotifications, setAllNotifications] = useState(
-    dataNotif?.getNotification ?? []
+    dataNotif?.getNotification.notifications ?? []
   );
+
+  const totalUnread = dataNotif?.getNotification.totalUnread ?? 0;
+  const total = dataNotif?.getNotification.total ?? 0;
 
   // Mettre à jour les notifications non lues lors du chargement initial
   useEffect(() => {
     if (dataNotif?.getNotification) {
-      setAllNotifications(dataNotif?.getNotification);
+      setAllNotifications(dataNotif?.getNotification.notifications);
     }
   }, [dataNotif]);
 
@@ -76,11 +90,14 @@ export default function Notifications() {
       } else {
         navigate("/coach");
       }
+    } else if (type === "NEW_FEEDBACK") {
+      navigate("/home?tab=calendar");
     }
     setIsOpen(false);
   };
 
   const handleNotifSeen = async () => {
+    setIsOpen(true);
     const notEverythingSeen = allNotifications.some(
       (notif) => !notif.hasBeenSeen
     );
@@ -118,130 +135,268 @@ export default function Notifications() {
     }
   };
 
-  return (
-    <Popover
-      isOpen={isOpen}
-      onOpenChange={(open) => {
-        setIsOpen(open);
-      }}
-    >
-      <PopoverTrigger>
-        <div className="relative cursor-pointer">
-          <div
-            className="hover:bg-black/5 p-2 rounded-full cursor-pointer"
-            onClick={handleNotifSeen}
-          >
-            <Bell className="w-5 h-5 text-gray-600 hover:text-gray-800 transition" />
-          </div>
-          {countRequest > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-              {countRequest}
-            </span>
-          )}
-        </div>
-      </PopoverTrigger>
-      <PopoverContent className="w-[370px] py-4 px-0 text-sm flex flex-col justify-start items-start">
-        <div className="w-full flex flex-col items-center justify-center gap-2">
-          <p className="font-semibold">Notifications</p>
-          <Separator />
-        </div>
-        <div className="w-full flex justify-end items-center">
-          <p
-            className="text-xs text-primary my-3 pr-2 cursor-pointer hover:underline"
-            onClick={handleMarkAsAllSeen}
-          >
-            Marquer tout comme lu
-          </p>
-        </div>
-        <div className="w-full max-h-[70vh] flex flex-col justify-start overflow-y-auto">
-          {allNotifications.length > 0 ? (
-            allNotifications.map((notification) => (
-              <div
-                key={notification.id}
-                className={`w-full h-[80px] flex justify-center items-center relative ${
-                  !notification.isRead &&
-                  "bg-primary bg-opacity-5 hover:bg-opacity-10"
-                } flex-shrink-0 cursor-pointer hover:bg-primary hover:bg-opacity-10 pr-4 pl-7`}
-              >
-                {notification.type === "NEW_REQUEST" && (
-                  <div
-                    className="flex justify-between items-center w-full h-full"
-                    onClick={() =>
-                      handleRedirect(
-                        notification.id,
-                        notification.type,
-                        notification.isRead
-                      )
-                    }
-                  >
-                    <div className="flex justify-start items-center gap-4 pr-4">
-                      <UserAvatar
-                        avatar={notification.request?.sender.avatar ?? ""}
-                      />
-                      <p className="text-xs w-[55%]">
-                        Vous avez reçu une nouvelle demande{" "}
-                        {notification.request?.sender.roles === "STUDENT" &&
-                          "de coaching de"}{" "}
-                        <span className="font-semibold">
-                          {notification.request?.sender.firstname +
-                            " " +
-                            notification.request?.sender.lastname}
-                        </span>
-                      </p>
-                    </div>
-                    <p className="text-[10px] text-gray-500 absolute right-2">
-                      {formatDistanceToNow(notification.createdAt, {
-                        locale: fr,
-                      })}
-                    </p>
-                    {!notification.isRead && (
-                      <span className="w-2 h-2 rounded-full absolute bg-primary left-2" />
-                    )}
-                  </div>
-                )}
-                {notification.type === "ACCEPT_REQUEST" && (
-                  <div
-                    className="flex justify-between items-center w-full h-full"
-                    onClick={() =>
-                      handleRedirect(
-                        notification.id,
-                        notification.type,
-                        notification.isRead
-                      )
-                    }
-                  >
-                    <div className="flex justify-start items-center gap-4 pr-4">
-                      <UserAvatar
-                        avatar={notification.request?.receiver.avatar ?? ""}
-                      />
-                      <p className="text-xs w-[55%]">
-                        <span className="font-semibold">
-                          {notification.request?.receiver.firstname +
-                            " " +
-                            notification.request?.receiver.lastname}
-                        </span>{" "}
-                        à accepter votre demande
-                      </p>
-                    </div>
-                    <p className="text-[10px] text-gray-500 absolute right-2">
-                      {formatDistanceToNow(notification.createdAt, {
-                        locale: fr,
-                      })}
-                    </p>
-                    {!notification.isRead && (
-                      <span className="w-2 h-2 rounded-full absolute bg-primary left-2" />
-                    )}
-                  </div>
-                )}
+  // Fonction pour obtenir le contenu spécifique de chaque type de notification
+  const getNotificationContent = (notification: Notification) => {
+    switch (notification.type) {
+      case "NEW_REQUEST":
+        return {
+          avatar: notification.request?.sender.avatar || "",
+          name:
+            notification.request?.sender.firstname +
+            " " +
+            notification.request?.sender.lastname,
+          message: (
+            <>
+              Vous avez reçu une nouvelle demande{" "}
+              {notification.request?.sender.roles === "STUDENT" &&
+                "de coaching de"}{" "}
+              <span className="font-semibold">
+                {notification.request?.sender.firstname +
+                  " " +
+                  notification.request?.sender.lastname}
+              </span>
+            </>
+          ),
+        };
+      case "ACCEPT_REQUEST":
+        return {
+          avatar: notification.request?.receiver.avatar || "",
+          name:
+            notification.request?.receiver.firstname +
+            " " +
+            notification.request?.receiver.lastname,
+          message: (
+            <>
+              <span className="font-semibold">
+                {notification.request?.receiver.firstname +
+                  " " +
+                  notification.request?.receiver.lastname}
+              </span>{" "}
+              à accepter votre demande
+            </>
+          ),
+        };
+      case "NEW_FEEDBACK":
+        return {
+          avatar: notification.feedback?.user.avatar || "",
+          name:
+            notification.feedback?.user.firstname +
+            " " +
+            notification.feedback?.user.lastname,
+          message: (
+            <>
+              <div className="line-clamp-2 overflow-hidden text-ellipsis">
+                <span className="font-semibold">
+                  {notification.feedback?.user.firstname}
+                </span>{" "}
+                a terminé la séance{" "}
+                <span className="font-semibold">
+                  {notification.feedback?.title}:
+                </span>
               </div>
-            ))
-          ) : (
-            <p className="text-xs text-gray-500 w-full flex justify-center my-4">
-              Vous n'avez aucune notification
-            </p>
-          )}
+              {notification.feedback?.comment ? (
+                <>
+                  <span className="text-gray-500 line-clamp-2 overflow-hidden text-ellipsis">
+                    {notification.feedback?.comment}
+                  </span>
+                </>
+              ) : null}
+            </>
+          ),
+        };
+      default:
+        return {
+          avatar: "",
+          name: "",
+          message: "Notification",
+        };
+    }
+  };
+
+  const groupNotifications = [
+    {
+      key: null,
+      label: "Tous les types",
+      color: "bg-blue-500 text-blue-500",
+      icon: <Layers size={16} className="text-blue-500" />,
+    },
+    {
+      key: NotificationGroup.Follow,
+      label: "Suivi",
+      color: "bg-orange-500 text-orange-500",
+      icon: <NotebookTabs size={16} className="text-orange-500" />,
+    },
+    {
+      key: NotificationGroup.Training,
+      label: "Séances",
+      color: "bg-green-500 text-green-500",
+      icon: <Dumbbell size={16} className="text-green-500" />,
+    },
+  ];
+
+  return (
+    <>
+      <div className="relative cursor-pointer">
+        <div
+          className="hover:bg-black/5 p-2 rounded-full cursor-pointer"
+          onClick={handleNotifSeen}
+        >
+          <Bell className="w-5 h-5 text-gray-600 hover:text-gray-800 transition" />
         </div>
-      </PopoverContent>
-    </Popover>
+        {totalUnread > 0 && countRequest > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+            {!socketNotification ? totalUnread : countRequest}
+          </span>
+        )}
+      </div>
+      <Drawer
+        isOpen={isOpen}
+        onOpenChange={() => setIsOpen(false)}
+        size="lg"
+        backdrop="transparent"
+        classNames={{
+          base: "rounded-none",
+        }}
+      >
+        <DrawerContent>
+          <div className="w-full flex flex-col items-center justify-center gap-4 pt-4">
+            <div className="relative w-[80%] flex justify-center items-center">
+              <p className="font-semibold">Notifications</p>
+              <div
+                className="group absolute -left-5 cursor-pointer bg-green-400 bg-opacity-10 hover:bg-green-500 hover:bg-opacity-20 rounded-sm p-1"
+                onClick={handleMarkAsAllSeen}
+              >
+                <Tooltip
+                  content="Marquer tout comme lu"
+                  showArrow={true}
+                  color="foreground"
+                  className="text-xs"
+                >
+                  <CheckCheck
+                    size={20}
+                    className="group-hover:text-green-500 text-green-300"
+                  />
+                </Tooltip>
+              </div>
+            </div>
+            <Separator />
+          </div>
+          <Tabs
+            aria-label="Read"
+            fullWidth
+            selectedKey={tabRead}
+            onSelectionChange={(key) => setTabread(key as string)}
+            classNames={{
+              tabList: "rounded-none",
+            }}
+          >
+            <Tab
+              title={
+                <div className="flex items-center space-x-2">
+                  <span>Tous</span>
+                  <div
+                    className={`w-6 h-6 flex justify-center items-center bg-dark text-gray-400 text-xs rounded-sm font-semibold ${
+                      tabRead === "all"
+                        ? "opacity-100 text-white"
+                        : "bg-opacity-20"
+                    }`}
+                  >
+                    {total}
+                  </div>
+                </div>
+              }
+              key="all"
+            />
+            <Tab
+              title={
+                <div className="flex items-center space-x-2">
+                  <span>Non lu</span>
+                  <div
+                    className={`w-6 h-6 flex justify-center items-center bg-red-500 text-red-500 text-xs rounded-sm font-semibold ${
+                      tabRead === "unread"
+                        ? "opacity-100 text-white"
+                        : "bg-opacity-20"
+                    }`}
+                  >
+                    {!socketNotification ? totalUnread : countRequest}
+                  </div>
+                </div>
+              }
+              key="unread"
+            />
+          </Tabs>
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{
+              delay: 0.3,
+              duration: 0.2,
+              ease: "easeOut",
+            }}
+            className="p-2 w-full min-h-14 flex justify-start items-center gap-2 overflow-x-scroll"
+          >
+            {groupNotifications.map((g) => (
+              <div
+                key={g.key}
+                className={`h-full flex justify-center items-center gap-2 px-4 text-sm rounded-lg bg-opacity-10 cursor-pointer ${
+                  activeGroup === g.key
+                    ? g.color
+                    : "bg-none text-dark hover:bg-dark/10 transition-all duration-200 ease-in-out"
+                }`}
+                onClick={() => setActiveGroup(g.key)}
+              >
+                {g.icon}
+                {g.label}
+              </div>
+            ))}
+          </motion.div>
+          <div className="w-full flex flex-col justify-start overflow-y-auto">
+            {allNotifications.length > 0 ? (
+              allNotifications.map((notification) => {
+                const { avatar, message } = getNotificationContent(
+                  notification as Notification
+                );
+                return (
+                  <div
+                    key={notification.id}
+                    className={`w-full h-[80px] border-b-1 border-gray-100 flex justify-center items-center relative ${
+                      !notification.isRead &&
+                      "bg-primary bg-opacity-5 hover:bg-opacity-10"
+                    } flex-shrink-0 cursor-pointer hover:bg-primary hover:bg-opacity-10 pr-4 pl-7`}
+                    onClick={() =>
+                      handleRedirect(
+                        notification.id,
+                        notification.type,
+                        notification.isRead
+                      )
+                    }
+                  >
+                    <div className="flex items-center w-full h-full">
+                      <div className="flex flex-1 items-center gap-4">
+                        <UserAvatar avatar={avatar} />
+                        <div className="text-xs flex-1">{message}</div>
+                      </div>
+
+                      <p className="text-[10px] text-gray-500 whitespace-nowrap ml-2">
+                        {formatDistanceToNow(notification.createdAt, {
+                          locale: fr,
+                        })}
+                      </p>
+                      {!notification.isRead && (
+                        <span className="w-2 h-2 rounded-full bg-primary ml-2 absolute left-0" />
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-xs text-gray-500 w-full flex justify-center mt-10">
+                Vous n'avez aucune notification
+              </p>
+            )}
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 }

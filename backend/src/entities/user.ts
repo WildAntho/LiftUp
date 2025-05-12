@@ -20,6 +20,7 @@ import { Notification } from "./notification";
 import { Message } from "./message";
 import { Conversation } from "./conversation";
 import { Membership } from "./memberShip";
+import { Feedback } from "./feedback";
 
 @ObjectType()
 @Entity()
@@ -67,6 +68,10 @@ export class User extends BaseEntity {
   @Field(() => [Training], { nullable: true })
   @OneToMany(() => Training, (training) => training.user)
   trainings?: Training[];
+
+  @Field(() => [Feedback], { nullable: true })
+  @OneToMany(() => Feedback, (feedback) => feedback.user)
+  feedbacks?: Feedback[];
 
   @Field(() => [Request], { nullable: true })
   @OneToMany(() => Request, (request) => request.sender)

@@ -3,7 +3,7 @@ import sharp from 'sharp'
 import fs from 'fs'
 import path from 'path'
 
-const inputDir = "./public/exercices/women"; // adapte si besoin
+const inputDir = "./public/exercices/men"; // adapte si besoin
 
 fs.readdirSync(inputDir).forEach((file) => {
   if (path.extname(file) === ".png") {

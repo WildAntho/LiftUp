@@ -1,9 +1,13 @@
+import { Feedback } from "../entities/feedback";
 import { Notification } from "../entities/notification";
 import { Request } from "../entities/request";
 import { User } from "../entities/user";
-import { NotificationType } from "../InputType/notificationType";
+import {
+  NotificationGroup,
+  NotificationType,
+} from "../InputType/notificationType";
 
-type TargetType = "request" | "membership";
+type TargetType = "request" | "membership" | "feedback";
 
 export async function createNotification(
   targetType: TargetType,
@@ -29,6 +33,15 @@ export async function createNotification(
         relations: { notifications: true },
       });
       notification.request = targetEntity;
+      notification.group = NotificationGroup.FOLLOW;
+      break;
+    case "feedback":
+      targetEntity = await Feedback.findOne({
+        where: { id: targetId },
+        relations: { notifications: true, user: true },
+      });
+      notification.feedback = targetEntity;
+      notification.group = NotificationGroup.TRAINING;
       break;
     default:
       throw new Error("Type de cible invalide");

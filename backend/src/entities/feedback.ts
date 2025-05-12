@@ -5,11 +5,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { User } from "./user";
 import { Training } from "./training";
+import { Notification } from "./notification";
+import { User } from "./user";
 
 @ObjectType()
 @Entity()
@@ -40,7 +42,22 @@ export class Feedback extends BaseEntity {
 
   @Field(() => Training)
   @OneToOne(() => Training, (training) => training.feedback, {
-    onDelete: "CASCADE"})
+    onDelete: "CASCADE",
+  })
   @JoinColumn()
   training!: Training;
+
+  @Field(() => [Notification], { nullable: true })
+  @OneToMany(() => Notification, (notification) => notification.feedback, {
+    cascade: true,
+  })
+  notifications?: Notification[];
+
+  @Field(() => User)
+  @ManyToOne(() => User, (user) => user.feedbacks, {
+    onDelete: "CASCADE",
+    eager: true,
+  })
+  @JoinColumn()
+  user!: User;
 }
