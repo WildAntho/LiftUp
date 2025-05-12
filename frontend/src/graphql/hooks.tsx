@@ -175,8 +175,10 @@ export type Feedback = {
   feeling: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   intensity: Scalars['Float']['output'];
+  notifications?: Maybe<Array<Notification>>;
   title: Scalars['String']['output'];
   training: Training;
+  user: User;
 };
 
 export type FeedbackData = {
@@ -550,6 +552,8 @@ export type MutationUpdateTrainingPlanArgs = {
 export type Notification = {
   __typename?: 'Notification';
   createdAt: Scalars['DateTimeISO']['output'];
+  feedback?: Maybe<Feedback>;
+  group: NotificationGroup;
   hasBeenSeen: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
   isRead: Scalars['Boolean']['output'];
@@ -558,8 +562,21 @@ export type Notification = {
   user: User;
 };
 
+export enum NotificationGroup {
+  Follow = 'FOLLOW',
+  Training = 'TRAINING'
+}
+
+export type NotificationResponse = {
+  __typename?: 'NotificationResponse';
+  notifications: Array<Notification>;
+  total: Scalars['Int']['output'];
+  totalUnread: Scalars['Int']['output'];
+};
+
 export enum NotificationType {
   AcceptRequest = 'ACCEPT_REQUEST',
+  NewFeedback = 'NEW_FEEDBACK',
   NewRequest = 'NEW_REQUEST'
 }
 
@@ -652,7 +669,7 @@ export type Query = {
   getListUsersCrew: Array<User>;
   getMessages: MessageResult;
   getMyCrew: Crew;
-  getNotification: Array<Notification>;
+  getNotification: NotificationResponse;
   getOneCoachOffers: Array<Offer>;
   getOneCoachProfile: CoachProfile;
   getOneTraining: Training;
@@ -670,7 +687,6 @@ export type Query = {
   getUserById: User;
   getUsers: Array<User>;
   selectCoach: Array<User>;
-  selectUsers: Array<User>;
 };
 
 
@@ -719,6 +735,12 @@ export type QueryGetMessagesArgs = {
   cursor?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   limit?: InputMaybe<Scalars['Float']['input']>;
+};
+
+
+export type QueryGetNotificationArgs = {
+  group?: InputMaybe<Scalars['String']['input']>;
+  unread?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -797,12 +819,6 @@ export type QuerySelectCoachArgs = {
   id: Scalars['String']['input'];
   input?: InputMaybe<Scalars['String']['input']>;
   price?: InputMaybe<Array<Scalars['Float']['input']>>;
-};
-
-
-export type QuerySelectUsersArgs = {
-  id: Scalars['String']['input'];
-  input?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type RangeDate = {
@@ -962,6 +978,7 @@ export type User = {
   email: Scalars['String']['output'];
   exerciceModels?: Maybe<Array<ExerciceModel>>;
   favoriteExercices?: Maybe<Array<ExerciceModel>>;
+  feedbacks?: Maybe<Array<Feedback>>;
   firstname: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   lastname: Scalars['String']['output'];
@@ -1481,10 +1498,13 @@ export type GetMyTrainingQueryVariables = Exact<{
 
 export type GetMyTrainingQuery = { __typename?: 'Query', getTrainingsById: Array<{ __typename?: 'Training', createdByCoach?: string | null, id: string, title: string, date: any, notes?: string | null, editable: boolean, validate: boolean, color: string, crew?: { __typename?: 'Crew', id: string } | null, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie: number, rep: number, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, image?: string | null, position?: number | null }> | null }> };
 
-export type GetNotificationQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetNotificationQueryVariables = Exact<{
+  unread: Scalars['Boolean']['input'];
+  group?: InputMaybe<Scalars['String']['input']>;
+}>;
 
 
-export type GetNotificationQuery = { __typename?: 'Query', getNotification: Array<{ __typename?: 'Notification', id: string, type: NotificationType, isRead: boolean, hasBeenSeen: boolean, createdAt: any, request?: { __typename?: 'Request', sender: { __typename?: 'User', firstname: string, lastname: string, roles: string, avatar?: string | null }, receiver: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } } | null }> };
+export type GetNotificationQuery = { __typename?: 'Query', getNotification: { __typename?: 'NotificationResponse', totalUnread: number, total: number, notifications: Array<{ __typename?: 'Notification', id: string, type: NotificationType, isRead: boolean, hasBeenSeen: boolean, createdAt: any, request?: { __typename?: 'Request', sender: { __typename?: 'User', firstname: string, lastname: string, roles: string, avatar?: string | null }, receiver: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null }> } };
 
 export type GetOneTrainingQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1563,14 +1583,6 @@ export type SelectCoachQueryVariables = Exact<{
 
 
 export type SelectCoachQuery = { __typename?: 'Query', selectCoach: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null, coachProfile?: { __typename?: 'CoachProfile', id: string, name?: string | null, specialisation?: Array<string> | null } | null, offers?: Array<{ __typename?: 'Offer', id: string, price: number, name: string, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', id: string, label: string } }> | null }> };
-
-export type SelectUsersQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-  input?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type SelectUsersQuery = { __typename?: 'Query', selectUsers: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null }> };
 
 export type LastMessageReadSubscriptionVariables = Exact<{
   id?: InputMaybe<Scalars['String']['input']>;
@@ -4063,24 +4075,40 @@ export type GetMyTrainingLazyQueryHookResult = ReturnType<typeof useGetMyTrainin
 export type GetMyTrainingSuspenseQueryHookResult = ReturnType<typeof useGetMyTrainingSuspenseQuery>;
 export type GetMyTrainingQueryResult = Apollo.QueryResult<GetMyTrainingQuery, GetMyTrainingQueryVariables>;
 export const GetNotificationDocument = gql`
-    query GetNotification {
-  getNotification {
-    id
-    type
-    isRead
-    hasBeenSeen
-    createdAt
-    request {
-      sender {
-        firstname
-        lastname
-        roles
-        avatar
+    query GetNotification($unread: Boolean!, $group: String) {
+  getNotification(unread: $unread, group: $group) {
+    totalUnread
+    total
+    notifications {
+      id
+      type
+      isRead
+      hasBeenSeen
+      createdAt
+      request {
+        sender {
+          firstname
+          lastname
+          roles
+          avatar
+        }
+        receiver {
+          firstname
+          lastname
+          avatar
+        }
       }
-      receiver {
-        firstname
-        lastname
-        avatar
+      feedback {
+        title
+        id
+        comment
+        user {
+          id
+          firstname
+          lastname
+          email
+          avatar
+        }
       }
     }
   }
@@ -4099,10 +4127,12 @@ export const GetNotificationDocument = gql`
  * @example
  * const { data, loading, error } = useGetNotificationQuery({
  *   variables: {
+ *      unread: // value for 'unread'
+ *      group: // value for 'group'
  *   },
  * });
  */
-export function useGetNotificationQuery(baseOptions?: Apollo.QueryHookOptions<GetNotificationQuery, GetNotificationQueryVariables>) {
+export function useGetNotificationQuery(baseOptions: Apollo.QueryHookOptions<GetNotificationQuery, GetNotificationQueryVariables> & ({ variables: GetNotificationQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetNotificationQuery, GetNotificationQueryVariables>(GetNotificationDocument, options);
       }
@@ -4649,52 +4679,6 @@ export type SelectCoachQueryHookResult = ReturnType<typeof useSelectCoachQuery>;
 export type SelectCoachLazyQueryHookResult = ReturnType<typeof useSelectCoachLazyQuery>;
 export type SelectCoachSuspenseQueryHookResult = ReturnType<typeof useSelectCoachSuspenseQuery>;
 export type SelectCoachQueryResult = Apollo.QueryResult<SelectCoachQuery, SelectCoachQueryVariables>;
-export const SelectUsersDocument = gql`
-    query SelectUsers($id: String!, $input: String) {
-  selectUsers(id: $id, input: $input) {
-    id
-    email
-    firstname
-    lastname
-    roles
-    avatar
-  }
-}
-    `;
-
-/**
- * __useSelectUsersQuery__
- *
- * To run a query within a React component, call `useSelectUsersQuery` and pass it any options that fit your needs.
- * When your component renders, `useSelectUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useSelectUsersQuery({
- *   variables: {
- *      id: // value for 'id'
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useSelectUsersQuery(baseOptions: Apollo.QueryHookOptions<SelectUsersQuery, SelectUsersQueryVariables> & ({ variables: SelectUsersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<SelectUsersQuery, SelectUsersQueryVariables>(SelectUsersDocument, options);
-      }
-export function useSelectUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SelectUsersQuery, SelectUsersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<SelectUsersQuery, SelectUsersQueryVariables>(SelectUsersDocument, options);
-        }
-export function useSelectUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SelectUsersQuery, SelectUsersQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<SelectUsersQuery, SelectUsersQueryVariables>(SelectUsersDocument, options);
-        }
-export type SelectUsersQueryHookResult = ReturnType<typeof useSelectUsersQuery>;
-export type SelectUsersLazyQueryHookResult = ReturnType<typeof useSelectUsersLazyQuery>;
-export type SelectUsersSuspenseQueryHookResult = ReturnType<typeof useSelectUsersSuspenseQuery>;
-export type SelectUsersQueryResult = Apollo.QueryResult<SelectUsersQuery, SelectUsersQueryVariables>;
 export const LastMessageReadDocument = gql`
     subscription LastMessageRead($id: String) {
   lastMessageRead(id: $id)

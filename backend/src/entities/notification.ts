@@ -11,7 +11,11 @@ import {
 } from "typeorm";
 import { User } from "./user";
 import { Request } from "./request";
-import { NotificationType } from "../InputType/notificationType";
+import {
+  NotificationGroup,
+  NotificationType,
+} from "../InputType/notificationType";
+import { Feedback } from "./feedback";
 
 @ObjectType()
 @Entity()
@@ -26,6 +30,13 @@ export class Notification extends BaseEntity {
     enum: NotificationType,
   })
   type!: NotificationType;
+
+  @Field(() => NotificationGroup)
+  @Column({
+    type: "enum",
+    enum: NotificationGroup,
+  })
+  group!: NotificationGroup;
 
   @Field()
   @Column({ default: false })
@@ -53,4 +64,10 @@ export class Notification extends BaseEntity {
     nullable: true,
   })
   request?: Request;
+
+  @Field(() => Feedback, { nullable: true })
+  @ManyToOne(() => Feedback, (feedback) => feedback.notifications, {
+    nullable: true,
+  })
+  feedback?: Feedback;
 }

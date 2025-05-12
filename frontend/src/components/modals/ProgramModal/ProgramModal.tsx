@@ -136,7 +136,7 @@ export default function ProgramModal({
       refetch();
       navigate("/home?tab=program&section=configuration");
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error("Une erreur est survenue lors de la création du programme");
     }
   };

@@ -1,25 +1,61 @@
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { Notification } from "../entities/notification";
 import { User } from "../entities/user";
+import {
+  NotificationGroup,
+  NotificationResponse,
+} from "../InputType/notificationType";
 
 @Resolver(Notification)
 export class NotificationResolver {
-  @Query(() => [Notification])
-  async getNotification(@Ctx() context: { user: User }) {
+  @Query(() => NotificationResponse)
+  async getNotification(
+    @Ctx() context: { user: User },
+    @Arg("unread", { nullable: true }) unread?: boolean,
+    @Arg("group", { nullable: true }) group?: NotificationGroup
+  ): Promise<NotificationResponse> {
+    const whereClause = {
+      user: { id: context.user.id },
+      ...(unread !== false && { isRead: !unread }),
+      ...(group && { group }),
+    };
+
+    // Récupérer les notifications avec la clause `where`
     const notifications = await Notification.find({
-      where: {
-        user: { id: context.user.id },
-      },
+      where: whereClause,
       relations: {
         request: true,
         user: true,
+        feedback: true,
       },
       order: {
         createdAt: "DESC",
       },
       take: 10,
     });
-    return notifications;
+
+    // Calculer le nombre total de notifications non lues
+    const totalUnread = await Notification.count({
+      where: {
+        user: { id: context.user.id },
+        isRead: false,
+        ...(group && { group }),
+      },
+    });
+
+    // Calculer le nombre total de notifications
+    const total = await Notification.count({
+      where: {
+        user: { id: context.user.id },
+        ...(group && { group }),
+      },
+    });
+
+    return {
+      notifications,
+      totalUnread,
+      total,
+    };
   }
 
   @Mutation(() => String)
