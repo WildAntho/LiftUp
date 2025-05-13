@@ -1,12 +1,17 @@
 import MyProfile from "./components/MyProfile";
 import { useUserStore } from "@/services/zustand/userStore";
-import { MessageCircleQuestion, NotebookPen, Settings } from "lucide-react";
+import {
+  Bell,
+  MessageCircleQuestion,
+  NotebookPen,
+  Settings,
+} from "lucide-react";
 import { useState, Key, useEffect } from "react";
 import About from "./components/About";
-import Plans from "./components/Plans";
 import { Tab, Tabs } from "@heroui/tabs";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
+import NotificationPreference from "./components/NotificationPreference";
 
 export default function Profile() {
   const currentUser = useUserStore((state) => state.user);
@@ -26,23 +31,26 @@ export default function Profile() {
     {
       key: "informations",
       label: "Mon profil",
-      icon: <NotebookPen size={18} className="text-red-500" />,
+      icon: <NotebookPen size={18} />,
     },
     ...(isCoach
       ? [
           {
             key: "about",
             label: "A propos",
-            icon: (
-              <MessageCircleQuestion size={18} className="text-green-500" />
-            ),
+            icon: <MessageCircleQuestion size={18} />,
           },
         ]
       : []),
     {
+      key: "notifications",
+      label: "Notifications",
+      icon: <Bell size={18} />,
+    },
+    {
       key: "settings",
       label: "Paramètres",
-      icon: <Settings size={18} className="text-dark-500" />,
+      icon: <Settings size={18} />,
     },
   ];
 
@@ -54,7 +62,7 @@ export default function Profile() {
   return (
     <section className="w-full h-full flex justify-center items-center p-4">
       <section className="h-full w-full pt-8 px-10 pb-2 flex flex-col items-start justify-start bg-white rounded-2xl">
-        <div className="min-w-[40%] pb-0">
+        <div className="min-w-[30%] pb-0">
           <Tabs
             selectedKey={active}
             onSelectionChange={handleSelectionChange}
@@ -68,7 +76,7 @@ export default function Profile() {
               <Tab
                 key={n.key}
                 title={
-                  <div className="flex items-center space-x-2 pb-4">
+                  <div className="flex items-center space-x-2 pb-2">
                     {n.icon}
                     <span>{n.label}</span>
                   </div>
@@ -84,7 +92,7 @@ export default function Profile() {
           <section className="min-h-full w-full">
             {active === "informations" && <MyProfile />}
             {active === "about" && isCoach && <About />}
-            {active === "plans" && isCoach && <Plans />}
+            {active === "notifications" && <NotificationPreference />}
           </section>
         </section>
       </section>

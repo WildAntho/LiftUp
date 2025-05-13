@@ -1,5 +1,6 @@
 import { Field, ID, ObjectType } from "type-graphql";
 import {
+  AfterInsert,
   BaseEntity,
   Column,
   Entity,
@@ -21,6 +22,7 @@ import { Message } from "./message";
 import { Conversation } from "./conversation";
 import { Membership } from "./memberShip";
 import { Feedback } from "./feedback";
+import { NotificationPreference } from "./notificationPreference";
 
 @ObjectType()
 @Entity()
@@ -136,4 +138,17 @@ export class User extends BaseEntity {
     nullable: true,
   })
   notifications?: Notification[];
+
+  @Field(() => [NotificationPreference])
+  @OneToMany(() => NotificationPreference, (preference) => preference.user)
+  notificationPreferences!: NotificationPreference[];
+
+  @AfterInsert()
+  async createDefaultPreferences() {
+    const preference = NotificationPreference.create({
+      user: this,
+      disabledTypes: [],
+    });
+    await preference.save();
+  }
 }

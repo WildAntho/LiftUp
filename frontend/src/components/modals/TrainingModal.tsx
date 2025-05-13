@@ -689,7 +689,8 @@ export default function TrainingModal({
             ) : (
               !currentStudent &&
               !currentCrew &&
-              training?.crew === null && (
+              training?.crew === null &&
+              !training.validate && (
                 <ConfirmButton
                   onClick={() => setOpenFeedback(true)}
                   title="Valider l'entraînement"
