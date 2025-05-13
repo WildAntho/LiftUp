@@ -115,6 +115,7 @@ export default function TrainingModal({
   const [editable, setEditable] = useState<boolean>(
     training ? training.editable : true
   );
+  const [sendNotif, setSendNotif] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [recurrence, setRecurrence] = useState<string>("");
   const [recurrentDate, setRecurrentDate] = useState<Date[]>([
@@ -223,7 +224,9 @@ export default function TrainingModal({
 
       if (isNew) {
         if (currentStudent?.id) {
-          await addTrainingStudent({ variables: { data } });
+          await addTrainingStudent({
+            variables: { data: { ...data, sendNotif } },
+          });
           refetch.refetchStudentTraining();
         } else if (currentCrew?.id) {
           await addTrainingCrew({ variables: { data } });
@@ -502,6 +505,17 @@ export default function TrainingModal({
             {!isShow && <Separator />}
             {!isShow && (
               <section className="flex-none flex flex-col justify-center items-start gap-4 w-full p-4">
+                {currentStudent && isNew && (
+                  <Switch
+                    isSelected={sendNotif}
+                    onValueChange={setSendNotif}
+                    size="sm"
+                  >
+                    <p className="text-xs">
+                      Envoyer une notification à l'élève
+                    </p>
+                  </Switch>
+                )}
                 {currentStudent && (
                   <Switch
                     isSelected={editable}

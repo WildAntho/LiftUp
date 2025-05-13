@@ -21,6 +21,9 @@ export class TrainingData {
   @Field({ nullable: true })
   color?: string;
 
+  @Field({ nullable: true, defaultValue: false })
+  sendNotif?: boolean;
+
   @Field(() => [ExerciceData], { nullable: true })
   exercices?: ExerciceData[];
 }

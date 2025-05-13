@@ -591,7 +591,8 @@ export type NotificationResponse = {
 export enum NotificationType {
   AcceptRequest = 'ACCEPT_REQUEST',
   NewFeedback = 'NEW_FEEDBACK',
-  NewRequest = 'NEW_REQUEST'
+  NewRequest = 'NEW_REQUEST',
+  NewTraining = 'NEW_TRAINING'
 }
 
 export type Offer = {
@@ -935,6 +936,7 @@ export type TrainingData = {
   exercices?: InputMaybe<Array<ExerciceData>>;
   id: Scalars['String']['input'];
   notes?: InputMaybe<Scalars['String']['input']>;
+  sendNotif?: InputMaybe<Scalars['Boolean']['input']>;
   title: Scalars['String']['input'];
 };
 
