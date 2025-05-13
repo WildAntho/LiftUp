@@ -1,11 +1,19 @@
-import { Drawer, DrawerContent, Tab, Tabs, Tooltip } from "@heroui/react";
+import {
+  Avatar,
+  Drawer,
+  DrawerContent,
+  Tab,
+  Tabs,
+  Tooltip,
+} from "@heroui/react";
 import { Bell, CheckCheck, Dumbbell, Layers, NotebookTabs } from "lucide-react";
-import { Separator } from "./ui/separator";
+import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Notification,
   NotificationGroup,
+  NotificationType,
   useGetNotificationQuery,
   useHasBeenseenMutation,
   useIsReadMutation,
@@ -15,7 +23,7 @@ import { useUserStore } from "@/services/zustand/userStore";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import UserAvatar from "./UserAvatar";
+import UserAvatar from "../UserAvatar";
 
 export default function Notifications() {
   const currentUser = useUserStore((state) => state.user);
@@ -60,9 +68,9 @@ export default function Notifications() {
   // Ajouter la nouvelle notification au tableau sans écraser les anciennes
   useEffect(() => {
     if (socketNotification) {
-      setAllNotifications((prev) => [socketNotification, ...prev]);
+      refetch();
     }
-  }, [socketNotification]);
+  }, [socketNotification, refetch]);
 
   const countRequest = allNotifications.reduce((acc, curr) => {
     if (!curr.hasBeenSeen) return acc + 1;
@@ -78,20 +86,19 @@ export default function Notifications() {
       });
       refetch();
     }
-    if (type === "NEW_REQUEST") {
-      if (currentUser?.roles === "COACH") {
+    switch (type) {
+      case NotificationType.NewRequest:
         navigate("/students?tab=request");
-      } else {
+        break;
+      case NotificationType.AcceptRequest:
         navigate("/coach");
-      }
-    } else if (type === "ACCEPT_REQUEST") {
-      if (currentUser?.roles === "COACH") {
-        navigate("/students");
-      } else {
-        navigate("/coach");
-      }
-    } else if (type === "NEW_FEEDBACK") {
-      navigate("/home?tab=calendar");
+        break;
+      case NotificationType.NewFeedback:
+      case NotificationType.NewTraining:
+        navigate("/home?tab=calendar");
+        break;
+      default:
+        break;
     }
     setIsOpen(false);
   };
@@ -140,7 +147,9 @@ export default function Notifications() {
     switch (notification.type) {
       case "NEW_REQUEST":
         return {
-          avatar: notification.request?.sender.avatar || "",
+          avatar: (
+            <UserAvatar avatar={notification.request?.sender.avatar || ""} />
+          ),
           name:
             notification.request?.sender.firstname +
             " " +
@@ -160,7 +169,9 @@ export default function Notifications() {
         };
       case "ACCEPT_REQUEST":
         return {
-          avatar: notification.request?.receiver.avatar || "",
+          avatar: (
+            <UserAvatar avatar={notification.request?.receiver.avatar || ""} />
+          ),
           name:
             notification.request?.receiver.firstname +
             " " +
@@ -178,7 +189,9 @@ export default function Notifications() {
         };
       case "NEW_FEEDBACK":
         return {
-          avatar: notification.feedback?.user.avatar || "",
+          avatar: (
+            <UserAvatar avatar={notification.feedback?.user.avatar || ""} />
+          ),
           name:
             notification.feedback?.user.firstname +
             " " +
@@ -201,6 +214,23 @@ export default function Notifications() {
                   </span>
                 </>
               ) : null}
+            </>
+          ),
+        };
+      case "NEW_TRAINING":
+        return {
+          avatar: <Avatar src="/biceps.webp" />,
+          name: "Nouveaux entraînements",
+          message: (
+            <>
+              <div className="line-clamp-2 overflow-hidden text-ellipsis">
+                <p className="font-semibold">
+                  Des nouvelles séances sont disponibles
+                </p>
+                <p className="text-gray-500">
+                  Pour les consulter rendez vous sur votre calendrier !
+                </p>
+              </div>
             </>
           ),
         };
@@ -373,7 +403,7 @@ export default function Notifications() {
                   >
                     <div className="flex items-center w-full h-full">
                       <div className="flex flex-1 items-center gap-4">
-                        <UserAvatar avatar={avatar} />
+                        {avatar}
                         <div className="text-xs flex-1">{message}</div>
                       </div>
 

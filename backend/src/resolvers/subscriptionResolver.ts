@@ -17,24 +17,14 @@ class NotificationArgs {
 @Resolver(Notification)
 export class SubscriptionResolver {
   @Subscription(() => Notification, {
-    topics: ["REQUEST_ADDED", "REQUEST_ACCEPTED", "NEW_FEEDBACK"],
+    topics: [
+      "REQUEST_ADDED",
+      "REQUEST_ACCEPTED",
+      "NEW_FEEDBACK",
+      "NEW_TRAINING",
+    ],
     filter: ({ payload, args }) => {
-      if (payload.topic === "REQUEST_ADDED") {
-        return (
-          payload.newNotification.request.receiver.id.toString() ===
-          args.id.toString()
-        );
-      } else if (payload.topic === "REQUEST_ACCEPTED") {
-        return (
-          payload.newNotification.request.sender.id.toString() ===
-          args.id.toString()
-        );
-      } else if (payload.topic === "NEW_FEEDBACK") {
-        return (
-          payload.newNotification.user.id.toString() === args.id.toString()
-        );
-      }
-      return false;
+      return payload.newNotification.user.id.toString() === args.id.toString();
     },
   })
   newNotification(

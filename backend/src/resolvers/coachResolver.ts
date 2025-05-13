@@ -4,6 +4,7 @@ import {
   Ctx,
   Int,
   Mutation,
+  PubSub,
   Query,
   Resolver,
 } from "type-graphql";
@@ -23,6 +24,9 @@ import {
   deleteStudent,
   desactivateMemberShip,
 } from "../services/coachService";
+import isNotificationAllowed from "../services/notificationPreferenceService";
+import { NotificationType } from "../InputType/notificationType";
+import { createNotification } from "../services/notificationsService";
 
 @Authorized("COACH")
 @Resolver(User)
@@ -233,7 +237,7 @@ export class CoachResolver {
   @Mutation(() => String)
   async addTrainingStudent(
     @Arg("data") data: TrainingData,
-    @Ctx() context: { user: CtxUser }
+    @Ctx() context: { pubsub: PubSub; user: CtxUser }
   ) {
     const student = await User.findOne({
       where: { id: data.id },
@@ -247,6 +251,24 @@ export class CoachResolver {
     const trainings = await createTrainingsForDates(data.date, data, student, {
       createdByCoach: context.user.id,
     });
+
+    const allowedNotification = await isNotificationAllowed(
+      NotificationType.NEW_TRAINING,
+      student.id
+    );
+    if (allowedNotification && data.sendNotif) {
+      const newNotification = await createNotification(
+        "training",
+        student.id,
+        NotificationType.NEW_TRAINING,
+        student.id
+      );
+
+      context.pubsub.publish("NEW_TRAINING", {
+        newNotification,
+        topic: "NEW_TRAINING",
+      });
+    }
 
     return JSON.stringify(
       `${trainings.length} entraînements ont été créés avec succès`

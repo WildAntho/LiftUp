@@ -25,7 +25,7 @@ import { useLogoutMutation } from "@/graphql/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useStudentStore } from "@/services/zustand/studentStore";
 import MyAvatar from "./MyAvatar";
-import Notifications from "./Notifications";
+import Notifications from "./Notification/Notifications";
 import ChatIcon from "./ChatIcon";
 import { useCrewStore } from "@/services/zustand/crewStore";
 import { useProgramStore } from "@/services/zustand/programStore";

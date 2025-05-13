@@ -29,8 +29,6 @@ export default function NotificationPreference() {
     [data]
   );
 
-  console.log(initialPreferences);
-
   const [disabledNotifications, setDisabledNotifications] = useState<
     NotificationType[]
   >([]);
@@ -87,7 +85,7 @@ export default function NotificationPreference() {
               key: NotificationType.NewFeedback,
               label: "Lorsqu'un élève valide un entraînement",
               icon: <BicepsFlexed size={20} />,
-              color: "text-orange-500 bg-orange-500",
+              color: "text-green-500 bg-green-500",
             },
           ]
         : [
@@ -96,6 +94,12 @@ export default function NotificationPreference() {
               label: "Lorsqu'une demande de coaching a été acceptée",
               icon: <Handshake size={20} />,
               color: "text-green-500 bg-green-500",
+            },
+            {
+              key: NotificationType.NewTraining,
+              label: "Lorsque ton coach te programme des entraînements",
+              icon: <BicepsFlexed size={20} />,
+              color: "text-blue-500 bg-blue-500",
             },
           ]),
     ],

@@ -5,6 +5,7 @@ export enum NotificationType {
   NEW_REQUEST = "NEW_REQUEST",
   ACCEPT_REQUEST = "ACCEPT_REQUEST",
   NEW_FEEDBACK = "NEW_FEEDBACK",
+  NEW_TRAINING = "NEW_TRAINING",
 }
 
 registerEnumType(NotificationType, {

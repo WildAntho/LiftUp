@@ -7,7 +7,7 @@ import {
   NotificationType,
 } from "../InputType/notificationType";
 
-type TargetType = "request" | "membership" | "feedback";
+type TargetType = "request" | "membership" | "feedback" | "training";
 
 export async function createNotification(
   targetType: TargetType,
@@ -43,10 +43,12 @@ export async function createNotification(
       notification.feedback = targetEntity;
       notification.group = NotificationGroup.TRAINING;
       break;
+    case "training":
+      notification.group = NotificationGroup.TRAINING;
+      break;
     default:
       throw new Error("Type de cible invalide");
   }
-  if (!targetEntity) throw new Error("Impossible de trouver l'entité cible");
   notification.type = type;
   notification.user = user;
   await notification.save();
