@@ -17,6 +17,7 @@ import { Membership } from "../entities/memberShip";
 import { Program } from "../entities/program";
 import { TrainingPlan } from "../entities/trainingPlan";
 import { MuscleGroup } from "../entities/muscleGroup";
+import { NotificationPreference } from "../entities/notificationPreference";
 
 config();
 
@@ -47,6 +48,7 @@ export const dataSource = new DataSource({
     Program,
     TrainingPlan,
     MuscleGroup,
+    NotificationPreference
   ],
   synchronize: true,
   migrations: ["build/migrations/*.js"],

@@ -68,6 +68,7 @@ export class Notification extends BaseEntity {
   @Field(() => Feedback, { nullable: true })
   @ManyToOne(() => Feedback, (feedback) => feedback.notifications, {
     nullable: true,
+    onDelete: "CASCADE",
   })
   feedback?: Feedback;
 }

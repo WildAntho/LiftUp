@@ -11,6 +11,7 @@ import { CtxUser } from "../InputType/coachType";
 import { User } from "../entities/user";
 import { createNotification } from "../services/notificationsService";
 import { NotificationType } from "../InputType/notificationType";
+import isNotificationAllowed from "../services/notificationPreferenceService";
 
 @Resolver(Feedback)
 export class FeedbackResolver {
@@ -74,16 +75,22 @@ export class FeedbackResolver {
       connectedUser.coach &&
       connectedUser?.coach.id.toString() === training.createdByCoach?.toString()
     ) {
-      const newNotification = await createNotification(
-        "feedback",
-        newFeedback.id,
+      const allowedNotification = await isNotificationAllowed(
         NotificationType.NEW_FEEDBACK,
         connectedUser.coach.id
       );
-      context.pubsub.publish("NEW_FEEDBACK", {
-        newNotification,
-        topic: "NEW_FEEDBACK",
-      });
+      if (allowedNotification) {
+        const newNotification = await createNotification(
+          "feedback",
+          newFeedback.id,
+          NotificationType.NEW_FEEDBACK,
+          connectedUser.coach.id
+        );
+        context.pubsub.publish("NEW_FEEDBACK", {
+          newNotification,
+          topic: "NEW_FEEDBACK",
+        });
+      }
     }
     return JSON.stringify("Le feedback a bien été enregistré");
   }

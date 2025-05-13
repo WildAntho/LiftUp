@@ -28,6 +28,7 @@ import { createPubSub } from "@graphql-yoga/subscription";
 import { ProgramResolver } from "./resolvers/programResolver";
 import { TrainingPlanResolver } from "./resolvers/trainginPlanResolver";
 import { MuscleGroupResolver } from "./resolvers/muscleGroupResolver";
+import { NotificationPreferenceResolver } from "./resolvers/notificationPreferenceResolver";
 
 type PubSubType = ReturnType<typeof createPubSub>;
 
@@ -55,6 +56,7 @@ export const createSchema = async (pubsub: PubSubType) => {
       ProgramResolver,
       TrainingPlanResolver,
       MuscleGroupResolver,
+      NotificationPreferenceResolver,
     ],
     emitSchemaFile: true,
     pubSub: pubsub,

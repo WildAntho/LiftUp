@@ -289,6 +289,7 @@ export type Mutation = {
   updateExercice: Exercice;
   updateFeedback: Scalars['String']['output'];
   updateOffer: Scalars['String']['output'];
+  updatePreferenceNotification: Scalars['String']['output'];
   updateProfile: User;
   updateProgram: Scalars['String']['output'];
   updateTraining: Scalars['String']['output'];
@@ -527,6 +528,11 @@ export type MutationUpdateOfferArgs = {
 };
 
 
+export type MutationUpdatePreferenceNotificationArgs = {
+  data: Array<NotificationType>;
+};
+
+
 export type MutationUpdateProfileArgs = {
   data: UpdateProfile;
 };
@@ -566,6 +572,14 @@ export enum NotificationGroup {
   Follow = 'FOLLOW',
   Training = 'TRAINING'
 }
+
+export type NotificationPreference = {
+  __typename?: 'NotificationPreference';
+  createdAt: Scalars['DateTimeISO']['output'];
+  disabledTypes: Array<NotificationType>;
+  id: Scalars['ID']['output'];
+  user: User;
+};
 
 export type NotificationResponse = {
   __typename?: 'NotificationResponse';
@@ -673,6 +687,7 @@ export type Query = {
   getOneCoachOffers: Array<Offer>;
   getOneCoachProfile: CoachProfile;
   getOneTraining: Training;
+  getPreferenceNotification: NotificationPreference;
   getPrograms: Array<Program>;
   getRequest: Array<Request>;
   getSent: Array<Request>;
@@ -983,6 +998,7 @@ export type User = {
   id: Scalars['ID']['output'];
   lastname: Scalars['String']['output'];
   memberships?: Maybe<Array<Membership>>;
+  notificationPreferences: Array<NotificationPreference>;
   notifications?: Maybe<Array<Notification>>;
   offers?: Maybe<Array<Offer>>;
   password: Scalars['String']['output'];
@@ -1327,6 +1343,13 @@ export type UpdateOfferMutationVariables = Exact<{
 
 export type UpdateOfferMutation = { __typename?: 'Mutation', updateOffer: string };
 
+export type UpdatePreferenceNotificationMutationVariables = Exact<{
+  data: Array<NotificationType> | NotificationType;
+}>;
+
+
+export type UpdatePreferenceNotificationMutation = { __typename?: 'Mutation', updatePreferenceNotification: string };
+
 export type UpdateProfileMutationVariables = Exact<{
   data: UpdateProfile;
 }>;
@@ -1505,6 +1528,11 @@ export type GetNotificationQueryVariables = Exact<{
 
 
 export type GetNotificationQuery = { __typename?: 'Query', getNotification: { __typename?: 'NotificationResponse', totalUnread: number, total: number, notifications: Array<{ __typename?: 'Notification', id: string, type: NotificationType, isRead: boolean, hasBeenSeen: boolean, createdAt: any, request?: { __typename?: 'Request', sender: { __typename?: 'User', firstname: string, lastname: string, roles: string, avatar?: string | null }, receiver: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null }> } };
+
+export type GetPreferenceNotificationQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPreferenceNotificationQuery = { __typename?: 'Query', getPreferenceNotification: { __typename?: 'NotificationPreference', id: string, disabledTypes: Array<NotificationType> } };
 
 export type GetOneTrainingQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2927,6 +2955,37 @@ export function useUpdateOfferMutation(baseOptions?: Apollo.MutationHookOptions<
 export type UpdateOfferMutationHookResult = ReturnType<typeof useUpdateOfferMutation>;
 export type UpdateOfferMutationResult = Apollo.MutationResult<UpdateOfferMutation>;
 export type UpdateOfferMutationOptions = Apollo.BaseMutationOptions<UpdateOfferMutation, UpdateOfferMutationVariables>;
+export const UpdatePreferenceNotificationDocument = gql`
+    mutation UpdatePreferenceNotification($data: [NotificationType!]!) {
+  updatePreferenceNotification(data: $data)
+}
+    `;
+export type UpdatePreferenceNotificationMutationFn = Apollo.MutationFunction<UpdatePreferenceNotificationMutation, UpdatePreferenceNotificationMutationVariables>;
+
+/**
+ * __useUpdatePreferenceNotificationMutation__
+ *
+ * To run a mutation, you first call `useUpdatePreferenceNotificationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdatePreferenceNotificationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updatePreferenceNotificationMutation, { data, loading, error }] = useUpdatePreferenceNotificationMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdatePreferenceNotificationMutation(baseOptions?: Apollo.MutationHookOptions<UpdatePreferenceNotificationMutation, UpdatePreferenceNotificationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdatePreferenceNotificationMutation, UpdatePreferenceNotificationMutationVariables>(UpdatePreferenceNotificationDocument, options);
+      }
+export type UpdatePreferenceNotificationMutationHookResult = ReturnType<typeof useUpdatePreferenceNotificationMutation>;
+export type UpdatePreferenceNotificationMutationResult = Apollo.MutationResult<UpdatePreferenceNotificationMutation>;
+export type UpdatePreferenceNotificationMutationOptions = Apollo.BaseMutationOptions<UpdatePreferenceNotificationMutation, UpdatePreferenceNotificationMutationVariables>;
 export const UpdateProfileDocument = gql`
     mutation UpdateProfile($data: UpdateProfile!) {
   updateProfile(data: $data) {
@@ -4148,6 +4207,46 @@ export type GetNotificationQueryHookResult = ReturnType<typeof useGetNotificatio
 export type GetNotificationLazyQueryHookResult = ReturnType<typeof useGetNotificationLazyQuery>;
 export type GetNotificationSuspenseQueryHookResult = ReturnType<typeof useGetNotificationSuspenseQuery>;
 export type GetNotificationQueryResult = Apollo.QueryResult<GetNotificationQuery, GetNotificationQueryVariables>;
+export const GetPreferenceNotificationDocument = gql`
+    query GetPreferenceNotification {
+  getPreferenceNotification {
+    id
+    disabledTypes
+  }
+}
+    `;
+
+/**
+ * __useGetPreferenceNotificationQuery__
+ *
+ * To run a query within a React component, call `useGetPreferenceNotificationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPreferenceNotificationQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPreferenceNotificationQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPreferenceNotificationQuery(baseOptions?: Apollo.QueryHookOptions<GetPreferenceNotificationQuery, GetPreferenceNotificationQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPreferenceNotificationQuery, GetPreferenceNotificationQueryVariables>(GetPreferenceNotificationDocument, options);
+      }
+export function useGetPreferenceNotificationLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPreferenceNotificationQuery, GetPreferenceNotificationQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPreferenceNotificationQuery, GetPreferenceNotificationQueryVariables>(GetPreferenceNotificationDocument, options);
+        }
+export function useGetPreferenceNotificationSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPreferenceNotificationQuery, GetPreferenceNotificationQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPreferenceNotificationQuery, GetPreferenceNotificationQueryVariables>(GetPreferenceNotificationDocument, options);
+        }
+export type GetPreferenceNotificationQueryHookResult = ReturnType<typeof useGetPreferenceNotificationQuery>;
+export type GetPreferenceNotificationLazyQueryHookResult = ReturnType<typeof useGetPreferenceNotificationLazyQuery>;
+export type GetPreferenceNotificationSuspenseQueryHookResult = ReturnType<typeof useGetPreferenceNotificationSuspenseQuery>;
+export type GetPreferenceNotificationQueryResult = Apollo.QueryResult<GetPreferenceNotificationQuery, GetPreferenceNotificationQueryVariables>;
 export const GetOneTrainingDocument = gql`
     query GetOneTraining($id: String!) {
   getOneTraining(id: $id) {
