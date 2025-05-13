@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 
 export type UserWithoutPassword = Omit<
   User,
-  "password" | "coach" | "students" | "crew" 
+  "password" | "coach" | "students" | "crew" | "notificationPreferences"
 >;
 
 type UserState = {
