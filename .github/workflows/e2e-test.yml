@@ -1,0 +1,44 @@
+name: e2e-test-workflow
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test-e2e:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set environment variables
+        run: |
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
+          echo "DB_SCHEMA=${{ secrets.DB_SCHEMA }}" >> $GITHUB_ENV
+          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> $GITHUB_ENV
+          echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> $GITHUB_ENV
+          echo "GATEWAY_PORT=7100" >> $GITHUB_ENV
+          echo "SERVER_HOST=liftup-test-backend" >> $GITHUB_ENV
+          echo "CLIENT_HOST=liftup-test-frontend" >> $GITHUB_ENV
+
+      - name: Build and run Docker Compose
+        run: |
+          docker-compose -f docker-compose.e2e.yaml up -d --build
+
+      - name: Seed the database
+        run: |
+          docker exec liftup-test-server npm run seed:test
+
+      - name: Run E2E tests
+        run: |
+          docker exec liftup-test-e2e npm run test
+
+      - name: Stop and clean up Docker containers
+        if: always()
+        run: |
+          docker-compose -f docker-compose.yml down

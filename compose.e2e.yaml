@@ -1,0 +1,75 @@
+networks:
+  test:
+    name: test-network
+
+services:
+  liftup-test-backend:
+    container_name: liftup-test-backend
+    build: ./backend
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_SCHEMA: ${DB_SCHEMA}
+      DB_USER: ${DB_USER}
+      DB_HOST: ${DB_HOST}
+      APP_SECRET: ${APP_SECRET}
+    depends_on:
+      liftup-test-database :
+        condition: service_healthy
+    networks:
+      - test
+  liftup-test-frontend:
+    container_name: liftup-test-frontend
+    build: ./frontend
+    environment:
+      VITE_GATEWAY_PORT: ${GATEWAY_PORT}
+      VITE_BACKEND_HOST: ${BACKEND_HOST}
+      VITE_FRONTEND_HOST: ${FRONTEND_HOST}
+    networks:
+      - test
+  liftup-test-database:
+    container_name: liftup-test-database
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_SCHEMA}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_HOST: ${DB_HOST}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 5s
+      retries: 5
+    networks:
+      - test
+  liftup-test-visualizer:
+    container_name: liftup-test-visualizer
+    image: adminer
+    networks:
+      - test
+  liftup-test-gateway: 
+    container_name: liftup-test-gateway
+    image: nginx
+    restart: always
+    volumes:
+      - ./nginx.test.conf:/etc/nginx/nginx.conf
+    ports: 
+      - ${GATEWAY_PORT}:80
+    networks:
+      - test
+
+  liftup-test-e2e:
+    container_name: liftup-test-e2e
+    build:
+      context: ./e2e
+      dockerfile: Dockerfile
+    networks:
+      - test
+    environment:
+      BASE_URL: http://liftup-test-gateway
+      USER_EMAIL: ${USER_EMAIL}
+      USER_PASSWORD: ${USER_PASSWORD}
+      CI: true
+    depends_on:
+      liftup-test-database:
+        condition: service_healthy
+
+

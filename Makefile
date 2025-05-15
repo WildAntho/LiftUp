@@ -1,4 +1,5 @@
 BUILD =  docker compose -f compose.yaml --env-file .env.dev up -d
+TEST = docker compose -f compose.e2e.yaml --env-file .env.test up -d
 STAGING =  docker compose -f compose.staging.yaml --env-file .env.staging up -d
 CLEAN = docker system prune -af --volumes   
 STOP = docker stop $(shell docker ps -a -q)
@@ -11,6 +12,9 @@ STOPFILE = docker stop liftup-dev-file
 
 build:
 	$(BUILD)
+
+test: 
+	$(TEST)
 
 staging:
 	$(STAGING)
