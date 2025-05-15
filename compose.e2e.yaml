@@ -67,7 +67,7 @@ services:
       BASE_URL: http://liftup-test-gateway
       USER_EMAIL: ${USER_EMAIL}
       USER_PASSWORD: ${USER_PASSWORD}
-      CI: true
+      CI: "true"
     depends_on:
       liftup-test-database:
         condition: service_healthy
