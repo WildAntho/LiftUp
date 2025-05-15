@@ -33,7 +33,7 @@ jobs:
 
       - name: Build and run Docker Compose
         run: |
-          docker-compose -f docker-compose.e2e.yaml up -d --build
+          docker-compose -f compose.e2e.yaml up -d --build
 
       - name: Seed the database
         run: |
@@ -46,4 +46,4 @@ jobs:
       - name: Stop and clean up Docker containers
         if: always()
         run: |
-          docker-compose -f docker-compose.yml down
+          docker-compose -f compose.e2e.yaml down
