@@ -31,7 +31,7 @@ jobs:
           echo "BACKEND_HOST=liftup-test-backend" >> $GITHUB_ENV
           echo "FRONTEND_HOST=liftup-test-frontend" >> $GITHUB_ENV
           echo "USER_EMAIL=${{ secrets.USER_EMAIL }}" >> $GITHUB_ENV
-          echo "USER_PASSWORDL=${{ secrets.USER_PASSWORD }}" >> $GITHUB_ENV
+          echo "USER_PASSWORD=${{ secrets.USER_PASSWORD }}" >> $GITHUB_ENV
 
       - name: Build and run Docker Compose
         run: |
