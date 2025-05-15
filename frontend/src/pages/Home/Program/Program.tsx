@@ -232,9 +232,9 @@ export default function Program() {
             {loading ? (
               <div className="w-full min-h-[350px] flex justify-center items-center" />
             ) : myPrograms.length > 0 ? (
-              <div className="w-full min-h-[350px] flex flex-wrap justify-start items-start gap-4">
+              <div className="w-full min-h-[350px] grid grid-cols-3 2xl:grid-cols-4 justify-start items-start gap-2">
                 {myPrograms.map((program) => (
-                  <div key={program.id} className="w-[30%] h-[350px]">
+                  <div key={program.id} className="h-[350px]">
                     <ProgramCard
                       id={program.id}
                       title={program.title}
