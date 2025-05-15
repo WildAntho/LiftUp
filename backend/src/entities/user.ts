@@ -140,15 +140,8 @@ export class User extends BaseEntity {
   notifications?: Notification[];
 
   @Field(() => [NotificationPreference])
-  @OneToMany(() => NotificationPreference, (preference) => preference.user)
+  @OneToMany(() => NotificationPreference, (preference) => preference.user, {
+    cascade: ["insert", "update"],
+  })
   notificationPreferences!: NotificationPreference[];
-
-  @AfterInsert()
-  async createDefaultPreferences() {
-    const preference = NotificationPreference.create({
-      user: this,
-      disabledTypes: [],
-    });
-    await preference.save();
-  }
 }

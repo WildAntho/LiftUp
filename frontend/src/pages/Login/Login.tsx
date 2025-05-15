@@ -63,6 +63,7 @@ export default function Login() {
         <p className="text-2xl font-bold">Accéder à mon compte</p>
         <section className="flex flex-col gap-2 w-[75%]">
           <Input
+            data-testid="email-input"
             ref={email}
             label="Email"
             isRequired
@@ -71,6 +72,7 @@ export default function Login() {
           />
           <div className="relative">
             <Input
+              data-testid="password-input"
               ref={password}
               type={`${showPassword ? "text" : "password"}`}
               isRequired
@@ -96,6 +98,7 @@ export default function Login() {
             />
           </div>
           <Button
+            data-testid="connection-button"
             type="submit"
             className="group shadow-none text-white h-[45px] rounded-xl bg-primary hover:translate-y-[-2px] hover:shadow-lg transition-all duration-200"
             onPress={handleLogin}

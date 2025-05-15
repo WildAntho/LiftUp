@@ -110,6 +110,7 @@ export default function Navigation() {
         <section className="flex justify-center items-center gap-3">
           {links.map((l: Link) => (
             <Button
+              data-testid={l.label}
               key={l.id}
               variant={l.value === path ? "default" : "ghost"}
               onClick={() => {
