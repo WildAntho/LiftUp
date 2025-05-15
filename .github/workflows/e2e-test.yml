@@ -39,7 +39,7 @@ jobs:
 
       - name: Seed the database
         run: |
-          docker exec liftup-test-server npm run seed:test
+          docker exec liftup-test-backend npm run seed:test
 
       - name: Run E2E tests
         run: |
