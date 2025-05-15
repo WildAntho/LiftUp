@@ -65,6 +65,8 @@ services:
       - test
     environment:
       BASE_URL: http://liftup-test-gateway
+      USER_EMAIL: ${USER_EMAIL}
+      USER_PASSWORD: ${USER_PASSWORD}
       CI: "true"
     depends_on:
       liftup-test-database:
