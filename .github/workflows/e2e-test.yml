@@ -28,8 +28,10 @@ jobs:
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> $GITHUB_ENV
           echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> $GITHUB_ENV
           echo "GATEWAY_PORT=7100" >> $GITHUB_ENV
-          echo "SERVER_HOST=liftup-test-backend" >> $GITHUB_ENV
-          echo "CLIENT_HOST=liftup-test-frontend" >> $GITHUB_ENV
+          echo "BACKEND_HOST=liftup-test-backend" >> $GITHUB_ENV
+          echo "FRONTEND_HOST=liftup-test-frontend" >> $GITHUB_ENV
+          echo "USER_EMAIL=${{ secrets.USER_EMAIL }}" >> $GITHUB_ENV
+          echo "USER_PASSWORDL=${{ secrets.USER_PASSWORD }}" >> $GITHUB_ENV
 
       - name: Build and run Docker Compose
         run: |
