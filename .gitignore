@@ -1,3 +1,6 @@
 **/.env.*
 persist/
 .DS_Store
+
+# Sauf le fichier .env.sample
+!.env.sample
