@@ -17,7 +17,7 @@ services:
         condition: service_healthy
     networks:
       - test
-      
+
   liftup-test-frontend:
     container_name: liftup-test-frontend
     build: ./frontend
@@ -62,7 +62,7 @@ services:
     networks:
       - test
     environment:
-      BASE_URL: http://liftup-test-gateway
+      BASE_URL: http://liftup-test-frontend:5173
       USER_EMAIL: ${USER_EMAIL}
       USER_PASSWORD: ${USER_PASSWORD}
       CI: "true"
