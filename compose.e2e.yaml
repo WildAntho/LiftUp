@@ -64,7 +64,7 @@ services:
     networks:
       - test
     environment:
-      BASE_URL: http://liftup-test-gateway
+      BASE_URL: http://http://localhost:7100
       USER_EMAIL: ${USER_EMAIL}
       USER_PASSWORD: ${USER_PASSWORD}
       CI: "true"
