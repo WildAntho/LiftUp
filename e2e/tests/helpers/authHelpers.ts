@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export async function login(page: Page) {
+  console.log({ password: process.env.USER_PASSWORD });
+  console.log({ password: process.env.USER_EMAIL });
 
   // Allez sur la page principale
   await page.goto("/login");
@@ -18,7 +20,7 @@ export async function login(page: Page) {
   await connectedButton.click();
 
   // Attendre que l'utilisateur soit bien connecté
-  await expect(page.locator('[data-testid="Accueil"]')).toBeVisible({
+  await expect(page.locator('[data-testid="logo-Accueil"]')).toBeVisible({
     timeout: 5000,
   });
 }
