@@ -17,6 +17,7 @@ services:
         condition: service_healthy
     networks:
       - test
+      
   liftup-test-frontend:
     container_name: liftup-test-frontend
     build: ./frontend
@@ -26,6 +27,7 @@ services:
       VITE_FRONTEND_HOST: ${FRONTEND_HOST}
     networks:
       - test
+
   liftup-test-database:
     container_name: liftup-test-database
     image: postgres
@@ -40,11 +42,7 @@ services:
       retries: 5
     networks:
       - test
-  liftup-test-visualizer:
-    container_name: liftup-test-visualizer
-    image: adminer
-    networks:
-      - test
+
   liftup-test-gateway: 
     container_name: liftup-test-gateway
     image: nginx
@@ -64,7 +62,7 @@ services:
     networks:
       - test
     environment:
-      BASE_URL: http://http://localhost:7100
+      BASE_URL: http://liftup-test-gateway
       USER_EMAIL: ${USER_EMAIL}
       USER_PASSWORD: ${USER_PASSWORD}
       CI: "true"
