@@ -18,6 +18,7 @@ type DayProps<T> = {
     refetchCrewTraining: () => void;
   };
   type: string;
+  index: number;
 };
 
 export function Day<T extends CalendarEvent>({
@@ -25,6 +26,7 @@ export function Day<T extends CalendarEvent>({
   events,
   refetch,
   type,
+  index,
 }: DayProps<T>) {
   const dayNumber = date.getDate();
   const isCurrentMonth = date.getMonth() === new Date().getMonth();
@@ -53,6 +55,7 @@ export function Day<T extends CalendarEvent>({
         isNew={true}
       />
       <div
+        data-testid={index === 0 ? "day-training" : ""}
         ref={setNodeRef}
         onClick={handleDayClick}
         className="flex flex-col min-h-[150px] p-2 border border-gray-200 bg-white cursor-pointer transition-colors hover:bg-gray-50 group"
