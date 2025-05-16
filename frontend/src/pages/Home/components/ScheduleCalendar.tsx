@@ -186,6 +186,7 @@ export const ScheduleCalendar = <T extends CalendarEvent>({
                 events={dayEvents}
                 refetch={refetch}
                 type={type}
+                index={index}
               />
             );
           })}

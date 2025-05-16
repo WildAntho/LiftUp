@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export async function login(page: Page) {
-  console.log(process.env.USER_EMAIL);
 
   // Allez sur la page principale
   await page.goto("/login");

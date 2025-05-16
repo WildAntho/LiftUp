@@ -417,6 +417,7 @@ export default function TrainingModal({
                   <>
                     <div className="relative flex-1">
                       <Input
+                        data-testid="input-training"
                         isInvalid={error}
                         isRequired
                         type="text"
@@ -528,6 +529,7 @@ export default function TrainingModal({
                   </Switch>
                 )}
                 <Switch
+                  data-testid="recurrence-switch"
                   isSelected={openRecurrent}
                   onValueChange={setOpenRecurrent}
                   size="sm"
@@ -538,6 +540,7 @@ export default function TrainingModal({
                   <>
                     <section className="flex flex-col justify-center items-start w-full rounded-lg bg-white">
                       <Input
+                        data-testid="recurrence-number"
                         className="m-0"
                         type="number"
                         label="Nombre de semaines"
@@ -551,9 +554,10 @@ export default function TrainingModal({
                     <div className="space-y-2">
                       <Label>Jours de répétition</Label>
                       <div className="flex flex-wrap gap-4">
-                        {DAYS.map(({ id, label }) => (
+                        {DAYS.map(({ id, label }, index) => (
                           <div key={id} className="flex items-center">
                             <Checkbox
+                              data-testid={index === 0 ? "monday-select" : ""}
                               isSelected={selectedDays.includes(id)}
                               onValueChange={() => toggleDay(id)}
                             />

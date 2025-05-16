@@ -9,6 +9,7 @@ type SavingProps = {
 export default function Saving({ onClick, loading }: SavingProps) {
   return (
     <Button
+      data-testid="saving-button"
       className="group shadow-none text-white h-[55px] w-[230px] rounded-xl bg-dark hover:translate-y-[-2px] hover:shadow-lg transition-all duration-200"
       onPress={onClick}
       startContent={<Save size={16} />}

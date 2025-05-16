@@ -77,7 +77,7 @@ export default function WeekProgram({
   useEffect(() => {
     const timeOut = setTimeout(() => {
       onDaySelect(currentWeek * 7 - 6);
-      setIsChangingWeek(false)
+      setIsChangingWeek(false);
     }, 300);
     return () => clearTimeout(timeOut);
   }, [currentWeek, onDaySelect, setIsChangingWeek]);
@@ -126,7 +126,7 @@ export default function WeekProgram({
             </button>
             <div className="flex items-center rounded-lg gap-2 bg-gray-50 px-5 py-1 border border-gray-200">
               <Calendar className="w-5 h-5 text-gray-500" />
-              <p className="text-gray-500 text-sm font-semibold">
+              <p data-testid="duration-test" className="text-gray-500 text-sm font-semibold">
                 Semaine {currentWeek} / {totalWeeks}
               </p>
             </div>
@@ -139,7 +139,10 @@ export default function WeekProgram({
             </button>
           </div>
           <div className="flex items-center justify-center w-1/3">
-            <p className="text-gray-700 text-xs font-semibold">
+            <p
+              data-testid="active-title-program"
+              className="text-gray-700 text-xs font-semibold"
+            >
               {currentProgram?.title}
             </p>
           </div>

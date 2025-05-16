@@ -256,6 +256,7 @@ export default function ProgramModal({
                               <div className="flex flex-col gap-4">
                                 <div>
                                   <Input
+                                    data-testid="program-title"
                                     label="Titre du programme"
                                     value={form.title}
                                     onChange={(e) =>
@@ -268,6 +269,7 @@ export default function ProgramModal({
                                 </div>
                                 <div>
                                   <Textarea
+                                    data-testid="program-description"
                                     label="Description"
                                     radius="sm"
                                     value={form.description}
@@ -287,6 +289,7 @@ export default function ProgramModal({
                                 </div>
                                 <div>
                                   <Input
+                                    data-testid="program-duration"
                                     label="Durée (semaines)"
                                     type="number"
                                     min={1}
@@ -359,6 +362,7 @@ export default function ProgramModal({
             </Button>
           )}
           <Button
+            data-testid="continue-button"
             onClick={isLastStep() ? handleSubmit : handleNext}
             disabled={!canContinue() || loading}
           >
