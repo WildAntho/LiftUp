@@ -43,7 +43,9 @@ jobs:
 
       - name: Run E2E tests
         run: |
-          docker exec liftup-test-e2e npm run test
+          cd e2e
+          npm install
+          npm run test
 
       - name: Stop and clean up Docker containers
         if: always()
