@@ -205,6 +205,7 @@ export default function Program() {
             </section>
             <div className="flex justify-end items-center">
               <Button
+                data-testid="create-program-button"
                 className="group shadow-none text-tertiary h-12 w-auto rounded-xl bg-tertiary bg-opacity-20 border border-tertiary border-opacity-20 hover:bg-tertiary hover:bg-opacity-20 hover:translate-y-[-2px] hover:shadow-sm transition-all duration-200"
                 onClick={() => setOpenProgramModal(true)}
               >

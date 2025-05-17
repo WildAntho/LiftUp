@@ -41,9 +41,16 @@ jobs:
         run: |
           docker exec liftup-test-backend npm run seed:test
 
+      - name: Install Playwright Browsers
+        run: |
+          cd e2e
+          npx playwright install
+
       - name: Run E2E tests
         run: |
-          docker exec liftup-test-e2e npm run test
+          cd e2e
+          npm install
+          npm run test
 
       - name: Stop and clean up Docker containers
         if: always()

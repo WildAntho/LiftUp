@@ -105,7 +105,12 @@ export default function Navigation() {
     <section className="w-full h-full bg-white shadow-sm flex justify-between items-center pr-10 pl-10">
       <section className="flex justify-center items-center gap-20">
         <div className="w-[80px] cursor-pointer" onClick={() => navigate("/")}>
-          <p className="font-logo text-primary text-5xl">LiftUp</p>
+          <p
+            data-testid="logo-liftup"
+            className="font-logo text-primary text-5xl"
+          >
+            LiftUp
+          </p>
         </div>
         <section className="flex justify-center items-center gap-3">
           {links.map((l: Link) => (
