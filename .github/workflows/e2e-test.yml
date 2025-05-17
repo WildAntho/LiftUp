@@ -41,6 +41,11 @@ jobs:
         run: |
           docker exec liftup-test-backend npm run seed:test
 
+      - name: Install Playwright Browsers
+        run: |
+          cd e2e
+          npx playwright install
+
       - name: Run E2E tests
         run: |
           cd e2e
