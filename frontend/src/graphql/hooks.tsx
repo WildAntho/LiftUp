@@ -570,6 +570,7 @@ export type Notification = {
 
 export enum NotificationGroup {
   Follow = 'FOLLOW',
+  Request = 'REQUEST',
   Training = 'TRAINING'
 }
 

@@ -6,7 +6,14 @@ import {
   Tabs,
   Tooltip,
 } from "@heroui/react";
-import { Bell, CheckCheck, Dumbbell, Layers, NotebookTabs } from "lucide-react";
+import {
+  Bell,
+  CheckCheck,
+  Dumbbell,
+  Layers,
+  MessageCircleQuestion,
+  NotebookTabs,
+} from "lucide-react";
 import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -249,6 +256,12 @@ export default function Notifications() {
       label: "Tous les types",
       color: "bg-blue-500 text-blue-500",
       icon: <Layers size={16} className="text-blue-500" />,
+    },
+    {
+      key: NotificationGroup.Request,
+      label: "Demandes",
+      color: "bg-yellow-500 text-yellow-500",
+      icon: <MessageCircleQuestion size={16} className="text-yellow-500" />,
     },
     {
       key: NotificationGroup.Follow,
