@@ -1,53 +1,26 @@
 import {
-  Request,
-  useGetRequestQuery,
-  useGetSentQuery,
+  useGetTotalRequestsQuery,
   useGetTotalStudentsQuery,
 } from "@/graphql/hooks";
-import { Loader2, MessageCircleQuestion, Users } from "lucide-react";
+import { MessageCircleQuestion, Users } from "lucide-react";
 import { Chip, Tab, Tabs } from "@heroui/react";
-import { useUserStore } from "@/services/zustand/userStore";
 import { Key, useEffect, useState } from "react";
-import { Receiver } from "@/type";
-import UserCard from "@/components/UserCard";
 import { useLocation, useNavigate } from "react-router-dom";
 import TabStudents from "./TabStudents";
 import TabRequests from "./TabRequests";
 
 export default function MyStudents() {
-  const currentUser = useUserStore((state) => state.user);
   const { data: dataTotalStudent, refetch: refetchTotal } =
     useGetTotalStudentsQuery();
-  const {
-    data: dataRequest,
-    loading: loadingRequest,
-    refetch: refetchRequest,
-  } = useGetRequestQuery({
-    variables: {
-      id: currentUser ? currentUser.id.toString() : "",
-    },
-    fetchPolicy: "no-cache",
-  });
-  const {
-    data: dataSent,
-    loading: loadingSent,
-    refetch: refetchSent,
-  } = useGetSentQuery({
-    variables: {
-      id: currentUser ? currentUser.id.toString() : "",
-    },
-    fetchPolicy: "cache-and-network",
-  });
-
   const refetch = {
-    refetchSent,
-    refetchRequest,
     refetchTotal,
   };
 
+  const { data: dataTotalRequests, refetch: refetchTotalRequest } =
+    useGetTotalRequestsQuery();
+
   const totalStudents = dataTotalStudent?.getTotalStudents;
-  const myRequests = dataRequest?.getRequest ?? [];
-  const mySent = dataSent?.getSent ?? [];
+  const totalRequests = dataTotalRequests?.getTotalRequests;
 
   // Navigation options
   const options = [
@@ -70,7 +43,7 @@ export default function MyStudents() {
           <MessageCircleQuestion size={18} />
           <span>Mes demandes reçus</span>
           <Chip size="sm" variant="faded">
-            {myRequests.length}
+            {totalRequests}
           </Chip>
         </div>
       ),
@@ -114,41 +87,21 @@ export default function MyStudents() {
           </div>
         </section>
         <section className="w-[90%] flex flex-col justify-start items-center gap-10">
-          {!loadingRequest || loadingSent ? (
-            <>
-              {active === "students" && (
-                <div className="w-full pb-4">
-                  <TabStudents refetch={refetch} />
-                </div>
-              )}
-              {active === "request" && (
-                <div className="w-full pb-4">
-                  <TabRequests
-                    refetch={refetch}
-                    requests={myRequests as Request[]}
-                  />
-                </div>
-              )}
-              {active === "pending" &&
-                (mySent.length > 0 ? (
-                  <section className="flex justify-start items-start flex-wrap w-full gap-2">
-                    {mySent.map((s: Receiver) => (
-                      <div key={s.receiver.id} className="w-[49%] h-[100px]">
-                        <UserCard user={s.receiver} />
-                      </div>
-                    ))}
-                  </section>
-                ) : (
-                  <p className="w-full justify-start pl-5 text-sm text-gray-600">
-                    Vous n'avez envoyé aucune demande.
-                  </p>
-                ))}
-            </>
-          ) : (
-            <section>
-              <Loader2 className="animate-spin" />
-            </section>
-          )}
+          <>
+            {active === "students" && (
+              <div className="w-full pb-4">
+                <TabStudents refetch={refetch} />
+              </div>
+            )}
+            {active === "request" && (
+              <div className="w-full pb-4">
+                <TabRequests
+                  refetchTotal={refetchTotalRequest}
+                  refetchTotalStudents={refetchTotal}
+                />
+              </div>
+            )}
+          </>
         </section>
       </section>
     </section>

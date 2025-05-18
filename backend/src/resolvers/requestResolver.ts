@@ -215,4 +215,15 @@ export class RequestResolver {
     });
     return requests;
   }
+
+  @Query(() => Number)
+  async getTotalRequests(@Ctx() context: { user: User }) {
+    const totalRequests = await Request.count({
+      where: {
+        receiver: { id: context.user.id },
+        status: "PENDING",
+      },
+    });
+    return totalRequests;
+  }
 }

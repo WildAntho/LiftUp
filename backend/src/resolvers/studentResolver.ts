@@ -1,7 +1,12 @@
-import { Arg, Ctx, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { User } from "../entities/user";
-import { Between, ILike, In } from "typeorm";
+import { Membership } from "../entities/memberShip";
 import { Crew } from "../entities/crew";
+import {
+  deleteFromCrew,
+  deleteStudent,
+  desactivateMemberShip,
+} from "../services/coachService";
 
 @Resolver(User)
 export class StudentResolver {
@@ -98,5 +103,59 @@ export class StudentResolver {
     if (user.coach) allUsers.push(user.coach);
 
     return allUsers;
+  }
+
+  @Query(() => User || String)
+  async getMyCoach(@Ctx() context: { user: User }) {
+    const user = await User.findOne({
+      where: {
+        id: context.user.id,
+      },
+      relations: { coach: true },
+    });
+    if (!user) throw new Error("Aucun utilisateur n'a été trouvé");
+    if (!user.coach) return "Vous n'avez pas encore de coach";
+    return user.coach;
+  }
+
+  @Query(() => Membership)
+  async getMembership(@Ctx() context: { user: User }) {
+    const membership = await Membership.findOne({
+      where: {
+        student: { id: context.user.id },
+        isActive: true,
+      },
+      relations: {
+        student: true,
+        offer: true,
+      },
+    });
+    return membership;
+  }
+
+  @Mutation(() => String)
+  async cancelMembership(@Ctx() context: { user: User }) {
+    const user = await User.findOne({
+      where: {
+        id: context.user.id,
+      },
+      relations: {
+        crew: true,
+        coach: true,
+      },
+    });
+    const memberShip = await Membership.findOne({
+      where: {
+        student: { id: context.user.id },
+        isActive: true,
+      },
+    });
+    if (!user) throw new Error("Aucun utilisateur n'a été trouvé");
+    if (!memberShip) throw new Error("Aucune souscription n'a été trouvée");
+    await desactivateMemberShip(memberShip);
+    user.coach = null;
+    user.crew = null;
+    await user.save();
+    return "Votre souscription a bien été clôturée";
   }
 }

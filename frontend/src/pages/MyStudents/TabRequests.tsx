@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/dialog";
 import { useCallback } from "react";
 import {
-  Request,
   useAcceptRequestMutation,
+  useGetRequestQuery,
   useRejectRequestMutation,
 } from "@/graphql/hooks";
 
@@ -30,12 +30,8 @@ import Accept from "./components/Accept";
 import { Separator } from "@/components/ui/separator";
 
 type TabRequestsProps = {
-  requests: Request[];
-  refetch?: {
-    refetchSent: () => void;
-    refetchRequest: () => void;
-    refetchTotal: () => void;
-  };
+  refetchTotal: () => void;
+  refetchTotalStudents: () => void;
 };
 
 type UserType = {
@@ -50,13 +46,23 @@ type UserType = {
   senderId: string;
 };
 
-export default function TabRequests({ requests, refetch }: TabRequestsProps) {
+export default function TabRequests({
+  refetchTotal,
+  refetchTotalStudents,
+}: TabRequestsProps) {
   const currentUser = useUserStore((state) => state.user);
+  const { data, refetch } = useGetRequestQuery({
+    variables: {
+      id: currentUser ? currentUser.id.toString() : "",
+    },
+    fetchPolicy: "no-cache",
+  });
   const [acceptRequest, { loading: loadingAccept }] =
     useAcceptRequestMutation();
   const [rejectRequest, { loading: loadingReject }] =
     useRejectRequestMutation();
 
+  const requests = data?.getRequest ?? [];
   const handleAcceptRequest = async (userId: string, requestId: string) => {
     const data = {
       receiverId: currentUser!.id.toString(),
@@ -65,11 +71,9 @@ export default function TabRequests({ requests, refetch }: TabRequestsProps) {
     await acceptRequest({
       variables: { data, id: requestId?.toString() as string },
     });
-    if (refetch) {
-      refetch.refetchRequest();
-      refetch.refetchSent();
-      refetch.refetchTotal();
-    }
+    refetch();
+    refetchTotalStudents();
+    refetchTotal();
   };
 
   const handleRejectRequest = async (requestId: string) => {
@@ -78,10 +82,8 @@ export default function TabRequests({ requests, refetch }: TabRequestsProps) {
         id: requestId?.toString() as string,
       },
     });
-    if (refetch) {
-      refetch.refetchRequest();
-      refetch.refetchSent();
-    }
+    refetch();
+    refetchTotal();
   };
 
   const columns = [

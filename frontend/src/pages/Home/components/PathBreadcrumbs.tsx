@@ -7,6 +7,7 @@ import {
   ChartNoAxesCombined,
   Dumbbell,
   Gauge,
+  HandCoins,
   Home,
   Settings,
 } from "lucide-react";
@@ -19,6 +20,7 @@ const translations: { [key: string]: string } = {
   exercices: "Exercices",
   statistics: "Statistiques",
   configuration: "Configuration",
+  coaching: "Coaching",
 };
 
 export default function PathBreadcrumbs() {
@@ -43,6 +45,8 @@ export default function PathBreadcrumbs() {
         return <ChartNoAxesCombined size={14} />;
       case "configuration":
         return <Settings size={14} />;
+      case "coaching":
+        return <HandCoins size={14} />;
       default:
         return null;
     }

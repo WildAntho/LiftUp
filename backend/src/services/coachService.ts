@@ -3,6 +3,7 @@ import { User } from "../entities/user";
 
 export async function desactivateMemberShip(memberShip: Membership) {
   memberShip.isActive = false;
+  memberShip.endDate = new Date();
   await memberShip.save();
 }
 

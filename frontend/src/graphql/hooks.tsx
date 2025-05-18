@@ -259,6 +259,7 @@ export type Mutation = {
   addTrainingCrew: Scalars['String']['output'];
   addTrainingStudent: Scalars['String']['output'];
   archiveProgram: Scalars['String']['output'];
+  cancelMembership: Scalars['String']['output'];
   createCrew: Scalars['String']['output'];
   createExerciceModel: Scalars['String']['output'];
   createProgram: Program;
@@ -683,7 +684,9 @@ export type Query = {
   getFavoriteExercicesId: Array<Scalars['String']['output']>;
   getFeedbacks: Array<Feedback>;
   getListUsersCrew: Array<User>;
+  getMembership: Membership;
   getMessages: MessageResult;
+  getMyCoach: User;
   getMyCrew: Crew;
   getNotification: NotificationResponse;
   getOneCoachOffers: Array<Offer>;
@@ -696,6 +699,7 @@ export type Query = {
   getStudentFeedback: Array<Feedback>;
   getStudentTrainings: Array<Training>;
   getStudents: StudentsResponse;
+  getTotalRequests: Scalars['Float']['output'];
   getTotalStudents: Scalars['Int']['output'];
   getTotalUnreadMessage: Scalars['Int']['output'];
   getTrainingPlan: Array<TrainingPlan>;
@@ -1139,6 +1143,11 @@ export type ArchiveProgramMutationVariables = Exact<{
 
 export type ArchiveProgramMutation = { __typename?: 'Mutation', archiveProgram: string };
 
+export type CancelMembershipMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CancelMembershipMutation = { __typename?: 'Mutation', cancelMembership: string };
+
 export type CreateCrewMutationVariables = Exact<{
   ids: Array<Scalars['String']['input']> | Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -1499,6 +1508,16 @@ export type GetMessagesQueryVariables = Exact<{
 
 export type GetMessagesQuery = { __typename?: 'Query', getMessages: { __typename?: 'MessageResult', totalCount: number, messages: Array<{ __typename?: 'Message', id: string, content: string, createdAt: any, readAt?: any | null, repliedMessage?: { __typename?: 'Message', id: string, content: string } | null, sender: { __typename?: 'User', id: string }, receiver: { __typename?: 'User', id: string } }> } };
 
+export type GetMyCoachQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMyCoachQuery = { __typename?: 'Query', getMyCoach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } };
+
+export type GetMyMembershipQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMyMembershipQuery = { __typename?: 'Query', getMembership: { __typename?: 'Membership', id: string, startDate: any, endDate: any, isActive: boolean, offer: { __typename?: 'Offer', id: string, name: string, description: string } } };
+
 export type GetMyOffersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1587,6 +1606,11 @@ export type GetStudentsQueryVariables = Exact<{
 
 
 export type GetStudentsQuery = { __typename?: 'Query', getStudents: { __typename?: 'StudentsResponse', totalCount: number, students: Array<{ __typename?: 'User', email: string, firstname: string, lastname: string, roles: string, id: string, avatar?: string | null, studentOffer?: { __typename?: 'Offer', name: string, durability: number, id: string } | null, crew?: { __typename?: 'Crew', id: string, name: string } | null, memberships?: Array<{ __typename?: 'Membership', id: string, endDate: any, isActive: boolean }> | null }> } };
+
+export type GetTotalRequestsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTotalRequestsQuery = { __typename?: 'Query', getTotalRequests: number };
 
 export type GetTotalStudentsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2051,6 +2075,36 @@ export function useArchiveProgramMutation(baseOptions?: Apollo.MutationHookOptio
 export type ArchiveProgramMutationHookResult = ReturnType<typeof useArchiveProgramMutation>;
 export type ArchiveProgramMutationResult = Apollo.MutationResult<ArchiveProgramMutation>;
 export type ArchiveProgramMutationOptions = Apollo.BaseMutationOptions<ArchiveProgramMutation, ArchiveProgramMutationVariables>;
+export const CancelMembershipDocument = gql`
+    mutation CancelMembership {
+  cancelMembership
+}
+    `;
+export type CancelMembershipMutationFn = Apollo.MutationFunction<CancelMembershipMutation, CancelMembershipMutationVariables>;
+
+/**
+ * __useCancelMembershipMutation__
+ *
+ * To run a mutation, you first call `useCancelMembershipMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCancelMembershipMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [cancelMembershipMutation, { data, loading, error }] = useCancelMembershipMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useCancelMembershipMutation(baseOptions?: Apollo.MutationHookOptions<CancelMembershipMutation, CancelMembershipMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CancelMembershipMutation, CancelMembershipMutationVariables>(CancelMembershipDocument, options);
+      }
+export type CancelMembershipMutationHookResult = ReturnType<typeof useCancelMembershipMutation>;
+export type CancelMembershipMutationResult = Apollo.MutationResult<CancelMembershipMutation>;
+export type CancelMembershipMutationOptions = Apollo.BaseMutationOptions<CancelMembershipMutation, CancelMembershipMutationVariables>;
 export const CreateCrewDocument = gql`
     mutation CreateCrew($ids: [String!]!, $name: String!) {
   createCrew(ids: $ids, name: $name)
@@ -3926,6 +3980,96 @@ export type GetMessagesQueryHookResult = ReturnType<typeof useGetMessagesQuery>;
 export type GetMessagesLazyQueryHookResult = ReturnType<typeof useGetMessagesLazyQuery>;
 export type GetMessagesSuspenseQueryHookResult = ReturnType<typeof useGetMessagesSuspenseQuery>;
 export type GetMessagesQueryResult = Apollo.QueryResult<GetMessagesQuery, GetMessagesQueryVariables>;
+export const GetMyCoachDocument = gql`
+    query GetMyCoach {
+  getMyCoach {
+    id
+    email
+    firstname
+    lastname
+    avatar
+  }
+}
+    `;
+
+/**
+ * __useGetMyCoachQuery__
+ *
+ * To run a query within a React component, call `useGetMyCoachQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMyCoachQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMyCoachQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetMyCoachQuery(baseOptions?: Apollo.QueryHookOptions<GetMyCoachQuery, GetMyCoachQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMyCoachQuery, GetMyCoachQueryVariables>(GetMyCoachDocument, options);
+      }
+export function useGetMyCoachLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyCoachQuery, GetMyCoachQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMyCoachQuery, GetMyCoachQueryVariables>(GetMyCoachDocument, options);
+        }
+export function useGetMyCoachSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyCoachQuery, GetMyCoachQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMyCoachQuery, GetMyCoachQueryVariables>(GetMyCoachDocument, options);
+        }
+export type GetMyCoachQueryHookResult = ReturnType<typeof useGetMyCoachQuery>;
+export type GetMyCoachLazyQueryHookResult = ReturnType<typeof useGetMyCoachLazyQuery>;
+export type GetMyCoachSuspenseQueryHookResult = ReturnType<typeof useGetMyCoachSuspenseQuery>;
+export type GetMyCoachQueryResult = Apollo.QueryResult<GetMyCoachQuery, GetMyCoachQueryVariables>;
+export const GetMyMembershipDocument = gql`
+    query GetMyMembership {
+  getMembership {
+    id
+    startDate
+    endDate
+    isActive
+    offer {
+      id
+      name
+      description
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetMyMembershipQuery__
+ *
+ * To run a query within a React component, call `useGetMyMembershipQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMyMembershipQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMyMembershipQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetMyMembershipQuery(baseOptions?: Apollo.QueryHookOptions<GetMyMembershipQuery, GetMyMembershipQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMyMembershipQuery, GetMyMembershipQueryVariables>(GetMyMembershipDocument, options);
+      }
+export function useGetMyMembershipLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyMembershipQuery, GetMyMembershipQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMyMembershipQuery, GetMyMembershipQueryVariables>(GetMyMembershipDocument, options);
+        }
+export function useGetMyMembershipSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyMembershipQuery, GetMyMembershipQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMyMembershipQuery, GetMyMembershipQueryVariables>(GetMyMembershipDocument, options);
+        }
+export type GetMyMembershipQueryHookResult = ReturnType<typeof useGetMyMembershipQuery>;
+export type GetMyMembershipLazyQueryHookResult = ReturnType<typeof useGetMyMembershipLazyQuery>;
+export type GetMyMembershipSuspenseQueryHookResult = ReturnType<typeof useGetMyMembershipSuspenseQuery>;
+export type GetMyMembershipQueryResult = Apollo.QueryResult<GetMyMembershipQuery, GetMyMembershipQueryVariables>;
 export const GetMyOffersDocument = gql`
     query GetMyOffers {
   getCoachOffers {
@@ -4584,6 +4728,43 @@ export type GetStudentsQueryHookResult = ReturnType<typeof useGetStudentsQuery>;
 export type GetStudentsLazyQueryHookResult = ReturnType<typeof useGetStudentsLazyQuery>;
 export type GetStudentsSuspenseQueryHookResult = ReturnType<typeof useGetStudentsSuspenseQuery>;
 export type GetStudentsQueryResult = Apollo.QueryResult<GetStudentsQuery, GetStudentsQueryVariables>;
+export const GetTotalRequestsDocument = gql`
+    query GetTotalRequests {
+  getTotalRequests
+}
+    `;
+
+/**
+ * __useGetTotalRequestsQuery__
+ *
+ * To run a query within a React component, call `useGetTotalRequestsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTotalRequestsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTotalRequestsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetTotalRequestsQuery(baseOptions?: Apollo.QueryHookOptions<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>(GetTotalRequestsDocument, options);
+      }
+export function useGetTotalRequestsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>(GetTotalRequestsDocument, options);
+        }
+export function useGetTotalRequestsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>(GetTotalRequestsDocument, options);
+        }
+export type GetTotalRequestsQueryHookResult = ReturnType<typeof useGetTotalRequestsQuery>;
+export type GetTotalRequestsLazyQueryHookResult = ReturnType<typeof useGetTotalRequestsLazyQuery>;
+export type GetTotalRequestsSuspenseQueryHookResult = ReturnType<typeof useGetTotalRequestsSuspenseQuery>;
+export type GetTotalRequestsQueryResult = Apollo.QueryResult<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>;
 export const GetTotalStudentsDocument = gql`
     query GetTotalStudents {
   getTotalStudents
