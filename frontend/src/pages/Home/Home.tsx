@@ -9,6 +9,7 @@ import PathBreadcrumbs from "./components/PathBreadcrumbs";
 import Offers from "./Offers/Offers";
 import ProtectedRoute from "@/services/ProtectedRoutes";
 import ExerciceModelSection from "./ExerciceModel/ExerciceModelSection";
+import Coaching from "./Coaching/Coaching";
 
 export default function Home() {
   const currentUser = useUserStore((state) => state.user);
@@ -32,6 +33,11 @@ export default function Home() {
         {activeTab === "offers" && (
           <ProtectedRoute requiredRole="COACH">
             <Offers />
+          </ProtectedRoute>
+        )}
+        {activeTab === "coaching" && (
+          <ProtectedRoute requiredRole="STUDENT">
+            <Coaching />
           </ProtectedRoute>
         )}
         {activeTab === "exercices" && <ExerciceModelSection />}

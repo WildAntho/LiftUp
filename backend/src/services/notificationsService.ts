@@ -33,7 +33,7 @@ export async function createNotification(
         relations: { notifications: true },
       });
       notification.request = targetEntity;
-      notification.group = NotificationGroup.FOLLOW;
+      notification.group = NotificationGroup.REQUEST;
       break;
     case "feedback":
       targetEntity = await Feedback.findOne({

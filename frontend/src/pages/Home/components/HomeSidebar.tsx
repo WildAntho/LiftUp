@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import UserProfile from "./UserProfile";
 import { UserWithoutPassword } from "@/services/zustand/userStore";
-import { Crew, useGetCoachLazyQuery } from "@/graphql/hooks";
+import { Crew } from "@/graphql/hooks";
 import SelectStudentModal from "@/components/modals/SelectStudentModal";
 import SelectCrewModal from "@/components/modals/SelectCrewModal";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -35,18 +35,6 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
   const [openCrewModal, setOpenCrewModal] = useState(false);
   const ROLE_COACH = "COACH";
   const isCoach = currentUser?.roles === ROLE_COACH;
-  const [getCoach, { data: dataCoach, loading: loadingCoach }] =
-    useGetCoachLazyQuery({
-      variables: { id: currentUser ? currentUser.id.toString() : "" },
-    });
-
-  const myCoach = dataCoach?.getUserById?.coach
-    ? [dataCoach.getUserById.coach]
-    : [];
-
-  const handleGetCoach = (): void => {
-    getCoach();
-  };
 
   const parentVariants = {
     hidden: {
@@ -123,13 +111,12 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
     ...(!isCoach
       ? [
           {
-            title: "Mon coach",
+            title: "Coaching",
+            value: "coaching",
             withArrow: true,
-            data: myCoach as UserWithoutPassword[],
-            loading: loadingCoach,
-            get: handleGetCoach,
             icon: <HandCoins className="size-5" />,
-            type: "user",
+            type: "content",
+            get: () => navigate("/home?tab=coaching"),
           },
         ]
       : []),

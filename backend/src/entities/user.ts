@@ -65,7 +65,7 @@ export class User extends BaseEntity {
 
   @Field(() => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.students, { nullable: true })
-  coach?: User;
+  coach?: User | null;
 
   @Field(() => [Training], { nullable: true })
   @OneToMany(() => Training, (training) => training.user)
