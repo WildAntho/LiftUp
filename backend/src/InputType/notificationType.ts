@@ -15,6 +15,7 @@ registerEnumType(NotificationType, {
 export enum NotificationGroup {
   TRAINING = "TRAINING",
   FOLLOW = "FOLLOW",
+  REQUEST = "REQUEST",
 }
 
 registerEnumType(NotificationGroup, {

@@ -1,4 +1,12 @@
-import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  Mutation,
+  PubSub,
+  Query,
+  Resolver,
+} from "type-graphql";
 import { Program } from "../entities/program";
 import {
   ProgramInput,
@@ -9,6 +17,9 @@ import { CtxUser } from "../InputType/coachType";
 import { User } from "../entities/user";
 import { TrainingPlan } from "../entities/trainingPlan";
 import { generateTraining } from "../services/programService";
+import isNotificationAllowed from "../services/notificationPreferenceService";
+import { NotificationType } from "../InputType/notificationType";
+import { createNotification } from "../services/notificationsService";
 
 @Authorized("COACH")
 @Resolver(Program)
@@ -106,7 +117,8 @@ export class ProgramResolver {
     @Arg("programId") programId: string,
     @Arg("userIds", () => [String]) userIds: string[],
     @Arg("coachId") coachId: string,
-    @Arg("startDate") startDate: Date
+    @Arg("startDate") startDate: Date,
+    @Ctx() context: { pubsub: PubSub }
   ) {
     const trainings = await TrainingPlan.find({
       where: {
@@ -126,6 +138,23 @@ export class ProgramResolver {
         const user = await User.findOneBy({ id: u });
         if (!user) throw new Error("Aucun utilisateur n'a été trouvé");
         await generateTraining(trainings, user, coachId, startDate);
+        const allowedNotification = await isNotificationAllowed(
+          NotificationType.NEW_TRAINING,
+          u
+        );
+        if (allowedNotification) {
+          const newNotification = await createNotification(
+            "training",
+            u,
+            NotificationType.NEW_TRAINING,
+            u
+          );
+
+          context.pubsub.publish("NEW_TRAINING", {
+            newNotification,
+            topic: "NEW_TRAINING",
+          });
+        }
       })
     );
     return "Programme généré avec succès";

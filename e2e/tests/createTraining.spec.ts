@@ -1,19 +1,6 @@
 import test, { expect } from "@playwright/test";
 import { login } from "./helpers/authHelpers";
 
-test.beforeEach(async ({ browser }) => {
-  // Nouveau contexte pour chaque test
-  const context = await browser.newContext({
-    ignoreHTTPSErrors: true,
-    viewport: { width: 1280, height: 720 },
-  });
-
-  // Effacer les cookies et le cache avant de commencer
-  await context.clearCookies();
-
-  return { context };
-});
-
 test("create training", async ({ page }) => {
   // Connexion
   await login(page);
