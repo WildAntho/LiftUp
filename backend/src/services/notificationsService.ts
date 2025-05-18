@@ -15,6 +15,8 @@ export async function createNotification(
   type: NotificationType,
   userId: string
 ): Promise<Notification> {
+  console.log(targetType);
+
   const notification = new Notification();
   const user = await User.findOne({
     where: {
@@ -45,6 +47,9 @@ export async function createNotification(
       break;
     case "training":
       notification.group = NotificationGroup.TRAINING;
+      break;
+    case "membership":
+      notification.group = NotificationGroup.FOLLOW;
       break;
     default:
       throw new Error("Type de cible invalide");

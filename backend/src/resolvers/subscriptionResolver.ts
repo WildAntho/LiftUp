@@ -22,6 +22,7 @@ export class SubscriptionResolver {
       "REQUEST_ACCEPTED",
       "NEW_FEEDBACK",
       "NEW_TRAINING",
+      "ACTIVE_MEMBERSHIP",
     ],
     filter: ({ payload, args }) => {
       return payload.newNotification.user.id.toString() === args.id.toString();

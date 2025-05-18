@@ -14,6 +14,7 @@ import {
   BicepsFlexed,
   Handshake,
   MessageCircleQuestion,
+  Power,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
@@ -100,6 +101,12 @@ export default function NotificationPreference() {
               label: "Lorsque ton coach te programme des entraînements",
               icon: <BicepsFlexed size={20} />,
               color: "text-blue-500 bg-blue-500",
+            },
+            {
+              key: NotificationType.ActivateMembership,
+              label: "Lorsque ton coach active ton coaching",
+              icon: <Power size={20} />,
+              color: "text-orange-500 bg-orange-500",
             },
           ]),
     ],
