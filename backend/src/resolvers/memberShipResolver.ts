@@ -1,15 +1,21 @@
-import { Arg, Mutation, Resolver } from "type-graphql";
+import { Arg, Ctx, Mutation, PubSub, Resolver } from "type-graphql";
 import { Membership } from "../entities/memberShip";
 import { ActiveMembershipType } from "../InputType/memberShipType";
 import { User } from "../entities/user";
 import { Offer } from "../entities/offer";
 import { startMembership } from "../services/memberShipService";
 import { addMonths } from "date-fns";
+import isNotificationAllowed from "../services/notificationPreferenceService";
+import { NotificationType } from "../InputType/notificationType";
+import { createNotification } from "../services/notificationsService";
 
 @Resolver(Membership)
 export class MembershipResolver {
   @Mutation(() => String)
-  async activeMembership(@Arg("data") data: ActiveMembershipType) {
+  async activeMembership(
+    @Arg("data") data: ActiveMembershipType,
+    @Ctx() context: { pubsub: PubSub }
+  ) {
     const student = await User.findOneBy({ id: data.studentId });
     if (!student) throw new Error("Aucun étudiant n'existe pour cet id");
     const offer = await Offer.findOneBy({ id: data.offerId });
@@ -24,6 +30,23 @@ export class MembershipResolver {
     if (memberShip.length > 0)
       throw new Error("Cet élève a déjà une souscription active");
     await startMembership(student, offer);
+    const allowedNotification = await isNotificationAllowed(
+      NotificationType.ACTIVATE_MEMBERSHIP,
+      data.studentId
+    );
+    if (allowedNotification) {
+      const newNotification = await createNotification(
+        "membership",
+        data.studentId,
+        NotificationType.ACTIVATE_MEMBERSHIP,
+        data.studentId
+      );
+
+      context.pubsub.publish("ACTIVE_MEMBERSHIP", {
+        newNotification,
+        topic: "ACTIVE_MEMBERSHIP",
+      });
+    }
     return JSON.stringify("La souscription a bien été activée");
   }
 

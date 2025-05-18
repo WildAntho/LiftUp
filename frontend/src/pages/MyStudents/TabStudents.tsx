@@ -383,7 +383,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
 
   return (
     <section className="w-full h-full flex flex-col items-center justify-start gap-5">
-      <section className="w-full flex justify-start items-center gap-2 overflow-x-scroll">
+      <section className="w-full flex justify-start items-center gap-2">
         <div onClick={() => setActiveCard(null)}>
           <StatusStudentCard
             icon={<Users size={20} />}

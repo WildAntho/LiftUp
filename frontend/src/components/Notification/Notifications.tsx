@@ -104,6 +104,9 @@ export default function Notifications() {
       case NotificationType.NewTraining:
         navigate("/home?tab=calendar");
         break;
+      case NotificationType.ActivateMembership:
+        navigate("/home?tab=coaching");
+        break;
       default:
         break;
     }
@@ -152,7 +155,7 @@ export default function Notifications() {
   // Fonction pour obtenir le contenu spécifique de chaque type de notification
   const getNotificationContent = (notification: Notification) => {
     switch (notification.type) {
-      case "NEW_REQUEST":
+      case NotificationType.NewRequest:
         return {
           avatar: (
             <UserAvatar avatar={notification.request?.sender.avatar || ""} />
@@ -174,7 +177,7 @@ export default function Notifications() {
             </>
           ),
         };
-      case "ACCEPT_REQUEST":
+      case NotificationType.AcceptRequest:
         return {
           avatar: (
             <UserAvatar avatar={notification.request?.receiver.avatar || ""} />
@@ -194,7 +197,7 @@ export default function Notifications() {
             </>
           ),
         };
-      case "NEW_FEEDBACK":
+      case NotificationType.NewFeedback:
         return {
           avatar: (
             <UserAvatar avatar={notification.feedback?.user.avatar || ""} />
@@ -224,7 +227,7 @@ export default function Notifications() {
             </>
           ),
         };
-      case "NEW_TRAINING":
+      case NotificationType.NewTraining:
         return {
           avatar: <Avatar src="/biceps.webp" />,
           name: "Nouveaux entraînements",
@@ -236,6 +239,23 @@ export default function Notifications() {
                 </p>
                 <p className="text-gray-500">
                   Pour les consulter rendez vous sur votre calendrier !
+                </p>
+              </div>
+            </>
+          ),
+        };
+      case NotificationType.ActivateMembership:
+        return {
+          avatar: <Avatar src="/activation.webp" />,
+          name: "Souscription activée",
+          message: (
+            <>
+              <div className="line-clamp-2 overflow-hidden text-ellipsis">
+                <p className="font-semibold">
+                  Votre coach a activé votre offre de coaching
+                </p>
+                <p className="text-gray-500">
+                  Il peut à présent vous programmer des séances
                 </p>
               </div>
             </>
@@ -376,7 +396,7 @@ export default function Notifications() {
               duration: 0.2,
               ease: "easeOut",
             }}
-            className="p-2 w-full min-h-14 flex justify-start items-center gap-2 overflow-x-scroll"
+            className="p-2 w-full min-h-14 flex justify-start items-center gap-2"
           >
             {groupNotifications.map((g) => (
               <div
@@ -384,7 +404,7 @@ export default function Notifications() {
                 className={`h-full flex justify-center items-center gap-2 px-4 text-sm rounded-lg bg-opacity-10 cursor-pointer ${
                   activeGroup === g.key
                     ? g.color
-                    : "bg-none text-dark hover:bg-dark/10 transition-all duration-200 ease-in-out"
+                    : "bg-none text-dark hover:bg-dark/5 transition-all duration-200 ease-in-out"
                 }`}
                 onClick={() => setActiveGroup(g.key)}
               >

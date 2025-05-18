@@ -61,7 +61,7 @@ export default function Offers() {
                   <div className="space-y-4 w-full flex-1">
                     <div className="w-full flex justify-between items-center">
                       <h1
-                        className="text-sm font-semibold hover:underline underline-offset-1 decoration-1 line-clamp-1 cursor-pointer text-blue-500 bg-blue-500 bg-opacity-10 px-4 py-2 rounded-full"
+                        className="text-sm font-semibold hover:underline underline-offset-1 decoration-1 truncate cursor-pointer text-blue-500 bg-blue-500 bg-opacity-10 px-4 py-2 rounded-full"
                         onClick={() => {
                           setOfferToEdit(o as Omit<Offer, "user">);
                           openModal();

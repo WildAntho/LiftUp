@@ -592,6 +592,7 @@ export type NotificationResponse = {
 
 export enum NotificationType {
   AcceptRequest = 'ACCEPT_REQUEST',
+  ActivateMembership = 'ACTIVATE_MEMBERSHIP',
   NewFeedback = 'NEW_FEEDBACK',
   NewRequest = 'NEW_REQUEST',
   NewTraining = 'NEW_TRAINING'

@@ -174,7 +174,7 @@ export default function Program() {
       {!isConfiguration && (
         <section className="w-full flex flex-col justify-start items-center rounded-2xl gap-4 py-10 mt-4 overflow-y-scroll">
           <section className="w-[80%] flex justify-between items-center">
-            <section className="flex justify-start items-start gap-2 overflow-x-scroll">
+            <section className="flex justify-start items-start gap-2">
               <div onClick={() => setActiveCard(ProgramStatus.Published)}>
                 <StatusCard
                   icon={<CircleCheckBig size={20} />}
