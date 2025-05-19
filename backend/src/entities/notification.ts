@@ -16,6 +16,7 @@ import {
   NotificationType,
 } from "../InputType/notificationType";
 import { Feedback } from "./feedback";
+import { Membership } from "./memberShip";
 
 @ObjectType()
 @Entity()
@@ -62,6 +63,7 @@ export class Notification extends BaseEntity {
   @Field(() => Request, { nullable: true })
   @ManyToOne(() => Request, (request) => request.notifications, {
     nullable: true,
+    onDelete: "CASCADE",
   })
   request?: Request;
 
@@ -71,4 +73,11 @@ export class Notification extends BaseEntity {
     onDelete: "CASCADE",
   })
   feedback?: Feedback;
+
+  @Field(() => Membership, { nullable: true })
+  @ManyToOne(() => Membership, (membership) => membership.notifications, {
+    nullable: true,
+    onDelete: "CASCADE",
+  })
+  membership?: Membership;
 }

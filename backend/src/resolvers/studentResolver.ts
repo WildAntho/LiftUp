@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Mutation, PubSub, Query, Resolver } from "type-graphql";
 import { User } from "../entities/user";
 import { Membership } from "../entities/memberShip";
 import { Crew } from "../entities/crew";
@@ -7,6 +7,9 @@ import {
   deleteStudent,
   desactivateMemberShip,
 } from "../services/coachService";
+import isNotificationAllowed from "../services/notificationPreferenceService";
+import { NotificationType } from "../InputType/notificationType";
+import { createNotification } from "../services/notificationsService";
 
 @Resolver(User)
 export class StudentResolver {
@@ -134,7 +137,7 @@ export class StudentResolver {
   }
 
   @Mutation(() => String)
-  async cancelMembership(@Ctx() context: { user: User }) {
+  async cancelMembership(@Ctx() context: { pubsub: PubSub; user: User }) {
     const user = await User.findOne({
       where: {
         id: context.user.id,
@@ -152,10 +155,30 @@ export class StudentResolver {
     });
     if (!user) throw new Error("Aucun utilisateur n'a été trouvé");
     if (!memberShip) throw new Error("Aucune souscription n'a été trouvée");
+    if (!user.coach) throw new Error("Cet élève n'a aucun coach");
+    const id = user.coach.id;
     await desactivateMemberShip(memberShip);
     user.coach = null;
     user.crew = null;
     await user.save();
+
+    const allowedNotification = await isNotificationAllowed(
+      NotificationType.CANCEL_MEMBERSHIP,
+      id
+    );
+    if (allowedNotification) {
+      const newNotification = await createNotification(
+        "membership",
+        memberShip.id,
+        NotificationType.CANCEL_MEMBERSHIP,
+        id
+      );
+
+      context.pubsub.publish("NEW_NOTIFICATION", {
+        newNotification,
+        topic: "NEW_NOTIFICATION",
+      });
+    }
     return "Votre souscription a bien été clôturée";
   }
 }

@@ -17,13 +17,7 @@ class NotificationArgs {
 @Resolver(Notification)
 export class SubscriptionResolver {
   @Subscription(() => Notification, {
-    topics: [
-      "REQUEST_ADDED",
-      "REQUEST_ACCEPTED",
-      "NEW_FEEDBACK",
-      "NEW_TRAINING",
-      "ACTIVE_MEMBERSHIP",
-    ],
+    topics: ["NEW_NOTIFICATION"],
     filter: ({ payload, args }) => {
       return payload.newNotification.user.id.toString() === args.id.toString();
     },

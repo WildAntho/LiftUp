@@ -36,6 +36,16 @@ export const GET_NOTIFICATION = gql`
             avatar
           }
         }
+        membership {
+          id
+          student {
+            id
+            email
+            firstname
+            lastname
+            avatar
+          }
+        }
       }
     }
   }

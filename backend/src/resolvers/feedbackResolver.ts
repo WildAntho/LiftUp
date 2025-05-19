@@ -86,9 +86,9 @@ export class FeedbackResolver {
           NotificationType.NEW_FEEDBACK,
           connectedUser.coach.id
         );
-        context.pubsub.publish("NEW_FEEDBACK", {
+        context.pubsub.publish("NEW_NOTIFICATION", {
           newNotification,
-          topic: "NEW_FEEDBACK",
+          topic: "NEW_NOTIFICATION",
         });
       }
     }

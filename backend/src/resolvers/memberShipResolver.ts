@@ -42,9 +42,9 @@ export class MembershipResolver {
         data.studentId
       );
 
-      context.pubsub.publish("ACTIVE_MEMBERSHIP", {
+      context.pubsub.publish("NEW_NOTIFICATION", {
         newNotification,
-        topic: "ACTIVE_MEMBERSHIP",
+        topic: "NEW_NOTIFICATION",
       });
     }
     return JSON.stringify("La souscription a bien été activée");

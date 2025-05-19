@@ -88,23 +88,29 @@ export default function NotificationPreference() {
               icon: <BicepsFlexed size={20} />,
               color: "text-green-500 bg-green-500",
             },
+            {
+              key: NotificationType.CancelMembership,
+              label: "Lorsqu'un élève arrête son coaching",
+              icon: <Power size={20} />,
+              color: "text-orange-500 bg-orange-500",
+            },
           ]
         : [
             {
               key: NotificationType.AcceptRequest,
               label: "Lorsqu'une demande de coaching a été acceptée",
               icon: <Handshake size={20} />,
-              color: "text-green-500 bg-green-500",
+              color: "text-blue-500 bg-blue-500",
             },
             {
               key: NotificationType.NewTraining,
               label: "Lorsque ton coach te programme des entraînements",
               icon: <BicepsFlexed size={20} />,
-              color: "text-blue-500 bg-blue-500",
+              color: "text-green-500 bg-green-500",
             },
             {
               key: NotificationType.ActivateMembership,
-              label: "Lorsque ton coach active ton coaching",
+              label: "Lorsque ton coach active ton suivi",
               icon: <Power size={20} />,
               color: "text-orange-500 bg-orange-500",
             },

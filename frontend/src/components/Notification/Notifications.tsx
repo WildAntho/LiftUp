@@ -1,19 +1,5 @@
-import {
-  Avatar,
-  Drawer,
-  DrawerContent,
-  Tab,
-  Tabs,
-  Tooltip,
-} from "@heroui/react";
-import {
-  Bell,
-  CheckCheck,
-  Dumbbell,
-  Layers,
-  MessageCircleQuestion,
-  NotebookTabs,
-} from "lucide-react";
+import { Drawer, DrawerContent, Tab, Tabs, Tooltip } from "@heroui/react";
+import { Bell, CheckCheck } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -30,7 +16,22 @@ import { useUserStore } from "@/services/zustand/userStore";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import UserAvatar from "../UserAvatar";
+import {
+  AcceptRequestNotification,
+  ActivateMembershipNotification,
+  CancelMembershipNotification,
+  DefaultNotification,
+  NewFeedbackNotification,
+  NewRequestNotification,
+  NewTrainingNotification,
+} from "./components/NotificationContent";
+import { groupNotifications } from "./components/NotificationGroup";
+import { getNotificationRedirectPath } from "./components/NotificationRedirect";
+
+interface NotificationContentProps {
+  avatar: React.ReactNode;
+  message: React.ReactNode;
+}
 
 export default function Notifications() {
   const currentUser = useUserStore((state) => state.user);
@@ -47,17 +48,14 @@ export default function Notifications() {
       unread: tabRead === "unread",
       group: activeGroup,
     },
-    fetchPolicy: "no-cache",
   });
   const [hasBeenSeen] = useHasBeenseenMutation();
   const [isRead] = useIsReadMutation();
 
   const navigate = useNavigate();
 
-  // Notification reçue via la subscription
   const socketNotification = dataSub?.newNotification;
 
-  // Récupère les requêtes non lues depuis la requête HTTP
   const [allNotifications, setAllNotifications] = useState(
     dataNotif?.getNotification.notifications ?? []
   );
@@ -65,14 +63,12 @@ export default function Notifications() {
   const totalUnread = dataNotif?.getNotification.totalUnread ?? 0;
   const total = dataNotif?.getNotification.total ?? 0;
 
-  // Mettre à jour les notifications non lues lors du chargement initial
   useEffect(() => {
     if (dataNotif?.getNotification) {
       setAllNotifications(dataNotif?.getNotification.notifications);
     }
   }, [dataNotif]);
 
-  // Ajouter la nouvelle notification au tableau sans écraser les anciennes
   useEffect(() => {
     if (socketNotification) {
       refetch();
@@ -86,30 +82,19 @@ export default function Notifications() {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleRedirect = async (id: string, type: string, read: boolean) => {
+  const handleRedirect = async (
+    id: string,
+    type: NotificationType,
+    read: boolean
+  ) => {
     if (!read) {
       await isRead({
         variables: { ids: id },
       });
       refetch();
     }
-    switch (type) {
-      case NotificationType.NewRequest:
-        navigate("/students?tab=request");
-        break;
-      case NotificationType.AcceptRequest:
-        navigate("/coach");
-        break;
-      case NotificationType.NewFeedback:
-      case NotificationType.NewTraining:
-        navigate("/home?tab=calendar");
-        break;
-      case NotificationType.ActivateMembership:
-        navigate("/home?tab=coaching");
-        break;
-      default:
-        break;
-    }
+    const redirectPath = getNotificationRedirectPath(type);
+    navigate(redirectPath);
     setIsOpen(false);
   };
 
@@ -152,150 +137,26 @@ export default function Notifications() {
     }
   };
 
-  // Fonction pour obtenir le contenu spécifique de chaque type de notification
-  const getNotificationContent = (notification: Notification) => {
+  const getNotificationContent = (
+    notification: Notification
+  ): NotificationContentProps => {
     switch (notification.type) {
       case NotificationType.NewRequest:
-        return {
-          avatar: (
-            <UserAvatar avatar={notification.request?.sender.avatar || ""} />
-          ),
-          name:
-            notification.request?.sender.firstname +
-            " " +
-            notification.request?.sender.lastname,
-          message: (
-            <>
-              Vous avez reçu une nouvelle demande{" "}
-              {notification.request?.sender.roles === "STUDENT" &&
-                "de coaching de"}{" "}
-              <span className="font-semibold">
-                {notification.request?.sender.firstname +
-                  " " +
-                  notification.request?.sender.lastname}
-              </span>
-            </>
-          ),
-        };
+        return NewRequestNotification({ notification });
       case NotificationType.AcceptRequest:
-        return {
-          avatar: (
-            <UserAvatar avatar={notification.request?.receiver.avatar || ""} />
-          ),
-          name:
-            notification.request?.receiver.firstname +
-            " " +
-            notification.request?.receiver.lastname,
-          message: (
-            <>
-              <span className="font-semibold">
-                {notification.request?.receiver.firstname +
-                  " " +
-                  notification.request?.receiver.lastname}
-              </span>{" "}
-              à accepter votre demande
-            </>
-          ),
-        };
+        return AcceptRequestNotification({ notification });
       case NotificationType.NewFeedback:
-        return {
-          avatar: (
-            <UserAvatar avatar={notification.feedback?.user.avatar || ""} />
-          ),
-          name:
-            notification.feedback?.user.firstname +
-            " " +
-            notification.feedback?.user.lastname,
-          message: (
-            <>
-              <div className="line-clamp-2 overflow-hidden text-ellipsis">
-                <span className="font-semibold">
-                  {notification.feedback?.user.firstname}
-                </span>{" "}
-                a terminé la séance{" "}
-                <span className="font-semibold">
-                  {notification.feedback?.title}:
-                </span>
-              </div>
-              {notification.feedback?.comment ? (
-                <>
-                  <span className="text-gray-500 line-clamp-2 overflow-hidden text-ellipsis">
-                    {notification.feedback?.comment}
-                  </span>
-                </>
-              ) : null}
-            </>
-          ),
-        };
+        return NewFeedbackNotification({ notification });
       case NotificationType.NewTraining:
-        return {
-          avatar: <Avatar src="/biceps.webp" />,
-          name: "Nouveaux entraînements",
-          message: (
-            <>
-              <div className="line-clamp-2 overflow-hidden text-ellipsis">
-                <p className="font-semibold">
-                  Des nouvelles séances sont disponibles
-                </p>
-                <p className="text-gray-500">
-                  Pour les consulter rendez vous sur votre calendrier !
-                </p>
-              </div>
-            </>
-          ),
-        };
+        return NewTrainingNotification();
       case NotificationType.ActivateMembership:
-        return {
-          avatar: <Avatar src="/activation.webp" />,
-          name: "Souscription activée",
-          message: (
-            <>
-              <div className="line-clamp-2 overflow-hidden text-ellipsis">
-                <p className="font-semibold">
-                  Votre coach a activé votre offre de coaching
-                </p>
-                <p className="text-gray-500">
-                  Il peut à présent vous programmer des séances
-                </p>
-              </div>
-            </>
-          ),
-        };
+        return ActivateMembershipNotification();
+      case NotificationType.CancelMembership:
+        return CancelMembershipNotification({ notification });
       default:
-        return {
-          avatar: "",
-          name: "",
-          message: "Notification",
-        };
+        return DefaultNotification();
     }
   };
-
-  const groupNotifications = [
-    {
-      key: null,
-      label: "Tous les types",
-      color: "bg-blue-500 text-blue-500",
-      icon: <Layers size={16} className="text-blue-500" />,
-    },
-    {
-      key: NotificationGroup.Request,
-      label: "Demandes",
-      color: "bg-yellow-500 text-yellow-500",
-      icon: <MessageCircleQuestion size={16} className="text-yellow-500" />,
-    },
-    {
-      key: NotificationGroup.Follow,
-      label: "Suivi",
-      color: "bg-orange-500 text-orange-500",
-      icon: <NotebookTabs size={16} className="text-orange-500" />,
-    },
-    {
-      key: NotificationGroup.Training,
-      label: "Séances",
-      color: "bg-green-500 text-green-500",
-      icon: <Dumbbell size={16} className="text-green-500" />,
-    },
-  ];
 
   return (
     <>
@@ -439,7 +300,6 @@ export default function Notifications() {
                         {avatar}
                         <div className="text-xs flex-1">{message}</div>
                       </div>
-
                       <p className="text-[10px] text-gray-500 whitespace-nowrap ml-2">
                         {formatDistanceToNow(notification.createdAt, {
                           locale: fr,
