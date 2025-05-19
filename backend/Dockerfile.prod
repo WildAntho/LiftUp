@@ -16,4 +16,4 @@ WORKDIR /app
 COPY --from=builder /app/build ./build
 COPY package*.json ./
 RUN npm i --production
-CMD ["sh", "-c", "npm run migration:run && npm run start"]
+CMD ["sh", "-c", "npm run start && npm run migration:run"]
