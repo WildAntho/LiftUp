@@ -1,4 +1,5 @@
 import { Feedback } from "../entities/feedback";
+import { Membership } from "../entities/memberShip";
 import { Notification } from "../entities/notification";
 import { Request } from "../entities/request";
 import { User } from "../entities/user";
@@ -15,8 +16,6 @@ export async function createNotification(
   type: NotificationType,
   userId: string
 ): Promise<Notification> {
-  console.log(targetType);
-
   const notification = new Notification();
   const user = await User.findOne({
     where: {
@@ -49,6 +48,11 @@ export async function createNotification(
       notification.group = NotificationGroup.TRAINING;
       break;
     case "membership":
+      targetEntity = await Membership.findOne({
+        where: { id: targetId },
+        relations: { notifications: true, student: true },
+      });
+      notification.membership = targetEntity;
       notification.group = NotificationGroup.FOLLOW;
       break;
     default:

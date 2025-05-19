@@ -7,6 +7,7 @@ export enum NotificationType {
   NEW_FEEDBACK = "NEW_FEEDBACK",
   NEW_TRAINING = "NEW_TRAINING",
   ACTIVATE_MEMBERSHIP = "ACTIVATE_MEMBERSHIP",
+  CANCEL_MEMBERSHIP = "CANCEL_MEMBERSHIP",
 }
 
 registerEnumType(NotificationType, {

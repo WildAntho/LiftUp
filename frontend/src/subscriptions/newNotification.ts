@@ -20,6 +20,28 @@ export const GET_NEW_NOTIFICATION = gql`
           lastname
         }
       }
+      feedback {
+        title
+        id
+        comment
+        user {
+          id
+          firstname
+          lastname
+          email
+          avatar
+        }
+      }
+      membership {
+        id
+        student {
+          id
+          email
+          firstname
+          lastname
+          avatar
+        }
+      }
     }
   }
 `;

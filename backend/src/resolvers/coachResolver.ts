@@ -264,9 +264,9 @@ export class CoachResolver {
         student.id
       );
 
-      context.pubsub.publish("NEW_TRAINING", {
+      context.pubsub.publish("NEW_NOTIFICATION", {
         newNotification,
-        topic: "NEW_TRAINING",
+        topic: "NEW_NOTIFICATION",
       });
     }
 

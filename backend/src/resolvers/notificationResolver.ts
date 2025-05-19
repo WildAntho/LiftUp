@@ -27,6 +27,7 @@ export class NotificationResolver {
         request: true,
         user: true,
         feedback: true,
+        membership: true,
       },
       order: {
         createdAt: "DESC",
@@ -60,7 +61,6 @@ export class NotificationResolver {
 
   @Mutation(() => String)
   async hasBeenSeen(@Arg("id", () => [String]) ids: string[]) {
-    // Utilisation de Promise.all pour traiter plusieurs notifications en parallèle
     await Promise.all(
       ids.map(async (id) => {
         const notification = await Notification.findOneBy({ id });
@@ -77,7 +77,6 @@ export class NotificationResolver {
 
   @Mutation(() => String)
   async isRead(@Arg("id", () => [String]) ids: string[]) {
-    // Utilisation de Promise.all pour traiter plusieurs notifications en parallèle
     await Promise.all(
       ids.map(async (id) => {
         const notification = await Notification.findOneBy({ id });

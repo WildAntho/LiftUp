@@ -67,9 +67,9 @@ export class RequestResolver {
         receiverId
       );
 
-      context.pubsub.publish("REQUEST_ADDED", {
+      context.pubsub.publish("NEW_NOTIFICATION", {
         newNotification,
-        topic: "REQUEST_ADDED",
+        topic: "NEW_NOTIFICATION",
       });
       return JSON.stringify("La demande a été envoyée");
     }
@@ -186,9 +186,9 @@ export class RequestResolver {
         NotificationType.ACCEPT_REQUEST,
         senderId
       );
-      context.pubsub.publish("REQUEST_ACCEPTED", {
+      context.pubsub.publish("NEW_NOTIFICATION", {
         newNotification,
-        topic: "REQUEST_ACCEPTED",
+        topic: "NEW_NOTIFICATION",
       });
     }
     return JSON.stringify("L'ajout a bien été effectué");

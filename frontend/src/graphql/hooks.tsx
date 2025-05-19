@@ -210,6 +210,7 @@ export type Membership = {
   endDate: Scalars['DateTimeISO']['output'];
   id: Scalars['ID']['output'];
   isActive: Scalars['Boolean']['output'];
+  notifications?: Maybe<Array<Notification>>;
   offer: Offer;
   startDate: Scalars['DateTimeISO']['output'];
   student: User;
@@ -564,6 +565,7 @@ export type Notification = {
   hasBeenSeen: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
   isRead: Scalars['Boolean']['output'];
+  membership?: Maybe<Membership>;
   request?: Maybe<Request>;
   type: NotificationType;
   user: User;
@@ -593,6 +595,7 @@ export type NotificationResponse = {
 export enum NotificationType {
   AcceptRequest = 'ACCEPT_REQUEST',
   ActivateMembership = 'ACTIVATE_MEMBERSHIP',
+  CancelMembership = 'CANCEL_MEMBERSHIP',
   NewFeedback = 'NEW_FEEDBACK',
   NewRequest = 'NEW_REQUEST',
   NewTraining = 'NEW_TRAINING'
@@ -1550,7 +1553,7 @@ export type GetNotificationQueryVariables = Exact<{
 }>;
 
 
-export type GetNotificationQuery = { __typename?: 'Query', getNotification: { __typename?: 'NotificationResponse', totalUnread: number, total: number, notifications: Array<{ __typename?: 'Notification', id: string, type: NotificationType, isRead: boolean, hasBeenSeen: boolean, createdAt: any, request?: { __typename?: 'Request', sender: { __typename?: 'User', firstname: string, lastname: string, roles: string, avatar?: string | null }, receiver: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null }> } };
+export type GetNotificationQuery = { __typename?: 'Query', getNotification: { __typename?: 'NotificationResponse', totalUnread: number, total: number, notifications: Array<{ __typename?: 'Notification', id: string, type: NotificationType, isRead: boolean, hasBeenSeen: boolean, createdAt: any, request?: { __typename?: 'Request', sender: { __typename?: 'User', firstname: string, lastname: string, roles: string, avatar?: string | null }, receiver: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null, membership?: { __typename?: 'Membership', id: string, student: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } | null }> } };
 
 export type GetPreferenceNotificationQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1660,7 +1663,7 @@ export type SubNewNotificationSubscriptionVariables = Exact<{
 }>;
 
 
-export type SubNewNotificationSubscription = { __typename?: 'Subscription', newNotification: { __typename?: 'Notification', id: string, type: NotificationType, hasBeenSeen: boolean, isRead: boolean, createdAt: any, request?: { __typename?: 'Request', id: string, sender: { __typename?: 'User', firstname: string, lastname: string, roles: string }, receiver: { __typename?: 'User', firstname: string, lastname: string } } | null } };
+export type SubNewNotificationSubscription = { __typename?: 'Subscription', newNotification: { __typename?: 'Notification', id: string, type: NotificationType, hasBeenSeen: boolean, isRead: boolean, createdAt: any, request?: { __typename?: 'Request', id: string, sender: { __typename?: 'User', firstname: string, lastname: string, roles: string }, receiver: { __typename?: 'User', firstname: string, lastname: string } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null, membership?: { __typename?: 'Membership', id: string, student: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } | null } };
 
 export type TotalUnreadMessageSubSubscriptionVariables = Exact<{
   id: Scalars['String']['input'];
@@ -4317,6 +4320,16 @@ export const GetNotificationDocument = gql`
           avatar
         }
       }
+      membership {
+        id
+        student {
+          id
+          email
+          firstname
+          lastname
+          avatar
+        }
+      }
     }
   }
 }
@@ -5056,6 +5069,28 @@ export const SubNewNotificationDocument = gql`
       receiver {
         firstname
         lastname
+      }
+    }
+    feedback {
+      title
+      id
+      comment
+      user {
+        id
+        firstname
+        lastname
+        email
+        avatar
+      }
+    }
+    membership {
+      id
+      student {
+        id
+        email
+        firstname
+        lastname
+        avatar
       }
     }
   }
