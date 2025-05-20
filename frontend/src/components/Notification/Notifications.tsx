@@ -1,5 +1,5 @@
 import { Drawer, DrawerContent, Tab, Tabs, Tooltip } from "@heroui/react";
-import { Bell, CheckCheck } from "lucide-react";
+import { Bell, CheckCheck, X } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -27,6 +27,7 @@ import {
 } from "./components/NotificationContent";
 import { groupNotifications } from "./components/NotificationGroup";
 import { getNotificationRedirectPath } from "./components/NotificationRedirect";
+import { toast } from "sonner";
 
 interface NotificationContentProps {
   avatar: React.ReactNode;
@@ -69,12 +70,6 @@ export default function Notifications() {
     }
   }, [dataNotif]);
 
-  useEffect(() => {
-    if (socketNotification) {
-      refetch();
-    }
-  }, [socketNotification, refetch]);
-
   const countRequest = allNotifications.reduce((acc, curr) => {
     if (!curr.hasBeenSeen) return acc + 1;
     return acc;
@@ -100,6 +95,7 @@ export default function Notifications() {
 
   const handleNotifSeen = async () => {
     setIsOpen(true);
+    refetch();
     const notEverythingSeen = allNotifications.some(
       (notif) => !notif.hasBeenSeen
     );
@@ -157,6 +153,43 @@ export default function Notifications() {
         return DefaultNotification();
     }
   };
+
+  useEffect(() => {
+    if (socketNotification) {
+      const { avatar, message } = getNotificationContent(
+        socketNotification as Notification
+      );
+      if (!isOpen) {
+        toast("", {
+          description: (
+            <div
+              className="flex flex-1 items-center gap-4 cursor-pointer"
+              onClick={() => {
+                handleRedirect(
+                  socketNotification.id,
+                  socketNotification.type,
+                  socketNotification.isRead
+                );
+                toast.dismiss();
+              }}
+            >
+              {avatar}
+              <div className="text-xs flex-1 text-dark">{message}</div>
+            </div>
+          ),
+          action: {
+            label: (
+              <div className="hover:bg-black/5 p-2 rounded-full cursor-pointer">
+                <X size={18} />
+              </div>
+            ),
+            onClick: () => toast.dismiss(),
+          },
+        });
+      }
+      refetch();
+    }
+  }, [socketNotification, refetch]);
 
   return (
     <>

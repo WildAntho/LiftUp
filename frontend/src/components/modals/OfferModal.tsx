@@ -13,10 +13,10 @@ import {
   ModalHeader,
 } from "@heroui/modal";
 import { Switch } from "@heroui/switch";
-import { SelectField, TextInputField, TextareaField } from "evergreen-ui";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
+import { Input, Select, SelectItem, Textarea } from "@heroui/react";
 
 type OfferModalProps = {
   open: boolean;
@@ -43,7 +43,7 @@ export default function OfferModal({
     categoryId: "",
     description: "",
     durability: 0,
-    price: "",
+    price: 0,
     crewId: "",
   });
   const [formError, setFormError] = useState({
@@ -60,7 +60,7 @@ export default function OfferModal({
       categoryId: "",
       description: "",
       durability: 0,
-      price: "",
+      price: 0,
       crewId: "",
     });
     setFormError({
@@ -79,7 +79,7 @@ export default function OfferModal({
         categoryId: offer?.category.id,
         description: offer.description,
         durability: offer.durability,
-        price: offer.price.toString(),
+        price: offer.price,
         crewId: offer.crew?.id ?? "",
       });
     }
@@ -114,7 +114,7 @@ export default function OfferModal({
           data: {
             ...formState,
             availability,
-            price: Number(formState.price),
+            price: formState.price,
             crewId: formState.crewId === "" ? null : formState.crewId,
           },
           id: offer.id as string,
@@ -152,61 +152,49 @@ export default function OfferModal({
         <ModalHeader className="w-full h-full flex justify-center">
           <p>Ajouter une prestation</p>
         </ModalHeader>
-        <ModalBody style={{ gap: "4px" }} className="h-full">
+        <ModalBody style={{ gap: "20px" }} className="h-full">
           <div className="w-full flex justify-center items-center gap-2 flex-1">
             <div className="w-[60%] relative">
-              <TextInputField
-                required
+              <Input
+                isRequired
                 isInvalid={formError.name}
-                label="Titre"
                 type="text"
-                placeholder="Désignation de la prestation"
+                label="Désignation de la prestation"
                 value={formState.name}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onChange={(e) =>
                   setFormState((prev) => ({ ...prev, name: e.target.value }))
                 }
               />
-              {formError.name && (
-                <p className="text-red-500 text-xs absolute top-[65px] left-1">
-                  Veuillez renseigner ce champ
-                </p>
-              )}
             </div>
             <div className="w-[40%] relative">
-              <SelectField
-                label="Catégorie"
-                className="flex-1"
+              <Select
+                isRequired
                 isInvalid={formError.categoryId}
-                required
-                value={formState.categoryId}
-                onChange={(e) => {
-                  setFormState((prev) => ({
-                    ...prev,
+                label="Catégorie"
+                selectedKeys={
+                  formState.categoryId ? [formState.categoryId] : []
+                }
+                onChange={(e) =>
+                  setFormState({
+                    ...formState,
                     categoryId: e.target.value,
-                  }));
-                }}
+                  })
+                }
               >
-                <option value="">Aucune catégorie</option>
-                {allCategories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.label}
-                  </option>
+                {allCategories.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.label}
+                  </SelectItem>
                 ))}
-              </SelectField>
-              {formError.categoryId && (
-                <p className="text-red-500 text-xs absolute top-[65px] left-1">
-                  Veuillez renseigner ce champ
-                </p>
-              )}
+              </Select>
             </div>
           </div>
           <div className="relative">
-            <TextareaField
-              placeholder="Décrivez votre prestation"
-              label="Description"
+            <Textarea
+              label="Décrivez votre prestation"
+              isRequired
               isInvalid={formError.description}
-              required
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+              onChange={(e) =>
                 setFormState((prev) => ({
                   ...prev,
                   description: e.target.value,
@@ -214,77 +202,60 @@ export default function OfferModal({
               }
               value={formState.description}
             />
-            {formError.description && (
-              <p className="text-red-500 text-xs absolute bottom-2 left-1">
-                Veuillez renseigner ce champ
-              </p>
-            )}
           </div>
           <div className="w-full flex justify-center items-center gap-2 flex-1">
             <div className="w-[50%] relative">
-              <TextInputField
-                required
+              <Input
+                isRequired
                 isInvalid={formError.durability}
-                label="Durée de la prestation (mois)"
+                variant="underlined"
                 type="number"
-                placeholder="Renseignez la durée"
-                value={formState.durability}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                label="Renseignez la durée (mois)"
+                value={formState.durability.toString()}
+                onChange={(e) =>
                   setFormState((prev) => ({
                     ...prev,
                     durability: Number(e.target.value),
                   }))
                 }
               />
-              {formError.durability && (
-                <p className="text-red-500 text-xs absolute top-[65px] left-1">
-                  Veuillez renseigner ce champ
-                </p>
-              )}
             </div>
             <div className="w-[50%] relative">
-              <TextInputField
-                required
+              <Input
+                isRequired
                 isInvalid={formError.price}
-                label="Prix (par mois)"
+                variant="underlined"
                 type="number"
-                placeholder="Renseignez le prix"
-                value={formState.price}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                label="Renseignez le prix (€)"
+                value={formState.price.toString()}
+                onChange={(e) =>
                   setFormState((prev) => ({
                     ...prev,
-                    price: e.target.value,
+                    price: Number(e.target.value),
                   }))
                 }
               />
-              {formError.price && (
-                <p className="text-red-500 text-xs absolute top-[65px] left-1">
-                  Veuillez renseigner ce champ
-                </p>
-              )}
             </div>
           </div>
           <div>
-            <SelectField
+            <Select
               label="Equipe"
-              className="flex-1"
-              hint="Rattacher cette offre à une équipe. Les élèves qui souscriront à
+              description="Rattacher cette offre à une équipe. Les élèves qui souscriront à
               cette offre seront automatiquement ajoutés à l'équipe."
-              value={formState.crewId}
-              onChange={(e) => {
-                setFormState((prev) => ({
-                  ...prev,
+              selectedKeys={formState.crewId ? [formState.crewId] : []}
+              onChange={(e) =>
+                setFormState({
+                  ...formState,
                   crewId: e.target.value,
-                }));
-              }}
+                })
+              }
             >
-              <option value="">Aucune équipe sélectionnée</option>
-              {allCrews.map((crew) => (
-                <option key={crew.id} value={crew.id}>
-                  {crew.name}
-                </option>
+              {allCrews.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
               ))}
-            </SelectField>
+            </Select>
           </div>
           <Switch
             isSelected={availability}

@@ -49,6 +49,7 @@ import ConfirmModal from "./ConfirmModal";
 import Saving from "../Saving";
 import Cancel from "../Cancel";
 import ConfirmButton from "../ConfirmButton";
+import DateInput from "../DateInput";
 
 interface Config {
   rep: number;
@@ -430,14 +431,9 @@ export default function TrainingModal({
                       />
                     </div>
                     <div className="flex-1">
-                      <Input
-                        isRequired
-                        label="Date"
-                        type="date"
-                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                          setSelectedDate(e.target.value)
-                        }
-                        value={selectedDate}
+                      <DateInput
+                        date={selectedDate}
+                        setDate={setSelectedDate}
                       />
                     </div>
                   </>
