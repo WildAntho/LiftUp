@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class ExerciceModel1747733304740 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`INSERT INTO exercise_model (title, serie, rep, image, primary_muscle_id, secondary_muscle_id) VALUES
+    await queryRunner.query(`INSERT INTO "exercice_model" ("title", "serie", "rep", "image", "primaryMuscleId", "secondaryMuscleId") VALUES
             ('Soulevé de terre jambes tendues', 1, 1, '/file-stifdeadlift.webp', 10, 15),
             ('Développé couché barre', 1, 1, '/file-benchpress.webp', 2, 4),
             ('Tractions pronation', 1, 1, '/file-pullup.webp', 1, 3),
