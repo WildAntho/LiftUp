@@ -1,3 +1,4 @@
+import { useApolloClient } from "@apollo/client";
 import {
   BicepsFlexed,
   BookOpen,
@@ -38,6 +39,7 @@ type Link = {
 };
 
 export default function Navigation() {
+  const client = useApolloClient();
   const location = useLocation();
   const path = location.pathname;
   const currentUser = useUserStore((state) => state.user);
@@ -94,6 +96,7 @@ export default function Navigation() {
 
   const handleLogout = async () => {
     await logout();
+    client.resetStore();
     clearStore();
     clearStudent();
     clearCrew();

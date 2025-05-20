@@ -5,8 +5,9 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/modal";
-import { Button, Input } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { Workflow } from "lucide-react";
+import DateInput from "../DateInput";
 
 type ChooseDateModalProps = {
   isOpen: boolean;
@@ -38,14 +39,7 @@ export default function ChooseDateModal({
           <p className="pt-2">Choisissez la date de début du programme</p>
         </ModalHeader>
         <ModalBody>
-          <Input
-            placeholder="Date de début"
-            label="Date de début"
-            isRequired
-            type="date"
-            value={startDate}
-            onValueChange={setStartDate}
-          />
+          <DateInput date={startDate} setDate={setStartDate} />
         </ModalBody>
         <ModalFooter className="justify-end gap-2">
           <Button

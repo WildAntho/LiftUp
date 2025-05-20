@@ -1,6 +1,12 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { BadgeEuro, Clock, Dumbbell, Lock, PlusCircle } from "lucide-react";
+import {
+  BadgeEuro,
+  Clock,
+  Dumbbell,
+  Lock,
+  Plus,
+  PlusCircle,
+} from "lucide-react";
 import {
   Offer,
   useDeleteOfferMutation,
@@ -10,6 +16,7 @@ import OfferModal from "@/components/modals/OfferModal";
 import Edit from "@/components/Edit";
 import Delete from "@/components/Delete";
 import { Separator } from "@/components/ui/separator";
+import { Button, Tooltip } from "@heroui/react";
 
 export default function Offers() {
   const { data: dataOffers, refetch } = useGetMyOffersQuery();
@@ -38,14 +45,14 @@ export default function Offers() {
   return (
     <>
       <section className="w-full h-full flex flex-col items-center overflow-y-auto pt-10">
-        <section className="w-full flex flex-col items-center justify-start gap-2 p-10">
+        <section className="w-full h-full flex flex-col items-center justify-start gap-2 p-10">
           <div className="w-[90%] flex justify-between items-end">
             <p className="font-semibold text-xl flex justify-start items-center gap-2">
               <BadgeEuro size={30} /> Toutes les offres
             </p>
             <Button
               className="group shadow-none text-tertiary h-12 w-auto rounded-xl bg-tertiary bg-opacity-20 border border-tertiary border-opacity-20 hover:bg-tertiary hover:bg-opacity-20 hover:translate-y-[-2px] hover:shadow-sm transition-all duration-200"
-              onClick={() => setOpen(true)}
+              onPress={() => setOpen(true)}
             >
               <PlusCircle className="transition-all duration-200 group-hover:rotate-90" />
               <p className="text-sm transition-all duration-200 group-hover:translate-x-1">
@@ -54,66 +61,95 @@ export default function Offers() {
             </Button>
           </div>
           <Separator className="w-[90%]" />
-          <section className="w-[90%] grid grid-cols-3 2xl:grid-cols-4 gap-2 bg-gray-50 bg-opacity-50 border border-gray-100 shadow-md p-4 mt-5 rounded-xl">
-            {myOffers?.map((o) => (
-              <div key={o.id} className="h-[450px]">
-                <article className="w-full h-full flex flex-col justify-between items-start bg-white rounded-lg shadow-xs border border-gray-200 p-6 space-y-6 hover:border-gray-300 hover:shadow-md hover:translate-y-[-2px] transition-all duration-200">
-                  <div className="space-y-4 w-full flex-1">
-                    <div className="w-full flex justify-between items-center">
-                      <h1
-                        className="text-sm font-semibold hover:underline underline-offset-1 decoration-1 truncate cursor-pointer text-blue-500 bg-blue-500 bg-opacity-10 px-4 py-2 rounded-full"
-                        onClick={() => {
-                          setOfferToEdit(o as Omit<Offer, "user">);
-                          openModal();
-                        }}
-                      >
-                        {o.name}
-                      </h1>
-                      <div className="flex justify-center items-center">
-                        <Edit
+          {myOffers.length > 0 ? (
+            <section className="w-[90%] grid grid-cols-3 2xl:grid-cols-4 gap-2 bg-gray-50 bg-opacity-50 border border-gray-100 shadow-md p-4 mt-5 rounded-xl">
+              {myOffers?.map((o) => (
+                <div key={o.id} className="h-[450px]">
+                  <article className="w-full h-full flex flex-col justify-between items-start bg-white rounded-lg shadow-xs border border-gray-200 p-6 space-y-6 hover:border-gray-300 hover:shadow-md hover:translate-y-[-2px] transition-all duration-200">
+                    <div className="space-y-4 w-full flex-1">
+                      <div className="w-full flex justify-between items-center">
+                        <h1
+                          className="text-sm font-semibold hover:underline underline-offset-1 decoration-1 truncate cursor-pointer text-blue-500 bg-blue-500 bg-opacity-10 px-4 py-2 rounded-full"
                           onClick={() => {
                             setOfferToEdit(o as Omit<Offer, "user">);
                             openModal();
                           }}
-                        />
-                        <Delete
-                          onClick={handleDelete}
-                          id={o.id as string}
-                          loading={loading}
-                          title="Êtes-vous sûr de vouloir supprimer cette offre ?"
-                        />
-                      </div>
-                    </div>
-                    <div className="h-[80%] w-full relative">
-                      <p className="text-gray-500 text-sm absolute inset-0 overflow-hidden">
-                        {o.description ?? "Aucune description"}
-                        <span className="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-white to-transparent" />
-                      </p>
-                    </div>
-                  </div>
-                  <div className="w-full flex flex-col justify-start items-start gap-5">
-                    <Separator />
-                    <div className="flex flex-wrap gap-3">
-                      <div className="bg-white border border-gray-300 text-gray-700 px-3 py-1 rounded-md text-xs font-medium flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        {o.durability} mois
-                      </div>
-                      <div className="bg-white border border-gray-300 text-gray-700 px-3 py-1 rounded-md text-xs font-medium flex items-center gap-2">
-                        <Dumbbell className="w-4 h-4" />
-                        {o.category.label}
-                      </div>
-                      {!o.availability && (
-                        <div className="bg-red-500 bg-opacity-20 text-gray-700 px-3 py-1 rounded-md text-xs font-medium flex items-center gap-2">
-                          <Lock className="w-4 h-4" />
-                          Complet
+                        >
+                          {o.name}
+                        </h1>
+                        <div className="flex justify-center items-center">
+                          <Edit
+                            onClick={() => {
+                              setOfferToEdit(o as Omit<Offer, "user">);
+                              openModal();
+                            }}
+                          />
+                          <Delete
+                            onClick={handleDelete}
+                            id={o.id as string}
+                            loading={loading}
+                            title="Êtes-vous sûr de vouloir supprimer cette offre ?"
+                          />
                         </div>
-                      )}
+                      </div>
+                      <div className="h-[80%] w-full relative">
+                        <p className="text-gray-500 text-sm absolute inset-0 overflow-hidden">
+                          {o.description ?? "Aucune description"}
+                          <span className="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-white to-transparent" />
+                        </p>
+                      </div>
                     </div>
+                    <div className="w-full flex flex-col justify-start items-start gap-5">
+                      <Separator />
+                      <div className="flex flex-wrap gap-3">
+                        <div className="bg-white border border-gray-300 text-gray-700 px-3 py-1 rounded-md text-xs font-medium flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          {o.durability} mois
+                        </div>
+                        <div className="bg-white border border-gray-300 text-gray-700 px-3 py-1 rounded-md text-xs font-medium flex items-center gap-2">
+                          <Dumbbell className="w-4 h-4" />
+                          {o.category.label}
+                        </div>
+                        {!o.availability && (
+                          <div className="bg-red-500 bg-opacity-20 text-gray-700 px-3 py-1 rounded-md text-xs font-medium flex items-center gap-2">
+                            <Lock className="w-4 h-4" />
+                            Complet
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              ))}
+            </section>
+          ) : (
+            <section className="w-full h-full flex flex-col items-center justify-start gap-4 mt-10">
+              <div className="flex flex-col items-center justify-center gap-2">
+                <h2 className="text-2xl font-semibold text-center text-gray-500">
+                  Lancez-vous !
+                </h2>
+                <div className="flex flex-col justify-center items-center">
+                  <p className="text-md text-gray-400 text-center w-[500px]">
+                    Créez votre première offre pour permettre aux élèves de
+                    s’inscrire et démarrer leur coaching dès maintenant !
+                  </p>
+                </div>
+                <Tooltip
+                  content="Ajouter une prestation"
+                  className="text-xs"
+                  showArrow={true}
+                  color="foreground"
+                >
+                  <div
+                    className="group flex justify-center items-center w-12 h-12 rounded-full my-2 cursor-pointer text-tertiary border border-tertiary border-opacity-20 bg-tertiary bg-opacity-20 hover:bg-tertiary hover:bg-opacity-20 shadow-sm p-2 hover:translate-y-[-2px] hover:shadow-md transition-all duration-200"
+                    onClick={() => setOpen(true)}
+                  >
+                    <Plus className="transition-all duration-200 group-hover:rotate-90" />
                   </div>
-                </article>
+                </Tooltip>
               </div>
-            ))}
-          </section>
+            </section>
+          )}
         </section>
       </section>
       <OfferModal

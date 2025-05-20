@@ -1,6 +1,6 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Info, Loader2, X } from "lucide-react";
-import { Label, TagInput, TextInputField, Textarea } from "evergreen-ui";
+import { Label, TagInput } from "evergreen-ui";
 import { Button } from "@/components/ui/button";
 import {
   useAddCoachProfileMutation,
@@ -15,6 +15,7 @@ import Edit from "@/components/Edit";
 import Close from "@/components/Close";
 import Saving from "@/components/Saving";
 import { toast } from "sonner";
+import { Input, Textarea } from "@heroui/react";
 
 export default function About() {
   const {
@@ -112,13 +113,11 @@ export default function About() {
                 </Label>
                 {isShow && <Separator className="mt-2" />}
                 {!isShow ? (
-                  <TextInputField
-                    placeholder="Renseignez votre activité"
-                    marginBottom={0}
+                  <Input
+                    label="Renseignez votre activité"
+                    className="mt-2"
                     value={name}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setName(e.target.value)
-                    }
+                    onChange={(e) => setName(e.target.value)}
                   />
                 ) : (
                   <p className="text-xs mt-2">
@@ -133,11 +132,10 @@ export default function About() {
                 {isShow && <Separator className="mt-2" />}
                 {!isShow ? (
                   <Textarea
-                    placeholder="Description"
+                    label="Description"
+                    className="mt-2"
                     value={description}
-                    onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-                      setDescription(e.target.value)
-                    }
+                    onChange={(e) => setDescription(e.target.value)}
                   />
                 ) : (
                   <p className="text-xs mt-2">
@@ -191,15 +189,15 @@ export default function About() {
                 </Label>
                 <Separator className="mt-2" />
                 {!isShow ? (
-                  <div className="w-full mt-5">
+                  <div className="w-full flex flex-col items-start justify-start gap-2 my-4">
                     {social.map(({ label, url }, i) => (
-                      <TextInputField
+                      <Input
                         key={i}
                         label={label.charAt(0).toUpperCase() + label.slice(1)}
                         type="text"
                         placeholder="URL"
                         value={url}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        onChange={(e) => {
                           if (label === "facebook") setFacebook(e.target.value);
                           if (label === "instagram")
                             setInstagram(e.target.value);
