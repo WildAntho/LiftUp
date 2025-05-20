@@ -144,11 +144,4 @@ export class User extends BaseEntity {
     cascade: ["insert", "update"],
   })
   notificationPreferences!: NotificationPreference[];
-
-  @AfterInsert()
-  async createDefaultNotificationPreferences() {
-    await NotificationPreference.create({
-      user: this,
-    }).save();
-  }
 }

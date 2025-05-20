@@ -18,6 +18,7 @@ import { Program } from "../entities/program";
 import { TrainingPlan } from "../entities/trainingPlan";
 import { MuscleGroup } from "../entities/muscleGroup";
 import { NotificationPreference } from "../entities/notificationPreference";
+import { UserSubscriber } from "../entities/userSubscriber";
 
 config();
 
@@ -30,6 +31,7 @@ export const dataSource = new DataSource({
   password: DB_PASSWORD,
   database: DB_SCHEMA,
   port: 5432,
+  subscribers: [UserSubscriber],
   entities: [
     User,
     Training,
@@ -48,7 +50,7 @@ export const dataSource = new DataSource({
     Program,
     TrainingPlan,
     MuscleGroup,
-    NotificationPreference
+    NotificationPreference,
   ],
   synchronize: true,
   migrations: ["build/migrations/*.js"],
