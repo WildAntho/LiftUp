@@ -9,7 +9,7 @@ export type IntensityComponentProps = {
 };
 
 export default function IntensityComponent({
-  size = "sm",
+  size = "md",
   value,
   setValue,
   disabled = false,
@@ -28,13 +28,10 @@ export default function IntensityComponent({
     | undefined = "success";
 
   if (value) {
-    if (value > 2 && value < 5) {
-      dynamicColor = "primary";
+    if (value < 5) {
+      dynamicColor = "success";
     }
-    if (value > 4 && value < 7) {
-      dynamicColor = "secondary";
-    }
-    if (value > 6 && value < 9) {
+    if (value > 5 && value < 9) {
       dynamicColor = "warning";
     }
     if (value > 8) {

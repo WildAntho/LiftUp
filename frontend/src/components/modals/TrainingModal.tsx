@@ -43,7 +43,6 @@ import { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useCrewStore } from "@/services/zustand/crewStore";
 import { Separator } from "../ui/separator";
-import { TextInputField } from "evergreen-ui";
 import ExerciceComponent from "@/pages/Home/Program/components/Configuration/components/ExerciceComponent";
 import ConfirmModal from "./ConfirmModal";
 import Saving from "../Saving";
@@ -536,6 +535,7 @@ export default function TrainingModal({
                   <>
                     <section className="flex flex-col justify-center items-start w-full rounded-lg bg-white">
                       <Input
+                        isRequired
                         data-testid="recurrence-number"
                         className="m-0"
                         type="number"
@@ -576,11 +576,13 @@ export default function TrainingModal({
                         >
                           <p className="text-xs font-semibold">{e.title}</p>
                           <div className="flex gap-2">
-                            <TextInputField
+                            <Input
                               label="Séries"
                               type="number"
                               placeholder="+/- séries"
-                              value={exerciceConfigs[e.id]?.serie || 0}
+                              value={
+                                exerciceConfigs[e.id]?.serie.toString() || ""
+                              }
                               onChange={(
                                 event: React.ChangeEvent<HTMLInputElement>
                               ) =>
@@ -597,11 +599,13 @@ export default function TrainingModal({
                                 }))
                               }
                             />
-                            <TextInputField
+                            <Input
                               label="Répétitions"
                               type="number"
                               placeholder="+/- répétitions"
-                              value={exerciceConfigs[e.id]?.rep || 0}
+                              value={
+                                exerciceConfigs[e.id]?.rep.toString() || ""
+                              }
                               onChange={(
                                 event: React.ChangeEvent<HTMLInputElement>
                               ) =>
@@ -618,11 +622,14 @@ export default function TrainingModal({
                                 }))
                               }
                             />
-                            <TextInputField
+                            <Input
                               label="Intensité"
                               type="number"
                               placeholder="+/- intensité"
-                              value={exerciceConfigs[e.id]?.intensity || 0}
+                              value={
+                                exerciceConfigs[e.id]?.intensity.toString() ||
+                                ""
+                              }
                               onChange={(
                                 event: React.ChangeEvent<HTMLInputElement>
                               ) =>

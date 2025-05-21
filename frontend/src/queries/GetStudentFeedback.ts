@@ -7,6 +7,7 @@ export const GET_STUDENT_FEEDBACK = gql`
       title
       intensity
       feeling
+      satisfaction
       date
       comment
     }

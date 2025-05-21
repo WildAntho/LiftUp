@@ -6,6 +6,7 @@ export const GET_FEEDBACKS = gql`
       id
       intensity
       feeling
+      satisfaction
       comment
       title
       date

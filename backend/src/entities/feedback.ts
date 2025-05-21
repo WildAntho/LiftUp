@@ -32,6 +32,10 @@ export class Feedback extends BaseEntity {
   @Column()
   feeling!: number;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true, default: 7 })
+  satisfaction?: number;
+
   @Field()
   @Column()
   date!: Date;
