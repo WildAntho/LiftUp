@@ -65,6 +65,7 @@ export class FeedbackResolver {
     newFeedback.date = training.date;
     newFeedback.intensity = feedbackData.intensity;
     newFeedback.feeling = feedbackData.feeling;
+    newFeedback.satisfaction = feedbackData.satisfaction;
     newFeedback.comment = feedbackData.comment;
     newFeedback.training = training;
     newFeedback.user = connectedUser;
@@ -120,6 +121,7 @@ export class FeedbackResolver {
     if (feedback) {
       feedback.feeling = feedbackData.feeling;
       feedback.intensity = feedbackData.intensity;
+      feedback.satisfaction = feedbackData.satisfaction;
       feedback.comment = feedbackData.comment;
       await feedback.save();
       return JSON.stringify("Le feedback a bien été modifié");

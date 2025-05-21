@@ -12,6 +12,9 @@ export class FeedbackData {
   feeling!: number;
 
   @Field()
+  satisfaction!: number;
+
+  @Field()
   comment?: string;
 }
 
@@ -26,6 +29,9 @@ export class FeedbackWithoutTrainingId
 
   @Field()
   feeling!: number;
+
+  @Field()
+  satisfaction!: number;
 
   @Field()
   comment?: string;

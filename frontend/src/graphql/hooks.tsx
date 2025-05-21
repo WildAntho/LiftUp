@@ -176,6 +176,7 @@ export type Feedback = {
   id: Scalars['ID']['output'];
   intensity: Scalars['Float']['output'];
   notifications?: Maybe<Array<Notification>>;
+  satisfaction?: Maybe<Scalars['Float']['output']>;
   title: Scalars['String']['output'];
   training: Training;
   user: User;
@@ -185,6 +186,7 @@ export type FeedbackData = {
   comment: Scalars['String']['input'];
   feeling: Scalars['Float']['input'];
   intensity: Scalars['Float']['input'];
+  satisfaction: Scalars['Float']['input'];
   trainingId: Scalars['String']['input'];
 };
 
@@ -192,6 +194,7 @@ export type FeedbackWithoutTrainingId = {
   comment: Scalars['String']['input'];
   feeling: Scalars['Float']['input'];
   intensity: Scalars['Float']['input'];
+  satisfaction: Scalars['Float']['input'];
 };
 
 /** Format d'intensité */
@@ -1494,7 +1497,7 @@ export type GetFeedbacksQueryVariables = Exact<{
 }>;
 
 
-export type GetFeedbacksQuery = { __typename?: 'Query', getFeedbacks: Array<{ __typename?: 'Feedback', id: string, intensity: number, feeling: number, comment?: string | null, title: string, date: any }> };
+export type GetFeedbacksQuery = { __typename?: 'Query', getFeedbacks: Array<{ __typename?: 'Feedback', id: string, intensity: number, feeling: number, satisfaction?: number | null, comment?: string | null, title: string, date: any }> };
 
 export type GetListUsersCrewQueryVariables = Exact<{
   input?: InputMaybe<Scalars['String']['input']>;
@@ -1587,7 +1590,7 @@ export type GetStudentFeedbackQueryVariables = Exact<{
 }>;
 
 
-export type GetStudentFeedbackQuery = { __typename?: 'Query', getStudentFeedback: Array<{ __typename?: 'Feedback', id: string, title: string, intensity: number, feeling: number, date: any, comment?: string | null }> };
+export type GetStudentFeedbackQuery = { __typename?: 'Query', getStudentFeedback: Array<{ __typename?: 'Feedback', id: string, title: string, intensity: number, feeling: number, satisfaction?: number | null, date: any, comment?: string | null }> };
 
 export type GetStudentTrainingsQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -3841,6 +3844,7 @@ export const GetFeedbacksDocument = gql`
     id
     intensity
     feeling
+    satisfaction
     comment
     title
     date
@@ -4562,6 +4566,7 @@ export const GetStudentFeedbackDocument = gql`
     title
     intensity
     feeling
+    satisfaction
     date
     comment
   }
