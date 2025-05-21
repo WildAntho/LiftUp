@@ -96,7 +96,7 @@ export class TrainingResolver {
         throw new Error("Vous ne pouvez pas éditer cet entraînement");
       if (data.title) training.title = data.title;
       if (data.date) training.date = data.date[0];
-      if (data.notes) training.notes = data.notes;
+      training.notes = data.notes;
       training.editable = data.editable ?? true;
       await training.save();
       const feedback = await Feedback.findOne({
