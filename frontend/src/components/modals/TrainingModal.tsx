@@ -1,7 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { format, setDay } from "date-fns";
 import { addWeeks } from "date-fns";
-import { fr } from "date-fns/locale";
 import { useUserStore } from "@/services/zustand/userStore";
 import { useStudentStore } from "@/services/zustand/studentStore";
 import FeedbackModal from "./FeedbackModal";
@@ -88,7 +87,6 @@ export default function TrainingModal({
   const currentCrew = useCrewStore((state) => state.crew);
   const isCoach = currentUser?.roles === "COACH";
   // To show on card Training
-  const formatedDate = format(date, "eeee d MMMM", { locale: fr });
   const [addTraining, { loading }] = useAddTrainingMutation();
   const [addTrainingStudent, { loading: loadingStudent }] =
     useAddTrainingStudentMutation();
@@ -413,49 +411,28 @@ export default function TrainingModal({
                 Informations générales
               </p>
               <section className="w-full flex justify-center items-center gap-2">
-                {!isShow ? (
-                  <>
-                    <div className="relative flex-1">
-                      <Input
-                        data-testid="input-training"
-                        isInvalid={error}
-                        isRequired
-                        type="text"
-                        value={title}
-                        label="Titre de l'entraînement"
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                          setError(false);
-                          setTitle(e.target.value);
-                        }}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <DateInput
-                        date={selectedDate}
-                        setDate={setSelectedDate}
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex-1">
-                      <Label htmlFor="title" className="pl-2 text-xs">
-                        Titre
-                      </Label>
-                      <p className="text-sm pl-2 font-bold">
-                        {training?.title}
-                      </p>
-                    </div>
-                    <div className="flex-1">
-                      <Label htmlFor="date" className="pl-2 text-xs">
-                        Date
-                      </Label>
-                      <p className="text-sm pl-2 font-bold">
-                        {formatedDate[0].toUpperCase() + formatedDate.slice(1)}
-                      </p>
-                    </div>
-                  </>
-                )}
+                <div className="relative flex-1">
+                  <Input
+                    isReadOnly={isShow}
+                    data-testid="input-training"
+                    isInvalid={error}
+                    isRequired
+                    type="text"
+                    value={title}
+                    label="Titre de l'entraînement"
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      setError(false);
+                      setTitle(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <DateInput
+                    date={selectedDate}
+                    setDate={setSelectedDate}
+                    readOnly={isShow}
+                  />
+                </div>
               </section>
             </section>
             <Separator />
@@ -485,18 +462,15 @@ export default function TrainingModal({
             <Separator />
             <section className="flex-none flex flex-col justify-start gap-3 w-full p-4">
               <p className="w-full items-start font-bold">Notes</p>
-              {!isShow ? (
-                <Textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  label="Ajouter des notes"
-                  minRows={6}
-                />
-              ) : (
-                <p className={`text-xs ${!training?.notes && "text-gray-400"}`}>
-                  {training?.notes ? training?.notes : "Aucune note ajoutée"}
-                </p>
-              )}
+              <Textarea
+                isReadOnly={isShow}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                label={`${
+                  isShow ? (notes ? "" : "Aucune note") : "Ajouter des notes"
+                }`}
+                minRows={isShow ? 3 : 6}
+              />
             </section>
             {!isShow && <Separator />}
             {!isShow && (

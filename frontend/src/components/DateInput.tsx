@@ -8,9 +8,10 @@ import { fr } from "date-fns/locale";
 type DateInputProps = {
   date: string; // Format: "yyyy-MM-dd"
   setDate: (dateStr: string) => void;
+  readOnly?: boolean;
 };
 
-export default function DateInput({ date, setDate }: DateInputProps) {
+export default function DateInput({ date, setDate, readOnly }: DateInputProps) {
   // Convert the string date to a Date object using date-fns
   const parsedDate = date ? parse(date, "yyyy-MM-dd", new Date()) : undefined;
 
@@ -25,6 +26,20 @@ export default function DateInput({ date, setDate }: DateInputProps) {
       setDate(formatted);
     }
   };
+
+  if (readOnly) {
+    const displayValue = selectedDate
+      ? format(selectedDate, "EEEE d MMMM yyyy", { locale: fr })
+      : "";
+    return (
+      <Input
+        isReadOnly
+        label="Date"
+        startContent={<Calendar1Icon />}
+        value={displayValue}
+      />
+    );
+  }
 
   return (
     <Popover>
