@@ -21,10 +21,7 @@ export default function ProgressComponent({
           <h1 className="text-2xl font-semibold text-gray-900">
             Bonjour {userName} 👋
           </h1>
-          <p className="text-sm">
-            Envie de découvrir une application qui simplifie ton quotidien ?
-            Laisses-toi guider.
-          </p>
+          <p className="text-sm">Découvre l'application en quelques clics !</p>
         </div>
         {/* Progress Section */}
         <div className="mb-2 w-full">
