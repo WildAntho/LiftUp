@@ -20,6 +20,7 @@ import { useStudentStore } from "@/services/zustand/studentStore";
 import ConfirmButton from "../ConfirmButton";
 import Cancel from "../Cancel";
 import HeartRating from "../HeartRating";
+//import { Info, NotebookText } from "lucide-react";
 
 type FeedbackModalProps = {
   isOpen: boolean;
@@ -48,6 +49,7 @@ export default function FeedbackModal({
   refetch,
 }: FeedbackModalProps) {
   const currentStudent = useStudentStore((state) => state.student);
+  const [tabChoice, setTabChoice] = useState("infos");
   const [addFeedback, { loading: loadingAddFeedback }] =
     useAddFeedbackMutation();
   const [deleteFeedback, { loading: loadingDelete }] =
@@ -114,6 +116,7 @@ export default function FeedbackModal({
       onOpenChange={() => {
         if (setIsShow) setIsShow(true);
         setOpen(false);
+        setTabChoice("infos");
       }}
       size="full"
       placement="bottom"
@@ -151,49 +154,78 @@ export default function FeedbackModal({
               <span className="text-tertiary font-bold">TA SEANCE ?</span>
             </p>
             <p>Renseigne ton feedback pour suivre ton évolution !</p>
+            {/* <Tabs
+              aria-label="Choice feedback modal"
+              fullWidth
+              variant="underlined"
+              color="primary"
+              selectedKey={tabChoice}
+              onSelectionChange={(key) => setTabChoice(key as string)}
+            >
+              <Tab
+                key="infos"
+                title={
+                  <div className="flex items-center space-x-2">
+                    <Info size={20} />
+                    <span>Informations générales</span>
+                  </div>
+                }
+              />
+              <Tab
+                key="exercices"
+                title={
+                  <div className="flex items-center space-x-2">
+                    <NotebookText size={20} />
+                    <span>Détails exercices</span>
+                  </div>
+                }
+              />
+            </Tabs> */}
           </DrawerHeader>
           <DrawerBody className="w-full h-full flex flex-col items-center justify-between">
-            <section className="w-full">
-              <section className="flex flex-col justify-center items-center gap-2 w-full p-4 rounded-lg bg-white">
-                <p className="w-full text-center text-lg font-bold">
-                  Perception de l'effort
-                </p>
-                <IntensityComponent
-                  value={event && isShow ? event?.intensity : intensity}
-                  setValue={setIntensity}
-                  disabled={isShow}
-                />
+            {tabChoice === "infos" && (
+              <section className="w-full">
+                <section className="flex flex-col justify-center items-center gap-2 w-full p-4 rounded-lg bg-white">
+                  <p className="w-full text-center text-lg font-bold">
+                    Perception de l'effort
+                  </p>
+                  <IntensityComponent
+                    value={event && isShow ? event?.intensity : intensity}
+                    setValue={setIntensity}
+                    disabled={isShow}
+                  />
+                </section>
+                <section className="flex flex-col justify-center items-center gap-2 w-full p-4 rounded-lg bg-white">
+                  <p className="w-full text-center text-lg font-bold">
+                    Sensation
+                  </p>
+                  <EmojiFeeling
+                    value={event && isShow ? event?.feeling : feeling}
+                    setValue={setFeeling}
+                    disabled={isShow}
+                  />
+                </section>
+                <section className="flex flex-col justify-center items-center gap-2 w-full p-4 rounded-lg bg-white">
+                  <p className="w-full text-center text-lg font-bold">
+                    Satisfaction / Plaisir
+                  </p>
+                  <HeartRating
+                    satisfaction={satisfaction}
+                    setSatisfaction={setSatisfaction}
+                    disabled={isShow}
+                  />
+                </section>
+                <section className="flex flex-col justify-center items-center gap-2 w-full p-4 rounded-lg bg-white">
+                  <p className="w-full items-start font-bold">Commentaires</p>
+                  <Textarea
+                    value={isShow ? event?.comment ?? "" : comment}
+                    isReadOnly={isShow}
+                    onChange={(e) => setComment(e.target.value)}
+                    label="Vos commentaires sur la séance"
+                  />
+                </section>
               </section>
-              <section className="flex flex-col justify-center items-center gap-2 w-full p-4 rounded-lg bg-white">
-                <p className="w-full text-center text-lg font-bold">
-                  Sensation
-                </p>
-                <EmojiFeeling
-                  value={event && isShow ? event?.feeling : feeling}
-                  setValue={setFeeling}
-                  disabled={isShow}
-                />
-              </section>
-              <section className="flex flex-col justify-center items-center gap-2 w-full p-4 rounded-lg bg-white">
-                <p className="w-full text-center text-lg font-bold">
-                  Satisfaction / Plaisir
-                </p>
-                <HeartRating
-                  satisfaction={satisfaction}
-                  setSatisfaction={setSatisfaction}
-                  disabled={isShow}
-                />
-              </section>
-              <section className="flex flex-col justify-center items-center gap-2 w-full p-4 rounded-lg bg-white">
-                <p className="w-full items-start font-bold">Commentaires</p>
-                <Textarea
-                  value={isShow ? event?.comment ?? "" : comment}
-                  isReadOnly={isShow}
-                  onChange={(e) => setComment(e.target.value)}
-                  label="Vos commentaires sur la séance"
-                />
-              </section>
-            </section>
+            )}
             <div className="w-full flex justify-end items-center gap-2 pb-2">
               {!currentStudent && isShow && <Edit onClick={switchView} />}
               {!currentStudent && isShow && (

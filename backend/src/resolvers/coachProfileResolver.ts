@@ -3,6 +3,7 @@ import { CoachProfile } from "../entities/coachProfile";
 import { CtxUser } from "../InputType/coachType";
 import { CoachProfileInput } from "../InputType/coachProfileType";
 import { User } from "../entities/user";
+import { updateProgress } from "../services/progressService";
 
 @Resolver(CoachProfile)
 export class CoachProfileResolver {
@@ -44,6 +45,7 @@ export class CoachProfileResolver {
     await newProfile.save();
     coach.coachProfile = newProfile;
     await coach.save();
+    await updateProgress(context.user.id, "profile");
     return JSON.stringify("Le profil a bien été créé");
   }
 

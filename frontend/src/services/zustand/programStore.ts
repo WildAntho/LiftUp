@@ -11,6 +11,7 @@ export type ProgramStore = {
   public: boolean;
   price?: number;
   level?: ProgramLevel
+  categoryId?: string
 };
 
 type ProgramState = {

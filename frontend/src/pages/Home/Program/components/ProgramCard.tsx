@@ -18,6 +18,7 @@ type ProgramCardProps = {
   duration: number;
   price?: number | null;
   level?: ProgramLevel;
+  categoryId?: string;
   isPublic: boolean;
   onDelete: (id: string) => void;
   onValidate: (id: string) => void;
@@ -33,6 +34,7 @@ export default function ProgramCard({
   duration,
   level,
   price,
+  categoryId,
   isPublic,
   onDelete,
   onValidate,
@@ -107,6 +109,7 @@ export default function ProgramCard({
       public: isPublic,
       price: price ?? 0,
       level,
+      categoryId,
     });
     navigate(`/home?tab=program&section=configuration`);
   };

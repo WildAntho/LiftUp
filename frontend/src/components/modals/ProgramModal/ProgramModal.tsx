@@ -15,6 +15,7 @@ import {
   ProgramLevel,
   ProgramStatus,
   useCreateProgramMutation,
+  useGetAllCategoriesQuery,
 } from "@/graphql/hooks";
 import { useProgramStore } from "@/services/zustand/programStore";
 import { toast } from "sonner";
@@ -34,6 +35,7 @@ export type ProgramForm = {
   duration: number;
   price: number;
   level: ProgramLevel | string;
+  categoryId: string;
 };
 
 type Step = {
@@ -49,6 +51,7 @@ export default function ProgramModal({
   const navigate = useNavigate();
   const setProgram = useProgramStore((state) => state.set);
   const [createProgram, { loading }] = useCreateProgramMutation();
+  const { data } = useGetAllCategoriesQuery();
   const [currentStep, setCurrentStep] = useState(1);
   const [form, setForm] = useState<ProgramForm>({
     public: false,
@@ -57,7 +60,10 @@ export default function ProgramModal({
     duration: 1,
     price: 0,
     level: ProgramLevel.Beginner,
+    categoryId: "",
   });
+
+  const categories = data?.getAllCategories ?? [];
 
   const resetForm = () => {
     setForm({
@@ -67,6 +73,7 @@ export default function ProgramModal({
       duration: 1,
       price: 0,
       level: ProgramLevel.Beginner,
+      categoryId: "",
     });
     setCurrentStep(1);
   };
@@ -106,7 +113,7 @@ export default function ProgramModal({
 
   const canContinue = () => {
     if (currentStep === 1) return true;
-    if (currentStep === 2) return form.title !== "" && form.description !== "";
+    if (currentStep === 2) return form.title !== "";
     if (currentStep === 3) return form.price > 0 && form.level;
     return false;
   };
@@ -130,6 +137,7 @@ export default function ProgramModal({
         public: data?.createProgram.public as boolean,
         price: data?.createProgram.price as number,
         level: data?.createProgram.level as ProgramLevel,
+        categoryId: data?.createProgram?.category?.id as string,
       });
       resetForm();
       onClose();
@@ -258,6 +266,7 @@ export default function ProgramModal({
                                   <Input
                                     data-testid="program-title"
                                     label="Titre du programme"
+                                    isRequired
                                     value={form.title}
                                     onChange={(e) =>
                                       setForm({
@@ -292,6 +301,7 @@ export default function ProgramModal({
                                     data-testid="program-duration"
                                     label="Durée (semaines)"
                                     type="number"
+                                    isRequired
                                     min={1}
                                     value={form.duration.toString()}
                                     onChange={(e) =>
@@ -305,10 +315,56 @@ export default function ProgramModal({
                               </div>
                             )}
                             {index === 2 && (
-                              <div className="w-full flex items-center gap-2">
+                              <div className="flex flex-col justify-center items-center gap-2">
+                                <div className="w-full flex items-center gap-2">
+                                  <Select
+                                    label="Catégorie de programme"
+                                    placeholder="Choisir une catégorie"
+                                    isRequired
+                                    selectedKeys={
+                                      form.categoryId ? [form.categoryId] : []
+                                    }
+                                    onChange={(e) =>
+                                      setForm({
+                                        ...form,
+                                        categoryId: e.target.value as string,
+                                      })
+                                    }
+                                  >
+                                    {categories.map((c) => (
+                                      <SelectItem key={c.id} value={c.id}>
+                                        {c.label}
+                                      </SelectItem>
+                                    ))}
+                                  </Select>
+                                  <Select
+                                    label="Niveau de pratique"
+                                    isRequired
+                                    selectedKeys={
+                                      form.level ? [form.level] : []
+                                    }
+                                    onChange={(e) =>
+                                      setForm({
+                                        ...form,
+                                        level: e.target.value as ProgramLevel,
+                                      })
+                                    }
+                                  >
+                                    {allLevel.map((l) => (
+                                      <SelectItem
+                                        key={l.key}
+                                        value={l.key}
+                                        startContent={l.startContent}
+                                      >
+                                        {l.label}
+                                      </SelectItem>
+                                    ))}
+                                  </Select>
+                                </div>
                                 <Input
                                   label="Prix (€)"
                                   type="number"
+                                  isRequired
                                   min={0}
                                   step={1}
                                   value={form.price.toString()}
@@ -319,26 +375,6 @@ export default function ProgramModal({
                                     })
                                   }
                                 />
-                                <Select
-                                  label="Niveau de pratique"
-                                  selectedKeys={form.level ? [form.level] : []}
-                                  onChange={(e) =>
-                                    setForm({
-                                      ...form,
-                                      level: e.target.value as ProgramLevel,
-                                    })
-                                  }
-                                >
-                                  {allLevel.map((l) => (
-                                    <SelectItem
-                                      key={l.key}
-                                      value={l.key}
-                                      startContent={l.startContent}
-                                    >
-                                      {l.label}
-                                    </SelectItem>
-                                  ))}
-                                </Select>
                               </div>
                             )}
                           </div>

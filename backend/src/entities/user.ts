@@ -23,6 +23,7 @@ import { Conversation } from "./conversation";
 import { Membership } from "./memberShip";
 import { Feedback } from "./feedback";
 import { NotificationPreference } from "./notificationPreference";
+import { ProgressSession } from "./progressSession";
 
 @ObjectType()
 @Entity()
@@ -144,4 +145,10 @@ export class User extends BaseEntity {
     cascade: ["insert", "update"],
   })
   notificationPreferences!: NotificationPreference[];
+
+  @Field(() => [ProgressSession])
+  @OneToMany(() => ProgressSession, (progress) => progress.user, {
+    cascade: ["insert", "update"],
+  })
+  progress!: ProgressSession;
 }

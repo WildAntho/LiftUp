@@ -29,6 +29,7 @@ import { ProgramResolver } from "./resolvers/programResolver";
 import { TrainingPlanResolver } from "./resolvers/trainginPlanResolver";
 import { MuscleGroupResolver } from "./resolvers/muscleGroupResolver";
 import { NotificationPreferenceResolver } from "./resolvers/notificationPreferenceResolver";
+import { DashboardResolver } from "./resolvers/dashboardResolver";
 
 type PubSubType = ReturnType<typeof createPubSub>;
 
@@ -57,6 +58,7 @@ export const createSchema = async (pubsub: PubSubType) => {
       TrainingPlanResolver,
       MuscleGroupResolver,
       NotificationPreferenceResolver,
+      DashboardResolver
     ],
     emitSchemaFile: true,
     pubSub: pubsub,

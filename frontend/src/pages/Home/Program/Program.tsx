@@ -135,6 +135,7 @@ export default function Program() {
         status: program.status as ProgramStatus,
         price: program.price as number,
         level: program.level as ProgramLevel,
+        categoryId: program.categoryId as string,
       });
       refetch();
     } catch (error) {
@@ -170,7 +171,7 @@ export default function Program() {
   };
 
   return (
-    <section className="relative w-full h-full flex flex-col justify-start items-center rounded-2xl px-4 pt-10 gap-4">
+    <section className="relative w-full h-full flex flex-col justify-start items-center bg-white rounded-2xl px-4 pt-10 gap-4">
       {!isConfiguration && (
         <section className="w-full flex flex-col justify-start items-center rounded-2xl gap-4 py-10 mt-4 overflow-y-scroll">
           <section className="w-[80%] flex justify-between items-center">
@@ -244,6 +245,7 @@ export default function Program() {
                       duration={program.duration}
                       price={program.price}
                       level={program.level}
+                      categoryId={program.category?.id}
                       isPublic={program.public}
                       onArchive={handleArchiveProgram}
                       onValidate={handleValidateProgram}

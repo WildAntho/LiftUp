@@ -15,6 +15,7 @@ import { useCrewStore } from "@/services/zustand/crewStore";
 import { Search } from "lucide-react";
 import { Separator } from "../ui/separator";
 import ListCrew from "../ListCrew";
+import { useUserStore } from "@/services/zustand/userStore";
 
 type SelectCrewModalProps = {
   open: boolean;
@@ -28,12 +29,14 @@ export default function SelectCrewModal({
   closeNav,
 }: SelectCrewModalProps) {
   const [input, setInput] = useState<string>("");
+  const currentUser = useUserStore((state) => state.user);
   const currentCrew = useCrewStore((state) => state.crew);
   const setCrew = useCrewStore((state) => state.set);
   const clearStudent = useStudentStore((state) => state.clear);
   const [selected, setSelected] = useState(currentCrew?.id ?? "");
   const { data: dataCrews } = useGetCoachCrewsQuery({
     fetchPolicy: "cache-and-network",
+    skip: currentUser?.roles !== "COACH",
   });
   const myCrews = dataCrews?.getCoachCrews ?? [];
 

@@ -7,7 +7,6 @@ import {
   BadgeEuro,
   BicepsFlexed,
   Calendar,
-  ChartNoAxesCombined,
   Dumbbell,
   Gauge,
   HandCoins,
@@ -128,14 +127,14 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
       type: "content",
       get: () => navigate("/home?tab=exercices"),
     },
-    {
-      title: "Statistiques",
-      value: "statistics",
-      withArrow: true,
-      icon: <ChartNoAxesCombined className="size-5" />,
-      type: "content",
-      get: () => navigate("/home?tab=statistics"),
-    },
+    // {
+    //   title: "Statistiques",
+    //   value: "statistics",
+    //   withArrow: true,
+    //   icon: <ChartNoAxesCombined className="size-5" />,
+    //   type: "content",
+    //   get: () => navigate("/home?tab=statistics"),
+    // },
   ];
 
   return (

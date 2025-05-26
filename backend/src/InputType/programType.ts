@@ -39,6 +39,9 @@ export class ProgramInput {
   @Field({ nullable: true })
   level?: ProgramLevel;
 
+  @Field({ nullable: true })
+  categoryId?: string;
+
   @Field()
   public!: boolean;
 }
@@ -62,6 +65,9 @@ export class UpdateProgramInput {
 
   @Field({ nullable: true })
   level?: ProgramLevel;
+
+  @Field({ nullable: true })
+  categoryId?: string;
 
   @Field()
   public!: boolean;

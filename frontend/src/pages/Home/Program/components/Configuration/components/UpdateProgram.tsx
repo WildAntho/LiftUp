@@ -5,6 +5,7 @@ import {
   ProgramLevel,
   ProgramStatus,
   UpdateProgramInput,
+  useGetAllCategoriesQuery,
 } from "@/graphql/hooks";
 import { allLevel, allStatus } from "@/services/utils";
 import { useProgramStore } from "@/services/zustand/programStore";
@@ -22,6 +23,9 @@ export default function UpdateProgram({
   backConfig,
 }: UpdateProgramProps) {
   const currentProgram = useProgramStore((state) => state.program);
+  const { data } = useGetAllCategoriesQuery();
+  const categories = data?.getAllCategories ?? [];
+
   const [form, setForm] = useState({
     public: currentProgram?.public ?? false,
     title: currentProgram?.title ?? "",
@@ -30,6 +34,7 @@ export default function UpdateProgram({
     price: currentProgram?.price ?? 0,
     status: currentProgram?.status ?? ProgramStatus.Draft,
     level: currentProgram?.level ?? "",
+    categoryId: currentProgram?.categoryId,
   });
 
   return (
@@ -69,6 +74,7 @@ export default function UpdateProgram({
             <div className="w-[65%]">
               <Input
                 label="Titre du programme"
+                isRequired
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
               />
@@ -107,6 +113,7 @@ export default function UpdateProgram({
             <div className="flex-1">
               <Input
                 label="Durée (semaines)"
+                isRequired
                 type="number"
                 min={1}
                 value={form.duration.toString()}
@@ -126,30 +133,28 @@ export default function UpdateProgram({
                 <Separator />
               </div>
               <div className="w-full flex items-start gap-2">
-                <div className="flex-1">
-                  <Input
-                    label="Prix (€)"
-                    type="number"
-                    description={
-                      <div className="flex items-center justify-start gap-2">
-                        <TriangleAlert className="w-6 h-6" />
-                        <p>
-                          Si aucun prix n'est renseigné, le programme ne sera
-                          pas visible dans le marketplace.
-                        </p>
-                      </div>
-                    }
-                    min={0}
-                    step={1}
-                    value={form.price.toString()}
+                <div className="flex-1 flex flex-col justify-center items-center gap-2">
+                  <Select
+                    label="Catégorie de programme"
+                    placeholder="Choisir une catégorie"
+                    isRequired
+                    selectedKeys={form.categoryId ? [form.categoryId] : []}
                     onChange={(e) =>
-                      setForm({ ...form, price: parseFloat(e.target.value) })
+                      setForm({
+                        ...form,
+                        categoryId: e.target.value as string,
+                      })
                     }
-                  />
-                </div>
-                <div className="flex-1">
+                  >
+                    {categories.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </Select>
                   <Select
                     label="Niveau de pratique"
+                    isRequired
                     selectedKeys={form.level ? [form.level] : []}
                     onChange={(e) =>
                       setForm({
@@ -168,6 +173,28 @@ export default function UpdateProgram({
                       </SelectItem>
                     ))}
                   </Select>
+                </div>
+                <div className="flex-1">
+                  <Input
+                    label="Prix (€)"
+                    isRequired
+                    type="number"
+                    description={
+                      <div className="flex items-center justify-start gap-2">
+                        <TriangleAlert className="w-6 h-6" />
+                        <p>
+                          Si aucun prix n'est renseigné, le programme ne sera
+                          pas visible dans le marketplace.
+                        </p>
+                      </div>
+                    }
+                    min={0}
+                    step={1}
+                    value={form.price.toString()}
+                    onChange={(e) =>
+                      setForm({ ...form, price: parseFloat(e.target.value) })
+                    }
+                  />
                 </div>
               </div>
             </>

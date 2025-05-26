@@ -3,6 +3,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -10,6 +11,7 @@ import {
 import { User } from "./user";
 import { ProgramLevel, ProgramStatus } from "../InputType/programType";
 import { TrainingPlan } from "./trainingPlan";
+import { OfferCategory } from "./offerCategory";
 
 @ObjectType()
 @Entity()
@@ -53,6 +55,13 @@ export class Program extends BaseEntity {
     nullable: true,
   })
   level?: ProgramLevel;
+
+  @Field(() => OfferCategory, { nullable: true })
+  @ManyToOne(() => OfferCategory, (category) => category.program, {
+    nullable: true,
+  })
+  @JoinColumn()
+  category?: OfferCategory;
 
   @Field(() => [TrainingPlan])
   @OneToMany(() => TrainingPlan, (trainingPlan) => trainingPlan.program)
