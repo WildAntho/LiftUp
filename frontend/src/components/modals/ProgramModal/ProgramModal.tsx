@@ -35,7 +35,7 @@ export type ProgramForm = {
   duration: number;
   price: number;
   level: ProgramLevel | string;
-  categoryId: string;
+  categoryId: string | null;
 };
 
 type Step = {
@@ -60,7 +60,7 @@ export default function ProgramModal({
     duration: 1,
     price: 0,
     level: ProgramLevel.Beginner,
-    categoryId: "",
+    categoryId: null,
   });
 
   const categories = data?.getAllCategories ?? [];
@@ -73,7 +73,7 @@ export default function ProgramModal({
       duration: 1,
       price: 0,
       level: ProgramLevel.Beginner,
-      categoryId: "",
+      categoryId: null,
     });
     setCurrentStep(1);
   };
