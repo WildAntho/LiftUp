@@ -11,6 +11,8 @@ import { CtxUser } from "../InputType/coachType";
 import { Feedback } from "../entities/feedback";
 import { Crew } from "../entities/crew";
 import { createTrainingsForDates } from "../services/trainingService";
+import { ProgressSession } from "../entities/progressSession";
+import { updateProgress } from "../services/progressService";
 
 @Resolver(Training)
 export class TrainingResolver {
@@ -77,6 +79,7 @@ export class TrainingResolver {
     // Création des entraînements sans la propriété createdByCoach
     const trainings = await createTrainingsForDates(data.date, data, user);
 
+    await updateProgress(data.id, "training");
     return JSON.stringify(
       `${trainings.length} entraînements ont été créés avec succès`
     );

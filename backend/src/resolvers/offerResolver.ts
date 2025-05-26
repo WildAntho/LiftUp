@@ -5,6 +5,7 @@ import { CtxUser } from "../InputType/coachType";
 import { OfferInput } from "../InputType/offerType";
 import { User } from "../entities/user";
 import { Crew } from "../entities/crew";
+import { updateProgress } from "../services/progressService";
 
 @Resolver(Offer)
 export class OfferResolver {
@@ -46,6 +47,7 @@ export class OfferResolver {
     if (category) newOffer.category = category;
     if (data.crewId && crew) newOffer.crew = crew;
     await newOffer.save();
+    await updateProgress(context.user.id, "offer");
     return JSON.stringify("L'offre a bien été créée");
   }
 

@@ -11,6 +11,10 @@ export const CREATE_PROGRAM = gql`
       public
       price
       level
+      category {
+        id
+        label
+      }
     }
   }
 `;

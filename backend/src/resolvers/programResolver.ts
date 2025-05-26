@@ -20,6 +20,8 @@ import { generateTraining } from "../services/programService";
 import isNotificationAllowed from "../services/notificationPreferenceService";
 import { NotificationType } from "../InputType/notificationType";
 import { createNotification } from "../services/notificationsService";
+import { updateProgress } from "../services/progressService";
+import { OfferCategory } from "../entities/offerCategory";
 
 @Authorized("COACH")
 @Resolver(Program)
@@ -36,6 +38,7 @@ export class ProgramResolver {
         },
         status,
       },
+      relations: { category: true },
     });
     return programs;
   }
@@ -50,17 +53,20 @@ export class ProgramResolver {
         id: context.user.id,
       },
     });
+    const category = await OfferCategory.findOneBy({ id: data.categoryId });
     if (!coach) throw new Error("Aucun utilisateur n'a été trouvé");
     if (!coach) throw new Error("Aucune coach ne correspond");
     const program = new Program();
     program.title = data.title;
     program.description = data.description;
     program.duration = data.duration;
-    if (data.price) program.price = data.price;
-    if (data.level) program.level = data.level;
+    program.price = data.price;
+    program.level = data.level;
     program.public = data.public;
+    if (category) program.category = category;
     program.coach = coach;
     await program.save();
+    await updateProgress(context.user.id, "program");
     return program;
   }
 
@@ -74,13 +80,15 @@ export class ProgramResolver {
         id,
       },
     });
+    const category = await OfferCategory.findOneBy({ id: data.categoryId });
     if (!program) throw new Error("Aucun programme n'a été trouvé");
     program.title = data.title;
     program.description = data.description;
     program.duration = data.duration;
     program.status = data.status;
-    if (data.price) program.price = data.price;
-    if (data.level) program.level = data.level;
+    program.price = data.price;
+    program.level = data.level;
+    if (category) program.category = category;
     program.public = data.public;
     await program.save();
     return "Les détails du programme ont été mis à jour";

@@ -44,7 +44,7 @@ export default function Offers() {
 
   return (
     <>
-      <section className="w-full h-full flex flex-col items-center overflow-y-auto pt-10">
+      <section className="w-full h-full flex flex-col items-center overflow-y-auto pt-10 bg-white rounded-2xl">
         <section className="w-full h-full flex flex-col items-center justify-start gap-2 p-10">
           <div className="w-[90%] flex justify-between items-end">
             <p className="font-semibold text-xl flex justify-start items-center gap-2">

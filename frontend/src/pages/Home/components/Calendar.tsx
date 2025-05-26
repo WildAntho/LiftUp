@@ -161,7 +161,7 @@ export default function Calendar({ currentUser }: CalendarProps) {
   }, [currentCrew]);
 
   return (
-    <section className="relative w-full h-full flex flex-col justify-center items-center p-4 pb-8 gap-4">
+    <section className="relative w-full h-full bg-white rounded-2xl flex flex-col justify-center items-center p-4 pb-8 gap-4">
       <Tabs
         aria-label="Options"
         color="primary"

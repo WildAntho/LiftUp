@@ -297,6 +297,7 @@ export type Mutation = {
   updatePreferenceNotification: Scalars['String']['output'];
   updateProfile: User;
   updateProgram: Scalars['String']['output'];
+  updateProgress: Scalars['String']['output'];
   updateTraining: Scalars['String']['output'];
   updateTrainingPlan: Scalars['String']['output'];
 };
@@ -549,6 +550,11 @@ export type MutationUpdateProgramArgs = {
 };
 
 
+export type MutationUpdateProgressArgs = {
+  data: ProgressInput;
+};
+
+
 export type MutationUpdateTrainingArgs = {
   data: UpdateTrainingData;
 };
@@ -625,6 +631,7 @@ export type OfferCategory = {
   id: Scalars['ID']['output'];
   label: Scalars['String']['output'];
   offers?: Maybe<Array<Offer>>;
+  program?: Maybe<Array<Program>>;
 };
 
 export type OfferInput = {
@@ -639,6 +646,7 @@ export type OfferInput = {
 
 export type Program = {
   __typename?: 'Program';
+  category?: Maybe<OfferCategory>;
   coach: User;
   description?: Maybe<Scalars['String']['output']>;
   duration: Scalars['Float']['output'];
@@ -652,6 +660,7 @@ export type Program = {
 };
 
 export type ProgramInput = {
+  categoryId?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   duration: Scalars['Float']['input'];
   level?: InputMaybe<Scalars['String']['input']>;
@@ -673,6 +682,18 @@ export enum ProgramStatus {
   Draft = 'DRAFT',
   Published = 'PUBLISHED'
 }
+
+export type ProgressSession = {
+  __typename?: 'ProgressSession';
+  id: Scalars['ID']['output'];
+  offer: Scalars['Boolean']['output'];
+  profile: Scalars['Boolean']['output'];
+  program: Scalars['Boolean']['output'];
+  searchCoach: Scalars['Boolean']['output'];
+  searchProgram: Scalars['Boolean']['output'];
+  training: Scalars['Boolean']['output'];
+  user: User;
+};
 
 export type Query = {
   __typename?: 'Query';
@@ -701,6 +722,7 @@ export type Query = {
   getOneTraining: Training;
   getPreferenceNotification: NotificationPreference;
   getPrograms: Array<Program>;
+  getProgress: ProgressSession;
   getRequest: Array<Request>;
   getSent: Array<Request>;
   getStudentFeedback: Array<Feedback>;
@@ -977,6 +999,7 @@ export type UpdateProfile = {
 };
 
 export type UpdateProgramInput = {
+  categoryId?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   duration: Scalars['Float']['input'];
   level?: InputMaybe<Scalars['String']['input']>;
@@ -1016,6 +1039,7 @@ export type User = {
   notifications?: Maybe<Array<Notification>>;
   offers?: Maybe<Array<Offer>>;
   password: Scalars['String']['output'];
+  progress: Array<ProgressSession>;
   receivedMessages?: Maybe<Array<Message>>;
   receivedRequests?: Maybe<Array<Request>>;
   roles: Scalars['String']['output'];
@@ -1049,6 +1073,16 @@ export enum WeightFormat {
 export type GetTrainingType = {
   dayNumber: Scalars['Float']['input'];
   programId: Scalars['String']['input'];
+};
+
+export type ProgressInput = {
+  id: Scalars['String']['input'];
+  offer?: InputMaybe<Scalars['Boolean']['input']>;
+  profile?: InputMaybe<Scalars['Boolean']['input']>;
+  program?: InputMaybe<Scalars['Boolean']['input']>;
+  searchCoach?: InputMaybe<Scalars['Boolean']['input']>;
+  searchProgram?: InputMaybe<Scalars['Boolean']['input']>;
+  training?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type UserLogin = {
@@ -1168,7 +1202,7 @@ export type CreateProgramMutationVariables = Exact<{
 }>;
 
 
-export type CreateProgramMutation = { __typename?: 'Mutation', createProgram: { __typename?: 'Program', id: string, title: string, description?: string | null, status: ProgramStatus, duration: number, public: boolean, price?: number | null, level: ProgramLevel } };
+export type CreateProgramMutation = { __typename?: 'Mutation', createProgram: { __typename?: 'Program', id: string, title: string, description?: string | null, status: ProgramStatus, duration: number, public: boolean, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', id: string, label: string } | null } };
 
 export type CreateTrainingPlanMutationVariables = Exact<{
   data: TrainingPlanData;
@@ -1384,6 +1418,13 @@ export type UpdateProgramMutationVariables = Exact<{
 
 export type UpdateProgramMutation = { __typename?: 'Mutation', updateProgram: string };
 
+export type UpdateProgressMutationVariables = Exact<{
+  data: ProgressInput;
+}>;
+
+
+export type UpdateProgressMutation = { __typename?: 'Mutation', updateProgress: string };
+
 export type UpdateTrainingMutationVariables = Exact<{
   data: UpdateTrainingData;
 }>;
@@ -1540,7 +1581,7 @@ export type GetMyProgramsQueryVariables = Exact<{
 }>;
 
 
-export type GetMyProgramsQuery = { __typename?: 'Query', getPrograms: Array<{ __typename?: 'Program', id: string, title: string, description?: string | null, status: ProgramStatus, duration: number, public: boolean, price?: number | null, level: ProgramLevel }> };
+export type GetMyProgramsQuery = { __typename?: 'Query', getPrograms: Array<{ __typename?: 'Program', id: string, title: string, description?: string | null, status: ProgramStatus, duration: number, public: boolean, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', id: string, label: string } | null }> };
 
 export type GetMyTrainingQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1569,6 +1610,11 @@ export type GetOneTrainingQueryVariables = Exact<{
 
 
 export type GetOneTrainingQuery = { __typename?: 'Query', getOneTraining: { __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean } };
+
+export type GetProgressQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetProgressQuery = { __typename?: 'Query', getProgress: { __typename?: 'ProgressSession', id: string, profile: boolean, training: boolean, program: boolean, offer: boolean, searchCoach: boolean, searchProgram: boolean } };
 
 export type GetRequestQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -2155,6 +2201,10 @@ export const CreateProgramDocument = gql`
     public
     price
     level
+    category {
+      id
+      label
+    }
   }
 }
     `;
@@ -3121,6 +3171,37 @@ export function useUpdateProgramMutation(baseOptions?: Apollo.MutationHookOption
 export type UpdateProgramMutationHookResult = ReturnType<typeof useUpdateProgramMutation>;
 export type UpdateProgramMutationResult = Apollo.MutationResult<UpdateProgramMutation>;
 export type UpdateProgramMutationOptions = Apollo.BaseMutationOptions<UpdateProgramMutation, UpdateProgramMutationVariables>;
+export const UpdateProgressDocument = gql`
+    mutation UpdateProgress($data: progressInput!) {
+  updateProgress(data: $data)
+}
+    `;
+export type UpdateProgressMutationFn = Apollo.MutationFunction<UpdateProgressMutation, UpdateProgressMutationVariables>;
+
+/**
+ * __useUpdateProgressMutation__
+ *
+ * To run a mutation, you first call `useUpdateProgressMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProgressMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProgressMutation, { data, loading, error }] = useUpdateProgressMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateProgressMutation(baseOptions?: Apollo.MutationHookOptions<UpdateProgressMutation, UpdateProgressMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateProgressMutation, UpdateProgressMutationVariables>(UpdateProgressDocument, options);
+      }
+export type UpdateProgressMutationHookResult = ReturnType<typeof useUpdateProgressMutation>;
+export type UpdateProgressMutationResult = Apollo.MutationResult<UpdateProgressMutation>;
+export type UpdateProgressMutationOptions = Apollo.BaseMutationOptions<UpdateProgressMutation, UpdateProgressMutationVariables>;
 export const UpdateTrainingDocument = gql`
     mutation UpdateTraining($data: UpdateTrainingData!) {
   updateTraining(data: $data)
@@ -4186,6 +4267,10 @@ export const GetMyProgramsDocument = gql`
     public
     price
     level
+    category {
+      id
+      label
+    }
   }
 }
     `;
@@ -4458,6 +4543,51 @@ export type GetOneTrainingQueryHookResult = ReturnType<typeof useGetOneTrainingQ
 export type GetOneTrainingLazyQueryHookResult = ReturnType<typeof useGetOneTrainingLazyQuery>;
 export type GetOneTrainingSuspenseQueryHookResult = ReturnType<typeof useGetOneTrainingSuspenseQuery>;
 export type GetOneTrainingQueryResult = Apollo.QueryResult<GetOneTrainingQuery, GetOneTrainingQueryVariables>;
+export const GetProgressDocument = gql`
+    query GetProgress {
+  getProgress {
+    id
+    profile
+    training
+    program
+    offer
+    searchCoach
+    searchProgram
+  }
+}
+    `;
+
+/**
+ * __useGetProgressQuery__
+ *
+ * To run a query within a React component, call `useGetProgressQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProgressQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProgressQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetProgressQuery(baseOptions?: Apollo.QueryHookOptions<GetProgressQuery, GetProgressQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetProgressQuery, GetProgressQueryVariables>(GetProgressDocument, options);
+      }
+export function useGetProgressLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProgressQuery, GetProgressQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetProgressQuery, GetProgressQueryVariables>(GetProgressDocument, options);
+        }
+export function useGetProgressSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetProgressQuery, GetProgressQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetProgressQuery, GetProgressQueryVariables>(GetProgressDocument, options);
+        }
+export type GetProgressQueryHookResult = ReturnType<typeof useGetProgressQuery>;
+export type GetProgressLazyQueryHookResult = ReturnType<typeof useGetProgressLazyQuery>;
+export type GetProgressSuspenseQueryHookResult = ReturnType<typeof useGetProgressSuspenseQuery>;
+export type GetProgressQueryResult = Apollo.QueryResult<GetProgressQuery, GetProgressQueryVariables>;
 export const GetRequestDocument = gql`
     query GetRequest($id: String!) {
   getRequest(id: $id) {

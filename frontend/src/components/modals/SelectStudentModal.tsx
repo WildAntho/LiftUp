@@ -61,6 +61,7 @@ export default function SelectStudentModal({
       page,
     },
     fetchPolicy: "cache-and-network",
+    skip: currentUser?.roles !== "COACH",
   });
   const myStudents = dataStudents?.getStudents.students ?? [];
   const totalPage = dataStudents?.getStudents.totalCount

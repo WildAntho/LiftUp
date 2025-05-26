@@ -3,7 +3,6 @@ import HomeSidebar from "./components/HomeSidebar";
 import { useLocation } from "react-router-dom";
 import Program from "./Program/Program";
 import Dashboard from "./Dashboard/Dashboard";
-import Statistics from "./Statistics/Statistics";
 import Calendar from "./components/Calendar";
 import PathBreadcrumbs from "./components/PathBreadcrumbs";
 import Offers from "./Offers/Offers";
@@ -18,10 +17,12 @@ export default function Home() {
   const activeTab = searchParams.get("tab");
 
   const renderContent = () => (
-    <div className="relative w-full h-full flex flex-col justify-center items-start bg-white rounded-2xl">
-      <div className="absolute top-5 left-8 z-10">
-        <PathBreadcrumbs />
-      </div>
+    <div className="relative w-full h-full flex flex-col justify-center items-start rounded-2xl">
+      {activeTab && (
+        <div className="absolute top-5 left-8 z-10">
+          <PathBreadcrumbs />
+        </div>
+      )}
       <div className="relative w-full h-full">
         {!activeTab && <Dashboard currentUser={currentUser} />}
         {activeTab === "calendar" && <Calendar currentUser={currentUser} />}
@@ -41,7 +42,7 @@ export default function Home() {
           </ProtectedRoute>
         )}
         {activeTab === "exercices" && <ExerciceModelSection />}
-        {activeTab === "statistics" && <Statistics currentUser={currentUser} />}
+        {/* {activeTab === "statistics" && <Statistics currentUser={currentUser} />} */}
       </div>
     </div>
   );
