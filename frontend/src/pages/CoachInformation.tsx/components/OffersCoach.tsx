@@ -11,7 +11,7 @@ export default function OffersCoach({ offers }: OffersCoachProps) {
   return (
     <section className="flex flex-col items-start justify-start gap-5 mt-5">
       <div className="w-full">
-        <p className="font-semibold text-lg mb-4 pl-4 flex items-center gap-3">
+        <p className="font-semibold text-lg mb-4 flex items-center gap-3">
           <BadgeEuro />
           Prestations proposées
         </p>

@@ -1,11 +1,10 @@
 import ConfirmModal from "@/components/modals/ConfirmModal";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Offer, useAddRequestMutation } from "@/graphql/hooks";
 import { useUserStore } from "@/services/zustand/userStore";
-import { SelectField, TextInputField, TextareaField } from "evergreen-ui";
+import { Button, Input, Select, SelectItem, Textarea } from "@heroui/react";
 import { Send, ShieldAlert } from "lucide-react";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 type RequestFormProps = {
@@ -22,7 +21,7 @@ export default function RequestForm({ offers, coachId }: RequestFormProps) {
     offerId: "",
     description: "",
   });
-  const [addRequest] = useAddRequestMutation();
+  const [addRequest, { loading }] = useAddRequestMutation();
 
   const handleAddRequest = async () => {
     await addRequest({
@@ -42,42 +41,41 @@ export default function RequestForm({ offers, coachId }: RequestFormProps) {
   return (
     <section className="w-full h-full flex flex-col items-start justify-start py-2">
       <p className="w-full flex justify-center font-semibold mb-4">
-        Formulaire de demande
+        Demande de coaching
       </p>
       <Separator />
-      <section className="w-full mt-5">
-        <TextInputField
-          label="Téléphone"
+      <section className="w-full flex flex-col items-start justify-center gap-4 my-4">
+        <Input
           type="number"
-          placeholder="Numéro de téléphone"
+          label="Numéro de téléphone"
+          placeholder="06XXXXXXXX"
           value={formState.phone}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setFormState((prev) => ({ ...prev, phone: e.target.value }))
           }
         />
-        <SelectField
-          required
-          label="Prestation"
-          className="flex-1"
-          value={formState.offerId}
-          onChange={(e) => {
-            setFormState((prev) => ({
-              ...prev,
+        <Select
+          label="Sélectionner une offre"
+          isRequired
+          selectedKeys={formState.offerId ? [formState.offerId] : []}
+          onChange={(e) =>
+            setFormState({
+              ...formState,
               offerId: e.target.value,
-            }));
-          }}
+            })
+          }
         >
-          <option value="">Aucune prestation sélectionnée</option>
-          {offers.map((offer) => (
-            <option key={offer.id} value={offer.id}>
-              {offer.name}
-            </option>
+          {offers.map((c) => (
+            <SelectItem key={c.id} value={c.id}>
+              {c.name}
+            </SelectItem>
           ))}
-        </SelectField>
-        <TextareaField
-          placeholder="Envoyer quelques informations utiles au coach (années de pratique, rythme des entraînements, objectifs ...)"
+        </Select>
+        <Textarea
+          description="Envoyer quelques informations utiles au coach (années de pratique, rythme des entraînements, objectifs ...)"
           label="Description"
-          onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+          placeholder="Je pratique la musculation et le streetlifting depuis 3 ans, avec 3 à 4 séances par semaine en moyenne..."
+          onChange={(e) =>
             setFormState((prev) => ({
               ...prev,
               description: e.target.value,
@@ -85,12 +83,15 @@ export default function RequestForm({ offers, coachId }: RequestFormProps) {
           }
         />
         <Button
-          className="bg-primary hover:bg-blue-600 w-full flex items-center gap-5"
-          disabled={formState.offerId.length === 0}
-          onClick={() => setOpenConfirm(true)}
+          className="group cursor-pointer shadow-none text-white h-[55px] w-full rounded-xl bg-primary hover:translate-y-[-2px] hover:shadow-lg transition-all duration-200"
+          onPress={() => setOpenConfirm(true)}
+          startContent={<Send size={16} />}
+          isDisabled={formState.offerId.length === 0}
+          isLoading={loading}
         >
-          <Send />
-          Envoyer la demande
+          <p className="text-sm transition-all duration-200 group-hover:translate-x-1">
+            Envoyer la demande
+          </p>
         </Button>
         <div className="flex justify-start items-center gap-2 text-primary mt-2">
           <ShieldAlert />

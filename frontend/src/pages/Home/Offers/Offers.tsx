@@ -56,7 +56,7 @@ export default function Offers() {
             >
               <PlusCircle className="transition-all duration-200 group-hover:rotate-90" />
               <p className="text-sm transition-all duration-200 group-hover:translate-x-1">
-                Ajouter une nouvelle prestation
+                Ajouter une nouvelle offre
               </p>
             </Button>
           </div>
@@ -126,11 +126,11 @@ export default function Offers() {
             <section className="w-full h-full flex flex-col items-center justify-start gap-4 mt-10">
               <div className="flex flex-col items-center justify-center gap-2">
                 <h2 className="text-2xl font-semibold text-center text-gray-500">
-                  Lancez-vous !
+                  C'est parti !
                 </h2>
                 <div className="flex flex-col justify-center items-center">
                   <p className="text-md text-gray-400 text-center w-[500px]">
-                    Créez votre première offre pour permettre aux élèves de
+                    Crée ta première offre pour permettre aux élèves de
                     s’inscrire et démarrer leur coaching dès maintenant !
                   </p>
                 </div>

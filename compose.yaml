@@ -33,6 +33,7 @@ services:
       VITE_GATEWAY_PORT: ${GATEWAY_PORT}
       VITE_BACKEND_HOST: ${BACKEND_HOST}
       VITE_FRONTEND_HOST: ${FRONTEND_HOST}
+      VITE_UPLOAD_URL: ${UPLOAD_URL}
     networks:
       - development
   liftup-dev-database:

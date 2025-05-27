@@ -6,7 +6,6 @@ import {
   RepFormat,
   WeightFormat,
 } from "@/graphql/hooks";
-import { Image } from "@heroui/react";
 import {
   Archive,
   BicepsFlexed,
@@ -16,7 +15,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-export const uploadURL = "file";
+export const uploadURL = import.meta.env.VITE_UPLOAD_URL;
 
 export function formatUser(user: string) {
   return user
@@ -70,43 +69,6 @@ export const getDaysInWeek = (date: Date): Date[] => {
 
   return days;
 };
-
-export const picture = [
-  {
-    type: "traction",
-    image: (
-      <Image alt="HeroUI hero Image" src="../../public/pullup.png" width={80} />
-    ),
-  },
-  {
-    type: "squat",
-    image: (
-      <Image alt="HeroUI hero Image" src="../../public/squat.jpg" width={80} />
-    ),
-  },
-  {
-    type: "dips",
-    image: (
-      <Image alt="HeroUI hero Image" src="../../public/dips.png" width={80} />
-    ),
-  },
-  {
-    type: "muscleup",
-    image: (
-      <Image
-        alt="HeroUI hero Image"
-        src="../../public/muscleup.png"
-        width={80}
-      />
-    ),
-  },
-  {
-    type: "renfo",
-    image: (
-      <Image alt="HeroUI hero Image" src="../../public/renfo.png" width={80} />
-    ),
-  },
-];
 
 export function getLastReadMessageIndex(
   messages: Message[],
@@ -229,5 +191,3 @@ export enum FilterCardEnum {
   FAVORITE = "FAVORITE",
   NEW = "NEW",
 }
-
-export const exercicesURL = "/exercices/men";

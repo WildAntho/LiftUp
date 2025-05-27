@@ -68,7 +68,7 @@ export default function OfferCard({
               </div>
             )}
           </section>
-          <p className="text-xs">{offer?.description}</p>
+          <p className="text-sm">{offer?.description}</p>
         </div>
         <div className="relative flex flex-col justify-center items-center h-full w-[20%]">
           <Separator orientation="vertical" className="absolute left-0 my-4" />

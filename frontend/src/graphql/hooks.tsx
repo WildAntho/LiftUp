@@ -1498,7 +1498,7 @@ export type GetOneCoachProfileQueryVariables = Exact<{
 }>;
 
 
-export type GetOneCoachProfileQuery = { __typename?: 'Query', getOneCoachProfile: { __typename?: 'CoachProfile', id: string, name?: string | null, description?: string | null, specialisation?: Array<string> | null, facebook?: string | null, instagram?: string | null, linkedin?: string | null, user?: { __typename?: 'User', firstname: string, lastname: string } | null } };
+export type GetOneCoachProfileQuery = { __typename?: 'Query', getOneCoachProfile: { __typename?: 'CoachProfile', id: string, name?: string | null, description?: string | null, specialisation?: Array<string> | null, facebook?: string | null, instagram?: string | null, linkedin?: string | null, user?: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } | null } };
 
 export type GetConversationByIdQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -3640,6 +3640,7 @@ export const GetOneCoachProfileDocument = gql`
     user {
       firstname
       lastname
+      avatar
     }
   }
 }

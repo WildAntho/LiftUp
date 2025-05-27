@@ -24,12 +24,9 @@ import {
 import { useUserStore } from "@/services/zustand/userStore";
 import { useLogoutMutation } from "@/graphql/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useStudentStore } from "@/services/zustand/studentStore";
 import MyAvatar from "./MyAvatar";
 import Notifications from "./Notification/Notifications";
 import ChatIcon from "./ChatIcon";
-import { useCrewStore } from "@/services/zustand/crewStore";
-import { useProgramStore } from "@/services/zustand/programStore";
 
 type Link = {
   id: number;
@@ -42,6 +39,7 @@ export default function Navigation() {
   const client = useApolloClient();
   const location = useLocation();
   const path = location.pathname;
+  const splitPath = path.split("/")[1];
   const currentUser = useUserStore((state) => state.user);
   const ROLE_COACH = "COACH";
   const ROLE_STUDENT = "STUDENT";
@@ -50,7 +48,7 @@ export default function Navigation() {
   const links: Link[] = [
     {
       id: 1,
-      value: "/home",
+      value: "home",
       label: "Accueil",
       icon: <HomeIcon size={16} />,
     },
@@ -58,13 +56,13 @@ export default function Navigation() {
       ? [
           {
             id: 2,
-            value: "/students",
+            value: "students",
             label: "Mes élèves",
             icon: <BookOpen />,
           },
           {
             id: 3,
-            value: "/crew",
+            value: "crew",
             label: "Mes équipes",
             icon: <Users />,
           },
@@ -74,13 +72,13 @@ export default function Navigation() {
       ? [
           {
             id: 4,
-            value: "/coach",
+            value: "coach",
             label: "Besoin d'un coach ?",
             icon: <Handshake />,
           },
           {
             id: 5,
-            value: "/program",
+            value: "program",
             label: "Besoin d'un plan d'entraînement ?",
             icon: <BicepsFlexed />,
           },
@@ -88,19 +86,11 @@ export default function Navigation() {
       : []),
   ];
   const navigate = useNavigate();
-  const clearStore = useUserStore((state) => state.clear);
-  const clearStudent = useStudentStore((state) => state.clear);
-  const clearCrew = useCrewStore((state) => state.clear);
-  const clearProgram = useProgramStore((state) => state.clear);
   const [logout] = useLogoutMutation();
 
   const handleLogout = async () => {
     await logout();
-    client.resetStore();
-    clearStore();
-    clearStudent();
-    clearCrew();
-    clearProgram();
+    await client.resetStore();
     navigate("/login");
   };
 
@@ -120,7 +110,7 @@ export default function Navigation() {
             <Button
               data-testid={l.label}
               key={l.id}
-              variant={l.value === path ? "default" : "ghost"}
+              variant={l.value === splitPath ? "default" : "ghost"}
               onClick={() => {
                 navigate(`${l.value}`);
               }}
