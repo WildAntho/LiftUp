@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Info, Loader2, X } from "lucide-react";
+import { Eye, Info, Loader2, X } from "lucide-react";
 import { Label, TagInput } from "evergreen-ui";
-import { Button } from "@/components/ui/button";
 import {
   useAddCoachProfileMutation,
   useGetMyProfileQuery,
@@ -15,9 +14,13 @@ import Edit from "@/components/Edit";
 import Close from "@/components/Close";
 import Saving from "@/components/Saving";
 import { toast } from "sonner";
-import { Input, Textarea } from "@heroui/react";
+import { Button, Input, Modal, ModalContent, ModalHeader } from "@heroui/react";
+import LexicalEditorComponent from "@/components/LexicalEditor/LexicalEditorComponent";
+import CoachInformation from "@/pages/CoachInformation.tsx/CoachInformation";
+import { useUserStore } from "@/services/zustand/userStore";
 
 export default function About() {
+  const currentUser = useUserStore((state) => state.user);
   const {
     data: dataProfile,
     loading: loadingProfile,
@@ -27,7 +30,6 @@ export default function About() {
   const [add, { loading: loadingAdd }] = useAddCoachProfileMutation();
   const loading = loadingAdd || loadingUpdate;
   const profile = dataProfile?.getCoachProfile || null;
-
   const [isShow, setIsShow] = useState<boolean>(true);
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -36,11 +38,14 @@ export default function About() {
   const [instagram, setInstagram] = useState<string>("");
   const [linkedin, setLinkedin] = useState<string>("");
   const [errorSpec, setErrorSpec] = useState<boolean>(false);
+  const [content, setContent] = useState<object | null>(null);
+  const [openPreview, setOpenPreview] = useState<boolean>(false);
 
   useEffect(() => {
     if (profile) {
       setName(profile.name || "");
       setDescription(profile.description || "");
+      setContent(profile.description ? JSON.parse(profile.description) : "");
       setSpecialisation(profile.specialisation || []);
       setFacebook(profile.facebook || "");
       setInstagram(profile.instagram || "");
@@ -56,7 +61,7 @@ export default function About() {
 
     const data = {
       name,
-      description,
+      description: JSON.stringify(content),
       specialisation,
       facebook,
       instagram,
@@ -89,8 +94,35 @@ export default function About() {
     { id: 3, label: "linkedin", icon: <FaLinkedin size={30} />, url: linkedin },
   ];
 
+  const handleChangeContent = (content: object) => {
+    setContent(content);
+  };
+
   return (
-    <section className="max-w-[50%] 2xl:max-w-[40%] h-full flex flex-col items-start justify-start">
+    <section className="relative max-w-[50%] 2xl:max-w-[40%] h-full flex flex-col items-start justify-start">
+      <Modal
+        scrollBehavior="inside"
+        isOpen={openPreview}
+        onOpenChange={() => setOpenPreview(false)}
+        isDismissable={false}
+        size="5xl"
+        style={{ backgroundColor: "#f3f4f6" }}
+        className="rounded-xl overflow-hidden"
+        classNames={{
+          closeButton: "text-black hover:bg-black/5 active:bg-black/10",
+        }}
+      >
+        <ModalContent>
+          <ModalHeader className="w-full flex flex-col justify-center items-center bg-white">
+            Point de vue des élèves
+            <p className="text-gray-500 text-sm">
+              Les élèves pourront choisir une offre de coaching ou un programme
+            </p>
+          </ModalHeader>
+          <Separator className="w-full" />
+          <CoachInformation prevId={currentUser?.id.toString()} />
+        </ModalContent>
+      </Modal>
       <section className="w-full flex flex-col items-start justify-start gap-5">
         {!loadingProfile ? (
           <>
@@ -103,6 +135,21 @@ export default function About() {
                   pas à être exhaustif dans votre description.
                 </p>
               </div>
+              {isShow && (
+                <Tooltip
+                  content="Prévisualiser"
+                  showArrow={true}
+                  color="foreground"
+                  className="text-xs"
+                >
+                  <div
+                    className="hover:bg-black/5 p-2 rounded-full cursor-pointer"
+                    onClick={() => setOpenPreview(true)}
+                  >
+                    <Eye className="size-4 text-black active:text-gray-500" />
+                  </div>
+                </Tooltip>
+              )}
               {isShow && <Edit onClick={() => setIsShow(false)} />}
               {!isShow && <Close onClick={() => setIsShow(true)} />}
             </div>
@@ -120,7 +167,7 @@ export default function About() {
                     onChange={(e) => setName(e.target.value)}
                   />
                 ) : (
-                  <p className="text-xs mt-2">
+                  <p className="text-sm mt-2">
                     {profile?.name || "Vous n'avez pas encore d'intitulé"}
                   </p>
                 )}
@@ -130,17 +177,17 @@ export default function About() {
                   À propos de vous
                 </Label>
                 {isShow && <Separator className="mt-2" />}
-                {!isShow ? (
-                  <Textarea
-                    label="Description"
-                    className="mt-2"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
+                {description || !isShow ? (
+                  <div className="w-full my-4">
+                    <LexicalEditorComponent
+                      onChange={handleChangeContent}
+                      value={content}
+                      readOnly={isShow}
+                    />
+                  </div>
                 ) : (
-                  <p className="text-xs mt-2">
-                    {profile?.description ||
-                      "Vous n'avez pas encore de description"}
+                  <p className="text-sm mt-2">
+                    Vous n'avez pas encore de description
                   </p>
                 )}
               </div>
@@ -178,7 +225,7 @@ export default function About() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs mt-2">
+                  <p className="text-sm mt-2">
                     Vous n'avez pas de spécialisation
                   </p>
                 )}
@@ -242,7 +289,7 @@ export default function About() {
           <section className="w-full flex items-center justify-end gap-2">
             <Button
               className="group shadow-none text-black h-[55px] w-[25%] rounded-xl border border-gray-300 bg-gray-200 hover:bg-gray-200 hover:translate-y-[-2px] hover:shadow-md transition-all duration-200"
-              onClick={() => {
+              onPress={() => {
                 setIsShow(true);
                 setErrorSpec(false);
               }}
@@ -256,6 +303,7 @@ export default function About() {
           </section>
         )}
       </section>
+      {/* <PreviewProfile open={openPreview} close={() => setOpenPreview(false)} /> */}
     </section>
   );
 }

@@ -12,16 +12,22 @@ import SocialCoach from "./components/SocialCoach";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Loader2 } from "lucide-react";
 
-export default function CoachInformation() {
+type CoachInformationProps = {
+  prevId?: string;
+};
+
+export default function CoachInformation({ prevId }: CoachInformationProps) {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: dataOffers, loading: loadingOffers } =
     useGetOneCoachOffersQuery({
-      variables: { id: id as string },
+      variables: { id: prevId ? prevId : (id as string) },
+      fetchPolicy: "cache-and-network",
     });
   const { data: dataProfile, loading: loadingProfile } =
     useGetOneCoachProfileQuery({
-      variables: { id: id as string },
+      variables: { id: prevId ? prevId : (id as string) },
+      fetchPolicy: "cache-and-network",
     });
   const offers = dataOffers?.getOneCoachOffers ?? [];
   const profile = dataProfile?.getOneCoachProfile as CoachProfile;
@@ -31,20 +37,26 @@ export default function CoachInformation() {
       {!loadingOffers || !loadingProfile ? (
         <section className="flex flex-col justify-start items-center h-full w-full overflow-y-scroll">
           <section className="w-full">
-            <div className="w-full pl-5 flex justify-start items-start gap-1 p-2">
-              <Button
-                variant="link"
-                className="group p-0 opacity-70 hover:opacity-100"
-                onClick={() => navigate(-1)}
-              >
-                <ChevronLeft className="opacity-50 group-hover:opacity-100" />
-                Retour
-              </Button>
-            </div>
+            {!prevId && (
+              <div className="w-full pl-5 flex justify-start items-start gap-1 p-2">
+                <Button
+                  variant="link"
+                  className="group p-0 opacity-70 hover:opacity-100"
+                  onClick={() => navigate(-1)}
+                >
+                  <ChevronLeft className="opacity-50 group-hover:opacity-100" />
+                  Retour
+                </Button>
+              </div>
+            )}
           </section>
-          <section className="px-4 pb-4 w-full h-full">
-            <section className="h-full gap-4 flex justify-start items-start">
-              <section className="w-[70%] h-full flex flex-col gap-4">
+          <section className="p-4 w-full h-full">
+            <section className="gap-4 flex justify-start items-start">
+              <section
+                className={`${
+                  prevId ? "w-full" : "w-[70%]"
+                } h-full flex flex-col gap-4`}
+              >
                 <section className="w-full bg-white rounded-2xl p-6">
                   {profile ? (
                     <AboutCoach profile={profile} />
@@ -65,9 +77,14 @@ export default function CoachInformation() {
                   </section>
                 )}
               </section>
-              <section className="sticky top-4 w-[30%] bg-white rounded-2xl p-4 shadow-md">
-                <RequestForm offers={availableOffers as Offer[]} coachId={id} />
-              </section>
+              {!prevId && (
+                <section className="sticky top-4 w-[30%] bg-white rounded-2xl p-4 shadow-md">
+                  <RequestForm
+                    offers={availableOffers as Offer[]}
+                    coachId={id}
+                  />
+                </section>
+              )}
             </section>
           </section>
         </section>

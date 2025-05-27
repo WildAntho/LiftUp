@@ -159,7 +159,7 @@ export default function OfferModal({
                 isRequired
                 isInvalid={formError.name}
                 type="text"
-                label="Désignation de la prestation"
+                label="Désignation de l'offre"
                 value={formState.name}
                 onChange={(e) =>
                   setFormState((prev) => ({ ...prev, name: e.target.value }))
@@ -191,7 +191,7 @@ export default function OfferModal({
           </div>
           <div className="relative">
             <Textarea
-              label="Décrivez votre prestation"
+              label="Description de l'offre"
               isRequired
               isInvalid={formError.description}
               onChange={(e) =>
@@ -210,7 +210,7 @@ export default function OfferModal({
                 isInvalid={formError.durability}
                 variant="underlined"
                 type="number"
-                label="Renseignez la durée (mois)"
+                label=" Durée de l'offre (mois)"
                 value={formState.durability.toString()}
                 onChange={(e) =>
                   setFormState((prev) => ({
@@ -226,7 +226,7 @@ export default function OfferModal({
                 isInvalid={formError.price}
                 variant="underlined"
                 type="number"
-                label="Renseignez le prix (€)"
+                label="Prix de l'offre (€)"
                 value={formState.price.toString()}
                 onChange={(e) =>
                   setFormState((prev) => ({
@@ -262,10 +262,10 @@ export default function OfferModal({
             onValueChange={setAvailability}
             size="sm"
           >
-            <p className="text-xs">Disponibilité du plan</p>
+            <p className="text-xs">Disponibilité de l'offre</p>
             <span className="text-[10px] text-gray-500">
-              (N'hésitez pas à désactiver la prestation si vous avez trop
-              d'elèves)
+              (N'hésite pas à désactiver l'offre si tu as trop d'elèves. Elle
+              n'apparaîtra plus.)
             </span>
           </Switch>
         </ModalBody>

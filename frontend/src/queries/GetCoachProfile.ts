@@ -13,6 +13,7 @@ export const GET_COACH_PROFILE = gql`
       user {
         firstname
         lastname
+        avatar
       }
     }
   }
