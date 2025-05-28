@@ -34,7 +34,7 @@ export default function OfferCard({
   return (
     <>
       <section
-        className={`flex justify-between items-center h-full w-full shadow-md p-4 rounded-xl border border-gray-100 ${
+        className={`flex justify-between items-center h-full w-full shadow-sm p-4 rounded-xl border border-gray-200 ${
           !offer?.availability && "bg-gray-100 text-gray-500"
         }`}
       >
