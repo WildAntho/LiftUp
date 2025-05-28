@@ -74,11 +74,14 @@ export default function SearchCoach({ loading }: SearchCoachProps) {
   };
   return (
     <section className="w-full flex flex-col justify-center items-end gap-1">
-      <section className="w-full h-[50px] flex justify-center items-center rounded-2xl overflow-hidden shadow-md">
+      <section className="w-full h-[50px] flex justify-center items-center rounded-2xl overflow-hidden shadow-sm">
         <Input
           radius="none"
           label="Nom du coach"
-          className="h-full"
+          className="h-full "
+          classNames={{
+            inputWrapper: "bg-white",
+          }}
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
@@ -87,6 +90,9 @@ export default function SearchCoach({ loading }: SearchCoachProps) {
           className="max-w-xs"
           label="Catégorie d'offre"
           radius="none"
+          classNames={{
+            trigger: "bg-white hover:bg-gray-100",
+          }}
           selectedKeys={[categorie]}
           onChange={(e) => setCategorie(e.target.value)}
         >
@@ -98,7 +104,7 @@ export default function SearchCoach({ loading }: SearchCoachProps) {
         <Popover placement="bottom-start">
           <PopoverTrigger>
             <Button
-              className="h-full w-[40%] bg-gray-100 hover:bg-gray-300 rounded-none"
+              className="h-full w-[40%] bg-white hover:bg-gray-100 rounded-none"
               onClick={() => setSelectPrice(true)}
             >
               {!selectPrice ? (

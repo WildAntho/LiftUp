@@ -153,7 +153,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
 
   return (
     <section className="w-full h-full flex flex-col justify-start items-center rounded-2xl pb-8 overflow-y-auto gap-2">
-      <div className="w-full 2xl:w-[1700px] grid grid-rows-2 gap-2">
+      <div className="w-full 2xl:max-w-[1700px] 2xl:min-w-[1000px] grid grid-rows-2 gap-2">
         <div className="grid grid-cols-2 gap-2">
           <div className="flex-1 h-full p-4 bg-white border border-gray-100 rounded-xl shadow-sm">
             <div className="w-full h-full p-6 flex flex-col items-center justify-center">

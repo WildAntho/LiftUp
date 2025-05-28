@@ -35,9 +35,7 @@ export default function OfferModal({
   const { data: dataCrews } = useGetCoachCrewsQuery();
   const [addOffer, { loading: loadingOffer }] = useAddOfferMutation();
   const [updateOffer, { loading: loadingUpdate }] = useUpdateOfferMutation();
-  const [availability, setAvailability] = useState<boolean>(
-    offer?.availability ?? true
-  );
+  const [availability, setAvailability] = useState<boolean>(true);
   const [formState, setFormState] = useState({
     name: "",
     categoryId: "",
@@ -82,6 +80,7 @@ export default function OfferModal({
         price: offer.price,
         crewId: offer.crew?.id ?? "",
       });
+      setAvailability(offer.availability);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);

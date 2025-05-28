@@ -146,9 +146,12 @@ export default function MyCoach() {
   };
 
   return (
-    <section className="h-full w-full pt-4 pb-4 gap-4 flex justify-center items-start overflow-y-auto">
-      <section className="w-[80%] 2xl:w-[100rem] min-h-full py-7 bg-white rounded-2xl flex flex-col justify-start items-center gap-7">
-        <section className="relative w-[90%] flex flex-col justify-start items-center gap-8">
+    <section className="h-full w-full pb-4 gap-4 flex flex-col justify-start items-center overflow-y-auto bg-gray-100">
+      <div className="w-full h-[250px]">
+        <img src="/mainbanner.jpg" className="object-cover w-full h-full" />
+      </div>
+      <section className="w-[80%] 2xl:w-[100rem] min-h-full rounded-2xl flex flex-col justify-start items-center gap-7">
+        <section className="relative w-[90%] flex flex-col justify-start items-center gap-4">
           {!loadingCoach &&
           !loadingSelectCoach &&
           !loadingRequest &&
@@ -157,8 +160,8 @@ export default function MyCoach() {
               <Tabs
                 aria-label="Options"
                 color="primary"
-                size="md"
                 variant="underlined"
+                size="md"
                 className="w-full"
                 selectedKey={active}
                 onSelectionChange={handleSelectionChange}
@@ -174,20 +177,17 @@ export default function MyCoach() {
                       <SearchCoach loading={loadingSelectCoach} />
                     </div>
                     {allCoach.length > 0 ? (
-                      <div className="w-full flex flex-col justify-start items-center gap-10">
-                        <div className="w-full">
-                          {allCoach.map((c) => (
-                            <div key={c.id} className="w-full">
-                              <CoachCard coach={c} />
-                            </div>
-                          ))}
-                        </div>
-                        {/* <PaginationBar /> */}
+                      <div className="w-full flex flex-col justify-start items-center gap-2">
+                        {allCoach.map((c) => (
+                          <div key={c.id} className="w-full">
+                            <CoachCard coach={c} />
+                          </div>
+                        ))}
                       </div>
                     ) : (
-                      <p className="w-full text-center text-xs text-gray-600 mt-10">
+                      <div className="w-full h-full">
                         Aucun coach ne correspond aux critères.
-                      </p>
+                      </div>
                     )}
                   </section>
                 ) : (

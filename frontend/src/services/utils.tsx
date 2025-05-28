@@ -15,7 +15,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-export const uploadURL = import.meta.env.VITE_UPLOAD_URL;
+export const uploadURL = "file";
 
 export function formatUser(user: string) {
   return user

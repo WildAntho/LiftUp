@@ -1105,13 +1105,6 @@ export type ActivateMemberShipMutationVariables = Exact<{
 
 export type ActivateMemberShipMutation = { __typename?: 'Mutation', activeMembership: string };
 
-export type AddCoachProfileMutationVariables = Exact<{
-  data: CoachProfileInput;
-}>;
-
-
-export type AddCoachProfileMutation = { __typename?: 'Mutation', addCoachProfile: string };
-
 export type AddExerciceMutationVariables = Exact<{
   exercices: Array<AddExercicePlanInput> | AddExercicePlanInput;
   id: Scalars['String']['input'];
@@ -1785,37 +1778,6 @@ export function useActivateMemberShipMutation(baseOptions?: Apollo.MutationHookO
 export type ActivateMemberShipMutationHookResult = ReturnType<typeof useActivateMemberShipMutation>;
 export type ActivateMemberShipMutationResult = Apollo.MutationResult<ActivateMemberShipMutation>;
 export type ActivateMemberShipMutationOptions = Apollo.BaseMutationOptions<ActivateMemberShipMutation, ActivateMemberShipMutationVariables>;
-export const AddCoachProfileDocument = gql`
-    mutation AddCoachProfile($data: CoachProfileInput!) {
-  addCoachProfile(data: $data)
-}
-    `;
-export type AddCoachProfileMutationFn = Apollo.MutationFunction<AddCoachProfileMutation, AddCoachProfileMutationVariables>;
-
-/**
- * __useAddCoachProfileMutation__
- *
- * To run a mutation, you first call `useAddCoachProfileMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAddCoachProfileMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [addCoachProfileMutation, { data, loading, error }] = useAddCoachProfileMutation({
- *   variables: {
- *      data: // value for 'data'
- *   },
- * });
- */
-export function useAddCoachProfileMutation(baseOptions?: Apollo.MutationHookOptions<AddCoachProfileMutation, AddCoachProfileMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AddCoachProfileMutation, AddCoachProfileMutationVariables>(AddCoachProfileDocument, options);
-      }
-export type AddCoachProfileMutationHookResult = ReturnType<typeof useAddCoachProfileMutation>;
-export type AddCoachProfileMutationResult = Apollo.MutationResult<AddCoachProfileMutation>;
-export type AddCoachProfileMutationOptions = Apollo.BaseMutationOptions<AddCoachProfileMutation, AddCoachProfileMutationVariables>;
 export const AddExerciceDocument = gql`
     mutation AddExercice($exercices: [AddExercicePlanInput!]!, $id: String!, $scope: ScopeExercice!) {
   addExercice(exercices: $exercices, id: $id, scope: $scope)

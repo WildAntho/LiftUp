@@ -42,6 +42,8 @@ export default function Offers() {
 
   const myOffers = dataOffers?.getCoachOffers ?? [];
 
+  console.log(myOffers);
+
   return (
     <>
       <section className="w-full h-full flex flex-col items-center overflow-y-auto pt-10 bg-white rounded-2xl">

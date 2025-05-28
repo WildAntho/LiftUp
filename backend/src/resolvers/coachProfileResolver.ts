@@ -21,39 +21,10 @@ export class CoachProfileResolver {
 
   @Authorized("COACH")
   @Mutation(() => String)
-  async addCoachProfile(
-    @Arg("data") data: CoachProfileInput,
-    @Ctx() context: { user: CtxUser }
-  ) {
-    const coach = await User.findOne({
-      where: {
-        id: context.user.id,
-      },
-      relations: {
-        coachProfile: true,
-      },
-    });
-    if (!coach) throw new Error("Aucun utilisateur n'a été trouvé");
-    const newProfile = new CoachProfile();
-    if (data.name) newProfile.name = data.name;
-    if (data.description) newProfile.description = data.description;
-    if (data.specialisation) newProfile.specialisation = data.specialisation;
-    newProfile.facebook = data.facebook;
-    newProfile.instagram = data.instagram;
-    newProfile.linkedin = data.linkedin;
-
-    await newProfile.save();
-    coach.coachProfile = newProfile;
-    await coach.save();
-    await updateProgress(context.user.id, "profile");
-    return JSON.stringify("Le profil a bien été créé");
-  }
-
-  @Authorized("COACH")
-  @Mutation(() => String)
   async updateCoachProfile(
     @Arg("data") data: CoachProfileInput,
-    @Arg("id") id: string
+    @Arg("id") id: string,
+    @Ctx() context: { user: CtxUser }
   ) {
     const profile = await CoachProfile.findOne({
       where: {
@@ -71,6 +42,7 @@ export class CoachProfileResolver {
     profile.instagram = data.instagram;
     profile.linkedin = data.linkedin;
     await profile.save();
+    await updateProgress(context.user.id, "profile");
     return JSON.stringify("Le profil a bien été mis à jour");
   }
 
