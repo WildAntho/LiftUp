@@ -11,6 +11,8 @@ import OffersCoach from "./components/OffersCoach";
 import SocialCoach from "./components/SocialCoach";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Loader2 } from "lucide-react";
+import UserAvatar from "@/components/UserAvatar";
+import { Badge } from "@/components/ui/badge";
 
 type CoachInformationProps = {
   prevId?: string;
@@ -32,10 +34,37 @@ export default function CoachInformation({ prevId }: CoachInformationProps) {
   const offers = dataOffers?.getOneCoachOffers ?? [];
   const profile = dataProfile?.getOneCoachProfile as CoachProfile;
   const availableOffers = offers.filter((offer) => offer.availability);
+
   return (
     <>
       {!loadingOffers || !loadingProfile ? (
         <section className="flex flex-col justify-start items-center h-full w-full overflow-y-scroll">
+          <div className="relative w-full h-[250px] flex justify-start items-center">
+            <div className="relative w-full h-full">
+              <img src="/banner.jpg" className="object-cover w-full h-full" />
+              <div className="absolute inset-0 bg-black/50"></div>
+            </div>
+            <div className="absolute left-16 flex justify-start items-center gap-2 text-white z-1">
+              <UserAvatar
+                radius="md"
+                className="w-[120px] h-[120px]"
+                avatar={profile?.user?.avatar ?? ""}
+              />
+              <div className="flex flex-col items-start justify-center gap-2">
+                <p className="pl-2 text-4xl font-semibold">
+                  {profile?.user?.firstname + " " + profile?.user?.lastname}
+                </p>
+                <p className="pl-2 text-md font-semibold">{profile?.name}</p>
+                <div className="flex justify-start items-center gap-2">
+                  {profile?.specialisation?.map((s, i) => (
+                    <Badge key={i} className="font-semibold">
+                      {s}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
           <section className="w-full">
             {!prevId && (
               <div className="w-full pl-5 flex justify-start items-start gap-1 p-2">

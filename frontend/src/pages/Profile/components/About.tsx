@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Eye, Info, Loader2, X } from "lucide-react";
 import { Label, TagInput } from "evergreen-ui";
 import {
-  useAddCoachProfileMutation,
   useGetMyProfileQuery,
   useUpdateCoachProfileMutation,
 } from "@/graphql/hooks";
@@ -27,8 +26,7 @@ export default function About() {
     refetch,
   } = useGetMyProfileQuery();
   const [update, { loading: loadingUpdate }] = useUpdateCoachProfileMutation();
-  const [add, { loading: loadingAdd }] = useAddCoachProfileMutation();
-  const loading = loadingAdd || loadingUpdate;
+  const loading = loadingUpdate;
   const profile = dataProfile?.getCoachProfile || null;
   const [isShow, setIsShow] = useState<boolean>(true);
   const [name, setName] = useState<string>("");
@@ -67,12 +65,7 @@ export default function About() {
       instagram,
       linkedin,
     };
-
-    if (!dataProfile) {
-      await add({ variables: { data } });
-    } else {
-      await update({ variables: { data, id: profile?.id as string } });
-    }
+    await update({ variables: { data, id: profile?.id as string } });
     toast.success("Vos informations ont bien été enregistré", {
       style: {
         backgroundColor: "#dcfce7",

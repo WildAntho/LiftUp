@@ -14,7 +14,7 @@ export default function CoachCard({ coach }: CoachCardProps) {
   const cheapestOfferPrice = coach?.offers?.[0]?.price ?? "Non disponible";
   return (
     <section
-      className="group w-full h-full flex justify-between items-center p-4 rounded-2xl border border-gray-100 transition-all duration-100 shadow-md hover:shadow-xl cursor-pointer"
+      className="group w-full h-full flex justify-between items-center p-4 rounded-2xl bg-white border border-white transform transition-all duration-300 ease-in-out hover:-translate-y-1 cursor-pointer"
       onClick={() => navigate(`/coach/${coach.id}`)}
     >
       <section className="flex justify-start items-center gap-5 cursor-pointer h-full">

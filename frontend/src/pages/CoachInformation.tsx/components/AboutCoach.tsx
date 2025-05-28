@@ -1,9 +1,7 @@
 import LexicalEditorComponent from "@/components/LexicalEditor/LexicalEditorComponent";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CoachProfile } from "@/graphql/hooks";
 import { NotebookText } from "lucide-react";
-import UserAvatar from "@/components/UserAvatar";
 
 type AboutProfileProps = {
   profile: CoachProfile;
@@ -18,21 +16,6 @@ export default function AboutCoach({ profile }: AboutProfileProps) {
           {profile?.user?.firstname + " " + profile?.user?.lastname}
         </p>
         <Separator />
-      </div>
-      <div className="flex justify-start items-center gap-2">
-        <UserAvatar
-          radius="md"
-          className="w-[100px] h-[100px]"
-          avatar={profile.user?.avatar ?? ""}
-        />
-        <div className="flex flex-col items-start justify-center gap-2">
-          <p className="pl-2 text-md font-semibold">{profile.name}</p>
-          <div className="flex justify-start items-center gap-2">
-            {profile?.specialisation?.map((s, i) => (
-              <Badge key={i}>{s}</Badge>
-            ))}
-          </div>
-        </div>
       </div>
       {profile.description ? (
         <div className="w-[85%]">
