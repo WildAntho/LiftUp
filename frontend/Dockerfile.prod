@@ -2,7 +2,7 @@
 FROM node:lts-alpine AS builder
 
 ARG VITE_S3_CLOUDFRONT
-ENV VITE_S3_CLOUDFRONT=${VITE_S3_CLOUDFRONT}
+ENV VITE_S3_CLOUDFRONT=https://d1wizaxnjlzb3w.cloudfront.net
 
 RUN mkdir /app
 WORKDIR /app
