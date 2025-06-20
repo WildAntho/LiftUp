@@ -1,6 +1,9 @@
 # container temporaire pour build l'appli
 FROM node:lts-alpine AS builder
 
+ARG VITE_S3_CLOUDFRONT
+ENV VITE_S3_CLOUDFRONT=${VITE_S3_CLOUDFRONT}
+
 RUN mkdir /app
 WORKDIR /app
 COPY package*.json ./
