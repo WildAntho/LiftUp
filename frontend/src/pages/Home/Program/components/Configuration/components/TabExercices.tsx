@@ -8,7 +8,6 @@ import {
 } from "@/graphql/hooks";
 import ChooseExerciceCard from "./ChooseExerciceCard";
 import {
-  BicepsFlexed,
   Check,
   Handshake,
   Heart,
@@ -43,8 +42,7 @@ export default function TabExercices({
   const [input, setInput] = useState<string>("");
   const [debounceInput, setDebounceInput] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [primary, setPrimary] = useState("");
-  const [secondary, setSecondary] = useState("");
+  const [muscles, setMuscles] = useState<string[]>([]);
   const { data: dataFavorite, refetch: refetchFavorite } =
     useGetFavoriteExercicesIdQuery();
   const [addFavorite] = useAddExerciceFavoriteMutation();
@@ -54,8 +52,7 @@ export default function TabExercices({
       input: debounceInput,
       id: activeTabId === 2 ? currentUser?.id.toString() : "",
       getFavorite: activeTabId === 3,
-      primary,
-      secondary,
+      muscles,
     },
     fetchPolicy: "cache-and-network",
   });
@@ -174,7 +171,7 @@ export default function TabExercices({
       <section className="w-full flex items-center gap-2">
         <Input
           placeholder="Rechercher un exercice"
-          className="flex-1"
+          className="w-[65%]"
           startContent={<Search size={20} className="text-gray-500" />}
           value={input}
           onChange={(e) => {
@@ -183,26 +180,16 @@ export default function TabExercices({
             debouncedSearch(e.target.value);
           }}
         />
-        <div className="flex items-center gap-1 flex-1">
+        <div className="flex items-center gap-1 w-[35%]">
           <Select
-            aria-label="Muscle principal"
-            placeholder="Muscle principal"
-            selectedKeys={primary ? [primary] : []}
-            onChange={(e) => setPrimary(e.target.value)}
-            startContent={<BicepsFlexed size={20} className="text-gray-500" />}
-          >
-            {allMuscleGroup.map((m) => (
-              <SelectItem key={m.id} value={m.key}>
-                {m.label}
-              </SelectItem>
-            ))}
-          </Select>
-          <Select
-            aria-label="Muscle secondaire"
-            placeholder="Muscle secondaire"
-            selectedKeys={secondary ? [secondary] : []}
-            onChange={(e) => setSecondary(e.target.value)}
+            aria-label="Groupes musculaires"
+            placeholder="Groupes musculaires"
+            selectedKeys={new Set(muscles)}
+            onSelectionChange={(keys) =>
+              setMuscles(Array.from(keys as Set<string>))
+            }
             startContent={<Handshake size={20} className="text-gray-500" />}
+            selectionMode="multiple"
           >
             {allMuscleGroup.map((m) => (
               <SelectItem key={m.id} value={m.key}>
@@ -215,15 +202,14 @@ export default function TabExercices({
       <p
         className="w-full text-end text-xs text-grat-500 hover:underline hover:text-dark cursor-pointer"
         onClick={() => {
-          setPrimary("");
-          setSecondary("");
+          setMuscles([]);
         }}
       >
         Réinitialiser les filtres
       </p>
       {allExercices.length > 0 ? (
         !loading ? (
-          <section className="flex flex-wrap justify-center w-full gap-4">
+          <section className="grid grid-cols-4 2xl:grid-cols-5 w-full gap-1">
             {allExercices.map((e) => {
               const isActive = activeExercices?.find(
                 (exercice) => exercice.id === e.id
@@ -231,7 +217,7 @@ export default function TabExercices({
               return (
                 <section
                   key={e.id}
-                  className="relative w-[250px] h-[250px] overflow-hidden flex flex-col items-center justify-center shadow-md rounded-2xl border border-gray-300 cursor-pointer hover:border-gray-600"
+                  className="relative h-[250px] overflow-hidden flex flex-col items-center justify-center shadow-md rounded-2xl border border-gray-300 cursor-pointer hover:border-gray-600"
                   onClick={() => handleClick(e)}
                 >
                   <ChooseExerciceCard

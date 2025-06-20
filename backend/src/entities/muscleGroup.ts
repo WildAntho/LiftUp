@@ -1,5 +1,12 @@
 import { Field, ID, ObjectType } from "type-graphql";
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { ExerciceModel } from "./exerciceModel";
 
 @ObjectType()
@@ -30,4 +37,8 @@ export class MuscleGroup extends BaseEntity {
     cascade: true,
   })
   secondaryExercises?: ExerciceModel[];
+
+  @Field(() => [ExerciceModel], { nullable: true })
+  @ManyToMany(() => ExerciceModel, (exercice) => exercice.muscles)
+  exercices?: ExerciceModel[];
 }

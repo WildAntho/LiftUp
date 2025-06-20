@@ -3,6 +3,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -97,4 +98,11 @@ export class ExerciceModel extends BaseEntity {
   @Field(() => MuscleGroup, { nullable: true })
   @ManyToOne(() => MuscleGroup, { nullable: true })
   secondaryMuscle?: MuscleGroup;
+
+  @Field(() => [MuscleGroup], { nullable: true })
+  @ManyToMany(() => MuscleGroup, (muscleGroup) => muscleGroup.exercices, {
+    cascade: true,
+  })
+  @JoinTable()
+  muscles?: MuscleGroup[];
 }

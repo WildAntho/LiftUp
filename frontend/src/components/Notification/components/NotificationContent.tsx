@@ -39,7 +39,7 @@ export const AcceptRequestNotification = ({
             " " +
             notification?.request?.receiver.lastname}
         </span>{" "}
-        à accepter votre demande
+        à accepter ta demande
       </>
     ),
   };
@@ -77,9 +77,9 @@ export const NewTrainingNotification = () => {
     message: (
       <>
         <div className="line-clamp-3 overflow-hidden text-ellipsis">
-          <p className="font-semibold">Prêt à vous surpasser ?</p>
+          <p className="font-semibold">Prêt à te surpasser ?</p>
           <p className="text-gray-500">
-            De nouvelles séances vous attendent dans votre calendrier !
+            De nouvelles séances t'attendent dans ton calendrier !
           </p>
         </div>
       </>
@@ -94,7 +94,7 @@ export const ActivateMembershipNotification = () => {
       <>
         <div className="line-clamp-3 overflow-hidden text-ellipsis">
           <p className="font-semibold">
-            Bonne nouvelle ! Votre suivi a été activé.
+            Bonne nouvelle ! Ton suivi a été activé.
           </p>
           <p className="text-gray-500">
             Prêt à recevoir des séances sur mesure ?
