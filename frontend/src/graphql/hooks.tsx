@@ -144,6 +144,7 @@ export type ExerciceModel = {
   image?: Maybe<Scalars['String']['output']>;
   intensity?: Maybe<Scalars['Float']['output']>;
   intensityFormat?: Maybe<IntensityFormat>;
+  muscles?: Maybe<Array<MuscleGroup>>;
   notes?: Maybe<Scalars['String']['output']>;
   primaryMuscle?: Maybe<MuscleGroup>;
   rep?: Maybe<Scalars['Float']['output']>;
@@ -240,6 +241,7 @@ export type MessageResult = {
 
 export type MuscleGroup = {
   __typename?: 'MuscleGroup';
+  exercices?: Maybe<Array<ExerciceModel>>;
   id: Scalars['ID']['output'];
   key: Scalars['String']['output'];
   label: Scalars['String']['output'];
@@ -252,7 +254,6 @@ export type Mutation = {
   acceptRequest: Scalars['String']['output'];
   activeMembership: Scalars['String']['output'];
   addCategory: Scalars['String']['output'];
-  addCoachProfile: Scalars['String']['output'];
   addExercice: Scalars['String']['output'];
   addExerciceFavorite: Scalars['String']['output'];
   addFeedback: Scalars['String']['output'];
@@ -316,11 +317,6 @@ export type MutationActiveMembershipArgs = {
 
 export type MutationAddCategoryArgs = {
   label: Scalars['String']['input'];
-};
-
-
-export type MutationAddCoachProfileArgs = {
-  data: CoachProfileInput;
 };
 
 
@@ -744,6 +740,7 @@ export type QueryGetAllExercicesModelArgs = {
   getFavorite?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   input?: InputMaybe<Scalars['String']['input']>;
+  muscles?: InputMaybe<Array<Scalars['String']['input']>>;
   primary?: InputMaybe<Scalars['String']['input']>;
   secondary?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1450,8 +1447,7 @@ export type GetAllExercicesModelQueryVariables = Exact<{
   input?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   getFavorite?: InputMaybe<Scalars['Boolean']['input']>;
-  secondary?: InputMaybe<Scalars['String']['input']>;
-  primary?: InputMaybe<Scalars['String']['input']>;
+  muscles?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
 
 
@@ -3300,13 +3296,12 @@ export type GetAllCategoriesLazyQueryHookResult = ReturnType<typeof useGetAllCat
 export type GetAllCategoriesSuspenseQueryHookResult = ReturnType<typeof useGetAllCategoriesSuspenseQuery>;
 export type GetAllCategoriesQueryResult = Apollo.QueryResult<GetAllCategoriesQuery, GetAllCategoriesQueryVariables>;
 export const GetAllExercicesModelDocument = gql`
-    query GetAllExercicesModel($input: String, $id: String, $getFavorite: Boolean, $secondary: String, $primary: String) {
+    query GetAllExercicesModel($input: String, $id: String, $getFavorite: Boolean, $muscles: [String!]) {
   getAllExercicesModel(
     input: $input
     id: $id
     getFavorite: $getFavorite
-    secondary: $secondary
-    primary: $primary
+    muscles: $muscles
   ) {
     id
     title
@@ -3339,8 +3334,7 @@ export const GetAllExercicesModelDocument = gql`
  *      input: // value for 'input'
  *      id: // value for 'id'
  *      getFavorite: // value for 'getFavorite'
- *      secondary: // value for 'secondary'
- *      primary: // value for 'primary'
+ *      muscles: // value for 'muscles'
  *   },
  * });
  */

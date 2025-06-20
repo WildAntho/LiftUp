@@ -10,7 +10,6 @@ import {
   UserPen,
   Users,
 } from "lucide-react";
-import { Button } from "./ui/button";
 import { ReactElement } from "react";
 import {
   DropdownMenu,
@@ -27,6 +26,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import MyAvatar from "./MyAvatar";
 import Notifications from "./Notification/Notifications";
 import ChatIcon from "./ChatIcon";
+import { Button } from "@heroui/react";
 
 type Link = {
   id: number;
@@ -58,13 +58,13 @@ export default function Navigation() {
             id: 2,
             value: "students",
             label: "Mes élèves",
-            icon: <BookOpen />,
+            icon: <BookOpen size={16} />,
           },
           {
             id: 3,
             value: "crew",
             label: "Mes équipes",
-            icon: <Users />,
+            icon: <Users size={16} />,
           },
         ]
       : []),
@@ -74,13 +74,13 @@ export default function Navigation() {
             id: 4,
             value: "coach",
             label: "Besoin d'un coach ?",
-            icon: <Handshake />,
+            icon: <Handshake size={16} />,
           },
           {
             id: 5,
             value: "program",
             label: "Besoin d'un plan d'entraînement ?",
-            icon: <BicepsFlexed />,
+            icon: <BicepsFlexed size={16} />,
           },
         ]
       : []),
@@ -110,15 +110,23 @@ export default function Navigation() {
             <Button
               data-testid={l.label}
               key={l.id}
-              variant={l.value === splitPath ? "default" : "ghost"}
-              onClick={() => {
+              radius="sm"
+              onPress={() => {
                 navigate(`${l.value}`);
               }}
-              className={`${l.value === path && "bg-dark hover:bg-dark/90"}`}
+              className={`group cursor-pointer h-[45px] min-w-[150px] bg-white hover:bg-gray-100 ${
+                l.value === splitPath
+                  ? "bg-dark hover:bg-dark text-white"
+                  : "text-black"
+              }`}
               value={l.value}
             >
-              {l.icon}
-              {l.label}
+              <div className="flex justify-center items-center gap-2 text-sm">
+                {l.icon}
+                <p className="transition-all duration-200 group-hover:translate-x-1">
+                  {l.label}
+                </p>
+              </div>
             </Button>
           ))}
         </section>
