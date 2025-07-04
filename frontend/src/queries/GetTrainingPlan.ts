@@ -19,8 +19,11 @@ export const GET_TRAINING_PLAN = gql`
         repFormat
         weightFormat
         intensityFormat
-        image
         position
+        exerciceModel {
+          id
+          image
+        }
       }
     }
   }

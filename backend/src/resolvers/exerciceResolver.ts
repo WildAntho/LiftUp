@@ -3,7 +3,6 @@ import { Exercice } from "../entities/exercice";
 import { ExerciceData, ScopeExercice } from "../InputType/exerciceType";
 import { Training } from "../entities/training";
 import { CreateMultipleExercicesFromModel } from "../services/exerciceService";
-import { AddExercicePlanInput } from "../InputType/trainingPlanType";
 import { TrainingPlan } from "../entities/trainingPlan";
 
 @Resolver(Exercice)
@@ -56,8 +55,8 @@ export class ExerciceResolver {
   @Mutation(() => String)
   async addExercice(
     @Arg("id") id: string,
-    @Arg("exercices", () => [AddExercicePlanInput])
-    exercices: AddExercicePlanInput[],
+    @Arg("exercices", () => [ExerciceData])
+    exercices: ExerciceData[],
     @Arg("scope", () => ScopeExercice) scope: ScopeExercice
   ) {
     let training: Training | TrainingPlan | null = null;

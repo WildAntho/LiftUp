@@ -6,20 +6,26 @@ export const GET_ALLEXERCICE_MODEL = gql`
     $id: String
     $getFavorite: Boolean
     $muscles: [String!]
-    ) { 
-    getAllExercicesModel(input: $input, id: $id, getFavorite: $getFavorite, muscles: $muscles) {
+  ) {
+    getAllExercicesModel(
+      input: $input
+      id: $id
+      getFavorite: $getFavorite
+      muscles: $muscles
+    ) {
       id
       title
-      serie
-      rep
-      intensity
-      weight
-      notes
       image
-      weightFormat
-      repFormat
-      intensityFormat
-      tempo
+      description
+      image
+      videoType
+      video
+      user {
+        id
+      }
+      muscles {
+        id
+      }
     }
   }
 `;

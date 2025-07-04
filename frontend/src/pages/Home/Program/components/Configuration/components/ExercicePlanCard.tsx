@@ -1,6 +1,5 @@
 import {
   Exercice,
-  ExerciceData,
   IntensityFormat,
   Maybe,
   RepFormat,
@@ -28,12 +27,12 @@ import {
   allFormatWeight,
 } from "@/services/utils";
 import InfoPopUp from "./InfoPopUp";
-import { useExerciceURL } from "@/services/zustand/useExerciceUrl";
+import ExerciceImage from "@/components/ExerciceImage";
 
 type ExercicePlanCardProps = {
   exercice: Exercice;
   onDelete: (id: string) => void;
-  onUpdate: (id: string, exercice: ExerciceData) => void;
+  onUpdate: (id: string, exercice: Exercice) => void;
 };
 
 export default function ExercicePlanCard({
@@ -41,11 +40,10 @@ export default function ExercicePlanCard({
   onDelete,
   onUpdate,
 }: ExercicePlanCardProps) {
-  const exercicesURL = useExerciceURL();
   const [showAll, setShowAll] = useState(false);
   const [currentExercice, setCurrentExercice] = useState(exercice);
-  const serieRef = useRef<number>(currentExercice.serie);
-  const repRef = useRef<number>(currentExercice.rep);
+  const serieRef = useRef<number>(currentExercice?.serie ?? 1);
+  const repRef = useRef<number>(currentExercice?.rep ?? 1);
   const weightRef = useRef<Maybe<number>>(currentExercice.weight ?? null);
   const intensityRef = useRef<Maybe<number>>(currentExercice.intensity ?? null);
   const noteRef = useRef<Maybe<string>>(currentExercice.notes ?? "");
@@ -191,15 +189,15 @@ export default function ExercicePlanCard({
                 <Grip size={18} className="text-gray-500" />
               </div>
             </Tooltip>
-            <img
-              src={`${exercicesURL}${exercice.image}`}
-              alt="Image Exercice"
-              className="w-16 h-16 object-cover object-top rounded-md"
+            <ExerciceImage
+              id={exercice.exerciceModel?.id}
+              image={exercice.exerciceModel?.image ?? ""}
             />
             <div className="flex flex-col items-start justify-center gap-2">
               <p className="text-sm font-semibold">{exercice.title}</p>
               <p className="text-xs text-gray-500">
-                {exercice.serie} {`série${exercice.serie > 1 ? "s" : ""}`}
+                {exercice?.serie}{" "}
+                {`série${exercice.serie && exercice?.serie > 1 ? "s" : ""}`}
               </p>
             </div>
           </div>

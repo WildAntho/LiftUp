@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import {
-  AddExercicePlanInput,
   Exercice,
   ExerciceData,
   TrainingPlan,
@@ -16,11 +15,11 @@ type CreateWorkoutProps = {
   onCreateTraining: () => void;
   onUpdateTraining: (id: string, title: string, notes?: string) => void;
   onDeleteTraining: (id: string) => void;
-  onCreateExercice: (exercices: AddExercicePlanInput[], id?: string) => void;
+  onCreateExercice: (exercices: ExerciceData[], id?: string) => void;
   onDeleteExercice: (id: string) => void;
   onUpdateExercice: (
     id: string,
-    exercice: ExerciceData,
+    exercice: Exercice,
     showToast?: boolean
   ) => void;
   onUpdateDrag: (

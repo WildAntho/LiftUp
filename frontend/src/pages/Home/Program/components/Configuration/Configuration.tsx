@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import UpdateProgram from "./components/UpdateProgram";
 import TabChoice from "./components/TabChoice";
 import {
-  AddExercicePlanInput,
   Exercice,
   ExerciceData,
   ScopeExercice,
@@ -152,14 +151,19 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
   };
 
   const handleCreateExercice = async (
-    exercices: AddExercicePlanInput[],
+    exercices: ExerciceData[],
     id?: string
   ) => {
     try {
+      const cleanExercice = exercices.map((e) => {
+        const newExercice = { ...e };
+        delete newExercice.image;
+        return newExercice;
+      });
       const { data } = await createExercice({
         variables: {
           id: id as string,
-          exercices,
+          exercices: cleanExercice,
           scope: ScopeExercice.Program,
         },
       });
@@ -180,7 +184,8 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
     }
   };
 
-  const handleUpdateExercice = async (id: string, exercice: ExerciceData) => {
+  const handleUpdateExercice = async (id: string, exercice: Exercice) => {
+    delete exercice.exerciceModel;
     try {
       await updateExercice({
         variables: {
@@ -214,7 +219,12 @@ export default function Configuration({ onUpdate }: ConfigurationProps) {
     await Promise.all(
       newOrder.map((ex, index) => {
         if (ex.position !== index) {
-          return handleUpdateExercice(ex.id, { ...ex, position: index });
+          const copyExercice = { ...ex };
+          delete copyExercice.exerciceModel;
+          return handleUpdateExercice(ex.id, {
+            ...copyExercice,
+            position: index,
+          });
         }
       })
     );

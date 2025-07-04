@@ -6,7 +6,8 @@ type EditProps = {
 };
 
 export default function Edit({ onClick }: EditProps) {
-  const handleSwitch = () => {
+  const handleSwitch = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     onClick();
   };
   return (

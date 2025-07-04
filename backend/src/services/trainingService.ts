@@ -1,7 +1,9 @@
+import { DeepPartial } from "typeorm";
 import { ExerciceData } from "../InputType/exerciceType";
 import { TrainingData } from "../InputType/trainingType";
 import { Crew } from "../entities/crew";
 import { Exercice } from "../entities/exercice";
+import { ExerciceModel } from "../entities/exerciceModel";
 import { Training } from "../entities/training";
 import { User } from "../entities/user";
 
@@ -15,9 +17,12 @@ export async function createExerciceFromData(
     serie: exData.config?.serie ? exData.config.serie : 0,
     intensity: exData.config?.intensity ? exData.config.intensity : 0,
   };
+  const exerciceModel = await ExerciceModel.findOneBy({
+    id: exData.exerciceModelId,
+  });
   const exercice = Exercice.create({
-    rep: Math.max(exData.rep + index * config.rep, 1),
-    serie: Math.max(exData.serie + index * config.serie, 1),
+    rep: Math.max(exData.rep ?? 1 + index * config.rep, 1),
+    serie: Math.max(exData.serie ?? 1 + index * config.serie, 1),
     title: exData.title,
     weight: exData.weight,
     intensity: exData.intensity
@@ -30,7 +35,8 @@ export async function createExerciceFromData(
     weightFormat: exData.weightFormat,
     intensityFormat: exData.intensityFormat,
     position: exData.position,
-  });
+    exerciceModel,
+  } as DeepPartial<Exercice>);
   await exercice.save();
   return exercice;
 }
