@@ -6,15 +6,14 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./user";
-import {
-  IntensityFormat,
-  RepFormat,
-  WeightFormat,
-} from "../InputType/exerciceType";
 import { MuscleGroup } from "./muscleGroup";
+import { Exercice } from "./exercice";
+import { VideoType } from "../InputType/exerciceModelType";
 
 @ObjectType()
 @Entity()
@@ -27,68 +26,34 @@ export class ExerciceModel extends BaseEntity {
   @Column()
   title!: string;
 
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  serie?: number;
-
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  rep?: number;
-
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  intensity?: number;
-
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  weight?: number;
-
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  notes?: string;
-
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   @Column({ nullable: true })
   image?: string;
 
-  @Field(() => IntensityFormat, { nullable: true })
-  @Column({
-    type: "enum",
-    enum: IntensityFormat,
-    nullable: true,
-    default: IntensityFormat.RPE,
-  })
-  intensityFormat?: IntensityFormat;
-
-  @Field(() => WeightFormat, { nullable: true })
-  @Column({
-    type: "enum",
-    enum: WeightFormat,
-    nullable: true,
-    default: WeightFormat.KG,
-  })
-  weightFormat?: WeightFormat;
-
-  @Field(() => RepFormat, { nullable: true })
-  @Column({
-    type: "enum",
-    enum: RepFormat,
-    nullable: true,
-    default: RepFormat.STANDARD,
-  })
-  repFormat?: RepFormat;
-
   @Field({ nullable: true })
   @Column({ nullable: true })
-  tempo?: number;
+  description?: string;
 
-  // Relation avec la table User
+  @Field(() => VideoType, { nullable: true })
+  @Column({
+    type: "enum",
+    enum: VideoType,
+    nullable: true,
+  })
+  videoType?: VideoType | null;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  video?: string;
+
   @Field(() => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.exerciceModels, { nullable: true })
   user?: User;
 
   @Field(() => [User], { nullable: true })
-  @ManyToMany(() => User, (user) => user.favoriteExercices)
+  @ManyToMany(() => User, (user) => user.favoriteExercices, {
+    cascade: true,
+  })
   userFavorites?: User[];
 
   @Field(() => MuscleGroup, { nullable: true })
@@ -105,4 +70,8 @@ export class ExerciceModel extends BaseEntity {
   })
   @JoinTable()
   muscles?: MuscleGroup[];
+
+  @Field(() => Exercice, { nullable: true })
+  @OneToMany(() => Exercice, (exercice) => exercice.exerciceModel)
+  exercices?: Exercice[];
 }

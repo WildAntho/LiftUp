@@ -29,7 +29,6 @@ export function Day<T extends CalendarEvent>({
   index,
 }: DayProps<T>) {
   const dayNumber = date.getDate();
-  const isCurrentMonth = date.getMonth() === new Date().getMonth();
   const [open, setOpen] = useState<boolean>(false);
   const closeModal = () => {
     setOpen(false);
@@ -63,8 +62,6 @@ export function Day<T extends CalendarEvent>({
         <div className="flex justify-between items-center max-h-[20%]">
           <span
             className={`text-sm font-medium ${
-              !isCurrentMonth && "text-gray-300"
-            } ${
               isToday(date) &&
               "flex justify-center items-center bg-primary text-white rounded-full w-8 h-8"
             }`}

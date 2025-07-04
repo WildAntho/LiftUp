@@ -1,3 +1,4 @@
+import { EXERCICE_FIELDS_FRAGMENT } from "@/fragments/ExerciceFragment";
 import { gql } from "@apollo/client";
 
 export const GET_STUDENT_TRAINING = gql`
@@ -23,9 +24,14 @@ export const GET_STUDENT_TRAINING = gql`
         weightFormat
         intensityFormat
         notes
-        image
         position
+        exerciceModel {
+          id
+          image
+          title
+        }
       }
     }
   }
+  ${EXERCICE_FIELDS_FRAGMENT}
 `;

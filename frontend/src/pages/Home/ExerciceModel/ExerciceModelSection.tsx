@@ -1,14 +1,14 @@
-import TabExercices from "../Program/components/Configuration/components/TabExercices";
 import { useState } from "react";
 import { ExerciceModel } from "@/graphql/hooks";
 import { Separator } from "@/components/ui/separator";
+import TabExercices from "@/components/TabExercices";
 
 export default function ExerciceModelSection() {
   const [activeExercices, setActiveExercices] = useState<
     ExerciceModel[] | null
   >(null);
   return (
-    <section className="w-full h-full flex flex-col justify-start items-center bg-white rounded-2xl p-4 pb-8 gap-4">
+    <section className="w-full h-full flex flex-col justify-start items-center bg-white rounded-2xl px-4 gap-4">
       <p className="pt-10 pl-4 mt-2 w-full text-start font-semibold text-xl">
         Tous les exercices
       </p>

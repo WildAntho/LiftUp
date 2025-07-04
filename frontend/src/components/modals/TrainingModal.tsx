@@ -6,11 +6,8 @@ import { useStudentStore } from "@/services/zustand/studentStore";
 import FeedbackModal from "./FeedbackModal";
 import useIsDesktop from "@/pages/UnsupportedScreen/useIsDesktop";
 import {
-  AddExercicePlanInput,
   Exercice,
   ExerciceData,
-  IntensityFormat,
-  RepFormat,
   ScopeExercice,
   Training,
   useAddExerciceMutation,
@@ -21,7 +18,6 @@ import {
   useDeleteTrainingMutation,
   useUpdateExerciceMutation,
   useUpdateTrainingMutation,
-  WeightFormat,
 } from "@/graphql/hooks";
 import {
   Modal,
@@ -206,10 +202,17 @@ export default function TrainingModal({
     }
     try {
       // Ajout des configurations aux exercices
-      const exercicesWithConfig = exercices.map((e) => ({
-        ...e,
-        config: openRecurrent ? exerciceConfigs[e.id] || null : null,
-      }));
+      const exercicesWithConfig = exercices.map((e) => {
+        const cloned = { ...e };
+        delete cloned.exerciceModel;
+        return {
+          ...cloned,
+          ...(!isNew && e.exerciceModel
+            ? { exerciceModelId: e.exerciceModel.id }
+            : {}),
+          config: openRecurrent ? exerciceConfigs[e.id] || null : null,
+        };
+      });
 
       const data = {
         id: id as string,
@@ -268,30 +271,35 @@ export default function TrainingModal({
     close();
   };
 
-  const handleCreateExercice = async (
-    exercicesToAdd: AddExercicePlanInput[]
-  ) => {
+  const handleCreateExercice = async (exercicesToAdd: ExerciceData[]) => {
     const newExercices = [...exercices];
     exercicesToAdd.forEach((e) =>
       newExercices.push({
+        id: `${Date.now()}-${Math.random()}`,
         ...e,
-        intensityFormat: IntensityFormat.Rpe,
-        repFormat: RepFormat.Standard,
-        weightFormat: WeightFormat.Kg,
+        exerciceModel: {
+          image: e.image,
+        },
       } as Exercice)
     );
     setExercices(newExercices);
     if (!isNew) {
+      const cleanExercices = exercicesToAdd.map((e) => ({
+        title: e.title,
+        serie: 1,
+        rep: 1,
+        exerciceModelId: e.exerciceModelId,
+      }));
       await addExercice({
         variables: {
           id: training?.id as string,
-          exercices: exercicesToAdd,
+          exercices: cleanExercices,
           scope: ScopeExercice.Calendar,
         },
       });
       if (currentStudent) refetch.refetchStudentTraining();
       if (currentCrew) refetch.refetchCrewTraining();
-      refetch.refetchMyTraining();
+      if (!currentCrew && !currentStudent) refetch.refetchMyTraining();
     }
   };
 
@@ -310,7 +318,7 @@ export default function TrainingModal({
     }
   };
 
-  const handleUpdateExercice = async (id: string, exercice: ExerciceData) => {
+  const handleUpdateExercice = async (id: string, exercice: Exercice) => {
     setExercices((prev) =>
       prev.map((ex) =>
         ex.id === id
@@ -322,9 +330,11 @@ export default function TrainingModal({
       )
     );
     if (!isNew) {
+      const cleanExercice = { ...exercice };
+      delete cleanExercice.exerciceModel;
       await updateExercice({
         variables: {
-          data: exercice,
+          data: cleanExercice,
           id,
         },
       });
@@ -340,7 +350,6 @@ export default function TrainingModal({
     setLocalExercices: (exercices: Exercice[]) => void
   ) => {
     const { active, over } = event;
-
     if (!over || active.id === over.id) return;
 
     const oldIndex = localExercices.findIndex((item) => item.id === active.id);

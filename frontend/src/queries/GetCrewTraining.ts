@@ -23,8 +23,12 @@ export const GET_CREW_TRAINING = gql`
         weightFormat
         intensityFormat
         notes
-        image
         position
+        exerciceModel {
+          id
+          image
+          title
+        }
       }
     }
   }

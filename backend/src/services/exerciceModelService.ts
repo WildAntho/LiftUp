@@ -1,0 +1,41 @@
+import { In } from "typeorm";
+import { ExerciceModel } from "../entities/exerciceModel";
+import { MuscleGroup } from "../entities/muscleGroup";
+import { User } from "../entities/user";
+import { ExerciceModelData } from "../InputType/exerciceModelType";
+
+export function canGetExercice(connectedUser: User, exerciceOwner: User) {
+  if (connectedUser.roles === "COACH" && connectedUser.id !== exerciceOwner.id)
+    return false;
+  if (connectedUser.id === exerciceOwner.id) return true;
+  if (connectedUser.coach && connectedUser.coach.id === exerciceOwner.id)
+    return true;
+  return false;
+}
+
+export async function saveExerciceModel(
+  data: ExerciceModelData,
+  user?: User,
+  exerciceToUpdate?: ExerciceModel
+) {
+  if (!user && !exerciceToUpdate) {
+    throw new Error("Impossible de créer un exercice sans user");
+  }
+
+  const exercice = exerciceToUpdate ?? new ExerciceModel();
+
+  const allMuscles = data.muscles?.length
+    ? await MuscleGroup.findBy({ id: In(data.muscles) })
+    : [];
+
+  if (user) exercice.user = user;
+
+  exercice.title = data.title;
+  exercice.image = data.image;
+  exercice.muscles = allMuscles;
+  exercice.description = data.description;
+  exercice.video = data.video;
+  exercice.videoType = data.videoType;
+
+  return await exercice.save();
+}

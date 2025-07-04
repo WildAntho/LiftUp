@@ -4,6 +4,7 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Training } from "./training";
@@ -13,6 +14,7 @@ import {
   RepFormat,
   WeightFormat,
 } from "../InputType/exerciceType";
+import { ExerciceModel } from "./exerciceModel";
 
 @ObjectType()
 @Entity()
@@ -25,13 +27,13 @@ export class Exercice extends BaseEntity {
   @Column()
   title!: string;
 
-  @Field()
-  @Column()
-  serie!: number;
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  serie?: number;
 
-  @Field()
-  @Column()
-  rep!: number;
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  rep?: number;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
@@ -44,10 +46,6 @@ export class Exercice extends BaseEntity {
   @Field({ nullable: true })
   @Column({ nullable: true })
   notes?: string;
-
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  image?: string;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
@@ -95,4 +93,12 @@ export class Exercice extends BaseEntity {
     onDelete: "CASCADE",
   })
   trainingPlan?: TrainingPlan;
+
+  @Field(() => ExerciceModel, { nullable: true })
+  @ManyToOne(() => ExerciceModel, (exerciceModel) => exerciceModel.exercices, {
+    nullable: true,
+    onDelete: "SET NULL",
+    eager: true,
+  })
+  exerciceModel?: ExerciceModel;
 }

@@ -4,15 +4,15 @@ import { ExerciceModel } from "../entities/exerciceModel";
 import { Training } from "../entities/training";
 import { TrainingPlan } from "../entities/trainingPlan";
 import {
+  ExerciceData,
   IntensityFormat,
   RepFormat,
   ScopeExercice,
   WeightFormat,
 } from "../InputType/exerciceType";
-import { AddExercicePlanInput } from "../InputType/trainingPlanType";
 
 export async function CreateMultipleExercicesFromModel(
-  exercices: AddExercicePlanInput[],
+  exercices: ExerciceData[],
   training: TrainingPlan | Training,
   scope: ScopeExercice
 ): Promise<Exercice[]> {
@@ -24,9 +24,11 @@ export async function CreateMultipleExercicesFromModel(
   return await Promise.all(
     exercices.map(async (e) => {
       const relationField = scope === "CALENDAR" ? "training" : "trainingPlan";
+      const exerciceModel = await ExerciceModel.findOneBy({id: e.exerciceModelId})
       const exerciceData = {
         ...defaultValues,
         ...e,
+        exerciceModel,
         [relationField]: training,
       } as DeepPartial<Exercice>;
       const exercice = Exercice.create(exerciceData);

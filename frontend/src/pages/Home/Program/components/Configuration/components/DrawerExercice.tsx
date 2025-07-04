@@ -1,14 +1,14 @@
 import { Tooltip } from "@heroui/tooltip";
 import { Plus, PlusCircle } from "lucide-react";
-import TabExercices from "./TabExercices";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { AddExercicePlanInput, ExerciceModel } from "@/graphql/hooks";
+import { ExerciceModel } from "@/graphql/hooks";
 import { Drawer, DrawerContent } from "@heroui/react";
+import TabExercices from "@/components/TabExercices";
 
 type DrawerExerciceProps = {
-  onCreate: (exercices: AddExercicePlanInput[]) => void;
+  onCreate: (exercices: ExerciceModel[]) => void;
 };
 
 export default function DrawerExercice({ onCreate }: DrawerExerciceProps) {
@@ -18,7 +18,7 @@ export default function DrawerExercice({ onCreate }: DrawerExerciceProps) {
   >(null);
 
   const handleCreate = () => {
-    onCreate(activeExercices as AddExercicePlanInput[]);
+    onCreate(activeExercices as ExerciceModel[]);
     setIsOpen(false);
     setActiveExercices(null);
   };

@@ -9,14 +9,13 @@ import {
 import { Exercice, RepFormat, WeightFormat } from "@/graphql/hooks";
 import { Input } from "@heroui/react";
 import { useState } from "react";
-import { useExerciceURL } from "@/services/zustand/useExerciceUrl";
+import ExerciceImage from "./ExerciceImage";
 
 type ExerciceCardProps = {
   exercice: Exercice;
 };
 
 export default function ExerciceCard({ exercice }: ExerciceCardProps) {
-  const exercicesURL = useExerciceURL();
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
   };
@@ -73,17 +72,17 @@ export default function ExerciceCard({ exercice }: ExerciceCardProps) {
         onClick={toggleShowAll}
       >
         <div className="flex justify-start items-center gap-3">
-          <img
-            src={`${exercicesURL}${exercice.image}`}
-            alt="Image Exercice"
-            className="w-16 h-16 object-cover object-top rounded-md"
+          <ExerciceImage
+            id={exercice.exerciceModel?.id}
+            image={exercice.exerciceModel?.image ?? ""}
           />
           <div className="flex flex-col justify-center items-start gap-1">
             <p className="text-md font-semibold text-gray-800">
               {exercice.title}
             </p>
             <p className="text-xs text-gray-500">
-              {exercice.serie} {`série${exercice.serie > 1 ? "s" : ""}`}
+              {exercice.serie}{" "}
+              {`série${exercice.serie && exercice.serie > 1 ? "s" : ""}`}
             </p>
           </div>
         </div>

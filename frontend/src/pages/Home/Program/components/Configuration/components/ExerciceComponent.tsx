@@ -1,7 +1,7 @@
 import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import DrawerExercice from "./DrawerExercice";
-import { AddExercicePlanInput, Exercice, ExerciceData } from "@/graphql/hooks";
+import { Exercice, ExerciceData, ExerciceModel } from "@/graphql/hooks";
 import ExercicePlanCard from "./ExercicePlanCard";
 import {
   DndContext,
@@ -15,9 +15,9 @@ import { useEffect, useState } from "react";
 import { SortableContext } from "@dnd-kit/sortable";
 
 type ExerciceComponentProps = {
-  onCreate: (exercices: AddExercicePlanInput[], id?: string) => void;
+  onCreate: (exercices: ExerciceData[], id?: string) => void;
   onDelete: (id: string) => void;
-  onUpdate: (id: string, exercice: ExerciceData) => void;
+  onUpdate: (id: string, exercice: Exercice) => void;
   onUpdateDrag: (
     event: DragEndEvent,
     localExercices: Exercice[],
@@ -68,11 +68,15 @@ export default function ExerciceComponent({
     },
   };
 
-  const handleCreate = (exercices: AddExercicePlanInput[]) => {
+  const handleCreate = (exercices: ExerciceModel[]) => {
     const lastPosition = (localExercices.at(-1)?.position ?? -1) + 1;
     const allExercicesWithPosition = exercices.map((e, i) => {
       return {
-        ...e,
+        title: e.title,
+        rep: 1,
+        serie: 1,
+        exerciceModelId: e.id,
+        image: e.image,
         position: lastPosition + i,
       };
     });

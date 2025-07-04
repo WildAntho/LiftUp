@@ -1,4 +1,5 @@
 import { Field, Float, InputType, registerEnumType } from "type-graphql";
+import { VideoType } from "./exerciceModelType";
 
 export enum ScopeExercice {
   CALENDAR = "CALENDAR",
@@ -66,11 +67,11 @@ export class ExerciceData {
   @Field()
   title!: string;
 
-  @Field()
-  serie!: number;
+  @Field({ nullable: true })
+  serie?: number;
 
-  @Field()
-  rep!: number;
+  @Field({ nullable: true })
+  rep?: number;
 
   @Field({ nullable: true })
   intensity?: number;
@@ -101,4 +102,7 @@ export class ExerciceData {
 
   @Field({ nullable: true })
   config?: Config;
+
+  @Field({ nullable: true })
+  exerciceModelId?: string;
 }

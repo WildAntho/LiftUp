@@ -10,7 +10,7 @@ export async function generateTraining(
   coachId: string,
   startDate: Date
 ) {
-  const results = await Promise.all(
+  await Promise.all(
     trainings.map(async (t) => {
       const trainingCopy = Training.create({
         title: t.title,

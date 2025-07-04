@@ -101,9 +101,7 @@ export class User extends BaseEntity {
   exerciceModels?: ExerciceModel[];
 
   @Field(() => [ExerciceModel], { nullable: true })
-  @ManyToMany(() => ExerciceModel, (ex) => ex.userFavorites, {
-    cascade: true,
-  })
+  @ManyToMany(() => ExerciceModel, (ex) => ex.userFavorites)
   @JoinTable()
   favoriteExercices?: ExerciceModel[];
 
