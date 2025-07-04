@@ -38,10 +38,22 @@ import { useStudentStore } from "./services/zustand/studentStore.ts";
 import UnsupportedScreen from "./pages/UnsupportedScreen/UnsupportedScreen.tsx";
 import useIsDesktop from "./pages/UnsupportedScreen/useIsDesktop.ts";
 
+const isStaging = import.meta.env.VITE_NODE_ENV === "staging";
+const isProd = import.meta.env.VITE_NODE_ENV === "production";
+let wsURL: string;
+
+if (isStaging) {
+  wsURL = "wss://staging.liftup-app.fr/api";
+} else if (isProd) {
+  wsURL = "wss://liftup-app.fr/api";
+} else {
+  wsURL = `/api`;
+}
+
 // Création du lien WebSocket
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "/api",
+    url: wsURL,
   })
 );
 

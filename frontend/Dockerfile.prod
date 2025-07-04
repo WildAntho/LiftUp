@@ -1,8 +1,8 @@
 # container temporaire pour build l'appli
 FROM node:lts-alpine AS builder
 
-ARG VITE_S3_CLOUDFRONT
 ENV VITE_S3_CLOUDFRONT=https://d1wizaxnjlzb3w.cloudfront.net
+ENV VITE_NODE_ENV=staging
 
 RUN mkdir /app
 WORKDIR /app

@@ -27,7 +27,7 @@ export async function generateS3SignedUrl({
 
   const key = isVideo
     ? `videos/users/${userId}/${fileName}`
-    : `public/exercices/staging/thumbnail/${fileName}`;
+    : `public/exercices/${process.env.NODE_ENV}/thumbnail/${fileName}`;
 
   const params = {
     Bucket: bucket,
@@ -48,7 +48,7 @@ export async function deleteFileFromS3(
 ) {
   const key = isVideo
     ? `videos/users/${userId}/${fileName}`
-    : `public/exercices/staging/thumbnail/${fileName}`;
+    : `public/exercices/${process.env.NODE_ENV}/thumbnail/${fileName}`;
 
   const bucket = isVideo ? PRIVATE_BUCKET_NAME : PUBLIC_BUCKET_NAME;
 
