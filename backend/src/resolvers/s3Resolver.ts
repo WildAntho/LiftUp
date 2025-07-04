@@ -1,7 +1,7 @@
 import { Arg, Ctx, Field, Mutation, ObjectType, Resolver } from "type-graphql";
 import { ExerciceModel } from "../entities/exerciceModel";
 import { CtxUser } from "../InputType/coachType";
-import { generateS3SignedUrl } from "../services/s3Service";
+import { generateFileName, generateS3SignedUrl } from "../services/s3Service";
 
 @ObjectType()
 export class GenerateUploadURL {
@@ -25,8 +25,7 @@ export class S3Resolver {
       throw new Error("fileName and fileType are required");
     }
 
-    const timestamp = Date.now();
-    const uniqueFileName = isNew ? `AWS_${timestamp}_${fileName}` : fileName;
+    const uniqueFileName = isNew ? generateFileName("AWS", fileType) : fileName;
 
     const { url, returnFileName } = await generateS3SignedUrl({
       fileName: uniqueFileName,
