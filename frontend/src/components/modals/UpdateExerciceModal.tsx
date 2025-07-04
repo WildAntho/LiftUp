@@ -249,15 +249,13 @@ export default function UpdateExerciceModal({
         generateUploadURL({
           variables: {
             fileType: file.file.type,
-            fileName: isNew ? file.file.name : exercice.video,
-            isNew,
+            fileName: isNew ? file.file.name : exercice.video
           },
         }),
         generateUploadURL({
           variables: {
             fileType: "image/jpeg",
-            fileName: isNew ? file.file.name : exercice.image,
-            isNew,
+            fileName: isNew ? file.file.name : exercice.image
           },
         }),
       ]);

@@ -58,12 +58,14 @@ export default function CreateExercice({
           variables: {
             fileType: file.file.type,
             fileName: file.file.name,
+            isNew: true,
           },
         }),
         generateUploadURL({
           variables: {
             fileType: "image/jpeg",
             fileName: file.file.name,
+            isNew: true,
           },
         }),
       ]);

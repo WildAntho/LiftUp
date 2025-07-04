@@ -65,3 +65,27 @@ export async function deleteFileFromS3(
     throw err;
   }
 }
+
+export function getExtensionFromMimeType(fileType: string) {
+  switch (fileType) {
+    case "image/jpeg":
+      return "jpg";
+    case "video/mp4":
+      return "mp4";
+    default:
+      return "";
+  }
+}
+
+export function generateFileName(prefix: string, fileType: string) {
+  const timestamp = Date.now();
+  const randomPart = Math.random().toString(36).substring(2, 8);
+  const extension = getExtensionFromMimeType(fileType);
+
+  let fileName = `${prefix}_${timestamp}_${randomPart}`;
+  if (extension) {
+    fileName += `.${extension}`;
+  }
+
+  return fileName;
+}
