@@ -4,9 +4,10 @@ import { Save } from "lucide-react";
 type SavingProps = {
   onClick: () => void;
   loading?: boolean;
+  disabled?: boolean;
 };
 
-export default function Saving({ onClick, loading }: SavingProps) {
+export default function Saving({ onClick, loading, disabled }: SavingProps) {
   return (
     <Button
       data-testid="saving-button"
@@ -14,6 +15,7 @@ export default function Saving({ onClick, loading }: SavingProps) {
       onPress={onClick}
       startContent={<Save size={16} />}
       isLoading={loading}
+      isDisabled={disabled}
     >
       <p className="text-sm transition-all duration-200 group-hover:translate-x-1">
         Sauvegarder

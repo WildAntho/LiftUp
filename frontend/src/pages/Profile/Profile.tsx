@@ -69,7 +69,7 @@ export default function Profile() {
             fullWidth={true}
             variant="underlined"
             classNames={{
-              tabList: "pb-0",
+              tabList: "p-0",
             }}
           >
             {navigation.map((n) => (

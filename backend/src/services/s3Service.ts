@@ -11,6 +11,8 @@ const s3 = new AWS.S3();
 const PRIVATE_BUCKET_NAME = process.env.S3_PRIVATE_BUCKET_NAME!;
 const PUBLIC_BUCKET_NAME = process.env.S3_PUBLIC_BUCKET_NAME!;
 
+const targetEnv = process.env.NODE_ENV === "development" ? "staging" : process.env.NODE_ENV;
+
 export async function generateS3SignedUrl({
   fileName,
   fileType,
@@ -27,7 +29,7 @@ export async function generateS3SignedUrl({
 
   const key = isVideo
     ? `videos/users/${userId}/${fileName}`
-    : `public/exercices/${process.env.NODE_ENV}/thumbnail/${fileName}`;
+    : `public/exercices/${targetEnv}/thumbnail/${fileName}`;
 
   const params = {
     Bucket: bucket,
@@ -48,7 +50,7 @@ export async function deleteFileFromS3(
 ) {
   const key = isVideo
     ? `videos/users/${userId}/${fileName}`
-    : `public/exercices/${process.env.NODE_ENV}/thumbnail/${fileName}`;
+    : `public/exercices/${targetEnv}/thumbnail/${fileName}`;
 
   const bucket = isVideo ? PRIVATE_BUCKET_NAME : PUBLIC_BUCKET_NAME;
 

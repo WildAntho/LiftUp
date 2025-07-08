@@ -68,6 +68,7 @@ export default function OfferModal({
       durability: false,
       price: false,
     });
+    setAvailability(true);
   };
 
   useEffect(() => {
@@ -81,9 +82,10 @@ export default function OfferModal({
         crewId: offer.crew?.id ?? "",
       });
       setAvailability(offer.availability);
+    } else {
+      purgeInput();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [open, offer]);
 
   const allCategories = dataCategories?.getAllCategories ?? [];
   const allCrews = dataCrews?.getCoachCrews ?? [];
@@ -272,10 +274,7 @@ export default function OfferModal({
           <Button
             type="button"
             variant="secondary"
-            onClick={() => {
-              onClose();
-              if (!offer) purgeInput();
-            }}
+            onClick={onClose}
           >
             Annuler
           </Button>
