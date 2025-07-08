@@ -656,6 +656,13 @@ export type OfferInput = {
   price: Scalars['Float']['input'];
 };
 
+/** Statut des offres */
+export enum OfferStatus {
+  All = 'ALL',
+  Available = 'AVAILABLE',
+  Cancel = 'CANCEL'
+}
+
 export type Program = {
   __typename?: 'Program';
   category?: Maybe<OfferCategory>;
@@ -759,6 +766,11 @@ export type QueryGetAllExercicesModelArgs = {
   id?: InputMaybe<Scalars['String']['input']>;
   input?: InputMaybe<Scalars['String']['input']>;
   muscles?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+
+export type QueryGetCoachOffersArgs = {
+  status?: InputMaybe<OfferStatus>;
 };
 
 
@@ -1628,7 +1640,9 @@ export type GetMyMembershipQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetMyMembershipQuery = { __typename?: 'Query', getMembership: { __typename?: 'Membership', id: string, startDate: any, endDate: any, isActive: boolean, offer: { __typename?: 'Offer', id: string, name: string, description: string } } };
 
-export type GetMyOffersQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetMyOffersQueryVariables = Exact<{
+  status?: InputMaybe<OfferStatus>;
+}>;
 
 
 export type GetMyOffersQuery = { __typename?: 'Query', getCoachOffers: Array<{ __typename?: 'Offer', id: string, name: string, price: number, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', label: string, id: string }, crew?: { __typename?: 'Crew', id: string, name: string } | null }> };
@@ -4399,8 +4413,8 @@ export type GetMyMembershipLazyQueryHookResult = ReturnType<typeof useGetMyMembe
 export type GetMyMembershipSuspenseQueryHookResult = ReturnType<typeof useGetMyMembershipSuspenseQuery>;
 export type GetMyMembershipQueryResult = Apollo.QueryResult<GetMyMembershipQuery, GetMyMembershipQueryVariables>;
 export const GetMyOffersDocument = gql`
-    query GetMyOffers {
-  getCoachOffers {
+    query GetMyOffers($status: OfferStatus) {
+  getCoachOffers(status: $status) {
     id
     name
     price
@@ -4431,6 +4445,7 @@ export const GetMyOffersDocument = gql`
  * @example
  * const { data, loading, error } = useGetMyOffersQuery({
  *   variables: {
+ *      status: // value for 'status'
  *   },
  * });
  */

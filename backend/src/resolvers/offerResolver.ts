@@ -2,21 +2,29 @@ import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { OfferCategory } from "../entities/offerCategory";
 import { Offer } from "../entities/offer";
 import { CtxUser } from "../InputType/coachType";
-import { OfferInput } from "../InputType/offerType";
+import { OfferInput, OfferStatus } from "../InputType/offerType";
 import { User } from "../entities/user";
 import { Crew } from "../entities/crew";
 import { updateProgress } from "../services/progressService";
+import { FindOptionsWhere } from "typeorm";
 
 @Resolver(Offer)
 export class OfferResolver {
   @Query(() => [Offer])
-  async getCoachOffers(@Ctx() context: { user: CtxUser }) {
-    const offers = await Offer.find({
-      where: {
-        user: {
-          id: context.user.id,
-        },
+  async getCoachOffers(
+    @Ctx() context: { user: CtxUser },
+    @Arg("status", () => OfferStatus, { nullable: true }) status?: OfferStatus
+  ) {
+    const where: FindOptionsWhere<Offer> = {
+      user: {
+        id: context.user.id,
       },
+    };
+    if (status) {
+      where.availability = status === OfferStatus.AVAILABLE ? true : false;
+    }
+    const offers = await Offer.find({
+      where,
       relations: {
         user: true,
         category: true,

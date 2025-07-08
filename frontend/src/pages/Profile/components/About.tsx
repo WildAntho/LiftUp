@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Eye, Info, Loader2, X } from "lucide-react";
-import { Label, TagInput } from "evergreen-ui";
 import {
   useGetMyProfileQuery,
   useUpdateCoachProfileMutation,
@@ -17,6 +16,8 @@ import { Button, Input, Modal, ModalContent, ModalHeader } from "@heroui/react";
 import LexicalEditorComponent from "@/components/LexicalEditor/LexicalEditorComponent";
 import CoachInformation from "@/pages/CoachInformation.tsx/CoachInformation";
 import { useUserStore } from "@/services/zustand/userStore";
+import { InputWithTags } from "@/components/InputWithTags";
+import { Label } from "@/components/ui/label";
 
 export default function About() {
   const currentUser = useUserStore((state) => state.user);
@@ -35,7 +36,6 @@ export default function About() {
   const [facebook, setFacebook] = useState<string>("");
   const [instagram, setInstagram] = useState<string>("");
   const [linkedin, setLinkedin] = useState<string>("");
-  const [errorSpec, setErrorSpec] = useState<boolean>(false);
   const [content, setContent] = useState<object | null>(null);
   const [openPreview, setOpenPreview] = useState<boolean>(false);
 
@@ -53,7 +53,6 @@ export default function About() {
 
   const handleSave = async () => {
     if (specialisation.length > 5) {
-      setErrorSpec(true);
       return;
     }
 
@@ -148,7 +147,7 @@ export default function About() {
             </div>
             <div className="w-full flex flex-col items-start justify-start gap-7">
               <div className="w-full">
-                <Label htmlFor="textarea-2" marginBottom={0} display="block">
+                <Label htmlFor="textarea-2">
                   Intitulé
                 </Label>
                 {isShow && <Separator className="mt-2" />}
@@ -166,7 +165,7 @@ export default function About() {
                 )}
               </div>
               <div className="w-full">
-                <Label htmlFor="textarea-2" marginBottom={4} display="block">
+                <Label htmlFor="textarea-2">
                   À propos de vous
                 </Label>
                 {isShow && <Separator className="mt-2" />}
@@ -185,7 +184,7 @@ export default function About() {
                 )}
               </div>
               <div className="w-full">
-                <Label htmlFor="textarea-2" marginBottom={4} display="block">
+                <Label htmlFor="textarea-2">
                   Vos spécialisations{" "}
                   {!isShow && (
                     <span className="text-xs text-gray-500">( 5 max )</span>
@@ -193,24 +192,14 @@ export default function About() {
                 </Label>
                 {isShow && <Separator className="mt-2" />}
                 {!isShow ? (
-                  <>
-                    <div className="flex justify-start items-center gap-2 w-full">
-                      <TagInput
-                        className="min-w-[50%] max-w-full"
-                        inputProps={{
-                          placeholder: "Ajouter une spécialisation",
-                        }}
-                        values={specialisation}
-                        onChange={setSpecialisation}
-                      />
-                      <p className="text-sm text-gray-400">⌘ Entrée</p>
-                    </div>
-                    {errorSpec && (
-                      <p className="text-xs text-red-500 mt-1">
-                        5 spécialisations maximum
-                      </p>
-                    )}
-                  </>
+                  <div className="flex justify-start items-start gap-2 w-full">
+                    <InputWithTags
+                      tags={specialisation}
+                      setTags={setSpecialisation}
+                      placeholder="Ajouter une spécialisation"
+                      limit={5}
+                    />
+                  </div>
                 ) : profile?.specialisation?.length ? (
                   <div className="flex justify-start items-center gap-2 mt-3">
                     {profile.specialisation.map((s, i) => (
@@ -224,7 +213,7 @@ export default function About() {
                 )}
               </div>
               <div className="w-full">
-                <Label htmlFor="textarea-2" marginBottom={4} display="block">
+                <Label htmlFor="textarea-2">
                   Vos réseaux
                 </Label>
                 <Separator className="mt-2" />
@@ -284,7 +273,6 @@ export default function About() {
               className="group shadow-none text-black h-[55px] w-[25%] rounded-xl border border-gray-300 bg-gray-200 hover:bg-gray-200 hover:translate-y-[-2px] hover:shadow-md transition-all duration-200"
               onPress={() => {
                 setIsShow(true);
-                setErrorSpec(false);
               }}
             >
               <X />

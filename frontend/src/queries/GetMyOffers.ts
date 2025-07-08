@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_MYOFFERS = gql`
-  query GetMyOffers {
-    getCoachOffers {
+  query GetMyOffers($status: OfferStatus) {
+    getCoachOffers(status: $status) {
       id
       name
       price

@@ -1,4 +1,14 @@
-import { Field, InputType } from "type-graphql";
+import { Field, InputType, registerEnumType } from "type-graphql";
+
+export enum OfferStatus {
+  AVAILABLE = "AVAILABLE",
+  CANCEL = "CANCEL",
+}
+
+registerEnumType(OfferStatus, {
+  name: "OfferStatus",
+  description: "Statut des offres",
+});
 
 @InputType()
 export class OfferInput {

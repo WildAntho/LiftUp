@@ -2,7 +2,10 @@ import { useUserStore } from "@/services/zustand/userStore";
 import {
   Award,
   BadgeHelp,
+  Eye,
+  EyeOff,
   Info,
+  Lock,
   MailIcon,
   Shield,
   Upload,
@@ -41,6 +44,7 @@ export default function MyProfile() {
     { key: "female", label: "Femme" },
     { key: "male", label: "Homme" },
   ];
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const renderIconSex = () => {
     switch (sex) {
       case "female":
@@ -180,9 +184,13 @@ export default function MyProfile() {
     }
   };
 
+  const switchView = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <section className="w-full h-full flex flex-col justify-start items-start gap-10 py-4">
-      <section className="flex flex-col items-start justify-start gap-7 w-[50%] max-w-[800px] p-4 shadow-md rounded-xl border border-gray-200">
+      <section className="flex flex-col items-start justify-start gap-7 w-[60%] max-w-[800px] p-4 shadow-md rounded-xl border border-gray-200">
         <div className="w-full flex justify-start items-center gap-8">
           <div
             className="relative flex justify-center items-center w-32 h-32 rounded-full overflow-hidden border border-gray-300 bg-gray-100 cursor-pointer"
@@ -221,7 +229,7 @@ export default function MyProfile() {
           <div className="h-full flex flex-1 items-center justify-start gap-2">
             <Info />
             <div className="flex flex-col justify-center items-start font-semibold">
-              <p className="font-bold">Informations générales</p>
+              <p className="text-lg">Informations générales</p>
               <p className="text-xs text-gray-500">
                 Gérez vos informations personnelles
               </p>
@@ -276,14 +284,96 @@ export default function MyProfile() {
           </div>
         </section>
       </section>
-      <div className="w-[50%] max-w-[800px] p-4 rounded-xl shadow-md border border-gray-200 flex flex-col items-start justify-start gap-5">
-        <p className="flex justify-start items-center gap-2 font-semibold">
+      <div className="w-[60%] max-w-[800px] p-4 rounded-xl shadow-md border border-gray-200 flex flex-col items-start justify-start gap-5">
+        <p className="flex justify-start items-center gap-2 text-lg font-semibold">
           <Award />
           Votre souscription
         </p>
         <section className="w-full h-full flex justify-center items-center gap-2">
           <CardRole role="COACH" />
           <CardRole role="STUDENT" />
+        </section>
+      </div>
+      <div className="w-[60%] max-w-[800px] h-full p-4 rounded-xl shadow-md border border-gray-200 flex items-start justify-center gap-5">
+        <section className="w-[50%] h-full flex flex-col justify-start items-start gap-1">
+          <p className="flex justify-start items-start gap-2 text-lg font-semibold">
+            <Lock />
+            Mot de passe
+          </p>
+          <p className="text-xs text-gray-500 ml-8">
+            Modifier le mot de passe actuel
+          </p>
+        </section>
+        <section className="w-full h-full flex flex-col justify-center items-end gap-5">
+          <Input
+            type={`${showPassword ? "text" : "password"}`}
+            isRequired
+            label="Mot de passe actuel"
+            startContent={<Lock size={20} className="text-gray-500" />}
+            endContent={
+              <>
+                <Eye
+                  className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
+                    showPassword ? "block" : "hidden"
+                  }`}
+                  onClick={switchView}
+                />
+                <EyeOff
+                  className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
+                    !showPassword ? "block" : "hidden"
+                  }`}
+                  onClick={switchView}
+                />
+              </>
+            }
+          />
+          <Input
+            type={`${showPassword ? "text" : "password"}`}
+            isRequired
+            label="Nouveau mot de passe"
+            startContent={<Lock size={20} className="text-gray-500" />}
+            endContent={
+              <>
+                <Eye
+                  className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
+                    showPassword ? "block" : "hidden"
+                  }`}
+                  onClick={switchView}
+                />
+                <EyeOff
+                  className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
+                    !showPassword ? "block" : "hidden"
+                  }`}
+                  onClick={switchView}
+                />
+              </>
+            }
+          />
+          <Input
+            type={`${showPassword ? "text" : "password"}`}
+            isRequired
+            label="Confirmer nouveau mot de passe"
+            startContent={<Lock size={20} className="text-gray-500" />}
+            endContent={
+              <>
+                <Eye
+                  className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
+                    showPassword ? "block" : "hidden"
+                  }`}
+                  onClick={switchView}
+                />
+                <EyeOff
+                  className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
+                    !showPassword ? "block" : "hidden"
+                  }`}
+                  onClick={switchView}
+                />
+              </>
+            }
+          />
+          <div className="w-full mt-2 flex justify-end">
+            <Saving onClick={() => console.log("save")} disabled={true} />
+          </div>
         </section>
       </div>
     </section>

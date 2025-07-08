@@ -173,8 +173,8 @@ export default function Program() {
   return (
     <section className="relative w-full h-full flex flex-col justify-start items-center bg-white rounded-2xl px-4 pt-10 gap-4">
       {!isConfiguration && (
-        <section className="w-full flex flex-col justify-start items-center rounded-2xl gap-4 py-10 mt-4 overflow-y-scroll">
-          <section className="w-[80%] flex justify-between items-center">
+        <section className="w-full flex flex-col justify-start items-center rounded-2xl gap-4 pt-6 pb-4">
+          <section className="w-[85%] flex justify-between items-center">
             <section className="flex justify-start items-start gap-2">
               <div onClick={() => setActiveCard(ProgramStatus.Published)}>
                 <StatusCard
@@ -204,7 +204,7 @@ export default function Program() {
                 />
               </div>
             </section>
-            <div className="flex justify-end items-center">
+            <div className="h-full flex items-end">
               <Button
                 data-testid="create-program-button"
                 className="group shadow-none text-tertiary h-12 w-auto rounded-xl bg-tertiary bg-opacity-20 border border-tertiary border-opacity-20 hover:bg-tertiary hover:bg-opacity-20 hover:translate-y-[-2px] hover:shadow-sm transition-all duration-200"
@@ -217,26 +217,24 @@ export default function Program() {
               </Button>
             </div>
           </section>
-          <section className="w-[80%] bg-gray-50 bg-opacity-50 border border-gray-100 shadow-md p-4 flex flex-col justify-start items-start rounded-xl gap-8">
+          <section className="h-full w-[85%] bg-gray-50 bg-opacity-50 border border-gray-100 shadow-md p-4 flex flex-col justify-start items-start rounded-xl gap-4 overflow-y-scroll">
             <Input
-              labelPlacement="outside"
+              label="Recherche"
               placeholder="Rechercher un programme"
               capture
               value={input}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setInput(e.target.value);
               }}
-              startContent={
-                <Search className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-              }
+              startContent={<Search size={20} className="text-gray-500" />}
               type="search"
             />
             {loading ? (
               <div className="w-full min-h-[350px] flex justify-center items-center" />
             ) : myPrograms.length > 0 ? (
-              <div className="w-full min-h-[350px] grid grid-cols-3 2xl:grid-cols-4 justify-start items-start gap-2">
+              <div className="w-full h-full grid grid-cols-3 2xl:grid-cols-4 justify-start items-start gap-2">
                 {myPrograms.map((program) => (
-                  <div key={program.id} className="h-[350px]">
+                  <div key={program.id} className="h-[400px]">
                     <ProgramCard
                       id={program.id}
                       title={program.title}

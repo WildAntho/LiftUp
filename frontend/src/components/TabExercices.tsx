@@ -201,7 +201,9 @@ export default function TabExercices({
         key={selectedId}
         isOpen={openEdit}
         onClose={() => setOpenEdit(false)}
-        exercice={allExercices.find((e) => selectedId === e.id) as ExerciceModel}
+        exercice={
+          allExercices.find((e) => selectedId === e.id) as ExerciceModel
+        }
         allMuscles={allMuscleGroup}
         refetch={refetch}
       />
