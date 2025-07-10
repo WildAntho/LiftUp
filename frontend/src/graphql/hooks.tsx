@@ -286,6 +286,7 @@ export type Mutation = {
   rejectRequest: Scalars['String']['output'];
   renewMemberShip: Scalars['String']['output'];
   signUp: Scalars['String']['output'];
+  subscribeProgram: Scalars['String']['output'];
   updateCoachProfile: Scalars['String']['output'];
   updateCrew: Scalars['String']['output'];
   updateExercice: Exercice;
@@ -508,6 +509,14 @@ export type MutationSignUpArgs = {
 };
 
 
+export type MutationSubscribeProgramArgs = {
+  coachId: Scalars['String']['input'];
+  politic: Scalars['Boolean']['input'];
+  programId: Scalars['String']['input'];
+  startDate: Scalars['DateTimeISO']['input'];
+};
+
+
 export type MutationUpdateCoachProfileArgs = {
   data: CoachProfileInput;
   id: Scalars['String']['input'];
@@ -658,7 +667,6 @@ export type OfferInput = {
 
 /** Statut des offres */
 export enum OfferStatus {
-  All = 'ALL',
   Available = 'AVAILABLE',
   Cancel = 'CANCEL'
 }
@@ -694,6 +702,12 @@ export enum ProgramLevel {
   Beginner = 'BEGINNER',
   Intermediate = 'INTERMEDIATE'
 }
+
+export type ProgramMarketplaceResponse = {
+  __typename?: 'ProgramMarketplaceResponse';
+  program: Program;
+  trainingsCount: Scalars['Float']['output'];
+};
 
 /** Le statut d'un programme (brouillon, publié, archivé) */
 export enum ProgramStatus {
@@ -740,9 +754,11 @@ export type Query = {
   getOneCoachOffers: Array<Offer>;
   getOneCoachProfile: CoachProfile;
   getOneExericeModel: ExerciceModel;
+  getOneProgramMarketPlace: ProgramMarketplaceResponse;
   getOneTraining: Training;
   getPreferenceNotification: NotificationPreference;
   getPrograms: Array<Program>;
+  getProgramsMarketPlace: Array<Program>;
   getProgress: ProgressSession;
   getRequest: Array<Request>;
   getSent: Array<Request>;
@@ -791,6 +807,7 @@ export type QueryGetDayNumberTrainingArgs = {
 
 
 export type QueryGetExerciceInfoArgs = {
+  exerciceId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
 };
 
@@ -835,6 +852,11 @@ export type QueryGetOneCoachProfileArgs = {
 
 
 export type QueryGetOneExericeModelArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryGetOneProgramMarketPlaceArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -1414,6 +1436,16 @@ export type SignupMutationVariables = Exact<{
 
 export type SignupMutation = { __typename?: 'Mutation', signUp: string };
 
+export type SubscribeProgramMutationVariables = Exact<{
+  startDate: Scalars['DateTimeISO']['input'];
+  coachId: Scalars['String']['input'];
+  programId: Scalars['String']['input'];
+  politic: Scalars['Boolean']['input'];
+}>;
+
+
+export type SubscribeProgramMutation = { __typename?: 'Mutation', subscribeProgram: string };
+
 export type UpdateCoachProfileMutationVariables = Exact<{
   id: Scalars['String']['input'];
   data: CoachProfileInput;
@@ -1687,12 +1719,24 @@ export type GetOneExericeModelQueryVariables = Exact<{
 
 export type GetOneExericeModelQuery = { __typename?: 'Query', getOneExericeModel: { __typename?: 'ExerciceModel', id: string, title: string, image?: string | null, description?: string | null, muscles?: Array<{ __typename?: 'MuscleGroup', id: string }> | null } };
 
+export type GetOneProgramMarketPlaceQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetOneProgramMarketPlaceQuery = { __typename?: 'Query', getOneProgramMarketPlace: { __typename?: 'ProgramMarketplaceResponse', trainingsCount: number, program: { __typename?: 'Program', id: string, title: string, description?: string | null, duration: number, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', label: string, id: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } } };
+
 export type GetOneTrainingQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
 export type GetOneTrainingQuery = { __typename?: 'Query', getOneTraining: { __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean } };
+
+export type GetProgramsMarketPlaceQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetProgramsMarketPlaceQuery = { __typename?: 'Query', getProgramsMarketPlace: Array<{ __typename?: 'Program', id: string, title: string, duration: number, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', id: string, label: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } }> };
 
 export type GetProgressQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3071,6 +3115,45 @@ export function useSignupMutation(baseOptions?: Apollo.MutationHookOptions<Signu
 export type SignupMutationHookResult = ReturnType<typeof useSignupMutation>;
 export type SignupMutationResult = Apollo.MutationResult<SignupMutation>;
 export type SignupMutationOptions = Apollo.BaseMutationOptions<SignupMutation, SignupMutationVariables>;
+export const SubscribeProgramDocument = gql`
+    mutation SubscribeProgram($startDate: DateTimeISO!, $coachId: String!, $programId: String!, $politic: Boolean!) {
+  subscribeProgram(
+    startDate: $startDate
+    coachId: $coachId
+    programId: $programId
+    politic: $politic
+  )
+}
+    `;
+export type SubscribeProgramMutationFn = Apollo.MutationFunction<SubscribeProgramMutation, SubscribeProgramMutationVariables>;
+
+/**
+ * __useSubscribeProgramMutation__
+ *
+ * To run a mutation, you first call `useSubscribeProgramMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSubscribeProgramMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [subscribeProgramMutation, { data, loading, error }] = useSubscribeProgramMutation({
+ *   variables: {
+ *      startDate: // value for 'startDate'
+ *      coachId: // value for 'coachId'
+ *      programId: // value for 'programId'
+ *      politic: // value for 'politic'
+ *   },
+ * });
+ */
+export function useSubscribeProgramMutation(baseOptions?: Apollo.MutationHookOptions<SubscribeProgramMutation, SubscribeProgramMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SubscribeProgramMutation, SubscribeProgramMutationVariables>(SubscribeProgramDocument, options);
+      }
+export type SubscribeProgramMutationHookResult = ReturnType<typeof useSubscribeProgramMutation>;
+export type SubscribeProgramMutationResult = Apollo.MutationResult<SubscribeProgramMutation>;
+export type SubscribeProgramMutationOptions = Apollo.BaseMutationOptions<SubscribeProgramMutation, SubscribeProgramMutationVariables>;
 export const UpdateCoachProfileDocument = gql`
     mutation UpdateCoachProfile($id: String!, $data: CoachProfileInput!) {
   updateCoachProfile(id: $id, data: $data)
@@ -4801,6 +4884,65 @@ export type GetOneExericeModelQueryHookResult = ReturnType<typeof useGetOneExeri
 export type GetOneExericeModelLazyQueryHookResult = ReturnType<typeof useGetOneExericeModelLazyQuery>;
 export type GetOneExericeModelSuspenseQueryHookResult = ReturnType<typeof useGetOneExericeModelSuspenseQuery>;
 export type GetOneExericeModelQueryResult = Apollo.QueryResult<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>;
+export const GetOneProgramMarketPlaceDocument = gql`
+    query GetOneProgramMarketPlace($id: String!) {
+  getOneProgramMarketPlace(id: $id) {
+    program {
+      id
+      title
+      description
+      duration
+      price
+      level
+      category {
+        label
+        id
+      }
+      coach {
+        id
+        email
+        firstname
+        lastname
+        avatar
+      }
+    }
+    trainingsCount
+  }
+}
+    `;
+
+/**
+ * __useGetOneProgramMarketPlaceQuery__
+ *
+ * To run a query within a React component, call `useGetOneProgramMarketPlaceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOneProgramMarketPlaceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOneProgramMarketPlaceQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetOneProgramMarketPlaceQuery(baseOptions: Apollo.QueryHookOptions<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables> & ({ variables: GetOneProgramMarketPlaceQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>(GetOneProgramMarketPlaceDocument, options);
+      }
+export function useGetOneProgramMarketPlaceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>(GetOneProgramMarketPlaceDocument, options);
+        }
+export function useGetOneProgramMarketPlaceSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>(GetOneProgramMarketPlaceDocument, options);
+        }
+export type GetOneProgramMarketPlaceQueryHookResult = ReturnType<typeof useGetOneProgramMarketPlaceQuery>;
+export type GetOneProgramMarketPlaceLazyQueryHookResult = ReturnType<typeof useGetOneProgramMarketPlaceLazyQuery>;
+export type GetOneProgramMarketPlaceSuspenseQueryHookResult = ReturnType<typeof useGetOneProgramMarketPlaceSuspenseQuery>;
+export type GetOneProgramMarketPlaceQueryResult = Apollo.QueryResult<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>;
 export const GetOneTrainingDocument = gql`
     query GetOneTraining($id: String!) {
   getOneTraining(id: $id) {
@@ -4847,6 +4989,60 @@ export type GetOneTrainingQueryHookResult = ReturnType<typeof useGetOneTrainingQ
 export type GetOneTrainingLazyQueryHookResult = ReturnType<typeof useGetOneTrainingLazyQuery>;
 export type GetOneTrainingSuspenseQueryHookResult = ReturnType<typeof useGetOneTrainingSuspenseQuery>;
 export type GetOneTrainingQueryResult = Apollo.QueryResult<GetOneTrainingQuery, GetOneTrainingQueryVariables>;
+export const GetProgramsMarketPlaceDocument = gql`
+    query GetProgramsMarketPlace {
+  getProgramsMarketPlace {
+    id
+    title
+    duration
+    price
+    level
+    category {
+      id
+      label
+    }
+    coach {
+      id
+      email
+      firstname
+      lastname
+      avatar
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetProgramsMarketPlaceQuery__
+ *
+ * To run a query within a React component, call `useGetProgramsMarketPlaceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProgramsMarketPlaceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProgramsMarketPlaceQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetProgramsMarketPlaceQuery(baseOptions?: Apollo.QueryHookOptions<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>(GetProgramsMarketPlaceDocument, options);
+      }
+export function useGetProgramsMarketPlaceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>(GetProgramsMarketPlaceDocument, options);
+        }
+export function useGetProgramsMarketPlaceSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>(GetProgramsMarketPlaceDocument, options);
+        }
+export type GetProgramsMarketPlaceQueryHookResult = ReturnType<typeof useGetProgramsMarketPlaceQuery>;
+export type GetProgramsMarketPlaceLazyQueryHookResult = ReturnType<typeof useGetProgramsMarketPlaceLazyQuery>;
+export type GetProgramsMarketPlaceSuspenseQueryHookResult = ReturnType<typeof useGetProgramsMarketPlaceSuspenseQuery>;
+export type GetProgramsMarketPlaceQueryResult = Apollo.QueryResult<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>;
 export const GetProgressDocument = gql`
     query GetProgress {
   getProgress {

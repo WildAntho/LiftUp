@@ -37,6 +37,9 @@ import { useCrewStore } from "./services/zustand/crewStore.ts";
 import { useStudentStore } from "./services/zustand/studentStore.ts";
 import UnsupportedScreen from "./pages/UnsupportedScreen/UnsupportedScreen.tsx";
 import useIsDesktop from "./pages/UnsupportedScreen/useIsDesktop.ts";
+import MarketPlace from "./pages/MarketPlace/MarketPlace.tsx";
+import ProgramInfo from "./pages/ProgramInfo/ProgramInfo.tsx";
+import SuccessPage from "./pages/SuccessPage.tsx";
 
 const isStaging = import.meta.env.VITE_NODE_ENV === "staging";
 const isProd = import.meta.env.VITE_NODE_ENV === "production";
@@ -146,6 +149,22 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "/marketplace",
+        element: (
+          <ProtectedRoute requiredRole="STUDENT">
+            <MarketPlace />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/marketplace/program/:id",
+        element: (
+          <ProtectedRoute requiredRole="STUDENT">
+            <ProgramInfo />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "/crew",
         element: (
           <ProtectedRoute requiredRole="COACH">
@@ -170,6 +189,14 @@ const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: "/success",
+    element: (
+      <ProtectedRoute>
+        <SuccessPage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/login",

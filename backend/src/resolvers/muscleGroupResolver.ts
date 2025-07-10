@@ -1,6 +1,7 @@
-import { Query, Resolver } from "type-graphql";
+import { Authorized, Query, Resolver } from "type-graphql";
 import { MuscleGroup } from "../entities/muscleGroup";
 
+@Authorized()
 @Resolver(MuscleGroup)
 export class MuscleGroupResolver {
   @Query(() => [MuscleGroup])

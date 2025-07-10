@@ -78,7 +78,7 @@ export default function Navigation() {
           },
           {
             id: 5,
-            value: "program",
+            value: "marketplace",
             label: "Besoin d'un plan d'entraînement ?",
             icon: <BicepsFlexed size={16} />,
           },

@@ -1,3 +1,4 @@
+import LexicalEditorComponent from "@/components/LexicalEditor/LexicalEditorComponent";
 import Privacy from "@/components/modals/ProgramModal/components/Privacy";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -9,7 +10,7 @@ import {
 } from "@/graphql/hooks";
 import { allLevel, allStatus } from "@/services/utils";
 import { useProgramStore } from "@/services/zustand/programStore";
-import { Input, Select, SelectItem, Textarea } from "@heroui/react";
+import { Input, Select, SelectItem } from "@heroui/react";
 import { Info, Lightbulb, Save, TriangleAlert } from "lucide-react";
 import { useState } from "react";
 
@@ -36,6 +37,16 @@ export default function UpdateProgram({
     level: currentProgram?.level ?? "",
     categoryId: currentProgram?.categoryId,
   });
+
+  const programContent = currentProgram?.description
+    ? JSON.parse(currentProgram.description)
+    : null;
+
+  const [content, setContent] = useState<object | null>(programContent);
+
+  const handleChangeContent = (content: object) => {
+    setContent(content);
+  };
 
   return (
     <section className="w-full h-full flex justify-center items-start">
@@ -100,14 +111,19 @@ export default function UpdateProgram({
             </div>
           </div>
           <div>
-            <Textarea
+            <LexicalEditorComponent
+              onChange={handleChangeContent}
+              value={content}
+              readOnly={false}
+            />
+            {/* <Textarea
               label="Description"
               radius="sm"
               value={form.description}
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
               }
-            />
+            /> */}
           </div>
           <div className="flex gap-2">
             <div className="flex-1">
@@ -203,7 +219,11 @@ export default function UpdateProgram({
             <Button
               className="group shadow-none text-tertiary h-12 w-[30%] rounded-xl bg-tertiary bg-opacity-20 border border-tertiary border-opacity-20 hover:bg-tertiary hover:bg-opacity-20 hover:translate-y-[-2px] hover:shadow-sm transition-all duration-200"
               onClick={() => {
-                onUpdate(currentProgram?.id as string, form);
+                const finalValues = {
+                  ...form,
+                  description: JSON.stringify(content),
+                };
+                onUpdate(currentProgram?.id as string, finalValues);
                 backConfig();
               }}
             >

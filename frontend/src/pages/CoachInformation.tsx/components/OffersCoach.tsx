@@ -1,7 +1,7 @@
 import OfferCard from "@/components/OfferCard";
 import { Separator } from "@/components/ui/separator";
 import { Offer } from "@/graphql/hooks";
-import { BadgeEuro } from "lucide-react";
+import { RiMoneyEuroCircleFill } from "react-icons/ri";
 
 type OffersCoachProps = {
   offers: Offer[];
@@ -12,7 +12,7 @@ export default function OffersCoach({ offers }: OffersCoachProps) {
     <section className="flex flex-col items-start justify-start gap-5 mt-5">
       <div className="w-full">
         <p className="font-semibold text-lg mb-4 flex items-center gap-3">
-          <BadgeEuro />
+          <RiMoneyEuroCircleFill size={24} />
           Prestations proposées
         </p>
         <Separator />

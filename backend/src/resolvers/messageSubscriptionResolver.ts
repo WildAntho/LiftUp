@@ -1,32 +1,15 @@
 import {
   Args,
   ArgsType,
-  Ctx,
+  Authorized,
   Field,
   Int,
-  ObjectType,
   Resolver,
   Root,
   Subscription,
 } from "type-graphql";
 import { Message } from "../entities/message";
-import { User } from "../entities/user";
 import { IsNull } from "typeorm";
-
-// @ObjectType()
-// class TypingStatus {
-//   @Field()
-//   user!: User;
-
-//   @Field()
-//   isTyping!: boolean;
-// }
-
-// @ArgsType()
-// class TypingArgs {
-//   @Field()
-//   id!: string;
-// }
 
 @ArgsType()
 class MessageArgs {
@@ -37,6 +20,7 @@ class MessageArgs {
   userId?: string;
 }
 
+@Authorized()
 @Resolver(Message)
 export class MessageSusbscription {
   @Subscription(() => Message, {

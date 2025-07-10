@@ -10,6 +10,7 @@ import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHt
 import cors from "cors";
 import { expressMiddleware } from "@apollo/server/express4";
 import { createPubSub } from "@graphql-yoga/subscription";
+import { stripeWebhookHandler } from "./webhook/stripe";
 
 const pubsub = createPubSub();
 
@@ -19,6 +20,12 @@ async function StartGraphQLServer() {
 
   const app = express();
   const httpServer = createServer(app);
+
+  // app.post(
+  //   "/api/webhook/stripe",
+  //   express.raw({ type: "application/json" }),
+  //   stripeWebhookHandler
+  // );
 
   const wsServer = new WebSocketServer({
     server: httpServer,

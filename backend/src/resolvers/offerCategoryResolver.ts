@@ -1,6 +1,7 @@
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 import { OfferCategory } from "../entities/offerCategory";
 
+@Authorized()
 @Resolver(OfferCategory)
 export class OfferCategoryResolver {
   @Mutation(() => String)

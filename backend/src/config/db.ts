@@ -20,6 +20,7 @@ import { MuscleGroup } from "../entities/muscleGroup";
 import { NotificationPreference } from "../entities/notificationPreference";
 import { UserSubscriber } from "../entities/userSubscriber";
 import { ProgressSession } from "../entities/progressSession";
+import { UserProgram } from "../entities/userProgram";
 
 config();
 
@@ -52,7 +53,8 @@ export const dataSource = new DataSource({
     TrainingPlan,
     MuscleGroup,
     NotificationPreference,
-    ProgressSession
+    ProgressSession,
+    UserProgram
   ],
   synchronize: true,
   migrations: ["build/migrations/*.js"],

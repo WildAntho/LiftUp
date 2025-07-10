@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { Training } from "../entities/training";
 import { User } from "../entities/user";
 import {
@@ -14,6 +14,7 @@ import { createTrainingsForDates } from "../services/trainingService";
 import { ProgressSession } from "../entities/progressSession";
 import { updateProgress } from "../services/progressService";
 
+@Authorized()
 @Resolver(Training)
 export class TrainingResolver {
   @Query(() => [Training])

@@ -9,9 +9,15 @@ type DateInputProps = {
   date: string; // Format: "yyyy-MM-dd"
   setDate: (dateStr: string) => void;
   readOnly?: boolean;
+  withLabel?: boolean;
 };
 
-export default function DateInput({ date, setDate, readOnly }: DateInputProps) {
+export default function DateInput({
+  date,
+  setDate,
+  readOnly,
+  withLabel = true,
+}: DateInputProps) {
   // Convert the string date to a Date object using date-fns
   const parsedDate = date ? parse(date, "yyyy-MM-dd", new Date()) : undefined;
 
@@ -42,12 +48,12 @@ export default function DateInput({ date, setDate, readOnly }: DateInputProps) {
   }
 
   return (
-    <Popover>
+    <Popover placement="bottom">
       <PopoverTrigger>
-        <div className="cursor-pointer">
+        <div className="cursor-pointer w-full">
           <Input
             isReadOnly
-            label="Date"
+            label={withLabel ? "Date" : ""}
             startContent={<Calendar1Icon />}
             value={
               selectedDate

@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, PubSub, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Mutation, PubSub, Query, Resolver } from "type-graphql";
 import { Request } from "../entities/request";
 import { AddRequestData } from "../InputType/requestType";
 import { User } from "../entities/user";
@@ -8,6 +8,7 @@ import { Offer } from "../entities/offer";
 import { Crew } from "../entities/crew";
 import { NotificationType } from "../InputType/notificationType";
 
+@Authorized()
 @Resolver(Request)
 export class RequestResolver {
   @Query(() => [Request])

@@ -1,4 +1,4 @@
-import { Arg, Ctx, Field, Mutation, ObjectType, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Field, Mutation, ObjectType, Resolver } from "type-graphql";
 import { ExerciceModel } from "../entities/exerciceModel";
 import { CtxUser } from "../InputType/coachType";
 import { generateFileName, generateS3SignedUrl } from "../services/s3Service";
@@ -12,6 +12,7 @@ export class GenerateUploadURL {
   fileName!: string;
 }
 
+@Authorized()
 @Resolver(ExerciceModel)
 export class S3Resolver {
   @Mutation(() => GenerateUploadURL)

@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { OfferCategory } from "../entities/offerCategory";
 import { Offer } from "../entities/offer";
 import { CtxUser } from "../InputType/coachType";
@@ -10,6 +10,7 @@ import { FindOptionsWhere } from "typeorm";
 
 @Resolver(Offer)
 export class OfferResolver {
+  @Authorized("COACH")
   @Query(() => [Offer])
   async getCoachOffers(
     @Ctx() context: { user: CtxUser },
@@ -37,6 +38,7 @@ export class OfferResolver {
     return offers;
   }
 
+  @Authorized("COACH")
   @Mutation(() => String)
   async addOffer(
     @Arg("data") data: OfferInput,
@@ -59,6 +61,7 @@ export class OfferResolver {
     return JSON.stringify("L'offre a bien été créée");
   }
 
+  @Authorized("COACH")
   @Mutation(() => String)
   async updateOffer(@Arg("data") data: OfferInput, @Arg("id") id: string) {
     const category = await OfferCategory.findOneBy({ id: data.categoryId });
@@ -83,6 +86,7 @@ export class OfferResolver {
     return JSON.stringify("L'offre a bien été modifiée");
   }
 
+  @Authorized("COACH")
   @Mutation(() => String)
   async deleteOffer(@Arg("id") id: string) {
     const offer = await Offer.findOneBy({ id });
@@ -91,6 +95,7 @@ export class OfferResolver {
     return JSON.stringify("L'offre a bien été supprimée");
   }
 
+  @Authorized()
   @Query(() => [Offer])
   async getOneCoachOffers(@Arg("id") id: string) {
     const offers = await Offer.find({

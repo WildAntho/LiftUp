@@ -24,6 +24,7 @@ import { Membership } from "./memberShip";
 import { Feedback } from "./feedback";
 import { NotificationPreference } from "./notificationPreference";
 import { ProgressSession } from "./progressSession";
+import { UserProgram } from "./userProgram";
 
 @ObjectType()
 @Entity()
@@ -149,4 +150,13 @@ export class User extends BaseEntity {
     cascade: ["insert", "update"],
   })
   progress!: ProgressSession;
+
+  @Field(() => [UserProgram], { nullable: true })
+  @OneToMany(() => UserProgram, (userProgram) => userProgram.user)
+  userPrograms?: UserProgram[];
+
+  // Si tu veux côté coach :
+  @Field(() => [UserProgram], { nullable: true })
+  @OneToMany(() => UserProgram, (userProgram) => userProgram.coach)
+  coachingPrograms?: UserProgram[];
 }

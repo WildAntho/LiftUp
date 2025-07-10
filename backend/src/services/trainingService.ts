@@ -71,7 +71,6 @@ export async function createTrainingsForDates(
         notes: data.notes,
         date: new Date(date),
         editable: data.editable,
-        color: data.color,
         exercices: allExercices,
         ...(entity instanceof User ? { user: entity } : { crew: entity }),
         ...additionalTrainingProps,

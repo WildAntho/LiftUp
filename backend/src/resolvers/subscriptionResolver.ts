@@ -1,6 +1,7 @@
 import {
   Args,
   ArgsType,
+  Authorized,
   Field,
   Resolver,
   Root,
@@ -14,6 +15,7 @@ class NotificationArgs {
   id!: string;
 }
 
+@Authorized()
 @Resolver(Notification)
 export class SubscriptionResolver {
   @Subscription(() => Notification, {

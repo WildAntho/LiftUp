@@ -1,4 +1,5 @@
-import { Field, InputType, registerEnumType } from "type-graphql";
+import { Field, InputType, ObjectType, registerEnumType } from "type-graphql";
+import { Program } from "../entities/program";
 
 export enum ProgramStatus {
   DRAFT = "DRAFT",
@@ -71,4 +72,13 @@ export class UpdateProgramInput {
 
   @Field()
   public!: boolean;
+}
+
+@ObjectType()
+export class ProgramMarketplaceResponse {
+  @Field(() => Program)
+  program!: Program;
+
+  @Field()
+  trainingsCount!: number;
 }

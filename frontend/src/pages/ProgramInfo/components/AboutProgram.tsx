@@ -1,28 +1,26 @@
 import LexicalEditorComponent from "@/components/LexicalEditor/LexicalEditorComponent";
 import { Separator } from "@/components/ui/separator";
-import { CoachProfile } from "@/graphql/hooks";
+import { Program } from "@/graphql/hooks";
 import { MdStickyNote2 } from "react-icons/md";
 
-type AboutProfileProps = {
-  profile: CoachProfile;
+type AboutProgramProps = {
+  program: Program;
 };
 
-export default function AboutCoach({ profile }: AboutProfileProps) {
+export default function AboutProgram({ program }: AboutProgramProps) {
+  const content = program.description ? JSON.parse(program.description) : null;
   return (
     <section className="flex flex-col items-start justify-start gap-5 mt-5">
       <div className="w-full">
         <p className="font-semibold text-lg mb-4 flex items-center gap-3">
-          <MdStickyNote2 size={24} />À propos de{" "}
-          {profile?.user?.firstname + " " + profile?.user?.lastname}
+          <MdStickyNote2 size={24} />
+          Description
         </p>
         <Separator />
       </div>
-      {profile.description ? (
+      {program.description ? (
         <div className="w-[85%]">
-          <LexicalEditorComponent
-            value={JSON.parse(profile.description)}
-            readOnly={true}
-          />
+          <LexicalEditorComponent value={content} readOnly={true} />
         </div>
       ) : (
         <p className="w-[80%] text-xs pl-4">
