@@ -13,7 +13,7 @@ import {
   ModalHeader,
   RadioGroup,
 } from "@heroui/react";
-import { useGetStudentsQuery } from "@/graphql/hooks";
+import { useGetStudentsQuery, UserRole } from "@/graphql/hooks";
 import ListUser from "../ListUsers";
 import { Button } from "../ui/button";
 import { useStudentStore } from "@/services/zustand/studentStore";
@@ -23,6 +23,7 @@ import { Search } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { useDebouncedCallback } from "@/services/useDebouncedCallback";
 import SkeletonUser from "../SkeletonUser";
+import { useRole } from "@/services/hooks/useRole";
 
 type SelectStudentModalProps = {
   open: boolean;
@@ -50,6 +51,7 @@ export default function SelectStudentModal({
   const currentStudent = useStudentStore((state) => state.student);
   const setStudent = useStudentStore((state) => state.set);
   const clearCrew = useCrewStore((state) => state.clear);
+  const isCoach = useRole(UserRole.Coach)
   const [selected, setSelected] = useState(currentStudent?.id ?? "");
   const [page, setPage] = useState<number>(1);
   const limit = 20;
@@ -61,7 +63,7 @@ export default function SelectStudentModal({
       page,
     },
     fetchPolicy: "cache-and-network",
-    skip: currentUser?.roles !== "COACH",
+    skip: !isCoach,
   });
   const myStudents = dataStudents?.getStudents.students ?? [];
   const totalPage = dataStudents?.getStudents.totalCount

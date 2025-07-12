@@ -11,7 +11,6 @@ export const GET_STUDENT_TRAINING = gql`
       createdByCoach
       editable
       validate
-      color
       exercices {
         title
         id

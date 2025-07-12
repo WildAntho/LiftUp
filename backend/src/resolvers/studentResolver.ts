@@ -18,6 +18,7 @@ import { ProgramMarketplaceResponse } from "../InputType/programType";
 import { UserProgram, UserProgramStatus } from "../entities/userProgram";
 import { In } from "typeorm";
 import { stripe } from "../config/stripe";
+import { UserRole } from "../InputType/userType";
 
 @Authorized("STUDENT")
 @Resolver(User)
@@ -37,7 +38,7 @@ export class StudentResolver {
       .leftJoinAndSelect("user.coachProfile", "coachProfile")
       .leftJoinAndSelect("user.offers", "offers")
       .leftJoinAndSelect("offers.category", "category")
-      .where("user.roles = :role", { role: "COACH" });
+      .where("user.roles = :role", { role: UserRole.COACH });
 
     // Ajouter des conditions de recherche par nom (firstname ou lastname)
     if (input) {
@@ -247,7 +248,10 @@ export class StudentResolver {
     if (!coach) {
       throw new Error("Aucun coach n'a été trouvé");
     }
-    // Vérifie si une souscription existe déjà (pending ou paid)
+    if (!program.public) {
+      throw new Error("Ce programme est privé");
+    }
+    // Vérifie si une souscription existe déjà (pending)
     let subscription = await UserProgram.findOne({
       where: {
         user: { id: user.id },
@@ -289,8 +293,8 @@ export class StudentResolver {
       metadata: {
         subscriptionId: subscription.id,
       },
-      success_url: `http://localhost:7100/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `http://localhost:7100/marketplace/program/${programId}`,
+      success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.FRONTEND_URL}/marketplace/program/${programId}`,
     });
 
     // ✅ Mets à jour le Stripe Session ID chaque fois

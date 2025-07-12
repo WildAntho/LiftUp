@@ -25,6 +25,7 @@ import { Feedback } from "./feedback";
 import { NotificationPreference } from "./notificationPreference";
 import { ProgressSession } from "./progressSession";
 import { UserProgram } from "./userProgram";
+import { UserRole } from "../InputType/userType";
 
 @ObjectType()
 @Entity()
@@ -49,9 +50,12 @@ export class User extends BaseEntity {
   @Column()
   password!: string;
 
-  @Field()
-  @Column()
-  roles!: string;
+  @Field(() => [UserRole])
+  @Column({
+    type: "jsonb",
+    default: () => "'[]'",
+  })
+  roles!: UserRole[];
 
   @Field({ nullable: true })
   @Column({ nullable: true })
@@ -118,7 +122,9 @@ export class User extends BaseEntity {
   coachedCrews?: Crew[];
 
   @Field(() => CoachProfile, { nullable: true })
-  @OneToOne(() => CoachProfile, (coachProfile) => coachProfile.user)
+  @OneToOne(() => CoachProfile, (coachProfile) => coachProfile.user, {
+    eager: true,
+  })
   coachProfile?: CoachProfile;
 
   @Field(() => [Offer], { nullable: true })

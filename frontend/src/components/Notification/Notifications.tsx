@@ -1,5 +1,5 @@
 import { Drawer, DrawerContent, Tab, Tabs, Tooltip } from "@heroui/react";
-import { Bell, CheckCheck, X } from "lucide-react";
+import { CheckCheck, X } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -28,6 +28,7 @@ import {
 import { groupNotifications } from "./components/NotificationGroup";
 import { getNotificationRedirectPath } from "./components/NotificationRedirect";
 import { toast } from "sonner";
+import { IoIosNotificationsOutline } from "react-icons/io";
 
 interface NotificationContentProps {
   avatar: React.ReactNode;
@@ -193,12 +194,12 @@ export default function Notifications() {
 
   return (
     <>
-      <div className="relative cursor-pointer">
+      <div className="group relative cursor-pointer">
         <div
           className="hover:bg-black/5 p-2 rounded-full cursor-pointer"
           onClick={handleNotifSeen}
         >
-          <Bell className="w-5 h-5 text-gray-600 hover:text-gray-800 transition" />
+          <IoIosNotificationsOutline className="w-[26px] h-[26px] text-gray-500 group-hover:text-gray-800 transition" />
         </div>
         {totalUnread > 0 && countRequest > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
@@ -209,7 +210,7 @@ export default function Notifications() {
       <Drawer
         isOpen={isOpen}
         onOpenChange={() => setIsOpen(false)}
-        size="lg"
+        size="xl"
         backdrop="transparent"
         classNames={{
           base: "rounded-none",

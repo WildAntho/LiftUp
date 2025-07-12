@@ -1,7 +1,13 @@
 import { User } from "../../entities/user";
-import { mockAndWhere, mockGetMany, mockLeftJoinAndSelect, mockOrderBy, mockWhere } from "../../factory/queryBuilderMock";
+import {
+  mockAndWhere,
+  mockGetMany,
+  mockLeftJoinAndSelect,
+  mockOrderBy,
+  mockWhere,
+} from "../../factory/queryBuilderMock";
+import { UserRole } from "../../InputType/userType";
 import { StudentResolver } from "../studentResolver";
-
 
 // Mocks pour la sous-requête
 const mockSubQueryBuilder = {
@@ -26,6 +32,19 @@ jest
   .spyOn(User, "createQueryBuilder")
   .mockImplementation(() => mockQueryBuilder as any);
 
+jest.mock("../../config/stripe", () => ({
+  stripe: {
+    checkout: {
+      sessions: {
+        create: jest.fn().mockResolvedValue({
+          id: "cs_test_123",
+          url: "https://fake-stripe-session-url.com",
+        }),
+      },
+    },
+  },
+}));
+
 describe("StudentResolver", () => {
   const resolver = new StudentResolver();
   afterEach(() => {
@@ -40,7 +59,7 @@ describe("StudentResolver", () => {
       const result = await resolver.selectCoach("123", "john");
 
       expect(mockWhere).toHaveBeenCalledWith("user.roles = :role", {
-        role: "COACH",
+        role: UserRole.COACH,
       });
       expect(mockAndWhere).toHaveBeenCalledWith(
         "(user.firstname ILIKE :input OR user.lastname ILIKE :input)",

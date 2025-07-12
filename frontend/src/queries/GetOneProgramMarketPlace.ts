@@ -20,6 +20,10 @@ export const GET_ONE_PROGRAM_MARKET = gql`
           firstname
           lastname
           avatar
+          coachProfile {
+            specialisation
+            name
+          }
         }
       }
       trainingsCount

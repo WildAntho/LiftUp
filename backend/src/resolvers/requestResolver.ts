@@ -1,4 +1,12 @@
-import { Arg, Authorized, Ctx, Mutation, PubSub, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  Mutation,
+  PubSub,
+  Query,
+  Resolver,
+} from "type-graphql";
 import { Request } from "../entities/request";
 import { AddRequestData } from "../InputType/requestType";
 import { User } from "../entities/user";
@@ -7,6 +15,8 @@ import { checkRequest } from "../services/requestService";
 import { Offer } from "../entities/offer";
 import { Crew } from "../entities/crew";
 import { NotificationType } from "../InputType/notificationType";
+import { hasAnyRole } from "../services/userService";
+import { UserRole } from "../InputType/userType";
 
 @Authorized()
 @Resolver(Request)
@@ -54,8 +64,11 @@ export class RequestResolver {
     if (offer) newRequest.offer = offer;
     const receiver = await User.findOneBy({ id: receiverId });
     const sender = await User.findOneBy({ id: senderId });
-    if (receiver?.roles === "COACH" && sender?.roles === "COACH")
+    const isReceiverCoach = receiver && hasAnyRole(receiver, [UserRole.COACH]);
+    const isSenderCoach = sender && hasAnyRole(sender, [UserRole.COACH]);
+    if (receiver && sender && isReceiverCoach && isSenderCoach) {
       throw new Error("Un coach ne peut pas ajouter un coach");
+    }
     if (receiver && sender) {
       newRequest.receiver = receiver;
       newRequest.sender = sender;
@@ -111,8 +124,12 @@ export class RequestResolver {
         offer: true,
       },
     });
+    const isSenderStudent = sender && hasAnyRole(sender, [UserRole.STUDENT]);
+    const isReceiverStudent =
+      receiver && hasAnyRole(receiver, [UserRole.STUDENT]);
+    const isReceiverCoach = receiver && hasAnyRole(receiver, [UserRole.COACH]);
     // Assignation de l'offre au user si c'est un élève
-    if (sender?.roles === "STUDENT" && request?.offer) {
+    if (sender && isSenderStudent && request?.offer) {
       sender.studentOffer = request?.offer;
       await sender.save();
     }
@@ -129,7 +146,7 @@ export class RequestResolver {
           students: true,
         },
       });
-      if (crew && sender?.roles === "STUDENT") {
+      if (crew && isSenderStudent) {
         if (crew.students) {
           crew.students.push(sender);
         } else {
@@ -142,7 +159,7 @@ export class RequestResolver {
     let requestNotification;
     // Gestion des demandes en cours en fonction du rôle du receiver / sender
     if (receiver && sender) {
-      if (receiver.roles === "COACH") {
+      if (isReceiverCoach) {
         receiver.students = receiver.students
           ? [...receiver.students, sender]
           : [sender];
@@ -153,7 +170,7 @@ export class RequestResolver {
           requestNotification = request;
         }
       }
-      if (receiver.roles === "STUDENT") {
+      if (isReceiverStudent) {
         receiver.coach = sender;
         await receiver.save();
         if (request) {

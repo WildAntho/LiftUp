@@ -1,4 +1,6 @@
+import { Separator } from "@/components/ui/separator";
 import { Program, ProgramLevel } from "@/graphql/hooks";
+import { FaCircleInfo } from "react-icons/fa6";
 
 type OverviewProps = {
   program: Program;
@@ -18,6 +20,13 @@ export default function Overview({ program, trainingCount }: OverviewProps) {
   };
   return (
     <section className="flex flex-col items-start justify-start gap-5">
+      <div className="w-full">
+        <p className="font-semibold text-lg mb-4 flex items-center gap-3">
+          <FaCircleInfo size={22} />
+          Informations générales
+        </p>
+        <Separator />
+      </div>
       <div className="flex justify-start items-center gap-2">
         <div className="h-[75px] flex flex-col items-center justify-center p-4 bg-gray-100 rounded-xl">
           <p className="text-xl font-bold">{program?.duration}</p>

@@ -2,14 +2,9 @@ import React, { useEffect, useState } from "react";
 import { isSameDay } from "date-fns";
 import { CalendarEvent, ViewMode } from "../../../type";
 import { Day } from "./Day";
-import {
-  Calendar as CalendarIcon,
-  CalendarSync,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Tooltip } from "@heroui/tooltip";
-import { Training, useUpdateTrainingMutation } from "@/graphql/hooks";
+import { Training, UserRole, useUpdateTrainingMutation } from "@/graphql/hooks";
 import {
   DndContext,
   DragEndEvent,
@@ -18,10 +13,12 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { useStudentStore } from "@/services/zustand/studentStore";
-import { useUserStore } from "@/services/zustand/userStore";
 import { useCrewStore } from "@/services/zustand/crewStore";
 import BadgeStudent from "./BadgeStudent";
 import BadgeCrew from "./BadgeCrew";
+import { FaRegCalendar } from "react-icons/fa6";
+import { IoArrowUndo } from "react-icons/io5";
+import { useRole } from "@/services/hooks/useRole";
 
 interface CalendarProps<T> {
   events: T[];
@@ -51,9 +48,8 @@ export const ScheduleCalendar = <T extends CalendarEvent>({
   days,
 }: CalendarProps<T>) => {
   const currentStudent = useStudentStore((state) => state.student);
-  const currentUser = useUserStore((state) => state.user);
   const currentCrew = useCrewStore((state) => state.crew);
-  const isCoach = currentUser?.roles === "COACH";
+  const isCoach = useRole(UserRole.Coach);
   const [updateTraining] = useUpdateTrainingMutation();
   const monthDisplay = currentDate.toLocaleDateString("fr-FR", {
     month: "long",
@@ -124,7 +120,7 @@ export const ScheduleCalendar = <T extends CalendarEvent>({
             onClick={() => setViewMode(viewMode === "month" ? "week" : "month")}
             className="flex items-center gap-2 px-3 py-1 text-sm rounded-md bg-gray-100 hover:bg-gray-200"
           >
-            <CalendarIcon size={16} />
+            <FaRegCalendar size={16} />
             {viewMode === "month" ? "Vue Semaine" : "Vue Mois"}
           </button>
           <Tooltip
@@ -137,8 +133,8 @@ export const ScheduleCalendar = <T extends CalendarEvent>({
               className="group hover:bg-black/5 p-2 rounded-full cursor-pointer"
               onClick={() => setCurrentDate(new Date())}
             >
-              <CalendarSync
-                size={24}
+              <IoArrowUndo
+                size={22}
                 className="text-gray-500 active:text-gray-500 group-hover:text-black"
               />
             </div>

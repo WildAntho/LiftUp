@@ -1,15 +1,5 @@
 import { useState } from "react";
-import {
-  BadgeEuro,
-  Ban,
-  CircleCheckBig,
-  Clock,
-  Dumbbell,
-  Lock,
-  Plus,
-  PlusCircle,
-  Search,
-} from "lucide-react";
+import { Clock, Dumbbell, Lock, Plus, PlusCircle, Search } from "lucide-react";
 import {
   Offer,
   OfferStatus,
@@ -23,6 +13,9 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@heroui/react";
 import { Button } from "@/components/ui/button";
 import StatusCard from "./component/StatusCard";
+import { FaCheckCircle } from "react-icons/fa";
+import { TbCoinEuroFilled } from "react-icons/tb";
+import { AiFillStop } from "react-icons/ai";
 
 export default function Offers() {
   const [deleteOffer, { loading }] = useDeleteOfferMutation();
@@ -64,7 +57,7 @@ export default function Offers() {
             <section className="flex justify-start items-start gap-2">
               <div onClick={() => setActiveCard(null)}>
                 <StatusCard
-                  icon={<BadgeEuro size={20} />}
+                  icon={<TbCoinEuroFilled size={22} />}
                   title="Tous"
                   description="Toutes les offres"
                   isActive={!activeCard}
@@ -72,7 +65,7 @@ export default function Offers() {
               </div>
               <div onClick={() => setActiveCard(OfferStatus.Available)}>
                 <StatusCard
-                  icon={<CircleCheckBig size={20} />}
+                  icon={<FaCheckCircle size={20} />}
                   title="Disponible"
                   description="Offres ouvertes"
                   type={OfferStatus.Available}
@@ -81,7 +74,7 @@ export default function Offers() {
               </div>
               <div onClick={() => setActiveCard(OfferStatus.Cancel)}>
                 <StatusCard
-                  icon={<Ban size={20} />}
+                  icon={<AiFillStop size={20} />}
                   title="Complet"
                   description="Offres désactivées"
                   type={OfferStatus.Cancel}

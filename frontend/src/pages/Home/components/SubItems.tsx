@@ -39,7 +39,7 @@ export default function SubItems(props: SubItemProps) {
               animate="enter"
               exit="exit"
               initial="initial"
-              className={`text-sm text-gray-500 transition transform group-hover:translate-x-1 group-hover:text-dark`}
+              className={`text-sm text-gray-400 transition transform group-hover:translate-x-1 group-hover:text-dark`}
             >
               {props.title}
             </motion.p>

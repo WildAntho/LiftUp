@@ -3,19 +3,14 @@ import { UserProgram, UserProgramStatus } from "../entities/userProgram";
 import Stripe from "stripe";
 import { Request, Response } from "express";
 import { generateTraining } from "../services/programService";
-import { User } from "../entities/user";
 import { TrainingPlan } from "../entities/trainingPlan";
 
 export const stripeWebhookHandler = async (req: Request, res: Response) => {
-  console.log("enter");
-
   const sig = req.headers["stripe-signature"] as string;
-
   let event;
-
   try {
     event = stripe.webhooks.constructEvent(
-      req.body, // ⚡️ ATTENTION : express.raw({ type: "application/json" }) est requis
+      req.body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!
     );

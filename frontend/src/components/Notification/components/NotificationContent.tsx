@@ -1,6 +1,6 @@
 import UserAvatar from "../../UserAvatar";
 import { Avatar } from "@heroui/react";
-import { Notification } from "@/graphql/hooks";
+import { Notification, UserRole } from "@/graphql/hooks";
 
 type NotificationComponentProps = {
   notification?: Notification;
@@ -14,7 +14,7 @@ export const NewRequestNotification = ({
     message: (
       <>
         Vous avez reçu une nouvelle demande{" "}
-        {notification?.request?.sender.roles === "STUDENT" && "de coaching de"}{" "}
+        {notification?.request?.sender.roles.includes(UserRole.Student) && "de coaching de"}{" "}
         <span className="font-semibold">
           {notification?.request?.sender.firstname +
             " " +

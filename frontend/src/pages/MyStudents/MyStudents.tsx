@@ -2,12 +2,13 @@ import {
   useGetTotalRequestsQuery,
   useGetTotalStudentsQuery,
 } from "@/graphql/hooks";
-import { MessageCircleQuestion, Users } from "lucide-react";
 import { Chip, Tab, Tabs } from "@heroui/react";
 import { Key, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import TabStudents from "./TabStudents";
 import TabRequests from "./TabRequests";
+import { FaUserFriends } from "react-icons/fa";
+import { FaQuestionCircle } from "react-icons/fa";
 
 export default function MyStudents() {
   const { data: dataTotalStudent, refetch: refetchTotal } =
@@ -28,7 +29,7 @@ export default function MyStudents() {
       id: "students",
       label: (
         <div className="flex items-center space-x-2">
-          <Users size={18} />
+          <FaUserFriends size={18} />
           <span>Mes élèves</span>
           <Chip size="sm" variant="faded">
             {totalStudents}
@@ -40,7 +41,7 @@ export default function MyStudents() {
       id: "request",
       label: (
         <div className="flex items-center space-x-2">
-          <MessageCircleQuestion size={18} />
+          <FaQuestionCircle size={18} />
           <span>Mes demandes reçus</span>
           <Chip size="sm" variant="faded">
             {totalRequests}

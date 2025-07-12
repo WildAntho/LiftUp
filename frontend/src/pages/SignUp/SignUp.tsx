@@ -5,20 +5,20 @@ import { Button, Input, Select, SelectItem } from "@heroui/react";
 import { Tooltip } from "@heroui/tooltip";
 import {
   ArrowRightToLine,
-  BadgeHelp,
-  CheckCircle,
   Eye,
   EyeOff,
   Info,
-  Loader2,
-  Lock,
-  Mail,
-  Shield,
-  User,
+  Loader2
 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Toaster, toast } from "sonner";
+import { IoMail } from "react-icons/io5";
+import { FaLock } from "react-icons/fa6";
+import { FaQuestionCircle } from "react-icons/fa";
+import { FaUser } from "react-icons/fa6";
+import { IoShieldSharp } from "react-icons/io5";
+import { FaCheckCircle } from "react-icons/fa";
 
 export default function SignUp() {
   const { role } = useParams();
@@ -103,19 +103,19 @@ export default function SignUp() {
               ref={firstname}
               label="Prénom"
               isRequired
-              startContent={<BadgeHelp size={20} className="text-gray-500" />}
+              startContent={<FaQuestionCircle size={20} className="text-gray-500" />}
             />
             <Input
               ref={lastname}
               label="Nom"
               isRequired
-              startContent={<User size={20} className="text-gray-500" />}
+              startContent={<FaUser size={16} className="text-gray-500" />}
             />
           </div>
           <Select
             label="Genre"
             placeholder="Quel est votre genre ?"
-            startContent={<Shield size={20} className="text-gray-500" />}
+            startContent={<IoShieldSharp size={20} className="text-gray-500" />}
             selectedKeys={[sex]}
             onChange={(e) => {
               setSex(e.target.value);
@@ -131,7 +131,7 @@ export default function SignUp() {
             ref={email}
             label="Email"
             isRequired
-            startContent={<Mail size={20} className="text-gray-500" />}
+            startContent={<IoMail size={20} className="text-gray-500" />}
           />
           <div className="flex flex-col justify-center items-center gap-2 w-full">
             <div className="w-full relative">
@@ -140,7 +140,7 @@ export default function SignUp() {
                 type={`${showPassword ? "text" : "password"}`}
                 label="Mot de passe"
                 isRequired
-                startContent={<Lock size={20} className="text-gray-500" />}
+                startContent={<FaLock size={18} className="text-gray-500" />}
                 endContent={
                   <>
                     <Eye
@@ -166,7 +166,7 @@ export default function SignUp() {
                 label="Confirmer le mot de passe"
                 isRequired
                 startContent={
-                  <CheckCircle size={20} className="text-gray-500" />
+                  <FaCheckCircle size={20} className="text-gray-500" />
                 }
                 endContent={
                   <>

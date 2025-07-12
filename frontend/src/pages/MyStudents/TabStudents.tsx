@@ -22,16 +22,7 @@ import {
   SelectItem,
   Spinner,
 } from "@heroui/react";
-import {
-  AlarmClock,
-  AlarmClockOff,
-  BadgeEuro,
-  CircleCheckBig,
-  Handshake,
-  Hourglass,
-  SearchIcon,
-  Users,
-} from "lucide-react";
+import { SearchIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import imgDefault from "../../../public/default.jpg";
 import { uploadURL } from "@/services/utils";
@@ -40,6 +31,13 @@ import { addMonths, differenceInDays } from "date-fns";
 import Renew from "@/components/Renew";
 import StatusStudentCard from "./components/StatusStudentCard";
 import { StatusStudent } from "@/type";
+import { FaUserFriends } from "react-icons/fa";
+import { FaCheckCircle } from "react-icons/fa";
+import { FaHourglassEnd } from "react-icons/fa";
+import { RiAlarmFill } from "react-icons/ri";
+import { BiSolidAlarmOff } from "react-icons/bi";
+import { TbCoinEuroFilled } from "react-icons/tb";
+import { HiMiniUserGroup } from "react-icons/hi2";
 
 type UserType = {
   id: string;
@@ -320,7 +318,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
               placeholder="Offre"
               radius="sm"
               aria-label="Filtrer par offre"
-              startContent={<BadgeEuro />}
+              startContent={<TbCoinEuroFilled size={20} />}
               selectedKeys={[offer]}
               onChange={(e) => setOffer(e.target.value)}
             >
@@ -334,7 +332,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
               placeholder="Equipe"
               radius="sm"
               aria-label="Filtrer par équipe"
-              startContent={<Handshake />}
+              startContent={<HiMiniUserGroup size={20} />}
               selectedKeys={[crew]}
               onChange={(e) => setCrew(e.target.value)}
             >
@@ -386,7 +384,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
       <section className="w-full flex justify-start items-center gap-2">
         <div onClick={() => setActiveCard(null)}>
           <StatusStudentCard
-            icon={<Users size={20} />}
+            icon={<FaUserFriends size={20} />}
             title="Tous"
             description="Tous les élèves"
             isActive={!activeCard}
@@ -394,7 +392,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
         </div>
         <div onClick={() => setActiveCard(StatusStudent.active)}>
           <StatusStudentCard
-            icon={<CircleCheckBig size={20} />}
+            icon={<FaCheckCircle size={20} />}
             title="Actifs"
             description="Coaching en cours"
             type={StatusStudent.active}
@@ -403,7 +401,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
         </div>
         <div onClick={() => setActiveCard(StatusStudent.waiting)}>
           <StatusStudentCard
-            icon={<Hourglass size={20} />}
+            icon={<FaHourglassEnd size={20} />}
             title="En attente"
             description="Coaching à valider"
             type={StatusStudent.waiting}
@@ -412,7 +410,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
         </div>
         <div onClick={() => setActiveCard(StatusStudent.end_7)}>
           <StatusStudentCard
-            icon={<AlarmClock size={20} />}
+            icon={<RiAlarmFill size={22} />}
             title="Fin proche"
             description="Moins de 8 jours"
             type={StatusStudent.end_7}
@@ -421,7 +419,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
         </div>
         <div onClick={() => setActiveCard(StatusStudent.expired)}>
           <StatusStudentCard
-            icon={<AlarmClockOff size={20} />}
+            icon={<BiSolidAlarmOff size={22} />}
             title="Expirés"
             description="Coaching terminés"
             type={StatusStudent.expired}

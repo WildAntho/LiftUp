@@ -7,13 +7,13 @@ import {
   ArrowRightToLine,
   Eye,
   EyeOff,
-  Loader2,
-  Lock,
-  Mail,
+  Loader2
 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { IoMail } from "react-icons/io5";
+import { FaLock } from "react-icons/fa6";
 
 export default function Login() {
   const setStore = useUserStore((state) => state.set);
@@ -68,7 +68,7 @@ export default function Login() {
             label="Email"
             isRequired
             isInvalid={error !== undefined}
-            startContent={<Mail size={20} className="text-gray-500" />}
+            startContent={<IoMail size={20} className="text-gray-500" />}
           />
           <div className="relative">
             <Input
@@ -78,7 +78,7 @@ export default function Login() {
               isRequired
               isInvalid={error !== undefined}
               label="Mot de passe"
-              startContent={<Lock size={20} className="text-gray-500" />}
+              startContent={<FaLock size={18} className="text-gray-500" />}
               endContent={
                 <>
                   <Eye

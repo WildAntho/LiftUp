@@ -31,6 +31,7 @@ import { MuscleGroupResolver } from "./resolvers/muscleGroupResolver";
 import { NotificationPreferenceResolver } from "./resolvers/notificationPreferenceResolver";
 import { DashboardResolver } from "./resolvers/dashboardResolver";
 import { S3Resolver } from "./resolvers/s3Resolver";
+import { UserRole } from "./InputType/userType";
 
 type PubSubType = ReturnType<typeof createPubSub>;
 
@@ -60,14 +61,15 @@ export const createSchema = async (pubsub: PubSubType) => {
       MuscleGroupResolver,
       NotificationPreferenceResolver,
       DashboardResolver,
-      S3Resolver
+      S3Resolver,
     ],
     emitSchemaFile: true,
     pubSub: pubsub,
     authChecker: ({ context }, neededRoles) => {
       if (!context.user) return false;
+      if (context.user.roles.includes(UserRole.ADMIN)) return true;
       if (neededRoles.length > 0) {
-        return neededRoles.includes(context.user.roles);
+        return neededRoles.some((role) => context.user.roles?.includes(role));
       } else {
         if (context.user) return true;
       }

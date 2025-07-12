@@ -5,11 +5,12 @@ import {
 } from "@/graphql/hooks";
 import { useUserStore } from "@/services/zustand/userStore";
 import { Tooltip } from "@heroui/tooltip";
-import { MessagesSquare, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import UserAvatar from "./UserAvatar";
+import { IoChatbubblesOutline } from "react-icons/io5";
 
 export default function ChatIcon() {
   const currentUser = useUserStore((state) => state.user);
@@ -75,7 +76,7 @@ export default function ChatIcon() {
   }, [newMessage]);
 
   return (
-    <div className="relative cursor-pointer">
+    <div className="group relative cursor-pointer">
       <Tooltip
         placement="left"
         content="Messagerie"
@@ -87,7 +88,7 @@ export default function ChatIcon() {
           className="hover:bg-black/5 p-2 rounded-full cursor-pointer"
           onClick={() => navigate("/chat")}
         >
-          <MessagesSquare className="w-5 h-5 text-gray-600 hover:text-gray-800" />
+          <IoChatbubblesOutline className="w-6 h-6 text-gray-500 group-hover:text-gray-800" />
         </div>
       </Tooltip>
       {totalMessage > 0 && (

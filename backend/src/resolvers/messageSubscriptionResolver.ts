@@ -20,7 +20,6 @@ class MessageArgs {
   userId?: string;
 }
 
-@Authorized()
 @Resolver(Message)
 export class MessageSusbscription {
   @Subscription(() => Message, {

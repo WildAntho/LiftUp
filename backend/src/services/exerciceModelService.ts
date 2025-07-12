@@ -4,9 +4,12 @@ import { MuscleGroup } from "../entities/muscleGroup";
 import { User } from "../entities/user";
 import { ExerciceModelData, VideoType } from "../InputType/exerciceModelType";
 import { generateS3SignedUrl } from "./s3Service";
+import { hasAnyRole } from "./userService";
+import { UserRole } from "../InputType/userType";
 
 export function canGetExercice(connectedUser: User, exerciceOwner: User) {
-  if (connectedUser.roles === "COACH" && connectedUser.id !== exerciceOwner.id)
+  const isConnectedUserCoach = hasAnyRole(connectedUser, [UserRole.COACH])
+  if (isConnectedUserCoach && connectedUser.id !== exerciceOwner.id)
     return false;
   if (connectedUser.id === exerciceOwner.id) return true;
   if (connectedUser.coach && connectedUser.coach.id === exerciceOwner.id)

@@ -682,6 +682,7 @@ export type Program = {
   price?: Maybe<Scalars['Float']['output']>;
   public: Scalars['Boolean']['output'];
   status: ProgramStatus;
+  subscriptions?: Maybe<Array<UserProgram>>;
   title: Scalars['String']['output'];
   trainingPlans: Array<TrainingPlan>;
 };
@@ -1006,7 +1007,6 @@ export type SubscriptionTotalMessageArgs = {
 
 export type Training = {
   __typename?: 'Training';
-  color: Scalars['String']['output'];
   createdByCoach?: Maybe<Scalars['String']['output']>;
   crew?: Maybe<Crew>;
   date: Scalars['DateTimeISO']['output'];
@@ -1082,6 +1082,7 @@ export type User = {
   coach?: Maybe<User>;
   coachProfile?: Maybe<CoachProfile>;
   coachedCrews?: Maybe<Array<Crew>>;
+  coachingPrograms?: Maybe<Array<UserProgram>>;
   conversations?: Maybe<Array<Conversation>>;
   crew?: Maybe<Crew>;
   email: Scalars['String']['output'];
@@ -1099,13 +1100,14 @@ export type User = {
   progress: Array<ProgressSession>;
   receivedMessages?: Maybe<Array<Message>>;
   receivedRequests?: Maybe<Array<Request>>;
-  roles: Scalars['String']['output'];
+  roles: Array<UserRole>;
   sentMessages?: Maybe<Array<Message>>;
   sentRequests?: Maybe<Array<Request>>;
   sex?: Maybe<Scalars['String']['output']>;
   studentOffer?: Maybe<Offer>;
   students?: Maybe<Array<User>>;
   trainings?: Maybe<Array<Training>>;
+  userPrograms?: Maybe<Array<UserProgram>>;
 };
 
 export type UserInput = {
@@ -1117,6 +1119,25 @@ export type UserInput = {
   roles: Scalars['String']['input'];
   sex?: InputMaybe<Scalars['String']['input']>;
 };
+
+export type UserProgram = {
+  __typename?: 'UserProgram';
+  applicationFeeAmount: Scalars['Float']['output'];
+  commissionRate: Scalars['Float']['output'];
+  createdAt: Scalars['DateTimeISO']['output'];
+  id: Scalars['ID']['output'];
+  price: Scalars['Float']['output'];
+  startDate?: Maybe<Scalars['DateTimeISO']['output']>;
+  status: Scalars['String']['output'];
+  stripeSessionId?: Maybe<Scalars['String']['output']>;
+};
+
+/** Rôles utilisateurs */
+export enum UserRole {
+  Admin = 'ADMIN',
+  Coach = 'COACH',
+  Student = 'STUDENT'
+}
 
 /** Type de vidéo */
 export enum VideoType {
@@ -1508,7 +1529,7 @@ export type UpdateProfileMutationVariables = Exact<{
 }>;
 
 
-export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, sex?: string | null, roles: string, avatar?: string | null } };
+export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, sex?: string | null, roles: Array<UserRole>, avatar?: string | null } };
 
 export type UpdateProgramMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1571,19 +1592,19 @@ export type GetAllMuscleGroupQuery = { __typename?: 'Query', getAllMuscleGroup: 
 export type GetChatUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetChatUsersQuery = { __typename?: 'Query', getChatUsers: Array<{ __typename?: 'User', firstname: string, id: string, email: string, lastname: string, avatar?: string | null, roles: string }> };
+export type GetChatUsersQuery = { __typename?: 'Query', getChatUsers: Array<{ __typename?: 'User', firstname: string, id: string, email: string, lastname: string, avatar?: string | null, roles: Array<UserRole> }> };
 
 export type GetCoachQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type GetCoachQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', coach?: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null } | null } };
+export type GetCoachQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', coach?: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null } | null } };
 
 export type GetCoachCrewsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCoachCrewsQuery = { __typename?: 'Query', getCoachCrews: Array<{ __typename?: 'Crew', id: string, name: string, students?: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null }> | null }> };
+export type GetCoachCrewsQuery = { __typename?: 'Query', getCoachCrews: Array<{ __typename?: 'Crew', id: string, name: string, students?: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null }> | null }> };
 
 export type GetOneCoachOffersQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1617,7 +1638,7 @@ export type GetCrewTrainingQueryVariables = Exact<{
 }>;
 
 
-export type GetCrewTrainingQuery = { __typename?: 'Query', getCrewTraining: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, color: string, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
+export type GetCrewTrainingQuery = { __typename?: 'Query', getCrewTraining: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
 
 export type GetDayNumberTrainingQueryVariables = Exact<{
   programId: Scalars['String']['input'];
@@ -1651,7 +1672,7 @@ export type GetListUsersCrewQueryVariables = Exact<{
 }>;
 
 
-export type GetListUsersCrewQuery = { __typename?: 'Query', getListUsersCrew: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null }> };
+export type GetListUsersCrewQuery = { __typename?: 'Query', getListUsersCrew: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null }> };
 
 export type GetMessagesQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1697,7 +1718,7 @@ export type GetMyTrainingQueryVariables = Exact<{
 }>;
 
 
-export type GetMyTrainingQuery = { __typename?: 'Query', getTrainingsById: Array<{ __typename?: 'Training', createdByCoach?: string | null, id: string, title: string, date: any, notes?: string | null, editable: boolean, validate: boolean, color: string, crew?: { __typename?: 'Crew', id: string } | null, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
+export type GetMyTrainingQuery = { __typename?: 'Query', getTrainingsById: Array<{ __typename?: 'Training', createdByCoach?: string | null, id: string, title: string, date: any, notes?: string | null, editable: boolean, validate: boolean, crew?: { __typename?: 'Crew', id: string } | null, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
 
 export type GetNotificationQueryVariables = Exact<{
   unread: Scalars['Boolean']['input'];
@@ -1705,7 +1726,7 @@ export type GetNotificationQueryVariables = Exact<{
 }>;
 
 
-export type GetNotificationQuery = { __typename?: 'Query', getNotification: { __typename?: 'NotificationResponse', totalUnread: number, total: number, notifications: Array<{ __typename?: 'Notification', id: string, type: NotificationType, isRead: boolean, hasBeenSeen: boolean, createdAt: any, request?: { __typename?: 'Request', sender: { __typename?: 'User', firstname: string, lastname: string, roles: string, avatar?: string | null }, receiver: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null, membership?: { __typename?: 'Membership', id: string, student: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } | null }> } };
+export type GetNotificationQuery = { __typename?: 'Query', getNotification: { __typename?: 'NotificationResponse', totalUnread: number, total: number, notifications: Array<{ __typename?: 'Notification', id: string, type: NotificationType, isRead: boolean, hasBeenSeen: boolean, createdAt: any, request?: { __typename?: 'Request', sender: { __typename?: 'User', firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null }, receiver: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null, membership?: { __typename?: 'Membership', id: string, student: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } | null }> } };
 
 export type GetPreferenceNotificationQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1724,7 +1745,7 @@ export type GetOneProgramMarketPlaceQueryVariables = Exact<{
 }>;
 
 
-export type GetOneProgramMarketPlaceQuery = { __typename?: 'Query', getOneProgramMarketPlace: { __typename?: 'ProgramMarketplaceResponse', trainingsCount: number, program: { __typename?: 'Program', id: string, title: string, description?: string | null, duration: number, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', label: string, id: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } } };
+export type GetOneProgramMarketPlaceQuery = { __typename?: 'Query', getOneProgramMarketPlace: { __typename?: 'ProgramMarketplaceResponse', trainingsCount: number, program: { __typename?: 'Program', id: string, title: string, description?: string | null, duration: number, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', label: string, id: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null, coachProfile?: { __typename?: 'CoachProfile', specialisation?: Array<string> | null, name?: string | null } | null } } } };
 
 export type GetOneTrainingQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1748,14 +1769,14 @@ export type GetRequestQueryVariables = Exact<{
 }>;
 
 
-export type GetRequestQuery = { __typename?: 'Query', getRequest: Array<{ __typename?: 'Request', id: string, description?: string | null, phone?: number | null, offer?: { __typename?: 'Offer', name: string, id: string } | null, sender: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null } }> };
+export type GetRequestQuery = { __typename?: 'Query', getRequest: Array<{ __typename?: 'Request', id: string, description?: string | null, phone?: number | null, offer?: { __typename?: 'Offer', name: string, id: string } | null, sender: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null } }> };
 
 export type GetSentQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type GetSentQuery = { __typename?: 'Query', getSent: Array<{ __typename?: 'Request', receiver: { __typename?: 'User', email: string, id: string, firstname: string, lastname: string, roles: string, avatar?: string | null } }> };
+export type GetSentQuery = { __typename?: 'Query', getSent: Array<{ __typename?: 'Request', receiver: { __typename?: 'User', email: string, id: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null } }> };
 
 export type GetStudentFeedbackQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1771,7 +1792,7 @@ export type GetStudentTrainingsQueryVariables = Exact<{
 }>;
 
 
-export type GetStudentTrainingsQuery = { __typename?: 'Query', getStudentTrainings: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, color: string, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
+export type GetStudentTrainingsQuery = { __typename?: 'Query', getStudentTrainings: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
 
 export type GetStudentsQueryVariables = Exact<{
   input?: InputMaybe<Scalars['String']['input']>;
@@ -1785,7 +1806,7 @@ export type GetStudentsQueryVariables = Exact<{
 }>;
 
 
-export type GetStudentsQuery = { __typename?: 'Query', getStudents: { __typename?: 'StudentsResponse', totalCount: number, students: Array<{ __typename?: 'User', email: string, firstname: string, lastname: string, roles: string, id: string, avatar?: string | null, studentOffer?: { __typename?: 'Offer', name: string, durability: number, id: string } | null, crew?: { __typename?: 'Crew', id: string, name: string } | null, memberships?: Array<{ __typename?: 'Membership', id: string, endDate: any, isActive: boolean }> | null }> } };
+export type GetStudentsQuery = { __typename?: 'Query', getStudents: { __typename?: 'StudentsResponse', totalCount: number, students: Array<{ __typename?: 'User', email: string, firstname: string, lastname: string, roles: Array<UserRole>, id: string, avatar?: string | null, studentOffer?: { __typename?: 'Offer', name: string, durability: number, id: string } | null, crew?: { __typename?: 'Crew', id: string, name: string } | null, memberships?: Array<{ __typename?: 'Membership', id: string, endDate: any, isActive: boolean }> | null }> } };
 
 export type GetTotalRequestsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1817,7 +1838,7 @@ export type SelectCoachQueryVariables = Exact<{
 }>;
 
 
-export type SelectCoachQuery = { __typename?: 'Query', selectCoach: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null, coachProfile?: { __typename?: 'CoachProfile', id: string, name?: string | null, specialisation?: Array<string> | null } | null, offers?: Array<{ __typename?: 'Offer', id: string, price: number, name: string, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', id: string, label: string } }> | null }> };
+export type SelectCoachQuery = { __typename?: 'Query', selectCoach: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null, coachProfile?: { __typename?: 'CoachProfile', id: string, name?: string | null, specialisation?: Array<string> | null } | null, offers?: Array<{ __typename?: 'Offer', id: string, price: number, name: string, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', id: string, label: string } }> | null }> };
 
 export type LastMessageReadSubscriptionVariables = Exact<{
   id?: InputMaybe<Scalars['String']['input']>;
@@ -1839,7 +1860,7 @@ export type SubNewNotificationSubscriptionVariables = Exact<{
 }>;
 
 
-export type SubNewNotificationSubscription = { __typename?: 'Subscription', newNotification: { __typename?: 'Notification', id: string, type: NotificationType, hasBeenSeen: boolean, isRead: boolean, createdAt: any, request?: { __typename?: 'Request', id: string, sender: { __typename?: 'User', firstname: string, lastname: string, roles: string }, receiver: { __typename?: 'User', firstname: string, lastname: string } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null, membership?: { __typename?: 'Membership', id: string, student: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } | null } };
+export type SubNewNotificationSubscription = { __typename?: 'Subscription', newNotification: { __typename?: 'Notification', id: string, type: NotificationType, hasBeenSeen: boolean, isRead: boolean, createdAt: any, request?: { __typename?: 'Request', id: string, sender: { __typename?: 'User', firstname: string, lastname: string, roles: Array<UserRole> }, receiver: { __typename?: 'User', firstname: string, lastname: string } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null, membership?: { __typename?: 'Membership', id: string, student: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } | null } };
 
 export type TotalUnreadMessageSubSubscriptionVariables = Exact<{
   id: Scalars['String']['input'];
@@ -4077,7 +4098,6 @@ export const GetCrewTrainingDocument = gql`
     createdByCoach
     editable
     validate
-    color
     exercices {
       title
       id
@@ -4654,7 +4674,6 @@ export const GetMyTrainingDocument = gql`
     notes
     editable
     validate
-    color
     crew {
       id
     }
@@ -4904,6 +4923,10 @@ export const GetOneProgramMarketPlaceDocument = gql`
         firstname
         lastname
         avatar
+        coachProfile {
+          specialisation
+          name
+        }
       }
     }
     trainingsCount
@@ -5246,7 +5269,6 @@ export const GetStudentTrainingsDocument = gql`
     createdByCoach
     editable
     validate
-    color
     exercices {
       title
       id

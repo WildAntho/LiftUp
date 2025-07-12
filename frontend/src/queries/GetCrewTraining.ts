@@ -10,7 +10,6 @@ export const GET_CREW_TRAINING = gql`
       createdByCoach
       editable
       validate
-      color
       exercices {
         title
         id

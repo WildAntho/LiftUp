@@ -23,7 +23,9 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
       FRONTEND_HOST: ${FRONTEND_HOST}
+      FRONTEND_URL: ${FRONTEND_URL}
       NODE_ENV: development
     depends_on:
       liftup-dev-database :

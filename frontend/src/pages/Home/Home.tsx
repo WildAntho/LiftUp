@@ -9,6 +9,7 @@ import Offers from "./Offers/Offers";
 import ProtectedRoute from "@/services/ProtectedRoutes";
 import ExerciceModelSection from "./ExerciceModel/ExerciceModelSection";
 import Coaching from "./Coaching/Coaching";
+import { UserRole } from "@/graphql/hooks";
 
 export default function Home() {
   const currentUser = useUserStore((state) => state.user);
@@ -27,29 +28,28 @@ export default function Home() {
         {!activeTab && <Dashboard currentUser={currentUser} />}
         {activeTab === "calendar" && <Calendar currentUser={currentUser} />}
         {activeTab === "program" && (
-          <ProtectedRoute requiredRole="COACH">
+          <ProtectedRoute requiredRole={UserRole.Coach}>
             <Program />
           </ProtectedRoute>
         )}
         {activeTab === "offers" && (
-          <ProtectedRoute requiredRole="COACH">
+          <ProtectedRoute requiredRole={UserRole.Coach}>
             <Offers />
           </ProtectedRoute>
         )}
         {activeTab === "coaching" && (
-          <ProtectedRoute requiredRole="STUDENT">
+          <ProtectedRoute requiredRole={UserRole.Student}>
             <Coaching />
           </ProtectedRoute>
         )}
         {activeTab === "exercices" && <ExerciceModelSection />}
-        {/* {activeTab === "statistics" && <Statistics currentUser={currentUser} />} */}
       </div>
     </div>
   );
 
   return (
     <section className="h-full p-4 gap-4 flex justify-start align-items-center">
-      <HomeSidebar currentUser={currentUser} />
+      <HomeSidebar />
       {renderContent()}
     </section>
   );

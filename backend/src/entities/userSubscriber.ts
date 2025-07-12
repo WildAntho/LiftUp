@@ -7,6 +7,7 @@ import { User } from "./user";
 import { NotificationPreference } from "./notificationPreference";
 import { ProgressSession } from "./progressSession";
 import { CoachProfile } from "./coachProfile";
+import { UserRole } from "../InputType/userType";
 
 @EventSubscriber()
 export class UserSubscriber implements EntitySubscriberInterface<User> {
@@ -15,7 +16,7 @@ export class UserSubscriber implements EntitySubscriberInterface<User> {
   }
 
   async afterInsert(event: InsertEvent<User>) {
-    const isCoach = event.entity.roles === "COACH";
+    const isCoach = event.entity.roles.includes(UserRole.COACH);
     const preference = NotificationPreference.create({
       user: event.entity,
     });

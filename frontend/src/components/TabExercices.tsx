@@ -7,14 +7,7 @@ import {
   useGetAllMuscleGroupQuery,
   useGetFavoriteExercicesIdQuery,
 } from "@/graphql/hooks";
-import {
-  Check,
-  Heart,
-  LayoutGrid,
-  PlusCircle,
-  Search,
-  UserCircle,
-} from "lucide-react";
+import { Check, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 import { Input } from "@heroui/react";
@@ -29,6 +22,10 @@ import CreateExercice from "./CreateExercice/CreateExercice";
 import MuscleGroupSelect from "./MuscleGroupSelect";
 import UpdateExerciceModal from "./modals/UpdateExerciceModal";
 import ExerciceInfo from "./modals/ExerciceModelInfo";
+import { FaHeart } from "react-icons/fa";
+import { FaCirclePlus } from "react-icons/fa6";
+import { RiLayoutGridFill } from "react-icons/ri";
+import { FaCircleUser } from "react-icons/fa6";
 
 type TabExercicesProps = {
   activeExercices: ExerciceModel[] | null;
@@ -163,7 +160,7 @@ export default function TabExercices({
   const tabChoice = [
     {
       id: 1,
-      icon: <LayoutGrid size={20} />,
+      icon: <RiLayoutGridFill size={20} />,
       title: "Tous",
       description: "Tous les exercices",
       type: FilterCardEnum.ALL,
@@ -171,7 +168,7 @@ export default function TabExercices({
     },
     {
       id: 2,
-      icon: <UserCircle size={20} />,
+      icon: <FaCircleUser size={20} />,
       title: "Mes exercices",
       description: "Exercices personnalisés",
       type: FilterCardEnum.MINE,
@@ -179,7 +176,7 @@ export default function TabExercices({
     },
     {
       id: 3,
-      icon: <Heart size={20} />,
+      icon: <FaHeart size={20} />,
       title: "Favoris",
       description: "Exercices favoris",
       type: FilterCardEnum.FAVORITE,
@@ -187,7 +184,7 @@ export default function TabExercices({
     },
     {
       id: 4,
-      icon: <PlusCircle size={20} />,
+      icon: <FaCirclePlus size={20} />,
       title: "Créer",
       description: "Créer un nouvel exercice",
       type: FilterCardEnum.NEW,

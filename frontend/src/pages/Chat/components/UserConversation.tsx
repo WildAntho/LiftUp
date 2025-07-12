@@ -53,9 +53,9 @@ export default function UserConversation({
       conversation.id === currentConversationId);
 
   return (
-    <div className=" w-full flex justify-between items-center">
+    <div className="relative w-full flex justify-between items-center">
       {!isRead && (
-        <span className="w-2 h-2 rounded-full absolute bg-primary left-5" />
+        <span className="w-2 h-2 rounded-full absolute bg-primary right-2 top-3" />
       )}
       <div className="flex justify-start items-center gap-2 flex-1">
         <UserAvatar avatar={user.avatar ?? ""} className="w-[50px] h-[50px]" />

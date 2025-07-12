@@ -21,11 +21,11 @@ async function StartGraphQLServer() {
   const app = express();
   const httpServer = createServer(app);
 
-  // app.post(
-  //   "/api/webhook/stripe",
-  //   express.raw({ type: "application/json" }),
-  //   stripeWebhookHandler
-  // );
+  app.post(
+    "/webhook/stripe",
+    express.raw({ type: "application/json" }),
+    stripeWebhookHandler
+  );
 
   const wsServer = new WebSocketServer({
     server: httpServer,

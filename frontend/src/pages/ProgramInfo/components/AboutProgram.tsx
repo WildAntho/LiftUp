@@ -2,6 +2,7 @@ import LexicalEditorComponent from "@/components/LexicalEditor/LexicalEditorComp
 import { Separator } from "@/components/ui/separator";
 import { Program } from "@/graphql/hooks";
 import { MdStickyNote2 } from "react-icons/md";
+import CoachLink from "./CoachLink";
 
 type AboutProgramProps = {
   program: Program;
@@ -27,6 +28,7 @@ export default function AboutProgram({ program }: AboutProgramProps) {
           Aucune description n'a été fournie
         </p>
       )}
+      <CoachLink program={program as Program} />
     </section>
   );
 }

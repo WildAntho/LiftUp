@@ -54,7 +54,9 @@ export default function StatusStudentCard({
         isActive ? colors.bg : "bg-gray-50 hover:bg-gray-100"
       } rounded-lg p-2 flex items-center justify-start gap-2 border border-gray-100 cursor-pointer transition-all duration-200`}
     >
-      <div className={`${colors.text}`}>{icon}</div>
+      <div className={`${colors.text} ${!isActive ? "text-opacity-40" : ""}`}>
+        {icon}
+      </div>
       <div>
         <h3
           className={`${
