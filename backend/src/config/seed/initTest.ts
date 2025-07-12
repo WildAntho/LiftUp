@@ -21,7 +21,8 @@ const seedDatabase = async () => {
     user.lastname = "Test";
     user.email = "user.test@gmail.com";
     user.password = hashedPassword;
-    user.roles = [UserRole.COACH];
+    user.roles = [];
+    user.roles.push(UserRole.COACH);
     await user.save();
     console.log("💪 Users seeded !");
   } catch (error) {
