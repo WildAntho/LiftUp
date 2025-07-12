@@ -16,6 +16,7 @@ import {
   useAddTrainingStudentMutation,
   useDeleteExerciceMutation,
   useDeleteTrainingMutation,
+  UserRole,
   useUpdateExerciceMutation,
   useUpdateTrainingMutation,
 } from "@/graphql/hooks";
@@ -44,6 +45,7 @@ import Saving from "../Saving";
 import Cancel from "../Cancel";
 import ConfirmButton from "../ConfirmButton";
 import DateInput from "../DateInput";
+import { useRole } from "@/services/hooks/useRole";
 
 interface Config {
   rep: number;
@@ -81,7 +83,7 @@ export default function TrainingModal({
   const currentUser = useUserStore((state) => state.user);
   const currentStudent = useStudentStore((state) => state.student);
   const currentCrew = useCrewStore((state) => state.crew);
-  const isCoach = currentUser?.roles === "COACH";
+  const isCoach = useRole(UserRole.Coach);
   // To show on card Training
   const [addTraining, { loading }] = useAddTrainingMutation();
   const [addTrainingStudent, { loading: loadingStudent }] =

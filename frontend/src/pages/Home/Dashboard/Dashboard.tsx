@@ -1,21 +1,18 @@
 import { UserWithoutPassword } from "@/services/zustand/userStore";
 import DashboardCaroussel from "./components/DashboardCaroussel";
-import {
-  BadgeEuro,
-  BicepsFlexed,
-  Dumbbell,
-  Handshake,
-  NotebookPen,
-} from "lucide-react";
+import { BadgeEuro, BicepsFlexed, Dumbbell, Handshake } from "lucide-react";
 import ProgressComponent from "./components/ProgressComponent";
 import { useNavigate } from "react-router-dom";
 import {
   useGetProgressQuery,
+  UserRole,
   useUpdateProgressMutation,
 } from "@/graphql/hooks";
 import DateNavigator from "./components/DateNavigator";
 import { useState } from "react";
 import { format } from "date-fns";
+import { BiSolidNotepad } from "react-icons/bi";
+import { useRole } from "@/services/hooks/useRole";
 
 type DashboardProps = {
   currentUser: UserWithoutPassword | null;
@@ -33,7 +30,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
   const [currentDate, setCurrentDate] = useState(
     format(new Date(), "yyyy-MM-dd")
   );
-  const isCoach = currentUser?.roles === "COACH";
+  const isCoach = useRole(UserRole.Coach);
   const { data } = useGetProgressQuery({ fetchPolicy: "cache-and-network" });
   const [updateProgress] = useUpdateProgressMutation();
   const progress = data?.getProgress;
@@ -44,7 +41,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
       buttonContent: "Créer un entraînement",
       redirect: "/home?tab=calendar",
       image: "/dashboard/training.webp",
-      icon: <NotebookPen size={18} />,
+      icon: <BiSolidNotepad className="w-10 h-10" />,
     },
     ...(isCoach
       ? [
@@ -82,7 +79,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
             description:
               "Besoin d'un plan d'entraînement pour progresser dans ta pratique ?",
             buttonContent: "Trouver un plan",
-            redirect: "/plan",
+            redirect: "/marketplace",
             image: "/dashboard/searchplan.webp",
             icon: <BicepsFlexed size={18} />,
             complete: progress?.searchProgram,
@@ -144,7 +141,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
                   data: { id: progress?.id as string, searchProgram: true },
                 },
               });
-              navigate("/program");
+              navigate("/marketplace");
             },
             completed: progress?.searchProgram ?? false,
           },

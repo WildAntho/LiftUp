@@ -14,11 +14,6 @@ test("create program", async ({ page }) => {
   const programTitle = page.locator('[data-testid="program-title"]');
   await programTitle.fill("Programme E2E Test Titre");
 
-  const programDescription = page.locator(
-    '[data-testid="program-description"]'
-  );
-  await programDescription.fill("Programme E2E Test Description");
-
   const programDuration = page.locator('[data-testid="program-duration"]');
   await programDuration.fill("6");
 

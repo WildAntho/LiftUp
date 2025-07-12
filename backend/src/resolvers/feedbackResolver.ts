@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, PubSub, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Mutation, PubSub, Query, Resolver } from "type-graphql";
 import { Feedback } from "../entities/feedback";
 import {
   FeedbackData,
@@ -13,6 +13,7 @@ import { createNotification } from "../services/notificationsService";
 import { NotificationType } from "../InputType/notificationType";
 import isNotificationAllowed from "../services/notificationPreferenceService";
 
+@Authorized()
 @Resolver(Feedback)
 export class FeedbackResolver {
   @Query(() => [Feedback])

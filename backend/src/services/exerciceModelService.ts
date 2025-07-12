@@ -2,10 +2,14 @@ import { In } from "typeorm";
 import { ExerciceModel } from "../entities/exerciceModel";
 import { MuscleGroup } from "../entities/muscleGroup";
 import { User } from "../entities/user";
-import { ExerciceModelData } from "../InputType/exerciceModelType";
+import { ExerciceModelData, VideoType } from "../InputType/exerciceModelType";
+import { generateS3SignedUrl } from "./s3Service";
+import { hasAnyRole } from "./userService";
+import { UserRole } from "../InputType/userType";
 
 export function canGetExercice(connectedUser: User, exerciceOwner: User) {
-  if (connectedUser.roles === "COACH" && connectedUser.id !== exerciceOwner.id)
+  const isConnectedUserCoach = hasAnyRole(connectedUser, [UserRole.COACH])
+  if (isConnectedUserCoach && connectedUser.id !== exerciceOwner.id)
     return false;
   if (connectedUser.id === exerciceOwner.id) return true;
   if (connectedUser.coach && connectedUser.coach.id === exerciceOwner.id)
@@ -38,4 +42,27 @@ export async function saveExerciceModel(
   exercice.videoType = data.videoType;
 
   return await exercice.save();
+}
+
+export async function buildResponseExercice(exerciceModel: ExerciceModel) {
+  let link = exerciceModel.video;
+  if (
+    exerciceModel.videoType === VideoType.PERSO &&
+    exerciceModel.video &&
+    exerciceModel.user
+  ) {
+    const { url } = await generateS3SignedUrl({
+      fileName: exerciceModel.video,
+      fileType: "video/mp4",
+      userId: exerciceModel.user.id,
+      type: "getObject",
+    });
+    link = url;
+    return {
+      link,
+      description: exerciceModel.description,
+      muscles: exerciceModel.muscles,
+      title: exerciceModel.title,
+    };
+  }
 }

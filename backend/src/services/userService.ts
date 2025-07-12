@@ -1,7 +1,10 @@
 import { Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { User } from "../entities/user";
+import { UserRole } from "../InputType/userType";
 
-export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+export const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
 
 export function getExpirationTokenTime(token: string): number {
   try {
@@ -46,4 +49,10 @@ export function regenerateToken(
   } catch (error) {
     console.error(error);
   }
+}
+
+export function hasAnyRole(user: User | undefined, roles: UserRole[]): boolean {
+  if (!user || !user.roles) return false;
+
+  return roles.some((role) => user.roles.includes(role));
 }

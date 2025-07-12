@@ -1,14 +1,7 @@
 import ProgramModal from "@/components/modals/ProgramModal/ProgramModal";
 import Configuration from "./components/Configuration/Configuration";
 import { Button } from "@/components/ui/button";
-import {
-  Plus,
-  PlusCircle,
-  Search,
-  CircleCheckBig,
-  NotepadTextDashed,
-  Archive,
-} from "lucide-react";
+import { Plus, PlusCircle, Search } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ProgramCard from "./components/ProgramCard";
@@ -20,6 +13,7 @@ import {
   useDeleteProgramMutation,
   useGenerateProgramMutation,
   useGetMyProgramsQuery,
+  UserRole,
   useUpdateProgramMutation,
   useValidateProgramMutation,
 } from "@/graphql/hooks";
@@ -28,9 +22,14 @@ import { toast } from "sonner";
 import StatusCard from "./components/StatusCard";
 import { useProgramStore } from "@/services/zustand/programStore";
 import { useUserStore } from "@/services/zustand/userStore";
+import { FaCheckCircle } from "react-icons/fa";
+import { FaBoxArchive } from "react-icons/fa6";
+import { BiSolidNotepad } from "react-icons/bi";
+import { useRole } from "@/services/hooks/useRole";
 
 export default function Program() {
   const currentUser = useUserStore((state) => state.user);
+  const isCoach = useRole(UserRole.Coach)
   const setProgram = useProgramStore((state) => state.set);
   const navigate = useNavigate();
   const location = useLocation();
@@ -56,10 +55,10 @@ export default function Program() {
   const myPrograms = data?.getPrograms ?? [];
 
   useEffect(() => {
-    if (currentUser?.roles !== "COACH") {
+    if (!isCoach) {
       navigate("/home");
     }
-  }, [currentUser, navigate]);
+  }, [currentUser, navigate, isCoach]);
 
   const handleArchiveProgram = async (id: string) => {
     try {
@@ -178,7 +177,7 @@ export default function Program() {
             <section className="flex justify-start items-start gap-2">
               <div onClick={() => setActiveCard(ProgramStatus.Published)}>
                 <StatusCard
-                  icon={<CircleCheckBig size={20} />}
+                  icon={<FaCheckCircle size={20} />}
                   title="Terminés"
                   description="Programmes terminés"
                   type={ProgramStatus.Published}
@@ -187,7 +186,7 @@ export default function Program() {
               </div>
               <div onClick={() => setActiveCard(ProgramStatus.Draft)}>
                 <StatusCard
-                  icon={<NotepadTextDashed size={20} />}
+                  icon={<BiSolidNotepad size={22} />}
                   title="Brouillon"
                   description="Programmes en cours"
                   type={ProgramStatus.Draft}
@@ -196,7 +195,7 @@ export default function Program() {
               </div>
               <div onClick={() => setActiveCard(ProgramStatus.Archived)}>
                 <StatusCard
-                  icon={<Archive size={20} />}
+                  icon={<FaBoxArchive size={18} />}
                   title="Archivés"
                   description="Programmes archivés"
                   type={ProgramStatus.Archived}

@@ -25,8 +25,10 @@ import {
   useAddRequestMutation,
   useDeleteStudentMutation,
   useRejectRequestMutation,
+  UserRole,
 } from "@/graphql/hooks";
 import UserAvatar from "./UserAvatar";
+import { useRole } from "@/services/hooks/useRole";
 
 type StudentsCardProps = {
   user: UserWithoutPassword;
@@ -60,6 +62,8 @@ export default function UserCard({
   details,
 }: StudentsCardProps) {
   const currentUser = useUserStore((state) => state.user);
+  const isCoach = useRole(UserRole.Coach)
+  const isStudent = useRole(UserRole.Student)
   const [addRequest] = useAddRequestMutation();
   const [deleteStudent] = useDeleteStudentMutation();
   const [acceptRequest] = useAcceptRequestMutation();
@@ -110,10 +114,10 @@ export default function UserCard({
     if (refetch) {
       refetch.refetchRequest();
       refetch.refetchSent();
-      if (currentUser?.roles === "COACH" && refetch.refetchStudents)
+      if (isCoach && refetch.refetchStudents)
         refetch.refetchStudents();
       if (
-        currentUser?.roles === "STUDENT" &&
+        isStudent &&
         refetch.refetchCoach &&
         refetch.refetchMyCoach
       ) {
@@ -132,9 +136,9 @@ export default function UserCard({
     if (refetch) {
       refetch.refetchRequest();
       refetch.refetchSent();
-      if (currentUser?.roles === "COACH" && refetch.refetchStudents)
+      if (isCoach && refetch.refetchStudents)
         refetch.refetchStudents();
-      if (currentUser?.roles === "STUDENT" && refetch.refetchCoach)
+      if (isStudent && refetch.refetchCoach)
         refetch.refetchCoach();
     }
   };

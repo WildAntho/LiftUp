@@ -1,10 +1,11 @@
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 import { Exercice } from "../entities/exercice";
 import { ExerciceData, ScopeExercice } from "../InputType/exerciceType";
 import { Training } from "../entities/training";
 import { CreateMultipleExercicesFromModel } from "../services/exerciceService";
 import { TrainingPlan } from "../entities/trainingPlan";
 
+@Authorized()
 @Resolver(Exercice)
 export class ExerciceResolver {
   @Query(() => [Exercice])

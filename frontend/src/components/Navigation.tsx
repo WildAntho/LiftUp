@@ -1,15 +1,5 @@
 import { useApolloClient } from "@apollo/client";
-import {
-  BicepsFlexed,
-  BookOpen,
-  ChevronDown,
-  Handshake,
-  HomeIcon,
-  LogOut,
-  Settings,
-  UserPen,
-  Users,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { ReactElement } from "react";
 import {
   DropdownMenu,
@@ -21,12 +11,16 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useUserStore } from "@/services/zustand/userStore";
-import { useLogoutMutation } from "@/graphql/hooks";
+import { useLogoutMutation, UserRole } from "@/graphql/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
 import MyAvatar from "./MyAvatar";
 import Notifications from "./Notification/Notifications";
 import ChatIcon from "./ChatIcon";
 import { Button } from "@heroui/react";
+import { FaUserEdit } from "react-icons/fa";
+import { HiOutlineLogout } from "react-icons/hi";
+import { MdAdminPanelSettings } from "react-icons/md";
+import { useRole } from "@/services/hooks/useRole";
 
 type Link = {
   id: number;
@@ -38,19 +32,17 @@ type Link = {
 export default function Navigation() {
   const client = useApolloClient();
   const location = useLocation();
+  const isCoach = useRole(UserRole.Coach);
+  const isStudent = useRole(UserRole.Student);
+  const isAdmin = useRole(UserRole.Admin);
   const path = location.pathname;
   const splitPath = path.split("/")[1];
   const currentUser = useUserStore((state) => state.user);
-  const ROLE_COACH = "COACH";
-  const ROLE_STUDENT = "STUDENT";
-  const isCoach = currentUser?.roles === ROLE_COACH;
-  const isStudent = currentUser?.roles === ROLE_STUDENT;
   const links: Link[] = [
     {
       id: 1,
       value: "home",
       label: "Accueil",
-      icon: <HomeIcon size={16} />,
     },
     ...(isCoach
       ? [
@@ -58,13 +50,11 @@ export default function Navigation() {
             id: 2,
             value: "students",
             label: "Mes élèves",
-            icon: <BookOpen size={16} />,
           },
           {
             id: 3,
             value: "crew",
             label: "Mes équipes",
-            icon: <Users size={16} />,
           },
         ]
       : []),
@@ -74,13 +64,11 @@ export default function Navigation() {
             id: 4,
             value: "coach",
             label: "Besoin d'un coach ?",
-            icon: <Handshake size={16} />,
           },
           {
             id: 5,
-            value: "program",
+            value: "marketplace",
             label: "Besoin d'un plan d'entraînement ?",
-            icon: <BicepsFlexed size={16} />,
           },
         ]
       : []),
@@ -122,7 +110,6 @@ export default function Navigation() {
               value={l.value}
             >
               <div className="flex justify-center items-center gap-2 text-sm">
-                {l.icon}
                 <p className="transition-all duration-200 group-hover:translate-x-1">
                   {l.label}
                 </p>
@@ -149,19 +136,23 @@ export default function Navigation() {
             <DropdownMenuGroup>
               <DropdownMenuItem
                 onClick={() => navigate("/profile?tab=informations")}
+                className="flex justify-start"
               >
-                <UserPen />
+                <FaUserEdit />
                 Profil
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => navigate("/profile?tab=settings")}
-              >
-                <Settings />
-                Paramètres
-              </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem
+                  onClick={() => console.log("Je suis admin")}
+                  className="flex justify-start"
+                >
+                  <MdAdminPanelSettings />
+                  Admin
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>
-                <LogOut />
+                <HiOutlineLogout />
                 Se déconnecter
               </DropdownMenuItem>
             </DropdownMenuGroup>

@@ -45,7 +45,7 @@ describe("UserResolver", () => {
         email: mockUserInput.email,
         firstname: mockUserInput.firstname,
         lastname: mockUserInput.lastname,
-        roles: mockUserInput.roles,
+        roles: [mockUserInput.roles],
       });
     });
 

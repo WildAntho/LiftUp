@@ -37,6 +37,10 @@ import { useCrewStore } from "./services/zustand/crewStore.ts";
 import { useStudentStore } from "./services/zustand/studentStore.ts";
 import UnsupportedScreen from "./pages/UnsupportedScreen/UnsupportedScreen.tsx";
 import useIsDesktop from "./pages/UnsupportedScreen/useIsDesktop.ts";
+import MarketPlace from "./pages/MarketPlace/MarketPlace.tsx";
+import ProgramInfo from "./pages/ProgramInfo/ProgramInfo.tsx";
+import SuccessPage from "./pages/SuccessPage.tsx";
+import { UserRole } from "./graphql/hooks.tsx";
 
 const isStaging = import.meta.env.VITE_NODE_ENV === "staging";
 const isProd = import.meta.env.VITE_NODE_ENV === "production";
@@ -124,7 +128,7 @@ const router = createBrowserRouter([
       {
         path: "/students",
         element: (
-          <ProtectedRoute requiredRole="COACH">
+          <ProtectedRoute requiredRole={UserRole.Coach}>
             <MyStudents />
           </ProtectedRoute>
         ),
@@ -132,7 +136,7 @@ const router = createBrowserRouter([
       {
         path: "/coach",
         element: (
-          <ProtectedRoute requiredRole="STUDENT">
+          <ProtectedRoute requiredRole={UserRole.Student}>
             <MyCoach />
           </ProtectedRoute>
         ),
@@ -140,15 +144,31 @@ const router = createBrowserRouter([
       {
         path: "/coach/:id",
         element: (
-          <ProtectedRoute requiredRole="STUDENT">
+          <ProtectedRoute requiredRole={UserRole.Student}>
             <CoachInformation />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/marketplace",
+        element: (
+          <ProtectedRoute requiredRole={UserRole.Student}>
+            <MarketPlace />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/marketplace/program/:id",
+        element: (
+          <ProtectedRoute requiredRole={UserRole.Student}>
+            <ProgramInfo />
           </ProtectedRoute>
         ),
       },
       {
         path: "/crew",
         element: (
-          <ProtectedRoute requiredRole="COACH">
+          <ProtectedRoute requiredRole={UserRole.Coach}>
             <MyCrews />
           </ProtectedRoute>
         ),
@@ -170,6 +190,14 @@ const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: "/success",
+    element: (
+      <ProtectedRoute>
+        <SuccessPage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/login",

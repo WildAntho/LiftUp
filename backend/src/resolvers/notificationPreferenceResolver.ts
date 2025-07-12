@@ -1,8 +1,9 @@
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { NotificationPreference } from "../entities/notificationPreference";
 import { CtxUser } from "../InputType/coachType";
 import { NotificationType } from "../InputType/notificationType";
 
+@Authorized()
 @Resolver(NotificationPreference)
 export class NotificationPreferenceResolver {
   @Query(() => NotificationPreference)

@@ -3,41 +3,35 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import CollapseItem from "./CollapseItem";
 import { SidebarComponent } from "@/type";
-import {
-  BadgeEuro,
-  BicepsFlexed,
-  Calendar,
-  Dumbbell,
-  Gauge,
-  HandCoins,
-} from "lucide-react";
 import UserProfile from "./UserProfile";
 import { UserWithoutPassword } from "@/services/zustand/userStore";
-import { Crew } from "@/graphql/hooks";
+import { Crew, UserRole } from "@/graphql/hooks";
 import SelectStudentModal from "@/components/modals/SelectStudentModal";
 import SelectCrewModal from "@/components/modals/SelectCrewModal";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import SubItems from "./SubItems";
 import { Separator } from "@/components/ui/separator";
+import { IoCalendar } from "react-icons/io5";
+import { FaFire } from "react-icons/fa6";
+import { TbDashboardFilled } from "react-icons/tb";
+import { TbCoinEuroFilled } from "react-icons/tb";
+import { FaDumbbell } from "react-icons/fa";
+import { FaChalkboardUser } from "react-icons/fa6";
+import { useRole } from "@/services/hooks/useRole";
 
-type HomeSidebarProps = {
-  currentUser: UserWithoutPassword | null;
-};
-
-export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
+export default function HomeSidebar() {
   const navigate = useNavigate();
+  const isCoach = useRole(UserRole.Coach)
   const [searchParams] = useSearchParams();
   const params = searchParams.get("tab");
   const isCalendar = params === "calendar";
   const [open, setOpen] = useState(false);
   const [openStudentModal, setOpenStudentModal] = useState(false);
   const [openCrewModal, setOpenCrewModal] = useState(false);
-  const ROLE_COACH = "COACH";
-  const isCoach = currentUser?.roles === ROLE_COACH;
 
   const parentVariants = {
     hidden: {
-      width: "60px",
+      width: "70px",
       transition: {
         duration: 0.5,
         ease: [0.4, 0, 0.2, 1],
@@ -58,7 +52,7 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
       title: "Tableau de bord",
       value: "dashboard",
       withArrow: true,
-      icon: <Gauge className="size-5" />,
+      icon: <TbDashboardFilled className="size-6" />,
       type: "content",
       get: () => navigate("/home"),
     },
@@ -66,8 +60,8 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
       title: "Calendrier",
       value: "calendar",
       withArrow: true,
-      rotateArrow: isCalendar,
-      icon: <Calendar className="size-5" />,
+      rotateArrow: isCalendar && isCoach,
+      icon: <IoCalendar className="size-6" />,
       get: () => navigate("/home?tab=calendar"),
       type: "content",
       subitems: isCoach
@@ -93,7 +87,7 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
             title: "Programmes",
             value: "program",
             withArrow: true,
-            icon: <BicepsFlexed className="size-5" />,
+            icon: <FaFire className="size-6" />,
             type: "content",
             get: () => navigate("/home?tab=program"),
           },
@@ -102,7 +96,7 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
             value: "offers",
             get: () => navigate("/home?tab=offers"),
             withArrow: true,
-            icon: <BadgeEuro className="size-5" />,
+            icon: <TbCoinEuroFilled className="size-[25px]" />,
             type: "content",
           },
         ]
@@ -113,7 +107,7 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
             title: "Coaching",
             value: "coaching",
             withArrow: true,
-            icon: <HandCoins className="size-5" />,
+            icon: <FaChalkboardUser className="size-6" />,
             type: "content",
             get: () => navigate("/home?tab=coaching"),
           },
@@ -123,18 +117,10 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
       title: "Exercices",
       value: "exercices",
       withArrow: true,
-      icon: <Dumbbell className="size-5" />,
+      icon: <FaDumbbell className="size-[22px]" />,
       type: "content",
       get: () => navigate("/home?tab=exercices"),
     },
-    // {
-    //   title: "Statistiques",
-    //   value: "statistics",
-    //   withArrow: true,
-    //   icon: <ChartNoAxesCombined className="size-5" />,
-    //   type: "content",
-    //   get: () => navigate("/home?tab=statistics"),
-    // },
   ];
 
   return (
@@ -165,12 +151,11 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
               <motion.div
                 whileTap={{ scale: 0.99 }}
                 transition={{ type: "spring", stiffness: 600 }}
-                className={`group hover:bg-dark/5
-                } rounded-md py-2 cursor-pointer ${
+                className={`group hover:bg-dark/5 rounded-md py-2 cursor-pointer text-gray-600 ${
                   ((!params && s.value === "dashboard") ||
                     s.value === params) &&
-                  "bg-primary/10 text-primary"
-                }`}
+                  "bg-primary/10 text-primary font-semibold"
+                } ${!open ? "flex justify-center" : ""}`}
                 onClick={s.get}
               >
                 <CollapseItem
@@ -203,7 +188,9 @@ export default function HomeSidebar({ currentUser }: HomeSidebarProps) {
           ))}
         </div>
       </div>
-      <UserProfile open={open} />
+      <div className="pl-1 w-full">
+        <UserProfile open={open} />
+      </div>
     </motion.section>
   );
 }

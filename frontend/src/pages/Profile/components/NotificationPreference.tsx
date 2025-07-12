@@ -3,10 +3,11 @@ import { Separator } from "@/components/ui/separator";
 import {
   NotificationType,
   useGetPreferenceNotificationQuery,
+  UserRole,
   useUpdatePreferenceNotificationMutation,
 } from "@/graphql/hooks";
+import { useRole } from "@/services/hooks/useRole";
 import { useDebouncedCallback } from "@/services/useDebouncedCallback";
-import { useUserStore } from "@/services/zustand/userStore";
 import { Switch } from "@heroui/switch";
 import {
   BellOff,
@@ -20,8 +21,7 @@ import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 
 export default function NotificationPreference() {
-  const currentUser = useUserStore((state) => state.user);
-  const isCoach = currentUser?.roles === "COACH";
+  const isCoach = useRole(UserRole.Coach);
   const { data, loading, refetch } = useGetPreferenceNotificationQuery();
   const [updatePreference] = useUpdatePreferenceNotificationMutation();
 

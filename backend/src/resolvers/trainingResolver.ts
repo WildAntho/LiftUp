@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { Training } from "../entities/training";
 import { User } from "../entities/user";
 import {
@@ -13,7 +13,9 @@ import { Crew } from "../entities/crew";
 import { createTrainingsForDates } from "../services/trainingService";
 import { ProgressSession } from "../entities/progressSession";
 import { updateProgress } from "../services/progressService";
+import { UserRole } from "../InputType/userType";
 
+@Authorized()
 @Resolver(Training)
 export class TrainingResolver {
   @Query(() => [Training])
@@ -95,7 +97,7 @@ export class TrainingResolver {
     if (!training || !user)
       throw new Error("Utilisateur ou entraînement introuvable");
     if (user && training) {
-      if (training.editable === false && user.roles === "STUDENT")
+      if (training.editable === false && user.roles.includes(UserRole.STUDENT))
         throw new Error("Vous ne pouvez pas éditer cet entraînement");
       if (data.title) training.title = data.title;
       if (data.date) training.date = data.date[0];

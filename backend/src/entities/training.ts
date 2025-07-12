@@ -44,10 +44,6 @@ export class Training extends BaseEntity {
   @Column({ default: false })
   validate!: boolean;
 
-  @Field()
-  @Column({ default: "#3B82F6" })
-  color?: string;
-
   @Field(() => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.trainings)
   user?: User;

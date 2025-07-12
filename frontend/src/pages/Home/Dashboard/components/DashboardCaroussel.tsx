@@ -5,11 +5,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Button } from "@heroui/react";
 import { ReactElement, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { type CarouselApi } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { Button } from "@/components/ui/button";
 
 type Items = {
   title: string;
@@ -76,11 +76,12 @@ export default function DashboardCaroussel({ items }: DashboardCarousselProps) {
                 </div>
                 <Button
                   data-testid="create-program-button"
-                  className="group flex items-center gap-4 shadow-none text-tertiary h-16 w-auto rounded-xl bg-tertiary bg-opacity-20 border border-tertiary border-opacity-20 hover:bg-tertiary hover:bg-opacity-20 hover:translate-y-[-2px] hover:shadow-sm transition-all duration-200"
-                  onPress={() => navigate(i.redirect)}
+                  variant="link"
+                  className="group text-tertiary flex items-center gap-4 shadow-none h-16 w-auto rounded-xl hover:translate-y-[-2px] transition-all duration-200"
+                  onClick={() => navigate(i.redirect)}
                 >
                   {i.icon}
-                  <p className="text-sm transition-all duration-200 group-hover:translate-x-1">
+                  <p className="text-md transition-all duration-200 group-hover:translate-x-1">
                     {i.buttonContent}
                   </p>
                 </Button>

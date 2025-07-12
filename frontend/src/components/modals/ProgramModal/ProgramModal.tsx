@@ -7,7 +7,7 @@ import {
 } from "@heroui/modal";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input, Select, SelectItem, Textarea } from "@heroui/react";
+import { Input, Select, SelectItem } from "@heroui/react";
 import { Check, ChevronDown, Info, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Privacy from "./components/Privacy";
@@ -21,6 +21,7 @@ import { useProgramStore } from "@/services/zustand/programStore";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { allLevel } from "@/services/utils";
+import LexicalEditorComponent from "@/components/LexicalEditor/LexicalEditorComponent";
 
 type ProgramModalProps = {
   open: boolean;
@@ -53,6 +54,7 @@ export default function ProgramModal({
   const [createProgram, { loading }] = useCreateProgramMutation();
   const { data } = useGetAllCategoriesQuery();
   const [currentStep, setCurrentStep] = useState(1);
+  const [content, setContent] = useState<object | null>(null);
   const [form, setForm] = useState<ProgramForm>({
     public: false,
     title: "",
@@ -124,6 +126,7 @@ export default function ProgramModal({
         variables: {
           data: {
             ...form,
+            description: JSON.stringify(content),
             level: form.level ? form.level : ProgramLevel.Beginner,
           },
         },
@@ -160,6 +163,10 @@ export default function ProgramModal({
     ) {
       setCurrentStep(stepIndex);
     }
+  };
+
+  const handleChangeContent = (content: object) => {
+    setContent(content);
   };
 
   return (
@@ -276,18 +283,11 @@ export default function ProgramModal({
                                     }
                                   />
                                 </div>
-                                <div>
-                                  <Textarea
-                                    data-testid="program-description"
-                                    label="Description"
-                                    radius="sm"
-                                    value={form.description}
-                                    onChange={(e) =>
-                                      setForm({
-                                        ...form,
-                                        description: e.target.value,
-                                      })
-                                    }
+                                <div data-testid="program-description">
+                                  <LexicalEditorComponent
+                                    onChange={handleChangeContent}
+                                    value={content}
+                                    readOnly={false}
                                   />
                                   <p className="flex justify-start items-center gap-2 text-xs text-gray-500 mt-1">
                                     <Info className="w-5 h-5 text-gray-500" />

@@ -9,6 +9,7 @@ import { useState } from "react";
 import SelectStudentModal from "@/components/modals/SelectStudentModal";
 import ChooseDateModal from "@/components/modals/ChooseDateModal";
 import { format } from "date-fns";
+import LexicalEditorComponent from "@/components/LexicalEditor/LexicalEditorComponent";
 
 type ProgramCardProps = {
   id: string;
@@ -50,6 +51,7 @@ export default function ProgramCard({
   const [startDate, setStartDate] = useState<string>(
     format(new Date(), "yyyy-MM-dd")
   );
+  const content = description ? JSON.parse(description) : null;
   const setProgram = useProgramStore((state) => state.set);
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -137,10 +139,10 @@ export default function ProgramCard({
           />
         </div>
         <div className="h-[80%] w-full relative">
-          <p className="text-gray-500 text-sm absolute inset-0 overflow-hidden">
-            {description ?? "Aucune description"}
+          <div className="text-gray-500 text-sm absolute inset-0 overflow-hidden">
+            <LexicalEditorComponent value={content} readOnly={true} />
             <span className="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-white to-transparent" />
-          </p>
+          </div>
         </div>
       </div>
       <div className="w-full flex flex-col justify-start items-start gap-5">

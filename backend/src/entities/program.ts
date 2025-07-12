@@ -12,6 +12,7 @@ import { User } from "./user";
 import { ProgramLevel, ProgramStatus } from "../InputType/programType";
 import { TrainingPlan } from "./trainingPlan";
 import { OfferCategory } from "./offerCategory";
+import { UserProgram } from "./userProgram";
 
 @ObjectType()
 @Entity()
@@ -70,4 +71,8 @@ export class Program extends BaseEntity {
   @Field(() => User)
   @ManyToOne(() => User, (user) => user.coachedCrews)
   coach!: User;
+
+  @Field(() => [UserProgram], { nullable: true })
+  @OneToMany(() => UserProgram, (userProgram) => userProgram.program)
+  subscriptions?: UserProgram[];
 }

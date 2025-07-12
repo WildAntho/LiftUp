@@ -1,21 +1,16 @@
 import MyProfile from "./components/MyProfile";
-import { useUserStore } from "@/services/zustand/userStore";
-import {
-  Bell,
-  MessageCircleQuestion,
-  NotebookPen,
-  Settings,
-} from "lucide-react";
+import { Bell, MessageCircleQuestion, NotebookPen } from "lucide-react";
 import { useState, Key, useEffect } from "react";
 import About from "./components/About";
 import { Tab, Tabs } from "@heroui/tabs";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import NotificationPreference from "./components/NotificationPreference";
+import { useRole } from "@/services/hooks/useRole";
+import { UserRole } from "@/graphql/hooks";
 
 export default function Profile() {
-  const currentUser = useUserStore((state) => state.user);
-  const isCoach = currentUser?.roles === "COACH";
+  const isCoach = useRole(UserRole.Coach);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const tabFromUrl = searchParams.get("tab") || "informations";
@@ -46,11 +41,6 @@ export default function Profile() {
       key: "notifications",
       label: "Notifications",
       icon: <Bell size={18} />,
-    },
-    {
-      key: "settings",
-      label: "Paramètres",
-      icon: <Settings size={18} />,
     },
   ];
 

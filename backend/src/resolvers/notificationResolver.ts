@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { Notification } from "../entities/notification";
 import { User } from "../entities/user";
 import {
@@ -6,6 +6,7 @@ import {
   NotificationResponse,
 } from "../InputType/notificationType";
 
+@Authorized()
 @Resolver(Notification)
 export class NotificationResolver {
   @Query(() => NotificationResponse)

@@ -23,14 +23,14 @@ export default function CoachCard({ coach }: CoachCardProps) {
           className="w-[140px] h-[140px]"
           avatar={coach?.avatar ?? ""}
         />
-        <section className="h-full flex flex-col items-start justify-center">
+        <section className="relative h-full flex flex-col items-start justify-center">
+          <div className="absolute -top-10 min-w-[350px] w-full flex justify-start items-center gap-2">
+            {coach?.coachProfile?.specialisation?.map((s, i) => (
+              <Badge key={i}>{s}</Badge>
+            ))}
+          </div>
           <div className="flex justify-start items-center gap-5">
             <p>{coach?.firstname + " " + coach?.lastname}</p>
-            <div className="flex justify-start items-center gap-2">
-              {coach?.coachProfile?.specialisation?.map((s, i) => (
-                <Badge key={i}>{s}</Badge>
-              ))}
-            </div>
           </div>
           <p className="opacity-50 text-xs">{coach?.coachProfile?.name}</p>
           {/* <StarRating rating={4.5} review={18} /> */}

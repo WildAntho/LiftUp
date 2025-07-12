@@ -1,4 +1,15 @@
-import { Field, InputType } from "type-graphql";
+import { Field, InputType, registerEnumType } from "type-graphql";
+
+export enum UserRole {
+  STUDENT = "STUDENT",
+  COACH = "COACH",
+  ADMIN = "ADMIN",
+}
+
+registerEnumType(UserRole, {
+  name: "UserRole",
+  description: "Rôles utilisateurs",
+});
 
 @InputType()
 export class UserInput {
@@ -15,7 +26,7 @@ export class UserInput {
   password!: string;
 
   @Field()
-  roles!: string;
+  roles!: UserRole;
 
   @Field({ nullable: true })
   sex?: "male" | "female";

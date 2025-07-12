@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { ExerciceModel } from "../entities/exerciceModel";
 import {
   ExerciceInfoResponse,
@@ -9,11 +9,14 @@ import { CtxUser } from "../InputType/coachType";
 import { User } from "../entities/user";
 import { dataSource } from "../config/db";
 import {
+  buildResponseExercice,
   canGetExercice,
   saveExerciceModel,
 } from "../services/exerciceModelService";
 import { deleteFileFromS3, generateS3SignedUrl } from "../services/s3Service";
+import { Exercice } from "../entities/exercice";
 
+@Authorized()
 @Resolver(ExerciceModel)
 export class ExerciceModelResolver {
   @Query(() => [ExerciceModel])
@@ -172,7 +175,8 @@ export class ExerciceModelResolver {
   @Query(() => ExerciceInfoResponse)
   async getExerciceInfo(
     @Ctx() context: { user: CtxUser },
-    @Arg("id") id: string
+    @Arg("id") id: string,
+    @Arg("exerciceId", { nullable: true }) exerciceId: string
   ) {
     const connectedUser = await User.findOne({
       where: { id: context.user.id },
@@ -190,31 +194,17 @@ export class ExerciceModelResolver {
     });
 
     if (!exerciceModel) throw new Error("Aucun exercice n'a été trouvé");
-    if (
-      exerciceModel.user &&
-      !canGetExercice(connectedUser, exerciceModel.user)
-    )
-      throw new Error("Vous n'avez pas accès à cette ressource");
-    let link = exerciceModel.video;
-    if (
-      exerciceModel.videoType === VideoType.PERSO &&
-      exerciceModel.video &&
-      exerciceModel.user
-    ) {
-      const { url } = await generateS3SignedUrl({
-        fileName: exerciceModel.video,
-        fileType: "video/mp4",
-        userId: exerciceModel.user.id,
-        type: "getObject",
-      });
-      link = url;
-    }
-    return {
-      link,
-      description: exerciceModel.description,
-      muscles: exerciceModel.muscles,
-      title: exerciceModel.title,
-    };
+    const isOwnerOrStudent =
+      exerciceModel.user && canGetExercice(connectedUser, exerciceModel.user);
+    if (isOwnerOrStudent) return await buildResponseExercice(exerciceModel);
+    const exercice = await Exercice.findOne({
+      where: { exerciceModel: { id: exerciceId } },
+      relations: {
+        trainingPlan: true,
+      },
+    });
+    if (!exercice) throw new Error("Aucun exercice lié n'a été trouvé");
+    throw new Error("Vous n'avez pas accès à cette ressource");
   }
 
   @Mutation(() => String)

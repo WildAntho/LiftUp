@@ -64,7 +64,8 @@ export class UserResolver {
     newUser.firstname = userData.firstname;
     newUser.lastname = userData.lastname;
     newUser.email = userData.email;
-    newUser.roles = userData.roles;
+    newUser.roles = [];
+    newUser.roles.push(userData.roles);
     newUser.password = hashPaswword;
     newUser.sex = userData.sex;
     await newUser.save();

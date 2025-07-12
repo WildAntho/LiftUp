@@ -18,9 +18,9 @@ import { User } from "../entities/user";
 import { In, IsNull, LessThan } from "typeorm";
 import { Conversation } from "../entities/conversation";
 
+@Authorized()
 @Resolver(Message)
 export class MessageResolver {
-  @Authorized()
   @Mutation(() => String)
   async addMessages(
     @Arg("data")
@@ -117,7 +117,6 @@ export class MessageResolver {
     }
   }
 
-  @Authorized()
   @Query(() => MessageResult)
   async getMessages(
     @Arg("id") conversationId: string,
@@ -156,7 +155,6 @@ export class MessageResolver {
     };
   }
 
-  @Authorized()
   @Mutation(() => MarkAsReadResponse)
   async markAsRead(
     @Arg("id") id: string,
@@ -220,7 +218,6 @@ export class MessageResolver {
   //   return true;
   // }
 
-  @Authorized()
   @Query(() => Int)
   async getTotalUnreadMessage(@Ctx() context: { user: User }) {
     const unreadMessages = await Message.find({

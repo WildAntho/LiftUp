@@ -1,10 +1,9 @@
-import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { Conversation } from "../entities/conversation";
-import { User } from "../entities/user";
-import { In } from "typeorm";
 import { CtxUser } from "../InputType/coachType";
 import { dataSource } from "../config/db";
 
+@Authorized()
 @Resolver(Conversation)
 export class ConversationResolver {
   @Query(() => [Conversation])

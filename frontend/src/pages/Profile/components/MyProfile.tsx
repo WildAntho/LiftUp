@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useRef, useState } from "react";
 import CardRole from "./CardRole";
-import { useUpdateProfileMutation } from "@/graphql/hooks";
+import { UserRole, useUpdateProfileMutation } from "@/graphql/hooks";
 import { uploadURL } from "@/services/utils";
 import { Input, Select, SelectItem } from "@heroui/react";
 import { toast } from "sonner";
@@ -44,7 +44,9 @@ export default function MyProfile() {
     { key: "female", label: "Femme" },
     { key: "male", label: "Homme" },
   ];
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showOldPassword, setShowOldPassword] = useState<boolean>(false);
+  const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const renderIconSex = () => {
     switch (sex) {
       case "female":
@@ -184,8 +186,14 @@ export default function MyProfile() {
     }
   };
 
-  const switchView = () => {
-    setShowPassword(!showPassword);
+  const switchViewOld = () => {
+    setShowOldPassword(!showOldPassword);
+  };
+  const switchViewNew = () => {
+    setShowNewPassword(!showNewPassword);
+  };
+  const switchViewConfirm = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   return (
@@ -290,8 +298,8 @@ export default function MyProfile() {
           Votre souscription
         </p>
         <section className="w-full h-full flex justify-center items-center gap-2">
-          <CardRole role="COACH" />
-          <CardRole role="STUDENT" />
+          <CardRole role={UserRole.Coach} />
+          <CardRole role={UserRole.Student} />
         </section>
       </div>
       <div className="w-[60%] max-w-[800px] h-full p-4 rounded-xl shadow-md border border-gray-200 flex items-start justify-center gap-5">
@@ -306,7 +314,7 @@ export default function MyProfile() {
         </section>
         <section className="w-full h-full flex flex-col justify-center items-end gap-5">
           <Input
-            type={`${showPassword ? "text" : "password"}`}
+            type={`${showOldPassword ? "text" : "password"}`}
             isRequired
             label="Mot de passe actuel"
             startContent={<Lock size={20} className="text-gray-500" />}
@@ -314,21 +322,21 @@ export default function MyProfile() {
               <>
                 <Eye
                   className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
-                    showPassword ? "block" : "hidden"
+                    showOldPassword ? "block" : "hidden"
                   }`}
-                  onClick={switchView}
+                  onClick={switchViewOld}
                 />
                 <EyeOff
                   className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
-                    !showPassword ? "block" : "hidden"
+                    !showOldPassword ? "block" : "hidden"
                   }`}
-                  onClick={switchView}
+                  onClick={switchViewOld}
                 />
               </>
             }
           />
           <Input
-            type={`${showPassword ? "text" : "password"}`}
+            type={`${showNewPassword ? "text" : "password"}`}
             isRequired
             label="Nouveau mot de passe"
             startContent={<Lock size={20} className="text-gray-500" />}
@@ -336,21 +344,21 @@ export default function MyProfile() {
               <>
                 <Eye
                   className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
-                    showPassword ? "block" : "hidden"
+                    showNewPassword ? "block" : "hidden"
                   }`}
-                  onClick={switchView}
+                  onClick={switchViewNew}
                 />
                 <EyeOff
                   className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
-                    !showPassword ? "block" : "hidden"
+                    !showNewPassword ? "block" : "hidden"
                   }`}
-                  onClick={switchView}
+                  onClick={switchViewNew}
                 />
               </>
             }
           />
           <Input
-            type={`${showPassword ? "text" : "password"}`}
+            type={`${showConfirmPassword ? "text" : "password"}`}
             isRequired
             label="Confirmer nouveau mot de passe"
             startContent={<Lock size={20} className="text-gray-500" />}
@@ -358,15 +366,15 @@ export default function MyProfile() {
               <>
                 <Eye
                   className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
-                    showPassword ? "block" : "hidden"
+                    showConfirmPassword ? "block" : "hidden"
                   }`}
-                  onClick={switchView}
+                  onClick={switchViewConfirm}
                 />
                 <EyeOff
                   className={`text-gray-400 hover:text-gray-500 cursor-pointer ${
-                    !showPassword ? "block" : "hidden"
+                    !showConfirmPassword ? "block" : "hidden"
                   }`}
-                  onClick={switchView}
+                  onClick={switchViewConfirm}
                 />
               </>
             }

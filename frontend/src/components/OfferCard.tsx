@@ -41,20 +41,19 @@ export default function OfferCard({
         <div className="flex flex-col items-start justify-start gap-4 w-[80%] pr-2">
           <section className="w-full flex justify-between items-center">
             <div className="flex justify-start items-center gap-5">
-              <Badge
-                className={`text-sm font-semibold truncate ${
+              <div
+                className={`text-md font-semibold truncate ${
                   !offer?.availability && "text-gray-500"
                 }`}
               >
                 {offer?.name}
+              </div>
+              <Badge className="text-xs text-blue-500">
+                {offer?.category.label}
               </Badge>
-              <p className="text-xs text-gray-500">
-                Type : {offer?.category.label}
-              </p>
-              <p className="text-xs">-</p>
-              <p className="text-xs text-gray-500">
-                Durée : {offer?.durability} mois
-              </p>
+              <Badge className="text-xs text-green-500">
+                {offer?.durability} mois
+              </Badge>
             </div>
             {isMyOffer && (
               <div className="flex justify-center items-center">

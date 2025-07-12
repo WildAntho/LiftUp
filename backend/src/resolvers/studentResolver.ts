@@ -1,16 +1,26 @@
-import { Arg, Ctx, Mutation, PubSub, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  Mutation,
+  PubSub,
+  Query,
+  Resolver,
+} from "type-graphql";
 import { User } from "../entities/user";
 import { Membership } from "../entities/memberShip";
-import { Crew } from "../entities/crew";
-import {
-  deleteFromCrew,
-  deleteStudent,
-  desactivateMemberShip,
-} from "../services/coachService";
+import { desactivateMemberShip } from "../services/coachService";
 import isNotificationAllowed from "../services/notificationPreferenceService";
 import { NotificationType } from "../InputType/notificationType";
 import { createNotification } from "../services/notificationsService";
+import { Program } from "../entities/program";
+import { ProgramMarketplaceResponse } from "../InputType/programType";
+import { UserProgram, UserProgramStatus } from "../entities/userProgram";
+import { In } from "typeorm";
+import { stripe } from "../config/stripe";
+import { UserRole } from "../InputType/userType";
 
+@Authorized("STUDENT")
 @Resolver(User)
 export class StudentResolver {
   @Query(() => [User])
@@ -28,7 +38,7 @@ export class StudentResolver {
       .leftJoinAndSelect("user.coachProfile", "coachProfile")
       .leftJoinAndSelect("user.offers", "offers")
       .leftJoinAndSelect("offers.category", "category")
-      .where("user.roles = :role", { role: "COACH" });
+      .where("user.roles = :role", { role: UserRole.COACH });
 
     // Ajouter des conditions de recherche par nom (firstname ou lastname)
     if (input) {
@@ -180,5 +190,117 @@ export class StudentResolver {
       });
     }
     return "Votre souscription a bien été clôturée";
+  }
+
+  @Query(() => [Program])
+  async getProgramsMarketPlace() {
+    const programs = await Program.find({
+      where: {
+        public: true,
+      },
+      relations: {
+        category: true,
+        coach: true,
+      },
+    });
+    return programs;
+  }
+
+  @Query(() => ProgramMarketplaceResponse)
+  async getOneProgramMarketPlace(@Arg("id") id: string) {
+    const program = await Program.findOne({
+      where: {
+        id,
+        public: true,
+      },
+      relations: {
+        category: true,
+        coach: true,
+        trainingPlans: true,
+      },
+    });
+
+    return {
+      program: program,
+      trainingsCount: program?.trainingPlans.length,
+    };
+  }
+
+  @Mutation(() => String)
+  async subscribeProgram(
+    @Arg("programId") programId: string,
+    @Arg("coachId") coachId: string,
+    @Arg("startDate") startDate: Date,
+    @Arg("politic") politic: boolean,
+    @Ctx() context: { pubsub: PubSub; user: User }
+  ) {
+    if (!politic)
+      throw new Error("Merci de valider les conditions générales d'achat");
+    const user = await User.findOneBy({ id: context.user.id });
+    if (!user) {
+      throw new Error("Aucun utilisateur n'a été trouvé");
+    }
+    const program = await Program.findOneBy({ id: programId });
+    if (!program) {
+      throw new Error("Programme introuvable");
+    }
+    const coach = await User.findOneBy({ id: coachId });
+    if (!coach) {
+      throw new Error("Aucun coach n'a été trouvé");
+    }
+    if (!program.public) {
+      throw new Error("Ce programme est privé");
+    }
+    // Vérifie si une souscription existe déjà (pending)
+    let subscription = await UserProgram.findOne({
+      where: {
+        user: { id: user.id },
+        program: { id: program.id },
+        status: In([UserProgramStatus.PENDING_PAYMENT]),
+      },
+    });
+
+    if (!subscription) {
+      // Crée la souscription si elle n'existe pas
+      subscription = UserProgram.create({
+        user,
+        coach,
+        program,
+        status: UserProgramStatus.PENDING_PAYMENT,
+        price: program.price || 0,
+        startDate,
+      });
+      await subscription.save();
+    }
+
+    // ✅ Toujours recalculer le Stripe Session pour cette souscription
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      customer_email: user.email,
+      line_items: [
+        {
+          price_data: {
+            currency: "eur",
+            product_data: {
+              name: `Programme : ${program.title}`,
+            },
+            unit_amount: program.price && program.price * 100,
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        subscriptionId: subscription.id,
+      },
+      success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.FRONTEND_URL}/marketplace/program/${programId}`,
+    });
+
+    // ✅ Mets à jour le Stripe Session ID chaque fois
+    subscription.stripeSessionId = session.id;
+    await subscription.save();
+
+    return session.url!;
   }
 }

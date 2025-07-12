@@ -1,5 +1,6 @@
-import { CheckCircle, ChevronRight, Circle } from "lucide-react";
+import { ChevronRight, Circle } from "lucide-react";
 import { Task } from "../Dashboard";
+import { FaCheckCircle } from "react-icons/fa";
 
 interface ProgressComponentProps {
   userName: string;
@@ -57,7 +58,7 @@ export default function ProgressComponent({
             <div className="flex-shrink-0">
               {task.completed ? (
                 <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-green-600" />
+                  <FaCheckCircle className="w-6 h-6 text-green-600" />
                 </div>
               ) : (
                 <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center transition-colors">

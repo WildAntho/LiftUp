@@ -1,4 +1,4 @@
-import { Arg, Ctx, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
 import { ProgressSession } from "../entities/progressSession";
 import { CtxUser } from "../InputType/coachType";
 
@@ -26,6 +26,7 @@ class progressInput {
   searchProgram?: boolean;
 }
 
+@Authorized()
 @Resolver()
 export class DashboardResolver {
   @Query(() => ProgressSession)

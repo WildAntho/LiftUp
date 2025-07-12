@@ -2,6 +2,7 @@ import * as argon from "argon2";
 import { setDataSource } from "typeorm-extension";
 import { User } from "../../entities/user";
 import { dataSource } from "../db";
+import { UserRole } from "../../InputType/userType";
 
 const seedDatabase = async () => {
   await dataSource.initialize();
@@ -20,7 +21,8 @@ const seedDatabase = async () => {
     user.lastname = "Test";
     user.email = "user.test@gmail.com";
     user.password = hashedPassword;
-    user.roles = "COACH";
+    user.roles = [];
+    user.roles.push(UserRole.COACH);
     await user.save();
     console.log("💪 Users seeded !");
   } catch (error) {

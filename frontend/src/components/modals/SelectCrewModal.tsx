@@ -8,14 +8,14 @@ import {
   ModalHeader,
   RadioGroup,
 } from "@heroui/react";
-import { Crew, useGetCoachCrewsQuery } from "@/graphql/hooks";
+import { Crew, useGetCoachCrewsQuery, UserRole } from "@/graphql/hooks";
 import { Button } from "../ui/button";
 import { useStudentStore } from "@/services/zustand/studentStore";
 import { useCrewStore } from "@/services/zustand/crewStore";
 import { Search } from "lucide-react";
 import { Separator } from "../ui/separator";
 import ListCrew from "../ListCrew";
-import { useUserStore } from "@/services/zustand/userStore";
+import { useRole } from "@/services/hooks/useRole";
 
 type SelectCrewModalProps = {
   open: boolean;
@@ -29,14 +29,14 @@ export default function SelectCrewModal({
   closeNav,
 }: SelectCrewModalProps) {
   const [input, setInput] = useState<string>("");
-  const currentUser = useUserStore((state) => state.user);
   const currentCrew = useCrewStore((state) => state.crew);
   const setCrew = useCrewStore((state) => state.set);
   const clearStudent = useStudentStore((state) => state.clear);
+  const isCoach = useRole(UserRole.Coach);
   const [selected, setSelected] = useState(currentCrew?.id ?? "");
   const { data: dataCrews } = useGetCoachCrewsQuery({
     fetchPolicy: "cache-and-network",
-    skip: currentUser?.roles !== "COACH",
+    skip: !isCoach,
   });
   const myCrews = dataCrews?.getCoachCrews ?? [];
 

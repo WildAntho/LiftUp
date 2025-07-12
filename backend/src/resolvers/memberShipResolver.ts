@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, PubSub, Resolver } from "type-graphql";
+import { Arg, Authorized, Ctx, Mutation, PubSub, Resolver } from "type-graphql";
 import { Membership } from "../entities/memberShip";
 import { ActiveMembershipType } from "../InputType/memberShipType";
 import { User } from "../entities/user";
@@ -9,6 +9,7 @@ import isNotificationAllowed from "../services/notificationPreferenceService";
 import { NotificationType } from "../InputType/notificationType";
 import { createNotification } from "../services/notificationsService";
 
+@Authorized("COACH")
 @Resolver(Membership)
 export class MembershipResolver {
   @Mutation(() => String)

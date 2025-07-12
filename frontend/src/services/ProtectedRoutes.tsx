@@ -1,9 +1,10 @@
 import { Navigate } from "react-router-dom";
 import { useUserStore } from "./zustand/userStore";
+import { UserRole } from "@/graphql/hooks";
 
 interface RoleProtectedRouteProps {
   children: JSX.Element;
-  requiredRole?: string;
+  requiredRole?: UserRole;
 }
 
 const ProtectedRoute: React.FC<RoleProtectedRouteProps> = ({
@@ -16,7 +17,7 @@ const ProtectedRoute: React.FC<RoleProtectedRouteProps> = ({
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && currentUser.roles !== requiredRole) {
+  if (requiredRole && !currentUser.roles.includes(requiredRole)) {
     return <Navigate to="/" replace />;
   }
 

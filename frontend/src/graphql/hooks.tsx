@@ -286,6 +286,7 @@ export type Mutation = {
   rejectRequest: Scalars['String']['output'];
   renewMemberShip: Scalars['String']['output'];
   signUp: Scalars['String']['output'];
+  subscribeProgram: Scalars['String']['output'];
   updateCoachProfile: Scalars['String']['output'];
   updateCrew: Scalars['String']['output'];
   updateExercice: Exercice;
@@ -508,6 +509,14 @@ export type MutationSignUpArgs = {
 };
 
 
+export type MutationSubscribeProgramArgs = {
+  coachId: Scalars['String']['input'];
+  politic: Scalars['Boolean']['input'];
+  programId: Scalars['String']['input'];
+  startDate: Scalars['DateTimeISO']['input'];
+};
+
+
 export type MutationUpdateCoachProfileArgs = {
   data: CoachProfileInput;
   id: Scalars['String']['input'];
@@ -658,7 +667,6 @@ export type OfferInput = {
 
 /** Statut des offres */
 export enum OfferStatus {
-  All = 'ALL',
   Available = 'AVAILABLE',
   Cancel = 'CANCEL'
 }
@@ -674,6 +682,7 @@ export type Program = {
   price?: Maybe<Scalars['Float']['output']>;
   public: Scalars['Boolean']['output'];
   status: ProgramStatus;
+  subscriptions?: Maybe<Array<UserProgram>>;
   title: Scalars['String']['output'];
   trainingPlans: Array<TrainingPlan>;
 };
@@ -694,6 +703,12 @@ export enum ProgramLevel {
   Beginner = 'BEGINNER',
   Intermediate = 'INTERMEDIATE'
 }
+
+export type ProgramMarketplaceResponse = {
+  __typename?: 'ProgramMarketplaceResponse';
+  program: Program;
+  trainingsCount: Scalars['Float']['output'];
+};
 
 /** Le statut d'un programme (brouillon, publié, archivé) */
 export enum ProgramStatus {
@@ -740,9 +755,11 @@ export type Query = {
   getOneCoachOffers: Array<Offer>;
   getOneCoachProfile: CoachProfile;
   getOneExericeModel: ExerciceModel;
+  getOneProgramMarketPlace: ProgramMarketplaceResponse;
   getOneTraining: Training;
   getPreferenceNotification: NotificationPreference;
   getPrograms: Array<Program>;
+  getProgramsMarketPlace: Array<Program>;
   getProgress: ProgressSession;
   getRequest: Array<Request>;
   getSent: Array<Request>;
@@ -791,6 +808,7 @@ export type QueryGetDayNumberTrainingArgs = {
 
 
 export type QueryGetExerciceInfoArgs = {
+  exerciceId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
 };
 
@@ -835,6 +853,11 @@ export type QueryGetOneCoachProfileArgs = {
 
 
 export type QueryGetOneExericeModelArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryGetOneProgramMarketPlaceArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -984,7 +1007,6 @@ export type SubscriptionTotalMessageArgs = {
 
 export type Training = {
   __typename?: 'Training';
-  color: Scalars['String']['output'];
   createdByCoach?: Maybe<Scalars['String']['output']>;
   crew?: Maybe<Crew>;
   date: Scalars['DateTimeISO']['output'];
@@ -1060,6 +1082,7 @@ export type User = {
   coach?: Maybe<User>;
   coachProfile?: Maybe<CoachProfile>;
   coachedCrews?: Maybe<Array<Crew>>;
+  coachingPrograms?: Maybe<Array<UserProgram>>;
   conversations?: Maybe<Array<Conversation>>;
   crew?: Maybe<Crew>;
   email: Scalars['String']['output'];
@@ -1077,13 +1100,14 @@ export type User = {
   progress: Array<ProgressSession>;
   receivedMessages?: Maybe<Array<Message>>;
   receivedRequests?: Maybe<Array<Request>>;
-  roles: Scalars['String']['output'];
+  roles: Array<UserRole>;
   sentMessages?: Maybe<Array<Message>>;
   sentRequests?: Maybe<Array<Request>>;
   sex?: Maybe<Scalars['String']['output']>;
   studentOffer?: Maybe<Offer>;
   students?: Maybe<Array<User>>;
   trainings?: Maybe<Array<Training>>;
+  userPrograms?: Maybe<Array<UserProgram>>;
 };
 
 export type UserInput = {
@@ -1095,6 +1119,25 @@ export type UserInput = {
   roles: Scalars['String']['input'];
   sex?: InputMaybe<Scalars['String']['input']>;
 };
+
+export type UserProgram = {
+  __typename?: 'UserProgram';
+  applicationFeeAmount: Scalars['Float']['output'];
+  commissionRate: Scalars['Float']['output'];
+  createdAt: Scalars['DateTimeISO']['output'];
+  id: Scalars['ID']['output'];
+  price: Scalars['Float']['output'];
+  startDate?: Maybe<Scalars['DateTimeISO']['output']>;
+  status: Scalars['String']['output'];
+  stripeSessionId?: Maybe<Scalars['String']['output']>;
+};
+
+/** Rôles utilisateurs */
+export enum UserRole {
+  Admin = 'ADMIN',
+  Coach = 'COACH',
+  Student = 'STUDENT'
+}
 
 /** Type de vidéo */
 export enum VideoType {
@@ -1414,6 +1457,16 @@ export type SignupMutationVariables = Exact<{
 
 export type SignupMutation = { __typename?: 'Mutation', signUp: string };
 
+export type SubscribeProgramMutationVariables = Exact<{
+  startDate: Scalars['DateTimeISO']['input'];
+  coachId: Scalars['String']['input'];
+  programId: Scalars['String']['input'];
+  politic: Scalars['Boolean']['input'];
+}>;
+
+
+export type SubscribeProgramMutation = { __typename?: 'Mutation', subscribeProgram: string };
+
 export type UpdateCoachProfileMutationVariables = Exact<{
   id: Scalars['String']['input'];
   data: CoachProfileInput;
@@ -1476,7 +1529,7 @@ export type UpdateProfileMutationVariables = Exact<{
 }>;
 
 
-export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, sex?: string | null, roles: string, avatar?: string | null } };
+export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, sex?: string | null, roles: Array<UserRole>, avatar?: string | null } };
 
 export type UpdateProgramMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1539,19 +1592,19 @@ export type GetAllMuscleGroupQuery = { __typename?: 'Query', getAllMuscleGroup: 
 export type GetChatUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetChatUsersQuery = { __typename?: 'Query', getChatUsers: Array<{ __typename?: 'User', firstname: string, id: string, email: string, lastname: string, avatar?: string | null, roles: string }> };
+export type GetChatUsersQuery = { __typename?: 'Query', getChatUsers: Array<{ __typename?: 'User', firstname: string, id: string, email: string, lastname: string, avatar?: string | null, roles: Array<UserRole> }> };
 
 export type GetCoachQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type GetCoachQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', coach?: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null } | null } };
+export type GetCoachQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', coach?: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null } | null } };
 
 export type GetCoachCrewsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCoachCrewsQuery = { __typename?: 'Query', getCoachCrews: Array<{ __typename?: 'Crew', id: string, name: string, students?: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null }> | null }> };
+export type GetCoachCrewsQuery = { __typename?: 'Query', getCoachCrews: Array<{ __typename?: 'Crew', id: string, name: string, students?: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null }> | null }> };
 
 export type GetOneCoachOffersQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1585,7 +1638,7 @@ export type GetCrewTrainingQueryVariables = Exact<{
 }>;
 
 
-export type GetCrewTrainingQuery = { __typename?: 'Query', getCrewTraining: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, color: string, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
+export type GetCrewTrainingQuery = { __typename?: 'Query', getCrewTraining: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
 
 export type GetDayNumberTrainingQueryVariables = Exact<{
   programId: Scalars['String']['input'];
@@ -1619,7 +1672,7 @@ export type GetListUsersCrewQueryVariables = Exact<{
 }>;
 
 
-export type GetListUsersCrewQuery = { __typename?: 'Query', getListUsersCrew: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null }> };
+export type GetListUsersCrewQuery = { __typename?: 'Query', getListUsersCrew: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null }> };
 
 export type GetMessagesQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1665,7 +1718,7 @@ export type GetMyTrainingQueryVariables = Exact<{
 }>;
 
 
-export type GetMyTrainingQuery = { __typename?: 'Query', getTrainingsById: Array<{ __typename?: 'Training', createdByCoach?: string | null, id: string, title: string, date: any, notes?: string | null, editable: boolean, validate: boolean, color: string, crew?: { __typename?: 'Crew', id: string } | null, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
+export type GetMyTrainingQuery = { __typename?: 'Query', getTrainingsById: Array<{ __typename?: 'Training', createdByCoach?: string | null, id: string, title: string, date: any, notes?: string | null, editable: boolean, validate: boolean, crew?: { __typename?: 'Crew', id: string } | null, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
 
 export type GetNotificationQueryVariables = Exact<{
   unread: Scalars['Boolean']['input'];
@@ -1673,7 +1726,7 @@ export type GetNotificationQueryVariables = Exact<{
 }>;
 
 
-export type GetNotificationQuery = { __typename?: 'Query', getNotification: { __typename?: 'NotificationResponse', totalUnread: number, total: number, notifications: Array<{ __typename?: 'Notification', id: string, type: NotificationType, isRead: boolean, hasBeenSeen: boolean, createdAt: any, request?: { __typename?: 'Request', sender: { __typename?: 'User', firstname: string, lastname: string, roles: string, avatar?: string | null }, receiver: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null, membership?: { __typename?: 'Membership', id: string, student: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } | null }> } };
+export type GetNotificationQuery = { __typename?: 'Query', getNotification: { __typename?: 'NotificationResponse', totalUnread: number, total: number, notifications: Array<{ __typename?: 'Notification', id: string, type: NotificationType, isRead: boolean, hasBeenSeen: boolean, createdAt: any, request?: { __typename?: 'Request', sender: { __typename?: 'User', firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null }, receiver: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null, membership?: { __typename?: 'Membership', id: string, student: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } | null }> } };
 
 export type GetPreferenceNotificationQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1687,12 +1740,24 @@ export type GetOneExericeModelQueryVariables = Exact<{
 
 export type GetOneExericeModelQuery = { __typename?: 'Query', getOneExericeModel: { __typename?: 'ExerciceModel', id: string, title: string, image?: string | null, description?: string | null, muscles?: Array<{ __typename?: 'MuscleGroup', id: string }> | null } };
 
+export type GetOneProgramMarketPlaceQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetOneProgramMarketPlaceQuery = { __typename?: 'Query', getOneProgramMarketPlace: { __typename?: 'ProgramMarketplaceResponse', trainingsCount: number, program: { __typename?: 'Program', id: string, title: string, description?: string | null, duration: number, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', label: string, id: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null, coachProfile?: { __typename?: 'CoachProfile', specialisation?: Array<string> | null, name?: string | null } | null } } } };
+
 export type GetOneTrainingQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
 export type GetOneTrainingQuery = { __typename?: 'Query', getOneTraining: { __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean } };
+
+export type GetProgramsMarketPlaceQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetProgramsMarketPlaceQuery = { __typename?: 'Query', getProgramsMarketPlace: Array<{ __typename?: 'Program', id: string, title: string, duration: number, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', id: string, label: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } }> };
 
 export type GetProgressQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1704,14 +1769,14 @@ export type GetRequestQueryVariables = Exact<{
 }>;
 
 
-export type GetRequestQuery = { __typename?: 'Query', getRequest: Array<{ __typename?: 'Request', id: string, description?: string | null, phone?: number | null, offer?: { __typename?: 'Offer', name: string, id: string } | null, sender: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null } }> };
+export type GetRequestQuery = { __typename?: 'Query', getRequest: Array<{ __typename?: 'Request', id: string, description?: string | null, phone?: number | null, offer?: { __typename?: 'Offer', name: string, id: string } | null, sender: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null } }> };
 
 export type GetSentQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type GetSentQuery = { __typename?: 'Query', getSent: Array<{ __typename?: 'Request', receiver: { __typename?: 'User', email: string, id: string, firstname: string, lastname: string, roles: string, avatar?: string | null } }> };
+export type GetSentQuery = { __typename?: 'Query', getSent: Array<{ __typename?: 'Request', receiver: { __typename?: 'User', email: string, id: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null } }> };
 
 export type GetStudentFeedbackQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1727,7 +1792,7 @@ export type GetStudentTrainingsQueryVariables = Exact<{
 }>;
 
 
-export type GetStudentTrainingsQuery = { __typename?: 'Query', getStudentTrainings: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, color: string, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
+export type GetStudentTrainingsQuery = { __typename?: 'Query', getStudentTrainings: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
 
 export type GetStudentsQueryVariables = Exact<{
   input?: InputMaybe<Scalars['String']['input']>;
@@ -1741,7 +1806,7 @@ export type GetStudentsQueryVariables = Exact<{
 }>;
 
 
-export type GetStudentsQuery = { __typename?: 'Query', getStudents: { __typename?: 'StudentsResponse', totalCount: number, students: Array<{ __typename?: 'User', email: string, firstname: string, lastname: string, roles: string, id: string, avatar?: string | null, studentOffer?: { __typename?: 'Offer', name: string, durability: number, id: string } | null, crew?: { __typename?: 'Crew', id: string, name: string } | null, memberships?: Array<{ __typename?: 'Membership', id: string, endDate: any, isActive: boolean }> | null }> } };
+export type GetStudentsQuery = { __typename?: 'Query', getStudents: { __typename?: 'StudentsResponse', totalCount: number, students: Array<{ __typename?: 'User', email: string, firstname: string, lastname: string, roles: Array<UserRole>, id: string, avatar?: string | null, studentOffer?: { __typename?: 'Offer', name: string, durability: number, id: string } | null, crew?: { __typename?: 'Crew', id: string, name: string } | null, memberships?: Array<{ __typename?: 'Membership', id: string, endDate: any, isActive: boolean }> | null }> } };
 
 export type GetTotalRequestsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1773,7 +1838,7 @@ export type SelectCoachQueryVariables = Exact<{
 }>;
 
 
-export type SelectCoachQuery = { __typename?: 'Query', selectCoach: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: string, avatar?: string | null, coachProfile?: { __typename?: 'CoachProfile', id: string, name?: string | null, specialisation?: Array<string> | null } | null, offers?: Array<{ __typename?: 'Offer', id: string, price: number, name: string, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', id: string, label: string } }> | null }> };
+export type SelectCoachQuery = { __typename?: 'Query', selectCoach: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null, coachProfile?: { __typename?: 'CoachProfile', id: string, name?: string | null, specialisation?: Array<string> | null } | null, offers?: Array<{ __typename?: 'Offer', id: string, price: number, name: string, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', id: string, label: string } }> | null }> };
 
 export type LastMessageReadSubscriptionVariables = Exact<{
   id?: InputMaybe<Scalars['String']['input']>;
@@ -1795,7 +1860,7 @@ export type SubNewNotificationSubscriptionVariables = Exact<{
 }>;
 
 
-export type SubNewNotificationSubscription = { __typename?: 'Subscription', newNotification: { __typename?: 'Notification', id: string, type: NotificationType, hasBeenSeen: boolean, isRead: boolean, createdAt: any, request?: { __typename?: 'Request', id: string, sender: { __typename?: 'User', firstname: string, lastname: string, roles: string }, receiver: { __typename?: 'User', firstname: string, lastname: string } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null, membership?: { __typename?: 'Membership', id: string, student: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } | null } };
+export type SubNewNotificationSubscription = { __typename?: 'Subscription', newNotification: { __typename?: 'Notification', id: string, type: NotificationType, hasBeenSeen: boolean, isRead: boolean, createdAt: any, request?: { __typename?: 'Request', id: string, sender: { __typename?: 'User', firstname: string, lastname: string, roles: Array<UserRole> }, receiver: { __typename?: 'User', firstname: string, lastname: string } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null, membership?: { __typename?: 'Membership', id: string, student: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } | null } };
 
 export type TotalUnreadMessageSubSubscriptionVariables = Exact<{
   id: Scalars['String']['input'];
@@ -3071,6 +3136,45 @@ export function useSignupMutation(baseOptions?: Apollo.MutationHookOptions<Signu
 export type SignupMutationHookResult = ReturnType<typeof useSignupMutation>;
 export type SignupMutationResult = Apollo.MutationResult<SignupMutation>;
 export type SignupMutationOptions = Apollo.BaseMutationOptions<SignupMutation, SignupMutationVariables>;
+export const SubscribeProgramDocument = gql`
+    mutation SubscribeProgram($startDate: DateTimeISO!, $coachId: String!, $programId: String!, $politic: Boolean!) {
+  subscribeProgram(
+    startDate: $startDate
+    coachId: $coachId
+    programId: $programId
+    politic: $politic
+  )
+}
+    `;
+export type SubscribeProgramMutationFn = Apollo.MutationFunction<SubscribeProgramMutation, SubscribeProgramMutationVariables>;
+
+/**
+ * __useSubscribeProgramMutation__
+ *
+ * To run a mutation, you first call `useSubscribeProgramMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSubscribeProgramMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [subscribeProgramMutation, { data, loading, error }] = useSubscribeProgramMutation({
+ *   variables: {
+ *      startDate: // value for 'startDate'
+ *      coachId: // value for 'coachId'
+ *      programId: // value for 'programId'
+ *      politic: // value for 'politic'
+ *   },
+ * });
+ */
+export function useSubscribeProgramMutation(baseOptions?: Apollo.MutationHookOptions<SubscribeProgramMutation, SubscribeProgramMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SubscribeProgramMutation, SubscribeProgramMutationVariables>(SubscribeProgramDocument, options);
+      }
+export type SubscribeProgramMutationHookResult = ReturnType<typeof useSubscribeProgramMutation>;
+export type SubscribeProgramMutationResult = Apollo.MutationResult<SubscribeProgramMutation>;
+export type SubscribeProgramMutationOptions = Apollo.BaseMutationOptions<SubscribeProgramMutation, SubscribeProgramMutationVariables>;
 export const UpdateCoachProfileDocument = gql`
     mutation UpdateCoachProfile($id: String!, $data: CoachProfileInput!) {
   updateCoachProfile(id: $id, data: $data)
@@ -3994,7 +4098,6 @@ export const GetCrewTrainingDocument = gql`
     createdByCoach
     editable
     validate
-    color
     exercices {
       title
       id
@@ -4571,7 +4674,6 @@ export const GetMyTrainingDocument = gql`
     notes
     editable
     validate
-    color
     crew {
       id
     }
@@ -4801,6 +4903,69 @@ export type GetOneExericeModelQueryHookResult = ReturnType<typeof useGetOneExeri
 export type GetOneExericeModelLazyQueryHookResult = ReturnType<typeof useGetOneExericeModelLazyQuery>;
 export type GetOneExericeModelSuspenseQueryHookResult = ReturnType<typeof useGetOneExericeModelSuspenseQuery>;
 export type GetOneExericeModelQueryResult = Apollo.QueryResult<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>;
+export const GetOneProgramMarketPlaceDocument = gql`
+    query GetOneProgramMarketPlace($id: String!) {
+  getOneProgramMarketPlace(id: $id) {
+    program {
+      id
+      title
+      description
+      duration
+      price
+      level
+      category {
+        label
+        id
+      }
+      coach {
+        id
+        email
+        firstname
+        lastname
+        avatar
+        coachProfile {
+          specialisation
+          name
+        }
+      }
+    }
+    trainingsCount
+  }
+}
+    `;
+
+/**
+ * __useGetOneProgramMarketPlaceQuery__
+ *
+ * To run a query within a React component, call `useGetOneProgramMarketPlaceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOneProgramMarketPlaceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOneProgramMarketPlaceQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetOneProgramMarketPlaceQuery(baseOptions: Apollo.QueryHookOptions<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables> & ({ variables: GetOneProgramMarketPlaceQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>(GetOneProgramMarketPlaceDocument, options);
+      }
+export function useGetOneProgramMarketPlaceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>(GetOneProgramMarketPlaceDocument, options);
+        }
+export function useGetOneProgramMarketPlaceSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>(GetOneProgramMarketPlaceDocument, options);
+        }
+export type GetOneProgramMarketPlaceQueryHookResult = ReturnType<typeof useGetOneProgramMarketPlaceQuery>;
+export type GetOneProgramMarketPlaceLazyQueryHookResult = ReturnType<typeof useGetOneProgramMarketPlaceLazyQuery>;
+export type GetOneProgramMarketPlaceSuspenseQueryHookResult = ReturnType<typeof useGetOneProgramMarketPlaceSuspenseQuery>;
+export type GetOneProgramMarketPlaceQueryResult = Apollo.QueryResult<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>;
 export const GetOneTrainingDocument = gql`
     query GetOneTraining($id: String!) {
   getOneTraining(id: $id) {
@@ -4847,6 +5012,60 @@ export type GetOneTrainingQueryHookResult = ReturnType<typeof useGetOneTrainingQ
 export type GetOneTrainingLazyQueryHookResult = ReturnType<typeof useGetOneTrainingLazyQuery>;
 export type GetOneTrainingSuspenseQueryHookResult = ReturnType<typeof useGetOneTrainingSuspenseQuery>;
 export type GetOneTrainingQueryResult = Apollo.QueryResult<GetOneTrainingQuery, GetOneTrainingQueryVariables>;
+export const GetProgramsMarketPlaceDocument = gql`
+    query GetProgramsMarketPlace {
+  getProgramsMarketPlace {
+    id
+    title
+    duration
+    price
+    level
+    category {
+      id
+      label
+    }
+    coach {
+      id
+      email
+      firstname
+      lastname
+      avatar
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetProgramsMarketPlaceQuery__
+ *
+ * To run a query within a React component, call `useGetProgramsMarketPlaceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProgramsMarketPlaceQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProgramsMarketPlaceQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetProgramsMarketPlaceQuery(baseOptions?: Apollo.QueryHookOptions<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>(GetProgramsMarketPlaceDocument, options);
+      }
+export function useGetProgramsMarketPlaceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>(GetProgramsMarketPlaceDocument, options);
+        }
+export function useGetProgramsMarketPlaceSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>(GetProgramsMarketPlaceDocument, options);
+        }
+export type GetProgramsMarketPlaceQueryHookResult = ReturnType<typeof useGetProgramsMarketPlaceQuery>;
+export type GetProgramsMarketPlaceLazyQueryHookResult = ReturnType<typeof useGetProgramsMarketPlaceLazyQuery>;
+export type GetProgramsMarketPlaceSuspenseQueryHookResult = ReturnType<typeof useGetProgramsMarketPlaceSuspenseQuery>;
+export type GetProgramsMarketPlaceQueryResult = Apollo.QueryResult<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>;
 export const GetProgressDocument = gql`
     query GetProgress {
   getProgress {
@@ -5050,7 +5269,6 @@ export const GetStudentTrainingsDocument = gql`
     createdByCoach
     editable
     validate
-    color
     exercices {
       title
       id

@@ -8,6 +8,7 @@ import {
   useGetChatUsersQuery,
   useGetConversationsQuery,
   useGetStudentsQuery,
+  UserRole,
 } from "@/graphql/hooks";
 import { Tooltip } from "@heroui/react";
 import { Separator } from "@/components/ui/separator";
@@ -16,9 +17,12 @@ import { useEffect, useState } from "react";
 import { AtSign, SquarePen } from "lucide-react";
 import ChatModal from "@/components/modals/ChatModal";
 import UserConversation from "./components/UserConversation";
+import { useRole } from "@/services/hooks/useRole";
 
 export default function Chat() {
   const currentUser = useUserStore((state) => state.user);
+  const isCoach = useRole(UserRole.Coach)
+  const isStudent = useRole(UserRole.Student)
   const [openModal, setOpenModal] = useState<boolean>(false);
 
   // Récupère l'utilisateur cliqué
@@ -43,15 +47,15 @@ export default function Chat() {
       id: currentUser?.id.toString() as string,
       input: search,
     },
-    skip: currentUser?.roles !== "COACH",
+    skip: !isCoach,
   });
   const { data: dataUsers } = useGetChatUsersQuery({
     fetchPolicy: "cache-and-network",
-    skip: currentUser?.roles !== "STUDENT",
+    skip: isCoach,
   });
   const allStudents = dataStudents?.getStudents.students ?? [];
   const allUsers = dataUsers?.getChatUsers ?? [];
-  const userSelect = currentUser?.roles === "COACH" ? allStudents : allUsers;
+  const userSelect = isCoach ? allStudents : allUsers;
 
   useEffect(() => {
     if (activeUser) {
@@ -143,12 +147,12 @@ export default function Chat() {
             </div>
             <div className="flex flex-col justify-center items-center">
               <p className="text-xl font-semibold">Vos messages</p>
-              {currentUser?.roles === "COACH" && (
+              {isCoach && (
                 <p className="text-sm">
                   Envoyez des messages privés à vos élèves
                 </p>
               )}
-              {currentUser?.roles === "STUDENT" && (
+              {!isStudent && (
                 <p className="text-sm">
                   Envoyez des messages privés à votre coach ou des membres de
                   votre équipe

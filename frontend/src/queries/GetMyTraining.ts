@@ -10,7 +10,6 @@ export const GET_MYTRAINING = gql`
       notes
       editable
       validate
-      color
       crew {
         id
       }

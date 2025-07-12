@@ -82,25 +82,32 @@ export default function RequestForm({ offers, coachId }: RequestFormProps) {
             }))
           }
         />
-        <Button
-          className="group cursor-pointer shadow-none text-white h-[55px] w-full rounded-xl bg-primary hover:translate-y-[-2px] hover:shadow-lg transition-all duration-200"
-          onPress={() => setOpenConfirm(true)}
-          startContent={<Send size={16} />}
-          isDisabled={formState.offerId.length === 0}
-          isLoading={loading}
-        >
-          <p className="text-sm transition-all duration-200 group-hover:translate-x-1">
-            Envoyer la demande
-          </p>
-        </Button>
+        <div className="w-full flex flex-col items-center justify-center gap-1">
+          <Button
+            className="group cursor-pointer shadow-none text-white h-[55px] w-full rounded-xl bg-primary hover:translate-y-[-2px] hover:shadow-lg transition-all duration-200"
+            onPress={() => setOpenConfirm(true)}
+            startContent={<Send size={16} />}
+            isDisabled={formState.offerId.length === 0}
+            isLoading={loading}
+          >
+            <p className="text-sm transition-all duration-200 group-hover:translate-x-1">
+              Envoyer la demande
+            </p>
+          </Button>
+          <div className="w-full flex justify-between items-center">
+            <p className="flex-1 text-xs text-gray-500">
+              <span className="text-red-500">*</span> Champs obligatoires
+            </p>
+            <p className="flex-1 text-xs text-gray-500">
+              Cette action est sans engagement
+            </p>
+          </div>
+        </div>
         <div className="flex justify-start items-center gap-2 text-primary mt-2">
           <ShieldAlert />
           <p className="text-xs">
             Seul le coach sera notifié et aura accès à ces informations.
           </p>
-        </div>
-        <div className="mt-4 ml-2">
-          <p className="flex-1 text-xs text-gray-600">* Champs obligatoires</p>
         </div>
       </section>
       <ConfirmModal
