@@ -12,6 +12,8 @@ services:
       DB_USER: ${DB_USER}
       DB_HOST: ${DB_HOST}
       APP_SECRET: ${APP_SECRET}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
     depends_on:
       liftup-test-database :
         condition: service_healthy
