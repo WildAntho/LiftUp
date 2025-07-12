@@ -32,6 +32,8 @@ jobs:
           echo "FRONTEND_HOST=liftup-test-frontend" >> $GITHUB_ENV
           echo "USER_EMAIL=${{ secrets.USER_EMAIL }}" >> $GITHUB_ENV
           echo "USER_PASSWORD=${{ secrets.USER_PASSWORD }}" >> $GITHUB_ENV
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> $GITHUB_ENV
+          echo "STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}" >> $GITHUB_ENV
 
       - name: Build and run Docker Compose
         run: |
@@ -45,7 +47,7 @@ jobs:
         run: |
           cd e2e
           npm install
-          
+
       - name: Install Playwright Browsers
         run: |
           cd e2e
