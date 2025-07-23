@@ -1,9 +1,13 @@
 import { stripe } from "../config/stripe";
-import { UserProgram, UserProgramStatus } from "../entities/userProgram";
 import Stripe from "stripe";
 import { Request, Response } from "express";
-import { generateTraining } from "../services/programService";
-import { TrainingPlan } from "../entities/trainingPlan";
+import { handleCheckoutSessionCompleted } from "./handlers/handleCheckoutSessionCompleted";
+import { handleInvoicePaymentSucceeded } from "./handlers/handleInvoicePaymentSucceeded";
+import { handleInvoicePaymentFailed } from "./handlers/handleInvoicePaymentFailed";
+import { handleChargeUpdated } from "./handlers/handleChargeUpdated";
+import { handleAccountUpdated } from "./handlers/handleAccountUpdated";
+import { handleSubscriptionUpdated } from "./handlers/handleSubscriptionUpdated";
+import { handleSubscriptionDeleted } from "./handlers/handleSubscriptionDeleted";
 
 export const stripeWebhookHandler = async (req: Request, res: Response) => {
   const sig = req.headers["stripe-signature"] as string;
@@ -18,50 +22,41 @@ export const stripeWebhookHandler = async (req: Request, res: Response) => {
     console.error("❌ Signature Stripe invalide :", err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
-
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const subscriptionId = session.metadata && session.metadata.subscriptionId;
-
-    if (!subscriptionId)
-      throw new Error("L'id de la souscription n'a pas été fourni");
-
-    const subscription = await UserProgram.findOne({
-      where: { id: subscriptionId },
-      relations: ["user", "program", "coach"],
-    });
-
-    if (!subscription) throw new Error("Aucune souscription n'a été trouvée");
-    subscription.status = UserProgramStatus.PAID;
-    await subscription.save();
-
-    try {
-      const user = subscription.user;
-      const program = subscription.program;
-      const coachId = subscription.coach.id;
-      const startDate = subscription.startDate;
-      if (!user || !program) {
-        throw new Error(
-          "Utilisateur ou programme manquant dans la souscription"
-        );
-      }
-      if (!startDate) {
-        throw new Error("Aucune date de départ n'a été fourni");
-      }
-      const trainings = await TrainingPlan.find({
-        where: { program: { id: program.id } },
-        relations: { program: true, exercices: true },
-      });
-      if (trainings.length === 0) {
-        throw new Error(
-          "Aucun entraînement n'est disponible pour ce programme"
-        );
-      }
-      await generateTraining(trainings, user, coachId, startDate);
-      subscription.status = UserProgramStatus.COMPLETED;
-      await subscription.save();
-    } catch (err) {
-      console.error("❌ Erreur génération entraînements :", err);
+  switch (event.type) {
+    case "checkout.session.completed": {
+      const session = event.data.object as Stripe.Checkout.Session;
+      await handleCheckoutSessionCompleted(session);
+      break;
+    }
+    case "invoice.payment_succeeded": {
+      const invoice = event.data.object as Stripe.Invoice;
+      await handleInvoicePaymentSucceeded(invoice);
+      break;
+    }
+    case "invoice.payment_failed": {
+      const invoice = event.data.object as Stripe.Invoice;
+      await handleInvoicePaymentFailed(invoice);
+      break;
+    }
+    case "charge.updated": {
+      const charge = event.data.object as Stripe.Charge;
+      await handleChargeUpdated(charge);
+      break;
+    }
+    case "account.updated": {
+      const account = event.data.object as Stripe.Account;
+      await handleAccountUpdated(account);
+      break;
+    }
+    case "customer.subscription.updated": {
+      const subscription = event.data.object as Stripe.Subscription;
+      await handleSubscriptionUpdated(subscription);
+      break;
+    }
+    case "customer.subscription.deleted": {
+      const subscription = event.data.object as Stripe.Subscription;
+      await handleSubscriptionDeleted(subscription);
+      break;
     }
   }
   res.status(200).json({ received: true });

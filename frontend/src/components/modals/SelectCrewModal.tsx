@@ -16,6 +16,8 @@ import { Search } from "lucide-react";
 import { Separator } from "../ui/separator";
 import ListCrew from "../ListCrew";
 import { useRole } from "@/services/hooks/useRole";
+import { useHasPermission } from "@/services/hooks/hasPermission";
+import { PERMISSIONS } from "@/services/constants";
 
 type SelectCrewModalProps = {
   open: boolean;
@@ -33,10 +35,11 @@ export default function SelectCrewModal({
   const setCrew = useCrewStore((state) => state.set);
   const clearStudent = useStudentStore((state) => state.clear);
   const isCoach = useRole(UserRole.Coach);
+  const canManageCrew = useHasPermission(PERMISSIONS.MANAGE_CREW);
   const [selected, setSelected] = useState(currentCrew?.id ?? "");
   const { data: dataCrews } = useGetCoachCrewsQuery({
     fetchPolicy: "cache-and-network",
-    skip: !isCoach,
+    skip: !isCoach || !canManageCrew,
   });
   const myCrews = dataCrews?.getCoachCrews ?? [];
 

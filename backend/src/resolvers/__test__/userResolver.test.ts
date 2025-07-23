@@ -78,7 +78,9 @@ describe("UserResolver", () => {
       (User.findOneBy as jest.Mock).mockResolvedValue(undefined);
       await expect(
         userResolver.signUp(mockUserInputWithBadPassword, { res })
-      ).rejects.toThrow("Le mot de passe doit contenir une majuscule, une minuscule, un chiffre et un caractère spécial");
+      ).rejects.toThrow(
+        "Le mot de passe doit contenir une majuscule, une minuscule, un chiffre et un caractère spécial"
+      );
     });
 
     it("should throw if passwords do not match", async () => {
@@ -101,14 +103,17 @@ describe("UserResolver", () => {
         password: "Password123!",
       };
 
-      (User.findOneBy as jest.Mock).mockResolvedValue(fakeUser);
+      (User.findOne as jest.Mock).mockResolvedValue(fakeUser);
       (argon.verify as jest.Mock).mockResolvedValue(true);
       (jwt.sign as jest.Mock).mockReturnValue("mockedToken");
 
       const res = mockResponse();
       const result = await userResolver.login(userData, { res });
 
-      expect(User.findOneBy).toHaveBeenCalledWith({ email: userData.email });
+      expect(User.findOne).toHaveBeenCalledWith({
+        where: { email: userData.email },
+        relations: { profile: true },
+      });
       expect(argon.verify).toHaveBeenCalledWith(
         fakeUser.password,
         userData.password
@@ -125,12 +130,21 @@ describe("UserResolver", () => {
         firstname: fakeUser.firstname,
         lastname: fakeUser.lastname,
         roles: fakeUser.roles,
-        avatar: null,
+        sex: fakeUser.sex,
+        avatar: fakeUser.avatar,
+        profile: {
+          id: fakeUser.profile.id,
+          name: fakeUser.profile.name,
+          permissions: expect.arrayContaining([
+            expect.objectContaining({ key: "manage:Exercice" }),
+            expect.objectContaining({ key: "read:Video" }),
+          ]),
+        },
       });
     });
 
     it("should throw if user is not found", async () => {
-      (User.findOneBy as jest.Mock).mockResolvedValue(undefined);
+      (User.findOne as jest.Mock).mockResolvedValue(undefined);
       const userData = { email: "notfound@test.com", password: "Password123!" };
       const res = mockResponse();
       await expect(userResolver.login(userData, { res })).rejects.toThrow(
@@ -139,7 +153,7 @@ describe("UserResolver", () => {
     });
 
     it("should throw if password is incorrect", async () => {
-      (User.findOneBy as jest.Mock).mockResolvedValue(fakeUser);
+      (User.findOne as jest.Mock).mockResolvedValue(fakeUser);
       (argon.verify as jest.Mock).mockResolvedValue(false);
       const userData = { email: fakeUser.email, password: "WrongPassword!" };
       const res = mockResponse();

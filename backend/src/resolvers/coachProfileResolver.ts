@@ -2,7 +2,6 @@ import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { CoachProfile } from "../entities/coachProfile";
 import { CtxUser } from "../InputType/coachType";
 import { CoachProfileInput } from "../InputType/coachProfileType";
-import { User } from "../entities/user";
 import { updateProgress } from "../services/progressService";
 
 @Resolver(CoachProfile)

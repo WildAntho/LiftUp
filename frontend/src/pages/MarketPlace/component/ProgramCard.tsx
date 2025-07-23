@@ -36,7 +36,7 @@ export default function ProgramCard({ program }: ProgramCardProps) {
           avatar={program.coach?.avatar ?? ""}
         />
         <section className="relative h-full flex flex-col items-start justify-center">
-          <div className="absolute top-3 min-w-[350px] w-full flex justify-start items-center gap-2">
+          <div className="absolute top-3 min-w-[450px] w-full flex justify-start items-center gap-2">
             <Badge>{renderLevel(program.level)}</Badge>
             <Badge>{program.category?.label}</Badge>
             <Badge className="text-green-500">

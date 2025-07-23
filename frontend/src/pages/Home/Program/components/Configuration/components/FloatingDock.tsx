@@ -29,7 +29,7 @@ export default function FloatingDock({
       },
     },
     {
-      title: "Créer une séance",
+      title: "Ajouter une séance",
       icon: <PlusCircle className="h-full w-full" />,
       action: () => {
         onCreate();

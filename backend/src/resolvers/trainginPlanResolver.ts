@@ -7,7 +7,9 @@ import {
 import { Program } from "../entities/program";
 import { Between, In } from "typeorm";
 import { copyTrainings, duplicateWeek } from "../services/trainingProgramService";
+import { HasPermissionClass } from "../middleware/hasPermissionClass";
 
+@HasPermissionClass(["manage:Program"])
 @Authorized("COACH")
 @Resolver(TrainingPlan)
 export class TrainingPlanResolver {

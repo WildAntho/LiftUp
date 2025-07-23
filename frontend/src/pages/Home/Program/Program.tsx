@@ -26,10 +26,12 @@ import { FaCheckCircle } from "react-icons/fa";
 import { FaBoxArchive } from "react-icons/fa6";
 import { BiSolidNotepad } from "react-icons/bi";
 import { useRole } from "@/services/hooks/useRole";
+import AnimatedWrapper from "@/components/AnimatedWrapper";
+import { ApolloError } from "@apollo/client";
 
 export default function Program() {
   const currentUser = useUserStore((state) => state.user);
-  const isCoach = useRole(UserRole.Coach)
+  const isCoach = useRole(UserRole.Coach);
   const setProgram = useProgramStore((state) => state.set);
   const navigate = useNavigate();
   const location = useLocation();
@@ -138,8 +140,14 @@ export default function Program() {
       });
       refetch();
     } catch (error) {
-      console.error(error);
-      toast.error("Une erreur est survenue lors de la validation du programme");
+      if (error instanceof ApolloError) {
+        toast.error(error.message, {
+          style: {
+            backgroundColor: "#fee2e2",
+            color: "#b91c1c",
+          },
+        });
+      }
     }
   };
 
@@ -174,7 +182,10 @@ export default function Program() {
       {!isConfiguration && (
         <section className="w-full flex flex-col justify-start items-center rounded-2xl gap-4 pt-6 pb-4">
           <section className="w-[85%] flex justify-between items-center">
-            <section className="flex justify-start items-start gap-2">
+            <AnimatedWrapper
+              animation="slideUp"
+              className="flex justify-start items-start gap-2"
+            >
               <div onClick={() => setActiveCard(ProgramStatus.Published)}>
                 <StatusCard
                   icon={<FaCheckCircle size={20} />}
@@ -202,8 +213,11 @@ export default function Program() {
                   isActive={activeCard === ProgramStatus.Archived}
                 />
               </div>
-            </section>
-            <div className="h-full flex items-end">
+            </AnimatedWrapper>
+            <AnimatedWrapper
+              animation="slideLeft"
+              className="h-full flex items-end"
+            >
               <Button
                 data-testid="create-program-button"
                 className="group shadow-none text-tertiary h-12 w-auto rounded-xl bg-tertiary bg-opacity-20 border border-tertiary border-opacity-20 hover:bg-tertiary hover:bg-opacity-20 hover:translate-y-[-2px] hover:shadow-sm transition-all duration-200"
@@ -214,7 +228,7 @@ export default function Program() {
                   Créer un nouveau programme
                 </p>
               </Button>
-            </div>
+            </AnimatedWrapper>
           </section>
           <section className="h-full w-[85%] bg-gray-50 bg-opacity-50 border border-gray-100 shadow-md p-4 flex flex-col justify-start items-start rounded-xl gap-4 overflow-y-scroll">
             <Input

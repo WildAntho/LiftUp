@@ -152,7 +152,7 @@ export default function Chat() {
                   Envoyez des messages privés à vos élèves
                 </p>
               )}
-              {!isStudent && (
+              {isStudent && (
                 <p className="text-sm">
                   Envoyez des messages privés à votre coach ou des membres de
                   votre équipe

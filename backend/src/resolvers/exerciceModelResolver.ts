@@ -15,6 +15,7 @@ import {
 } from "../services/exerciceModelService";
 import { deleteFileFromS3, generateS3SignedUrl } from "../services/s3Service";
 import { Exercice } from "../entities/exercice";
+import { HasPermissionMethod } from "../middleware/hasPermissionMethod";
 
 @Authorized()
 @Resolver(ExerciceModel)
@@ -69,6 +70,7 @@ export class ExerciceModelResolver {
     return exerciceModels;
   }
 
+  @HasPermissionMethod(["manage:Exercice"])
   @Mutation(() => String)
   async createExerciceModel(
     @Ctx() context: { user: CtxUser },
@@ -207,6 +209,7 @@ export class ExerciceModelResolver {
     throw new Error("Vous n'avez pas accès à cette ressource");
   }
 
+  @HasPermissionMethod(["manage:Exercice"])
   @Mutation(() => String)
   async deleteExerciceModel(
     @Ctx() context: { user: CtxUser },
@@ -237,6 +240,7 @@ export class ExerciceModelResolver {
     return "Le modèle d'exercice a bien été supprimé";
   }
 
+  @HasPermissionMethod(["manage:Exercice"])
   @Mutation(() => String)
   async updateExerciceModel(
     @Ctx() context: { user: CtxUser },

@@ -9,18 +9,25 @@ import {
   useGetMyTrainingQuery,
   useGetStudentFeedbackLazyQuery,
   useGetStudentTrainingsLazyQuery,
+  UserRole,
 } from "@/graphql/hooks";
 import { AlarmClockCheck, BookOpenCheck, CheckCheck } from "lucide-react";
 import { useStudentStore } from "@/services/zustand/studentStore";
 import { Tab, Tabs } from "@heroui/tabs";
 import { subDays } from "date-fns";
 import { useCrewStore } from "@/services/zustand/crewStore";
+import { useHasPermission } from "@/services/hooks/hasPermission";
+import { PERMISSIONS } from "@/services/constants";
+import { useRole } from "@/services/hooks/useRole";
 
 type CalendarProps = {
   currentUser: UserWithoutPassword | null;
 };
 
 export default function Calendar({ currentUser }: CalendarProps) {
+  const isCoach = useRole(UserRole.Coach);
+  const canReadFeedback =
+    useHasPermission(PERMISSIONS.READ_FEEDBACK) || isCoach;
   const currentStudent = useStudentStore((state) => state.student);
   const currentCrew = useCrewStore((state) => state.crew);
   const [viewMode, setViewMode] = useState<ViewMode>("month");
@@ -128,24 +135,28 @@ export default function Calendar({ currentUser }: CalendarProps) {
         </div>
       ),
     },
-    {
-      id: "done",
-      label: (
-        <div className="flex items-center space-x-2">
-          <CheckCheck size={18} />
-          <span>Réalisé</span>
-        </div>
-      ),
-    },
-    {
-      id: "both",
-      label: (
-        <div className="flex items-center space-x-2">
-          <BookOpenCheck size={18} />
-          <span>Les Deux</span>
-        </div>
-      ),
-    },
+    ...(canReadFeedback
+      ? [
+          {
+            id: "done",
+            label: (
+              <div className="flex items-center space-x-2">
+                <CheckCheck size={18} />
+                <span>Réalisé</span>
+              </div>
+            ),
+          },
+          {
+            id: "both",
+            label: (
+              <div className="flex items-center space-x-2">
+                <BookOpenCheck size={18} />
+                <span>Les Deux</span>
+              </div>
+            ),
+          },
+        ]
+      : []),
   ];
 
   // Active options

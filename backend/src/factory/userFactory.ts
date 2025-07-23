@@ -16,8 +16,17 @@ export const createMockUserEntity = (overrides = {}) => ({
   lastname: faker.person.lastName(),
   email: faker.internet.email(),
   password: "hashedPassword",
-  roles: UserRole.STUDENT,
+  roles: [UserRole.STUDENT],
+  sex: "male", 
   avatar: null,
+  profile: {
+    id: faker.string.uuid(),
+    name: "Student-Maestro",
+    permissions: [
+      { id: 1, key: "manage:Exercice" },
+      { id: 2, key: "read:Video" },
+    ],
+  },
   ...overrides,
 });
 

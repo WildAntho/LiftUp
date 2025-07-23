@@ -1,4 +1,5 @@
 import { Field, InputType } from "type-graphql";
+import { Profile } from "../entities/profile";
 
 @InputType()
 export class StudentCoach {
@@ -11,5 +12,6 @@ export class StudentCoach {
 
 export type CtxUser = {
   id: string;
-  roles: string;
+  roles: string[];
+  profile: Profile
 };

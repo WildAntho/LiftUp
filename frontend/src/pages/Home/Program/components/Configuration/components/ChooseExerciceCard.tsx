@@ -2,11 +2,11 @@ import { ExerciceModel } from "@/graphql/hooks";
 import { Heart, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useExerciceURL } from "@/services/zustand/useExerciceUrl";
 import { Tooltip } from "@heroui/tooltip";
 import ExerciceInfo from "@/components/modals/ExerciceModelInfo";
 import Delete from "@/components/Delete";
 import Edit from "@/components/Edit";
+import { useExerciceURL } from "@/services/hooks/useExerciceUrl";
 
 type ChooseExerciceCardProps = {
   exercice: ExerciceModel;

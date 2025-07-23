@@ -3,6 +3,8 @@ import { setDataSource } from "typeorm-extension";
 import { User } from "../../entities/user";
 import { dataSource } from "../db";
 import { UserRole } from "../../InputType/userType";
+import { Profile } from "../../entities/profile";
+import { Permission } from "../../entities/permission";
 
 const seedDatabase = async () => {
   await dataSource.initialize();
@@ -12,6 +14,20 @@ const seedDatabase = async () => {
   try {
     // clear existing data
     await dataSource.getRepository(User).delete({});
+    await dataSource.getRepository(Permission).delete({});
+    await dataSource.getRepository(Profile).delete({});
+
+    // create permission
+    const permission = new Permission();
+    permission.key = "manage:Program";
+    permission.description = "Peut créer, modifier et supprimer des programmes";
+    await permission.save();
+
+    // create profile
+    const profile = new Profile();
+    profile.permissions = [];
+    profile.permissions.push(permission);
+    await profile.save();
 
     // create users
     const user = new User();
@@ -23,6 +39,7 @@ const seedDatabase = async () => {
     user.password = hashedPassword;
     user.roles = [];
     user.roles.push(UserRole.COACH);
+    user.profile = profile;
     await user.save();
     console.log("💪 Users seeded !");
   } catch (error) {

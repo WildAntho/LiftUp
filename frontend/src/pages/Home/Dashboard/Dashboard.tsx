@@ -1,6 +1,5 @@
 import { UserWithoutPassword } from "@/services/zustand/userStore";
 import DashboardCaroussel from "./components/DashboardCaroussel";
-import { BadgeEuro, BicepsFlexed, Dumbbell, Handshake } from "lucide-react";
 import ProgressComponent from "./components/ProgressComponent";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,7 +11,12 @@ import DateNavigator from "./components/DateNavigator";
 import { useState } from "react";
 import { format } from "date-fns";
 import { BiSolidNotepad } from "react-icons/bi";
+import { TbCoinEuroFilled } from "react-icons/tb";
+import { FaChalkboardUser } from "react-icons/fa6";
+import { FaFire } from "react-icons/fa6";
 import { useRole } from "@/services/hooks/useRole";
+import { useHasPermission } from "@/services/hooks/hasPermission";
+import { PERMISSIONS } from "@/services/constants";
 
 type DashboardProps = {
   currentUser: UserWithoutPassword | null;
@@ -27,6 +31,7 @@ export interface Task {
 
 export default function Dashboard({ currentUser }: DashboardProps) {
   const navigate = useNavigate();
+  const canManageProgram = useHasPermission(PERMISSIONS.MANAGE_PROGRAM);
   const [currentDate, setCurrentDate] = useState(
     format(new Date(), "yyyy-MM-dd")
   );
@@ -41,26 +46,31 @@ export default function Dashboard({ currentUser }: DashboardProps) {
       buttonContent: "Créer un entraînement",
       redirect: "/home?tab=calendar",
       image: "/dashboard/training.webp",
-      icon: <BiSolidNotepad className="w-10 h-10" />,
+      icon: <BiSolidNotepad className="w-6 h-6" />,
     },
     ...(isCoach
       ? [
-          {
-            title: "Programme d'entraînement",
-            description: "Construis un programme sur mesure pour tes élèves !",
-            buttonContent: "Créer un programme",
-            redirect: "/home?tab=program",
-            image: "/dashboard/programation.webp",
-            icon: <Dumbbell size={18} />,
-            complete: progress?.program,
-          },
+          ...(canManageProgram
+            ? [
+                {
+                  title: "Programme d'entraînement",
+                  description:
+                    "Construis un programme sur mesure pour tes élèves !",
+                  buttonContent: "Créer un programme",
+                  redirect: "/home?tab=program",
+                  image: "/dashboard/programation.webp",
+                  icon: <FaFire className="w-5 h-5" />,
+                  complete: progress?.program,
+                },
+              ]
+            : []),
           {
             title: "Offre de coaching",
             description: "Ajoute de nouvelles offres de coaching !",
             buttonContent: "Créer une offre",
             redirect: "/home?tab=offers",
             image: "/dashboard/offer.webp",
-            icon: <BadgeEuro size={18} />,
+            icon: <TbCoinEuroFilled className="w-6 h-6" />,
             complete: progress?.offer,
           },
         ]
@@ -71,7 +81,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
             buttonContent: "Trouver un coach",
             redirect: "/coach",
             image: "/dashboard/searchcoach.webp",
-            icon: <Handshake size={18} />,
+            icon: <FaChalkboardUser className="w-6 h-6" />,
             complete: progress?.searchCoach,
           },
           {
@@ -81,7 +91,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
             buttonContent: "Trouver un plan",
             redirect: "/marketplace",
             image: "/dashboard/searchplan.webp",
-            icon: <BicepsFlexed size={18} />,
+            icon: <FaFire className="w-5 h-5" />,
             complete: progress?.searchProgram,
           },
         ]),
@@ -111,16 +121,26 @@ export default function Dashboard({ currentUser }: DashboardProps) {
             action: () => navigate("/home?tab=offers"),
             completed: progress?.offer ?? false,
           },
-          {
-            id: 4,
-            text: "Crée ton premier programme",
-            action: () => navigate("/home?tab=program"),
-            completed: progress?.program ?? false,
-          },
+          ...(canManageProgram
+            ? [
+                {
+                  id: 4,
+                  text: "Crée ton compte Connect",
+                  action: () => navigate("/profile?tab=stripe"),
+                  completed: false,
+                },
+                {
+                  id: 5,
+                  text: "Crée ton premier programme",
+                  action: () => navigate("/home?tab=program"),
+                  completed: progress?.program ?? false,
+                },
+              ]
+            : []),
         ]
       : [
           {
-            id: 3,
+            id: 6,
             text: "Visite le market place des coachs",
             action: async () => {
               await updateProgress({
@@ -133,7 +153,7 @@ export default function Dashboard({ currentUser }: DashboardProps) {
             completed: progress?.searchCoach ?? false,
           },
           {
-            id: 4,
+            id: 7,
             text: "Visite le market place des plans d'entraînement",
             action: async () => {
               await updateProgress({

@@ -11,7 +11,6 @@ import { CtxUser } from "../InputType/coachType";
 import { Feedback } from "../entities/feedback";
 import { Crew } from "../entities/crew";
 import { createTrainingsForDates } from "../services/trainingService";
-import { ProgressSession } from "../entities/progressSession";
 import { updateProgress } from "../services/progressService";
 import { UserRole } from "../InputType/userType";
 

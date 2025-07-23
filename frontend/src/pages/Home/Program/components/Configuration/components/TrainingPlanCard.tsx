@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Input, Textarea } from "@heroui/react";
 import { Dumbbell, Notebook, Pen, Trash2 } from "lucide-react";
 import LogoAction from "./LogoActions";
-import { useDebouncedCallback } from "@/services/useDebouncedCallback";
+import { useDebouncedCallback } from "@/services/hooks/useDebouncedCallback";
 import PulsingCircle from "./PulsingCircle";
 
 type TrainingPlanProps = {

@@ -17,6 +17,8 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { Input, Select, SelectItem, Textarea } from "@heroui/react";
+import { useHasPermission } from "@/services/hooks/hasPermission";
+import { PERMISSIONS } from "@/services/constants";
 
 type OfferModalProps = {
   open: boolean;
@@ -31,8 +33,11 @@ export default function OfferModal({
   refetch,
   offer,
 }: OfferModalProps) {
+  const canManageCrew = useHasPermission(PERMISSIONS.MANAGE_CREW);
   const { data: dataCategories } = useGetAllCategoriesQuery();
-  const { data: dataCrews } = useGetCoachCrewsQuery();
+  const { data: dataCrews } = useGetCoachCrewsQuery({
+    skip: !canManageCrew,
+  });
   const [addOffer, { loading: loadingOffer }] = useAddOfferMutation();
   const [updateOffer, { loading: loadingUpdate }] = useUpdateOfferMutation();
   const [availability, setAvailability] = useState<boolean>(true);
@@ -238,26 +243,28 @@ export default function OfferModal({
               />
             </div>
           </div>
-          <div>
-            <Select
-              label="Equipe"
-              description="Rattacher cette offre à une équipe. Les élèves qui souscriront à
+          {canManageCrew && (
+            <div>
+              <Select
+                label="Equipe"
+                description="Rattacher cette offre à une équipe. Les élèves qui souscriront à
               cette offre seront automatiquement ajoutés à l'équipe."
-              selectedKeys={formState.crewId ? [formState.crewId] : []}
-              onChange={(e) =>
-                setFormState({
-                  ...formState,
-                  crewId: e.target.value,
-                })
-              }
-            >
-              {allCrews.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
+                selectedKeys={formState.crewId ? [formState.crewId] : []}
+                onChange={(e) =>
+                  setFormState({
+                    ...formState,
+                    crewId: e.target.value,
+                  })
+                }
+              >
+                {allCrews.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+          )}
           <Switch
             isSelected={availability}
             onValueChange={setAvailability}
@@ -271,11 +278,7 @@ export default function OfferModal({
           </Switch>
         </ModalBody>
         <ModalFooter className="flex justify-end items-center gap-2">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-          >
+          <Button type="button" variant="secondary" onClick={onClose}>
             Annuler
           </Button>
           <Button

@@ -17,7 +17,9 @@ import {
 import { User } from "../entities/user";
 import { In, IsNull, LessThan } from "typeorm";
 import { Conversation } from "../entities/conversation";
+import { HasPermissionClass } from "../middleware/hasPermissionClass";
 
+@HasPermissionClass(["manage:Message"])
 @Authorized()
 @Resolver(Message)
 export class MessageResolver {

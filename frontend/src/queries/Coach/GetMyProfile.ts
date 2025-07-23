@@ -7,6 +7,10 @@ export const GET_MYPROFILE = gql`
       name
       description
       specialisation
+      stripeAccountId
+      chargesEnabled
+      payoutsEnabled
+      detailsSubmitted
       instagram
       linkedin
       facebook

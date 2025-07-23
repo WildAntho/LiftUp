@@ -39,7 +39,9 @@ export class Membership extends BaseEntity {
   student!: User;
 
   @Field(() => Offer)
-  @ManyToOne(() => Offer, (offer) => offer.memberships, { onDelete: "CASCADE" })
+  @ManyToOne(() => Offer, (offer) => offer.memberships, {
+    onDelete: "SET NULL",
+  })
   offer!: Offer;
 
   @Field(() => [Notification], { nullable: true })

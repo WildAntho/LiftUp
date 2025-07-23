@@ -16,13 +16,18 @@ import {
 import { CtxUser } from "../InputType/coachType";
 import { User } from "../entities/user";
 import { TrainingPlan } from "../entities/trainingPlan";
-import { generateTraining } from "../services/programService";
+import {
+  checkAutorization,
+  generateTraining,
+} from "../services/programService";
 import isNotificationAllowed from "../services/notificationPreferenceService";
 import { NotificationType } from "../InputType/notificationType";
 import { createNotification } from "../services/notificationsService";
 import { updateProgress } from "../services/progressService";
 import { OfferCategory } from "../entities/offerCategory";
+import { HasPermissionClass } from "../middleware/hasPermissionClass";
 
+@HasPermissionClass(["manage:Program"])
 @Authorized("COACH")
 @Resolver(Program)
 export class ProgramResolver {
@@ -52,10 +57,13 @@ export class ProgramResolver {
       where: {
         id: context.user.id,
       },
+      relations: {
+        coachProfile: true,
+      },
     });
     const category = await OfferCategory.findOneBy({ id: data.categoryId });
     if (!coach) throw new Error("Aucun utilisateur n'a été trouvé");
-    if (!coach) throw new Error("Aucune coach ne correspond");
+    checkAutorization(data, coach, category);
     const program = new Program();
     program.title = data.title;
     program.description = data.description;
@@ -72,6 +80,7 @@ export class ProgramResolver {
 
   @Mutation(() => String)
   async updateProgram(
+    @Ctx() context: { user: CtxUser },
     @Arg("data") data: UpdateProgramInput,
     @Arg("id") id: string
   ) {
@@ -79,9 +88,24 @@ export class ProgramResolver {
       where: {
         id,
       },
+      relations: {
+        coach: true,
+      },
     });
-    const category = await OfferCategory.findOneBy({ id: data.categoryId });
     if (!program) throw new Error("Aucun programme n'a été trouvé");
+    const coach = await User.findOne({
+      where: {
+        id: context.user.id,
+      },
+      relations: {
+        coachProfile: true,
+      },
+    });
+    if (!coach) throw new Error("Aucun utilisateur n'a été trouvé");
+    if (coach.id !== program?.coach.id)
+      throw new Error("Vous n'êtes pas autorisé à effectuer cette action");
+    const category = await OfferCategory.findOneBy({ id: data.categoryId });
+    checkAutorization(data, coach, category);
     program.title = data.title;
     program.description = data.description;
     program.duration = data.duration;

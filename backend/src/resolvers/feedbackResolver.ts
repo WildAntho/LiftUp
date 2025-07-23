@@ -1,4 +1,12 @@
-import { Arg, Authorized, Ctx, Mutation, PubSub, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  Mutation,
+  PubSub,
+  Query,
+  Resolver,
+} from "type-graphql";
 import { Feedback } from "../entities/feedback";
 import {
   FeedbackData,
@@ -12,10 +20,12 @@ import { User } from "../entities/user";
 import { createNotification } from "../services/notificationsService";
 import { NotificationType } from "../InputType/notificationType";
 import isNotificationAllowed from "../services/notificationPreferenceService";
+import { HasPermissionMethod } from "../middleware/hasPermissionMethod";
 
-@Authorized()
+@Authorized("STUDENT")
 @Resolver(Feedback)
 export class FeedbackResolver {
+  @HasPermissionMethod(["read:Feedback"])
   @Query(() => [Feedback])
   async getFeedbacks(
     @Arg("id") id: string,
@@ -37,6 +47,7 @@ export class FeedbackResolver {
     return feedbacks;
   }
 
+  @HasPermissionMethod(["manage:Feedback"])
   @Mutation(() => String)
   async addFeedback(
     @Arg("data") feedbackData: FeedbackData,
@@ -97,6 +108,7 @@ export class FeedbackResolver {
     return JSON.stringify("Le feedback a bien été enregistré");
   }
 
+  @HasPermissionMethod(["manage:Feedback"])
   @Mutation(() => String)
   async deleteFeedback(@Arg("id") id: string) {
     const feedback = await Feedback.findOne({
@@ -113,6 +125,8 @@ export class FeedbackResolver {
       return JSON.stringify("Le feedback a bien été supprimé");
     }
   }
+  
+  @HasPermissionMethod(["manage:Feedback"])
   @Mutation(() => String)
   async updateFeedback(
     @Arg("data") feedbackData: FeedbackWithoutTrainingId,

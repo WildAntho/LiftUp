@@ -10,6 +10,7 @@ import ProtectedRoute from "@/services/ProtectedRoutes";
 import ExerciceModelSection from "./ExerciceModel/ExerciceModelSection";
 import Coaching from "./Coaching/Coaching";
 import { UserRole } from "@/graphql/hooks";
+import { PERMISSIONS } from "@/services/constants";
 
 export default function Home() {
   const currentUser = useUserStore((state) => state.user);
@@ -28,7 +29,10 @@ export default function Home() {
         {!activeTab && <Dashboard currentUser={currentUser} />}
         {activeTab === "calendar" && <Calendar currentUser={currentUser} />}
         {activeTab === "program" && (
-          <ProtectedRoute requiredRole={UserRole.Coach}>
+          <ProtectedRoute
+            requiredRole={UserRole.Coach}
+            permission={PERMISSIONS.MANAGE_PROGRAM}
+          >
             <Program />
           </ProtectedRoute>
         )}

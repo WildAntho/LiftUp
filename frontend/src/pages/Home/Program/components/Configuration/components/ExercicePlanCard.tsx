@@ -18,7 +18,7 @@ import { useEffect, useRef, useState } from "react";
 import LogoAction from "./LogoActions";
 import PulsingCircle from "./PulsingCircle";
 import { Separator } from "@/components/ui/separator";
-import { useDebouncedCallback } from "@/services/useDebouncedCallback";
+import { useDebouncedCallback } from "@/services/hooks/useDebouncedCallback";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {

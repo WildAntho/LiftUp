@@ -1,7 +1,7 @@
-import { useExerciceURL } from "@/services/zustand/useExerciceUrl";
 import { Tooltip } from "@heroui/tooltip";
 import ExerciceInfo from "./modals/ExerciceModelInfo";
 import { useState } from "react";
+import { useExerciceURL } from "@/services/hooks/useExerciceUrl";
 
 type ExerciceImageProps = {
   image?: string;

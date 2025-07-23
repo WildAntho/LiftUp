@@ -42,13 +42,17 @@ export type AddRequestData = {
 
 export type CoachProfile = {
   __typename?: 'CoachProfile';
+  chargesEnabled: Scalars['Boolean']['output'];
   description?: Maybe<Scalars['String']['output']>;
+  detailsSubmitted: Scalars['Boolean']['output'];
   facebook?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   instagram?: Maybe<Scalars['String']['output']>;
   linkedin?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  payoutsEnabled: Scalars['Boolean']['output'];
   specialisation?: Maybe<Array<Scalars['String']['output']>>;
+  stripeAccountId?: Maybe<Scalars['String']['output']>;
   user?: Maybe<User>;
 };
 
@@ -198,6 +202,28 @@ export enum IntensityFormat {
   Rpe = 'RPE'
 }
 
+export type Invoice = {
+  __typename?: 'Invoice';
+  amountPaid: Scalars['Float']['output'];
+  currency: Scalars['String']['output'];
+  hostedInvoicePdf?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  invoicePdf: Scalars['String']['output'];
+  nextPaymentAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  paidAt: Scalars['DateTimeISO']['output'];
+  profileSubscription: ProfileSubscription;
+  status: InvoiceStatus;
+  stripeInvoiceId: Scalars['String']['output'];
+  user: User;
+};
+
+export enum InvoiceStatus {
+  Open = 'OPEN',
+  Paid = 'PAID',
+  Uncollectible = 'UNCOLLECTIBLE',
+  Void = 'VOID'
+}
+
 export type MarkAsReadResponse = {
   __typename?: 'MarkAsReadResponse';
   message: Scalars['String']['output'];
@@ -259,6 +285,7 @@ export type Mutation = {
   addTrainingStudent: Scalars['String']['output'];
   archiveProgram: Scalars['String']['output'];
   cancelMembership: Scalars['String']['output'];
+  cancelProfileSubscription: Scalars['Boolean']['output'];
   createCrew: Scalars['String']['output'];
   createExerciceModel: Scalars['String']['output'];
   createProgram: Program;
@@ -275,6 +302,7 @@ export type Mutation = {
   deleteTrainingPlan: Scalars['String']['output'];
   duplicateWeekTraining: Scalars['String']['output'];
   generateProgram: Scalars['String']['output'];
+  generateSessionProfile: Scalars['String']['output'];
   generateUploadUrl: GenerateUploadUrl;
   hasBeenSeen: Scalars['String']['output'];
   isRead: Scalars['String']['output'];
@@ -283,6 +311,7 @@ export type Mutation = {
   markAsRead: MarkAsReadResponse;
   pasteTraining: Scalars['String']['output'];
   publishProgram: Scalars['String']['output'];
+  reactivateProfileSubscription: Scalars['Boolean']['output'];
   rejectRequest: Scalars['String']['output'];
   renewMemberShip: Scalars['String']['output'];
   signUp: Scalars['String']['output'];
@@ -453,6 +482,12 @@ export type MutationGenerateProgramArgs = {
   programId: Scalars['String']['input'];
   startDate: Scalars['DateTimeISO']['input'];
   userIds: Array<Scalars['String']['input']>;
+};
+
+
+export type MutationGenerateSessionProfileArgs = {
+  id: Scalars['String']['input'];
+  periodicity: Periodicity;
 };
 
 
@@ -671,6 +706,61 @@ export enum OfferStatus {
   Cancel = 'CANCEL'
 }
 
+export enum Periodicity {
+  Monthly = 'MONTHLY',
+  Yearly = 'YEARLY'
+}
+
+export type Permission = {
+  __typename?: 'Permission';
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  key: Scalars['String']['output'];
+};
+
+export type Profile = {
+  __typename?: 'Profile';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  permissions: Array<Permission>;
+  stripePriceMonth?: Maybe<Scalars['String']['output']>;
+  stripePriceYear?: Maybe<Scalars['String']['output']>;
+  stripeProductId?: Maybe<Scalars['String']['output']>;
+  type: UserRole;
+  users?: Maybe<Array<User>>;
+};
+
+export type ProfileOutput = {
+  __typename?: 'ProfileOutput';
+  id: Scalars['String']['output'];
+  monthlyAmount?: Maybe<Scalars['Float']['output']>;
+  name: Scalars['String']['output'];
+  yearlyAmount?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ProfileSubscription = {
+  __typename?: 'ProfileSubscription';
+  canceledAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  currentPeriodEnd?: Maybe<Scalars['DateTimeISO']['output']>;
+  endDate?: Maybe<Scalars['DateTimeISO']['output']>;
+  id: Scalars['ID']['output'];
+  periodicity: Periodicity;
+  profile: Profile;
+  startDate?: Maybe<Scalars['DateTimeISO']['output']>;
+  status: ProfileSubscriptionStatus;
+  stripeSessionId?: Maybe<Scalars['String']['output']>;
+  stripeSubscriptionId?: Maybe<Scalars['String']['output']>;
+  user: User;
+};
+
+export enum ProfileSubscriptionStatus {
+  Active = 'ACTIVE',
+  Canceled = 'CANCELED',
+  FirstPaid = 'FIRST_PAID',
+  Incomplete = 'INCOMPLETE',
+  ScheduleCancel = 'SCHEDULE_CANCEL'
+}
+
 export type Program = {
   __typename?: 'Program';
   category?: Maybe<OfferCategory>;
@@ -731,6 +821,7 @@ export type ProgressSession = {
 
 export type Query = {
   __typename?: 'Query';
+  GetMe: Scalars['String']['output'];
   getAllCategories: Array<OfferCategory>;
   getAllExercicesModel: Array<ExerciceModel>;
   getAllMuscleGroup: Array<MuscleGroup>;
@@ -738,14 +829,17 @@ export type Query = {
   getCoachCrews: Array<Crew>;
   getCoachOffers: Array<Offer>;
   getCoachProfile: CoachProfile;
+  getConnectUrl: Scalars['String']['output'];
   getConversationById: Conversation;
   getConversations: Array<Conversation>;
   getCrewTraining: Array<Training>;
+  getCurrentProfileSubscription: ProfileSubscription;
   getDayNumberTraining: Array<Scalars['Float']['output']>;
   getExerciceInfo: ExerciceInfoResponse;
   getExercices: Array<Exercice>;
   getFavoriteExercicesId: Array<Scalars['String']['output']>;
   getFeedbacks: Array<Feedback>;
+  getInvoices: Array<Invoice>;
   getListUsersCrew: Array<User>;
   getMembership: Membership;
   getMessages: MessageResult;
@@ -757,7 +851,11 @@ export type Query = {
   getOneExericeModel: ExerciceModel;
   getOneProgramMarketPlace: ProgramMarketplaceResponse;
   getOneTraining: Training;
+  getPermissionAdmin: Array<Permission>;
+  getPortailStrip: Scalars['String']['output'];
   getPreferenceNotification: NotificationPreference;
+  getProfileAdmin: Array<Profile>;
+  getProfilePricing: Array<ProfileOutput>;
   getPrograms: Array<Program>;
   getProgramsMarketPlace: Array<Program>;
   getProgress: ProgressSession;
@@ -773,6 +871,7 @@ export type Query = {
   getTrainingsById: Array<Training>;
   getUnreadRequests: Array<Request>;
   getUserById: User;
+  getUserPrograms: Array<UserProgram>;
   getUsers: Array<User>;
   selectCoach: Array<User>;
 };
@@ -1097,6 +1196,7 @@ export type User = {
   notifications?: Maybe<Array<Notification>>;
   offers?: Maybe<Array<Offer>>;
   password: Scalars['String']['output'];
+  profile?: Maybe<Profile>;
   progress: Array<ProgressSession>;
   receivedMessages?: Maybe<Array<Message>>;
   receivedRequests?: Maybe<Array<Request>>;
@@ -1104,6 +1204,7 @@ export type User = {
   sentMessages?: Maybe<Array<Message>>;
   sentRequests?: Maybe<Array<Request>>;
   sex?: Maybe<Scalars['String']['output']>;
+  stripeCustomerId?: Maybe<Scalars['String']['output']>;
   studentOffer?: Maybe<Offer>;
   students?: Maybe<Array<User>>;
   trainings?: Maybe<Array<Training>>;
@@ -1122,14 +1223,19 @@ export type UserInput = {
 
 export type UserProgram = {
   __typename?: 'UserProgram';
-  applicationFeeAmount: Scalars['Float']['output'];
+  coach: User;
   commissionRate: Scalars['Float']['output'];
   createdAt: Scalars['DateTimeISO']['output'];
+  currency?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  paidAt?: Maybe<Scalars['DateTimeISO']['output']>;
   price: Scalars['Float']['output'];
+  program: Program;
+  receip?: Maybe<Scalars['String']['output']>;
   startDate?: Maybe<Scalars['DateTimeISO']['output']>;
   status: Scalars['String']['output'];
   stripeSessionId?: Maybe<Scalars['String']['output']>;
+  user: User;
 };
 
 /** Rôles utilisateurs */
@@ -1386,6 +1492,14 @@ export type GenerateProgramMutationVariables = Exact<{
 
 export type GenerateProgramMutation = { __typename?: 'Mutation', generateProgram: string };
 
+export type GenerateSessionProfileMutationVariables = Exact<{
+  periodicity: Periodicity;
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GenerateSessionProfileMutation = { __typename?: 'Mutation', generateSessionProfile: string };
+
 export type GenerateUploadUrlMutationVariables = Exact<{
   fileType?: InputMaybe<Scalars['String']['input']>;
   fileName?: InputMaybe<Scalars['String']['input']>;
@@ -1435,6 +1549,11 @@ export type PasteTrainingMutationVariables = Exact<{
 
 
 export type PasteTrainingMutation = { __typename?: 'Mutation', pasteTraining: string };
+
+export type ReactivateProfileSubscriptionMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ReactivateProfileSubscriptionMutation = { __typename?: 'Mutation', reactivateProfileSubscription: boolean };
 
 export type RejectRequestMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1569,56 +1688,35 @@ export type ValidateProgramMutationVariables = Exact<{
 
 export type ValidateProgramMutation = { __typename?: 'Mutation', publishProgram: string };
 
+export type CancelProfileSubscriptionMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CancelProfileSubscriptionMutation = { __typename?: 'Mutation', cancelProfileSubscription: boolean };
+
+export type GetPermissionAdminQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPermissionAdminQuery = { __typename?: 'Query', getPermissionAdmin: Array<{ __typename?: 'Permission', id: string, key: string, description?: string | null }> };
+
+export type GetProfileAdminQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetProfileAdminQuery = { __typename?: 'Query', getProfileAdmin: Array<{ __typename?: 'Profile', id: string, name: string, permissions: Array<{ __typename?: 'Permission', id: string, key: string, description?: string | null }> }> };
+
+export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUsersQuery = { __typename?: 'Query', getUsers: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null, sex?: string | null, coach?: { __typename?: 'User', firstname: string, lastname: string, email: string, avatar?: string | null, id: string } | null, profile?: { __typename?: 'Profile', id: string, name: string } | null }> };
+
 export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAllCategoriesQuery = { __typename?: 'Query', getAllCategories: Array<{ __typename?: 'OfferCategory', id: string, label: string }> };
 
-export type GetAllExercicesModelQueryVariables = Exact<{
-  input?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  getFavorite?: InputMaybe<Scalars['Boolean']['input']>;
-  muscles?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
-}>;
-
-
-export type GetAllExercicesModelQuery = { __typename?: 'Query', getAllExercicesModel: Array<{ __typename?: 'ExerciceModel', id: string, title: string, image?: string | null, description?: string | null, videoType?: VideoType | null, video?: string | null, user?: { __typename?: 'User', id: string } | null, muscles?: Array<{ __typename?: 'MuscleGroup', id: string }> | null }> };
-
-export type GetAllMuscleGroupQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetAllMuscleGroupQuery = { __typename?: 'Query', getAllMuscleGroup: Array<{ __typename?: 'MuscleGroup', id: string, key: string, label: string }> };
-
 export type GetChatUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetChatUsersQuery = { __typename?: 'Query', getChatUsers: Array<{ __typename?: 'User', firstname: string, id: string, email: string, lastname: string, avatar?: string | null, roles: Array<UserRole> }> };
-
-export type GetCoachQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type GetCoachQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', coach?: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null } | null } };
-
-export type GetCoachCrewsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetCoachCrewsQuery = { __typename?: 'Query', getCoachCrews: Array<{ __typename?: 'Crew', id: string, name: string, students?: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null }> | null }> };
-
-export type GetOneCoachOffersQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type GetOneCoachOffersQuery = { __typename?: 'Query', getOneCoachOffers: Array<{ __typename?: 'Offer', id: string, name: string, price: number, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', label: string, id: string } }> };
-
-export type GetOneCoachProfileQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type GetOneCoachProfileQuery = { __typename?: 'Query', getOneCoachProfile: { __typename?: 'CoachProfile', id: string, name?: string | null, description?: string | null, specialisation?: Array<string> | null, facebook?: string | null, instagram?: string | null, linkedin?: string | null, user?: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } | null } };
 
 export type GetConversationByIdQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1632,48 +1730,6 @@ export type GetConversationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetConversationsQuery = { __typename?: 'Query', getConversations: Array<{ __typename?: 'Conversation', id: string, participants: Array<{ __typename?: 'User', id: string, firstname: string, lastname: string, avatar?: string | null }>, messages?: Array<{ __typename?: 'Message', content: string, createdAt: any, readAt?: any | null, sender: { __typename?: 'User', id: string } }> | null }> };
 
-export type GetCrewTrainingQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-  rangeDate: RangeDate;
-}>;
-
-
-export type GetCrewTrainingQuery = { __typename?: 'Query', getCrewTraining: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
-
-export type GetDayNumberTrainingQueryVariables = Exact<{
-  programId: Scalars['String']['input'];
-}>;
-
-
-export type GetDayNumberTrainingQuery = { __typename?: 'Query', getDayNumberTraining: Array<number> };
-
-export type GetExerciceInfoQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type GetExerciceInfoQuery = { __typename?: 'Query', getExerciceInfo: { __typename?: 'ExerciceInfoResponse', link?: string | null, description?: string | null, title?: string | null, muscles?: Array<{ __typename?: 'MuscleGroup', id: string, label: string }> | null } };
-
-export type GetFavoriteExercicesIdQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetFavoriteExercicesIdQuery = { __typename?: 'Query', getFavoriteExercicesId: Array<string> };
-
-export type GetFeedbacksQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-  rangeDate: RangeDate;
-}>;
-
-
-export type GetFeedbacksQuery = { __typename?: 'Query', getFeedbacks: Array<{ __typename?: 'Feedback', id: string, intensity: number, feeling: number, satisfaction?: number | null, comment?: string | null, title: string, date: any }> };
-
-export type GetListUsersCrewQueryVariables = Exact<{
-  input?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type GetListUsersCrewQuery = { __typename?: 'Query', getListUsersCrew: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null }> };
-
 export type GetMessagesQueryVariables = Exact<{
   id: Scalars['String']['input'];
   limit?: InputMaybe<Scalars['Float']['input']>;
@@ -1683,116 +1739,20 @@ export type GetMessagesQueryVariables = Exact<{
 
 export type GetMessagesQuery = { __typename?: 'Query', getMessages: { __typename?: 'MessageResult', totalCount: number, messages: Array<{ __typename?: 'Message', id: string, content: string, createdAt: any, readAt?: any | null, repliedMessage?: { __typename?: 'Message', id: string, content: string } | null, sender: { __typename?: 'User', id: string }, receiver: { __typename?: 'User', id: string } }> } };
 
-export type GetMyCoachQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetTotalUnreadMessageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMyCoachQuery = { __typename?: 'Query', getMyCoach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } };
+export type GetTotalUnreadMessageQuery = { __typename?: 'Query', getTotalUnreadMessage: number };
 
-export type GetMyMembershipQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetMyMembershipQuery = { __typename?: 'Query', getMembership: { __typename?: 'Membership', id: string, startDate: any, endDate: any, isActive: boolean, offer: { __typename?: 'Offer', id: string, name: string, description: string } } };
-
-export type GetMyOffersQueryVariables = Exact<{
-  status?: InputMaybe<OfferStatus>;
-}>;
+export type GetCoachCrewsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMyOffersQuery = { __typename?: 'Query', getCoachOffers: Array<{ __typename?: 'Offer', id: string, name: string, price: number, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', label: string, id: string }, crew?: { __typename?: 'Crew', id: string, name: string } | null }> };
+export type GetCoachCrewsQuery = { __typename?: 'Query', getCoachCrews: Array<{ __typename?: 'Crew', id: string, name: string, students?: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null }> | null }> };
 
 export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMyProfileQuery = { __typename?: 'Query', getCoachProfile: { __typename?: 'CoachProfile', id: string, name?: string | null, description?: string | null, specialisation?: Array<string> | null, instagram?: string | null, linkedin?: string | null, facebook?: string | null } };
-
-export type GetMyProgramsQueryVariables = Exact<{
-  status?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type GetMyProgramsQuery = { __typename?: 'Query', getPrograms: Array<{ __typename?: 'Program', id: string, title: string, description?: string | null, status: ProgramStatus, duration: number, public: boolean, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', id: string, label: string } | null }> };
-
-export type GetMyTrainingQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-  rangeDate: RangeDate;
-}>;
-
-
-export type GetMyTrainingQuery = { __typename?: 'Query', getTrainingsById: Array<{ __typename?: 'Training', createdByCoach?: string | null, id: string, title: string, date: any, notes?: string | null, editable: boolean, validate: boolean, crew?: { __typename?: 'Crew', id: string } | null, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
-
-export type GetNotificationQueryVariables = Exact<{
-  unread: Scalars['Boolean']['input'];
-  group?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type GetNotificationQuery = { __typename?: 'Query', getNotification: { __typename?: 'NotificationResponse', totalUnread: number, total: number, notifications: Array<{ __typename?: 'Notification', id: string, type: NotificationType, isRead: boolean, hasBeenSeen: boolean, createdAt: any, request?: { __typename?: 'Request', sender: { __typename?: 'User', firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null }, receiver: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null, membership?: { __typename?: 'Membership', id: string, student: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } | null }> } };
-
-export type GetPreferenceNotificationQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetPreferenceNotificationQuery = { __typename?: 'Query', getPreferenceNotification: { __typename?: 'NotificationPreference', id: string, disabledTypes: Array<NotificationType> } };
-
-export type GetOneExericeModelQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type GetOneExericeModelQuery = { __typename?: 'Query', getOneExericeModel: { __typename?: 'ExerciceModel', id: string, title: string, image?: string | null, description?: string | null, muscles?: Array<{ __typename?: 'MuscleGroup', id: string }> | null } };
-
-export type GetOneProgramMarketPlaceQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type GetOneProgramMarketPlaceQuery = { __typename?: 'Query', getOneProgramMarketPlace: { __typename?: 'ProgramMarketplaceResponse', trainingsCount: number, program: { __typename?: 'Program', id: string, title: string, description?: string | null, duration: number, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', label: string, id: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null, coachProfile?: { __typename?: 'CoachProfile', specialisation?: Array<string> | null, name?: string | null } | null } } } };
-
-export type GetOneTrainingQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type GetOneTrainingQuery = { __typename?: 'Query', getOneTraining: { __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean } };
-
-export type GetProgramsMarketPlaceQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetProgramsMarketPlaceQuery = { __typename?: 'Query', getProgramsMarketPlace: Array<{ __typename?: 'Program', id: string, title: string, duration: number, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', id: string, label: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } }> };
-
-export type GetProgressQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetProgressQuery = { __typename?: 'Query', getProgress: { __typename?: 'ProgressSession', id: string, profile: boolean, training: boolean, program: boolean, offer: boolean, searchCoach: boolean, searchProgram: boolean } };
-
-export type GetRequestQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type GetRequestQuery = { __typename?: 'Query', getRequest: Array<{ __typename?: 'Request', id: string, description?: string | null, phone?: number | null, offer?: { __typename?: 'Offer', name: string, id: string } | null, sender: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null } }> };
-
-export type GetSentQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-
-export type GetSentQuery = { __typename?: 'Query', getSent: Array<{ __typename?: 'Request', receiver: { __typename?: 'User', email: string, id: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null } }> };
-
-export type GetStudentFeedbackQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-  rangeDate: RangeDate;
-}>;
-
-
-export type GetStudentFeedbackQuery = { __typename?: 'Query', getStudentFeedback: Array<{ __typename?: 'Feedback', id: string, title: string, intensity: number, feeling: number, satisfaction?: number | null, date: any, comment?: string | null }> };
-
-export type GetStudentTrainingsQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-  rangeDate: RangeDate;
-}>;
-
-
-export type GetStudentTrainingsQuery = { __typename?: 'Query', getStudentTrainings: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
+export type GetMyProfileQuery = { __typename?: 'Query', getCoachProfile: { __typename?: 'CoachProfile', id: string, name?: string | null, description?: string | null, specialisation?: Array<string> | null, stripeAccountId?: string | null, chargesEnabled: boolean, payoutsEnabled: boolean, detailsSubmitted: boolean, instagram?: string | null, linkedin?: string | null, facebook?: string | null } };
 
 export type GetStudentsQueryVariables = Exact<{
   input?: InputMaybe<Scalars['String']['input']>;
@@ -1808,20 +1768,152 @@ export type GetStudentsQueryVariables = Exact<{
 
 export type GetStudentsQuery = { __typename?: 'Query', getStudents: { __typename?: 'StudentsResponse', totalCount: number, students: Array<{ __typename?: 'User', email: string, firstname: string, lastname: string, roles: Array<UserRole>, id: string, avatar?: string | null, studentOffer?: { __typename?: 'Offer', name: string, durability: number, id: string } | null, crew?: { __typename?: 'Crew', id: string, name: string } | null, memberships?: Array<{ __typename?: 'Membership', id: string, endDate: any, isActive: boolean }> | null }> } };
 
-export type GetTotalRequestsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetTotalRequestsQuery = { __typename?: 'Query', getTotalRequests: number };
-
 export type GetTotalStudentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetTotalStudentsQuery = { __typename?: 'Query', getTotalStudents: number };
 
-export type GetTotalUnreadMessageQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetAllExercicesModelQueryVariables = Exact<{
+  input?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  getFavorite?: InputMaybe<Scalars['Boolean']['input']>;
+  muscles?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+}>;
 
 
-export type GetTotalUnreadMessageQuery = { __typename?: 'Query', getTotalUnreadMessage: number };
+export type GetAllExercicesModelQuery = { __typename?: 'Query', getAllExercicesModel: Array<{ __typename?: 'ExerciceModel', id: string, title: string, image?: string | null, description?: string | null, videoType?: VideoType | null, video?: string | null, user?: { __typename?: 'User', id: string } | null, muscles?: Array<{ __typename?: 'MuscleGroup', id: string }> | null }> };
+
+export type GetExerciceInfoQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetExerciceInfoQuery = { __typename?: 'Query', getExerciceInfo: { __typename?: 'ExerciceInfoResponse', link?: string | null, description?: string | null, title?: string | null, muscles?: Array<{ __typename?: 'MuscleGroup', id: string, label: string }> | null } };
+
+export type GetFavoriteExercicesIdQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetFavoriteExercicesIdQuery = { __typename?: 'Query', getFavoriteExercicesId: Array<string> };
+
+export type GetOneExericeModelQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetOneExericeModelQuery = { __typename?: 'Query', getOneExericeModel: { __typename?: 'ExerciceModel', id: string, title: string, image?: string | null, description?: string | null, muscles?: Array<{ __typename?: 'MuscleGroup', id: string }> | null } };
+
+export type GetFeedbacksQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+  rangeDate: RangeDate;
+}>;
+
+
+export type GetFeedbacksQuery = { __typename?: 'Query', getFeedbacks: Array<{ __typename?: 'Feedback', id: string, intensity: number, feeling: number, satisfaction?: number | null, comment?: string | null, title: string, date: any }> };
+
+export type GetStudentFeedbackQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+  rangeDate: RangeDate;
+}>;
+
+
+export type GetStudentFeedbackQuery = { __typename?: 'Query', getStudentFeedback: Array<{ __typename?: 'Feedback', id: string, title: string, intensity: number, feeling: number, satisfaction?: number | null, date: any, comment?: string | null }> };
+
+export type GetListUsersCrewQueryVariables = Exact<{
+  input?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetListUsersCrewQuery = { __typename?: 'Query', getListUsersCrew: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null }> };
+
+export type GetMeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMeQuery = { __typename?: 'Query', GetMe: string };
+
+export type GetMyMembershipQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMyMembershipQuery = { __typename?: 'Query', getMembership: { __typename?: 'Membership', id: string, startDate: any, endDate: any, isActive: boolean, offer: { __typename?: 'Offer', id: string, name: string, description: string } } };
+
+export type GetProgressQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetProgressQuery = { __typename?: 'Query', getProgress: { __typename?: 'ProgressSession', id: string, profile: boolean, training: boolean, program: boolean, offer: boolean, searchCoach: boolean, searchProgram: boolean } };
+
+export type GetInvoicesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetInvoicesQuery = { __typename?: 'Query', getInvoices: Array<{ __typename?: 'Invoice', id: string, status: InvoiceStatus, amountPaid: number, currency: string, invoicePdf: string, hostedInvoicePdf?: string | null, paidAt: any, nextPaymentAt?: any | null, profileSubscription: { __typename?: 'ProfileSubscription', profile: { __typename?: 'Profile', id: string, name: string } } }> };
+
+export type GetAllMuscleGroupQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllMuscleGroupQuery = { __typename?: 'Query', getAllMuscleGroup: Array<{ __typename?: 'MuscleGroup', id: string, key: string, label: string }> };
+
+export type GetNotificationQueryVariables = Exact<{
+  unread: Scalars['Boolean']['input'];
+  group?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetNotificationQuery = { __typename?: 'Query', getNotification: { __typename?: 'NotificationResponse', totalUnread: number, total: number, notifications: Array<{ __typename?: 'Notification', id: string, type: NotificationType, isRead: boolean, hasBeenSeen: boolean, createdAt: any, request?: { __typename?: 'Request', sender: { __typename?: 'User', firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null }, receiver: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } } | null, feedback?: { __typename?: 'Feedback', title: string, id: string, comment?: string | null, user: { __typename?: 'User', id: string, firstname: string, lastname: string, email: string, avatar?: string | null } } | null, membership?: { __typename?: 'Membership', id: string, student: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } } | null }> } };
+
+export type GetPreferenceNotificationQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPreferenceNotificationQuery = { __typename?: 'Query', getPreferenceNotification: { __typename?: 'NotificationPreference', id: string, disabledTypes: Array<NotificationType> } };
+
+export type GetOneCoachOffersQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetOneCoachOffersQuery = { __typename?: 'Query', getOneCoachOffers: Array<{ __typename?: 'Offer', id: string, name: string, price: number, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', label: string, id: string } }> };
+
+export type GetMyOffersQueryVariables = Exact<{
+  status?: InputMaybe<OfferStatus>;
+}>;
+
+
+export type GetMyOffersQuery = { __typename?: 'Query', getCoachOffers: Array<{ __typename?: 'Offer', id: string, name: string, price: number, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', label: string, id: string }, crew?: { __typename?: 'Crew', id: string, name: string } | null }> };
+
+export type GetOneCoachProfileQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetOneCoachProfileQuery = { __typename?: 'Query', getOneCoachProfile: { __typename?: 'CoachProfile', id: string, name?: string | null, description?: string | null, specialisation?: Array<string> | null, facebook?: string | null, instagram?: string | null, linkedin?: string | null, user?: { __typename?: 'User', firstname: string, lastname: string, avatar?: string | null } | null } };
+
+export type GetCurrentProfileSubscriptionQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCurrentProfileSubscriptionQuery = { __typename?: 'Query', getCurrentProfileSubscription: { __typename?: 'ProfileSubscription', id: string, status: ProfileSubscriptionStatus, currentPeriodEnd?: any | null } };
+
+export type GetDayNumberTrainingQueryVariables = Exact<{
+  programId: Scalars['String']['input'];
+}>;
+
+
+export type GetDayNumberTrainingQuery = { __typename?: 'Query', getDayNumberTraining: Array<number> };
+
+export type GetMyProgramsQueryVariables = Exact<{
+  status?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetMyProgramsQuery = { __typename?: 'Query', getPrograms: Array<{ __typename?: 'Program', id: string, title: string, description?: string | null, status: ProgramStatus, duration: number, public: boolean, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', id: string, label: string } | null }> };
+
+export type GetOneProgramMarketPlaceQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetOneProgramMarketPlaceQuery = { __typename?: 'Query', getOneProgramMarketPlace: { __typename?: 'ProgramMarketplaceResponse', trainingsCount: number, program: { __typename?: 'Program', id: string, title: string, description?: string | null, duration: number, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', label: string, id: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null, coachProfile?: { __typename?: 'CoachProfile', specialisation?: Array<string> | null, name?: string | null } | null } } } };
+
+export type GetProgramsMarketPlaceQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetProgramsMarketPlaceQuery = { __typename?: 'Query', getProgramsMarketPlace: Array<{ __typename?: 'Program', id: string, title: string, duration: number, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', id: string, label: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } }> };
 
 export type GetTrainingPlanQueryVariables = Exact<{
   data: GetTrainingType;
@@ -1829,6 +1921,57 @@ export type GetTrainingPlanQueryVariables = Exact<{
 
 
 export type GetTrainingPlanQuery = { __typename?: 'Query', getTrainingPlan: Array<{ __typename?: 'TrainingPlan', id: string, title: string, dayNumber: number, notes?: string | null, exercices?: Array<{ __typename?: 'Exercice', id: string, title: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, notes?: string | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null } | null }> | null }> };
+
+export type GetUserProgramsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUserProgramsQuery = { __typename?: 'Query', getUserPrograms: Array<{ __typename?: 'UserProgram', id: string, price: number, commissionRate: number, createdAt: any, startDate?: any | null, paidAt?: any | null, status: string, receip?: string | null, user: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null }, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null }, program: { __typename?: 'Program', id: string, title: string } }> };
+
+export type GetRequestQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetRequestQuery = { __typename?: 'Query', getRequest: Array<{ __typename?: 'Request', id: string, description?: string | null, phone?: number | null, offer?: { __typename?: 'Offer', name: string, id: string } | null, sender: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null } }> };
+
+export type GetSentQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetSentQuery = { __typename?: 'Query', getSent: Array<{ __typename?: 'Request', receiver: { __typename?: 'User', email: string, id: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null } }> };
+
+export type GetTotalRequestsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTotalRequestsQuery = { __typename?: 'Query', getTotalRequests: number };
+
+export type GetConnectUrlQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetConnectUrlQuery = { __typename?: 'Query', getConnectUrl: string };
+
+export type GetProfilePricingQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetProfilePricingQuery = { __typename?: 'Query', getProfilePricing: Array<{ __typename?: 'ProfileOutput', id: string, name: string, monthlyAmount?: number | null, yearlyAmount?: number | null }> };
+
+export type GetPortailStripQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPortailStripQuery = { __typename?: 'Query', getPortailStrip: string };
+
+export type GetCoachQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetCoachQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', coach?: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null } | null } };
+
+export type GetMyCoachQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMyCoachQuery = { __typename?: 'Query', getMyCoach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } };
 
 export type SelectCoachQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -1839,6 +1982,37 @@ export type SelectCoachQueryVariables = Exact<{
 
 
 export type SelectCoachQuery = { __typename?: 'Query', selectCoach: Array<{ __typename?: 'User', id: string, email: string, firstname: string, lastname: string, roles: Array<UserRole>, avatar?: string | null, coachProfile?: { __typename?: 'CoachProfile', id: string, name?: string | null, specialisation?: Array<string> | null } | null, offers?: Array<{ __typename?: 'Offer', id: string, price: number, name: string, description: string, availability: boolean, durability: number, category: { __typename?: 'OfferCategory', id: string, label: string } }> | null }> };
+
+export type GetCrewTrainingQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+  rangeDate: RangeDate;
+}>;
+
+
+export type GetCrewTrainingQuery = { __typename?: 'Query', getCrewTraining: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
+
+export type GetMyTrainingQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+  rangeDate: RangeDate;
+}>;
+
+
+export type GetMyTrainingQuery = { __typename?: 'Query', getTrainingsById: Array<{ __typename?: 'Training', createdByCoach?: string | null, id: string, title: string, date: any, notes?: string | null, editable: boolean, validate: boolean, crew?: { __typename?: 'Crew', id: string } | null, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
+
+export type GetOneTrainingQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetOneTrainingQuery = { __typename?: 'Query', getOneTraining: { __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean } };
+
+export type GetStudentTrainingsQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+  rangeDate: RangeDate;
+}>;
+
+
+export type GetStudentTrainingsQuery = { __typename?: 'Query', getStudentTrainings: Array<{ __typename?: 'Training', id: string, title: string, date: any, notes?: string | null, createdByCoach?: string | null, editable: boolean, validate: boolean, exercices?: Array<{ __typename?: 'Exercice', title: string, id: string, serie?: number | null, rep?: number | null, intensity?: number | null, weight?: number | null, tempo?: number | null, repFormat?: RepFormat | null, weightFormat?: WeightFormat | null, intensityFormat?: IntensityFormat | null, notes?: string | null, position?: number | null, exerciceModel?: { __typename?: 'ExerciceModel', id: string, image?: string | null, title: string } | null }> | null }> };
 
 export type LastMessageReadSubscriptionVariables = Exact<{
   id?: InputMaybe<Scalars['String']['input']>;
@@ -2819,6 +2993,38 @@ export function useGenerateProgramMutation(baseOptions?: Apollo.MutationHookOpti
 export type GenerateProgramMutationHookResult = ReturnType<typeof useGenerateProgramMutation>;
 export type GenerateProgramMutationResult = Apollo.MutationResult<GenerateProgramMutation>;
 export type GenerateProgramMutationOptions = Apollo.BaseMutationOptions<GenerateProgramMutation, GenerateProgramMutationVariables>;
+export const GenerateSessionProfileDocument = gql`
+    mutation GenerateSessionProfile($periodicity: Periodicity!, $id: String!) {
+  generateSessionProfile(periodicity: $periodicity, id: $id)
+}
+    `;
+export type GenerateSessionProfileMutationFn = Apollo.MutationFunction<GenerateSessionProfileMutation, GenerateSessionProfileMutationVariables>;
+
+/**
+ * __useGenerateSessionProfileMutation__
+ *
+ * To run a mutation, you first call `useGenerateSessionProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useGenerateSessionProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [generateSessionProfileMutation, { data, loading, error }] = useGenerateSessionProfileMutation({
+ *   variables: {
+ *      periodicity: // value for 'periodicity'
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGenerateSessionProfileMutation(baseOptions?: Apollo.MutationHookOptions<GenerateSessionProfileMutation, GenerateSessionProfileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<GenerateSessionProfileMutation, GenerateSessionProfileMutationVariables>(GenerateSessionProfileDocument, options);
+      }
+export type GenerateSessionProfileMutationHookResult = ReturnType<typeof useGenerateSessionProfileMutation>;
+export type GenerateSessionProfileMutationResult = Apollo.MutationResult<GenerateSessionProfileMutation>;
+export type GenerateSessionProfileMutationOptions = Apollo.BaseMutationOptions<GenerateSessionProfileMutation, GenerateSessionProfileMutationVariables>;
 export const GenerateUploadUrlDocument = gql`
     mutation GenerateUploadUrl($fileType: String, $fileName: String, $isNew: Boolean) {
   generateUploadUrl(fileType: $fileType, fileName: $fileName, isNew: $isNew) {
@@ -3043,6 +3249,36 @@ export function usePasteTrainingMutation(baseOptions?: Apollo.MutationHookOption
 export type PasteTrainingMutationHookResult = ReturnType<typeof usePasteTrainingMutation>;
 export type PasteTrainingMutationResult = Apollo.MutationResult<PasteTrainingMutation>;
 export type PasteTrainingMutationOptions = Apollo.BaseMutationOptions<PasteTrainingMutation, PasteTrainingMutationVariables>;
+export const ReactivateProfileSubscriptionDocument = gql`
+    mutation ReactivateProfileSubscription {
+  reactivateProfileSubscription
+}
+    `;
+export type ReactivateProfileSubscriptionMutationFn = Apollo.MutationFunction<ReactivateProfileSubscriptionMutation, ReactivateProfileSubscriptionMutationVariables>;
+
+/**
+ * __useReactivateProfileSubscriptionMutation__
+ *
+ * To run a mutation, you first call `useReactivateProfileSubscriptionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReactivateProfileSubscriptionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [reactivateProfileSubscriptionMutation, { data, loading, error }] = useReactivateProfileSubscriptionMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useReactivateProfileSubscriptionMutation(baseOptions?: Apollo.MutationHookOptions<ReactivateProfileSubscriptionMutation, ReactivateProfileSubscriptionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ReactivateProfileSubscriptionMutation, ReactivateProfileSubscriptionMutationVariables>(ReactivateProfileSubscriptionDocument, options);
+      }
+export type ReactivateProfileSubscriptionMutationHookResult = ReturnType<typeof useReactivateProfileSubscriptionMutation>;
+export type ReactivateProfileSubscriptionMutationResult = Apollo.MutationResult<ReactivateProfileSubscriptionMutation>;
+export type ReactivateProfileSubscriptionMutationOptions = Apollo.BaseMutationOptions<ReactivateProfileSubscriptionMutation, ReactivateProfileSubscriptionMutationVariables>;
 export const RejectRequestDocument = gql`
     mutation RejectRequest($id: String!) {
   rejectRequest(id: $id)
@@ -3604,6 +3840,178 @@ export function useValidateProgramMutation(baseOptions?: Apollo.MutationHookOpti
 export type ValidateProgramMutationHookResult = ReturnType<typeof useValidateProgramMutation>;
 export type ValidateProgramMutationResult = Apollo.MutationResult<ValidateProgramMutation>;
 export type ValidateProgramMutationOptions = Apollo.BaseMutationOptions<ValidateProgramMutation, ValidateProgramMutationVariables>;
+export const CancelProfileSubscriptionDocument = gql`
+    mutation CancelProfileSubscription {
+  cancelProfileSubscription
+}
+    `;
+export type CancelProfileSubscriptionMutationFn = Apollo.MutationFunction<CancelProfileSubscriptionMutation, CancelProfileSubscriptionMutationVariables>;
+
+/**
+ * __useCancelProfileSubscriptionMutation__
+ *
+ * To run a mutation, you first call `useCancelProfileSubscriptionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCancelProfileSubscriptionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [cancelProfileSubscriptionMutation, { data, loading, error }] = useCancelProfileSubscriptionMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useCancelProfileSubscriptionMutation(baseOptions?: Apollo.MutationHookOptions<CancelProfileSubscriptionMutation, CancelProfileSubscriptionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CancelProfileSubscriptionMutation, CancelProfileSubscriptionMutationVariables>(CancelProfileSubscriptionDocument, options);
+      }
+export type CancelProfileSubscriptionMutationHookResult = ReturnType<typeof useCancelProfileSubscriptionMutation>;
+export type CancelProfileSubscriptionMutationResult = Apollo.MutationResult<CancelProfileSubscriptionMutation>;
+export type CancelProfileSubscriptionMutationOptions = Apollo.BaseMutationOptions<CancelProfileSubscriptionMutation, CancelProfileSubscriptionMutationVariables>;
+export const GetPermissionAdminDocument = gql`
+    query GetPermissionAdmin {
+  getPermissionAdmin {
+    id
+    key
+    description
+  }
+}
+    `;
+
+/**
+ * __useGetPermissionAdminQuery__
+ *
+ * To run a query within a React component, call `useGetPermissionAdminQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPermissionAdminQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPermissionAdminQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPermissionAdminQuery(baseOptions?: Apollo.QueryHookOptions<GetPermissionAdminQuery, GetPermissionAdminQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPermissionAdminQuery, GetPermissionAdminQueryVariables>(GetPermissionAdminDocument, options);
+      }
+export function useGetPermissionAdminLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPermissionAdminQuery, GetPermissionAdminQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPermissionAdminQuery, GetPermissionAdminQueryVariables>(GetPermissionAdminDocument, options);
+        }
+export function useGetPermissionAdminSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPermissionAdminQuery, GetPermissionAdminQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPermissionAdminQuery, GetPermissionAdminQueryVariables>(GetPermissionAdminDocument, options);
+        }
+export type GetPermissionAdminQueryHookResult = ReturnType<typeof useGetPermissionAdminQuery>;
+export type GetPermissionAdminLazyQueryHookResult = ReturnType<typeof useGetPermissionAdminLazyQuery>;
+export type GetPermissionAdminSuspenseQueryHookResult = ReturnType<typeof useGetPermissionAdminSuspenseQuery>;
+export type GetPermissionAdminQueryResult = Apollo.QueryResult<GetPermissionAdminQuery, GetPermissionAdminQueryVariables>;
+export const GetProfileAdminDocument = gql`
+    query GetProfileAdmin {
+  getProfileAdmin {
+    id
+    name
+    permissions {
+      id
+      key
+      description
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetProfileAdminQuery__
+ *
+ * To run a query within a React component, call `useGetProfileAdminQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProfileAdminQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProfileAdminQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetProfileAdminQuery(baseOptions?: Apollo.QueryHookOptions<GetProfileAdminQuery, GetProfileAdminQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetProfileAdminQuery, GetProfileAdminQueryVariables>(GetProfileAdminDocument, options);
+      }
+export function useGetProfileAdminLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProfileAdminQuery, GetProfileAdminQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetProfileAdminQuery, GetProfileAdminQueryVariables>(GetProfileAdminDocument, options);
+        }
+export function useGetProfileAdminSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetProfileAdminQuery, GetProfileAdminQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetProfileAdminQuery, GetProfileAdminQueryVariables>(GetProfileAdminDocument, options);
+        }
+export type GetProfileAdminQueryHookResult = ReturnType<typeof useGetProfileAdminQuery>;
+export type GetProfileAdminLazyQueryHookResult = ReturnType<typeof useGetProfileAdminLazyQuery>;
+export type GetProfileAdminSuspenseQueryHookResult = ReturnType<typeof useGetProfileAdminSuspenseQuery>;
+export type GetProfileAdminQueryResult = Apollo.QueryResult<GetProfileAdminQuery, GetProfileAdminQueryVariables>;
+export const GetUsersDocument = gql`
+    query GetUsers {
+  getUsers {
+    id
+    email
+    firstname
+    lastname
+    roles
+    avatar
+    sex
+    coach {
+      firstname
+      lastname
+      email
+      avatar
+      id
+    }
+    profile {
+      id
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetUsersQuery__
+ *
+ * To run a query within a React component, call `useGetUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUsersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetUsersQuery(baseOptions?: Apollo.QueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, options);
+      }
+export function useGetUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, options);
+        }
+export function useGetUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, options);
+        }
+export type GetUsersQueryHookResult = ReturnType<typeof useGetUsersQuery>;
+export type GetUsersLazyQueryHookResult = ReturnType<typeof useGetUsersLazyQuery>;
+export type GetUsersSuspenseQueryHookResult = ReturnType<typeof useGetUsersSuspenseQuery>;
+export type GetUsersQueryResult = Apollo.QueryResult<GetUsersQuery, GetUsersQueryVariables>;
 export const GetAllCategoriesDocument = gql`
     query GetAllCategories {
   getAllCategories {
@@ -3644,107 +4052,6 @@ export type GetAllCategoriesQueryHookResult = ReturnType<typeof useGetAllCategor
 export type GetAllCategoriesLazyQueryHookResult = ReturnType<typeof useGetAllCategoriesLazyQuery>;
 export type GetAllCategoriesSuspenseQueryHookResult = ReturnType<typeof useGetAllCategoriesSuspenseQuery>;
 export type GetAllCategoriesQueryResult = Apollo.QueryResult<GetAllCategoriesQuery, GetAllCategoriesQueryVariables>;
-export const GetAllExercicesModelDocument = gql`
-    query GetAllExercicesModel($input: String, $id: String, $getFavorite: Boolean, $muscles: [String!]) {
-  getAllExercicesModel(
-    input: $input
-    id: $id
-    getFavorite: $getFavorite
-    muscles: $muscles
-  ) {
-    id
-    title
-    image
-    description
-    image
-    videoType
-    video
-    user {
-      id
-    }
-    muscles {
-      id
-    }
-  }
-}
-    `;
-
-/**
- * __useGetAllExercicesModelQuery__
- *
- * To run a query within a React component, call `useGetAllExercicesModelQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetAllExercicesModelQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetAllExercicesModelQuery({
- *   variables: {
- *      input: // value for 'input'
- *      id: // value for 'id'
- *      getFavorite: // value for 'getFavorite'
- *      muscles: // value for 'muscles'
- *   },
- * });
- */
-export function useGetAllExercicesModelQuery(baseOptions?: Apollo.QueryHookOptions<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>(GetAllExercicesModelDocument, options);
-      }
-export function useGetAllExercicesModelLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>(GetAllExercicesModelDocument, options);
-        }
-export function useGetAllExercicesModelSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>(GetAllExercicesModelDocument, options);
-        }
-export type GetAllExercicesModelQueryHookResult = ReturnType<typeof useGetAllExercicesModelQuery>;
-export type GetAllExercicesModelLazyQueryHookResult = ReturnType<typeof useGetAllExercicesModelLazyQuery>;
-export type GetAllExercicesModelSuspenseQueryHookResult = ReturnType<typeof useGetAllExercicesModelSuspenseQuery>;
-export type GetAllExercicesModelQueryResult = Apollo.QueryResult<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>;
-export const GetAllMuscleGroupDocument = gql`
-    query GetAllMuscleGroup {
-  getAllMuscleGroup {
-    id
-    key
-    label
-  }
-}
-    `;
-
-/**
- * __useGetAllMuscleGroupQuery__
- *
- * To run a query within a React component, call `useGetAllMuscleGroupQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetAllMuscleGroupQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetAllMuscleGroupQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetAllMuscleGroupQuery(baseOptions?: Apollo.QueryHookOptions<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>(GetAllMuscleGroupDocument, options);
-      }
-export function useGetAllMuscleGroupLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>(GetAllMuscleGroupDocument, options);
-        }
-export function useGetAllMuscleGroupSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>(GetAllMuscleGroupDocument, options);
-        }
-export type GetAllMuscleGroupQueryHookResult = ReturnType<typeof useGetAllMuscleGroupQuery>;
-export type GetAllMuscleGroupLazyQueryHookResult = ReturnType<typeof useGetAllMuscleGroupLazyQuery>;
-export type GetAllMuscleGroupSuspenseQueryHookResult = ReturnType<typeof useGetAllMuscleGroupSuspenseQuery>;
-export type GetAllMuscleGroupQueryResult = Apollo.QueryResult<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>;
 export const GetChatUsersDocument = gql`
     query GetChatUsers {
   getChatUsers {
@@ -3789,201 +4096,6 @@ export type GetChatUsersQueryHookResult = ReturnType<typeof useGetChatUsersQuery
 export type GetChatUsersLazyQueryHookResult = ReturnType<typeof useGetChatUsersLazyQuery>;
 export type GetChatUsersSuspenseQueryHookResult = ReturnType<typeof useGetChatUsersSuspenseQuery>;
 export type GetChatUsersQueryResult = Apollo.QueryResult<GetChatUsersQuery, GetChatUsersQueryVariables>;
-export const GetCoachDocument = gql`
-    query GetCoach($id: String!) {
-  getUserById(id: $id) {
-    coach {
-      id
-      email
-      firstname
-      lastname
-      roles
-      avatar
-    }
-  }
-}
-    `;
-
-/**
- * __useGetCoachQuery__
- *
- * To run a query within a React component, call `useGetCoachQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetCoachQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetCoachQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetCoachQuery(baseOptions: Apollo.QueryHookOptions<GetCoachQuery, GetCoachQueryVariables> & ({ variables: GetCoachQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetCoachQuery, GetCoachQueryVariables>(GetCoachDocument, options);
-      }
-export function useGetCoachLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCoachQuery, GetCoachQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetCoachQuery, GetCoachQueryVariables>(GetCoachDocument, options);
-        }
-export function useGetCoachSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCoachQuery, GetCoachQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetCoachQuery, GetCoachQueryVariables>(GetCoachDocument, options);
-        }
-export type GetCoachQueryHookResult = ReturnType<typeof useGetCoachQuery>;
-export type GetCoachLazyQueryHookResult = ReturnType<typeof useGetCoachLazyQuery>;
-export type GetCoachSuspenseQueryHookResult = ReturnType<typeof useGetCoachSuspenseQuery>;
-export type GetCoachQueryResult = Apollo.QueryResult<GetCoachQuery, GetCoachQueryVariables>;
-export const GetCoachCrewsDocument = gql`
-    query GetCoachCrews {
-  getCoachCrews {
-    id
-    name
-    students {
-      id
-      email
-      firstname
-      lastname
-      roles
-      avatar
-    }
-  }
-}
-    `;
-
-/**
- * __useGetCoachCrewsQuery__
- *
- * To run a query within a React component, call `useGetCoachCrewsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetCoachCrewsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetCoachCrewsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetCoachCrewsQuery(baseOptions?: Apollo.QueryHookOptions<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>(GetCoachCrewsDocument, options);
-      }
-export function useGetCoachCrewsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>(GetCoachCrewsDocument, options);
-        }
-export function useGetCoachCrewsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>(GetCoachCrewsDocument, options);
-        }
-export type GetCoachCrewsQueryHookResult = ReturnType<typeof useGetCoachCrewsQuery>;
-export type GetCoachCrewsLazyQueryHookResult = ReturnType<typeof useGetCoachCrewsLazyQuery>;
-export type GetCoachCrewsSuspenseQueryHookResult = ReturnType<typeof useGetCoachCrewsSuspenseQuery>;
-export type GetCoachCrewsQueryResult = Apollo.QueryResult<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>;
-export const GetOneCoachOffersDocument = gql`
-    query GetOneCoachOffers($id: String!) {
-  getOneCoachOffers(id: $id) {
-    id
-    name
-    price
-    description
-    availability
-    durability
-    category {
-      label
-      id
-    }
-  }
-}
-    `;
-
-/**
- * __useGetOneCoachOffersQuery__
- *
- * To run a query within a React component, call `useGetOneCoachOffersQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetOneCoachOffersQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetOneCoachOffersQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetOneCoachOffersQuery(baseOptions: Apollo.QueryHookOptions<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables> & ({ variables: GetOneCoachOffersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables>(GetOneCoachOffersDocument, options);
-      }
-export function useGetOneCoachOffersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables>(GetOneCoachOffersDocument, options);
-        }
-export function useGetOneCoachOffersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables>(GetOneCoachOffersDocument, options);
-        }
-export type GetOneCoachOffersQueryHookResult = ReturnType<typeof useGetOneCoachOffersQuery>;
-export type GetOneCoachOffersLazyQueryHookResult = ReturnType<typeof useGetOneCoachOffersLazyQuery>;
-export type GetOneCoachOffersSuspenseQueryHookResult = ReturnType<typeof useGetOneCoachOffersSuspenseQuery>;
-export type GetOneCoachOffersQueryResult = Apollo.QueryResult<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables>;
-export const GetOneCoachProfileDocument = gql`
-    query GetOneCoachProfile($id: String!) {
-  getOneCoachProfile(id: $id) {
-    id
-    name
-    description
-    specialisation
-    facebook
-    instagram
-    linkedin
-    user {
-      firstname
-      lastname
-      avatar
-    }
-  }
-}
-    `;
-
-/**
- * __useGetOneCoachProfileQuery__
- *
- * To run a query within a React component, call `useGetOneCoachProfileQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetOneCoachProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetOneCoachProfileQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetOneCoachProfileQuery(baseOptions: Apollo.QueryHookOptions<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables> & ({ variables: GetOneCoachProfileQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables>(GetOneCoachProfileDocument, options);
-      }
-export function useGetOneCoachProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables>(GetOneCoachProfileDocument, options);
-        }
-export function useGetOneCoachProfileSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables>(GetOneCoachProfileDocument, options);
-        }
-export type GetOneCoachProfileQueryHookResult = ReturnType<typeof useGetOneCoachProfileQuery>;
-export type GetOneCoachProfileLazyQueryHookResult = ReturnType<typeof useGetOneCoachProfileLazyQuery>;
-export type GetOneCoachProfileSuspenseQueryHookResult = ReturnType<typeof useGetOneCoachProfileSuspenseQuery>;
-export type GetOneCoachProfileQueryResult = Apollo.QueryResult<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables>;
 export const GetConversationByIdDocument = gql`
     query GetConversationById($id: String!) {
   getConversationById(id: $id) {
@@ -4088,33 +4200,24 @@ export type GetConversationsQueryHookResult = ReturnType<typeof useGetConversati
 export type GetConversationsLazyQueryHookResult = ReturnType<typeof useGetConversationsLazyQuery>;
 export type GetConversationsSuspenseQueryHookResult = ReturnType<typeof useGetConversationsSuspenseQuery>;
 export type GetConversationsQueryResult = Apollo.QueryResult<GetConversationsQuery, GetConversationsQueryVariables>;
-export const GetCrewTrainingDocument = gql`
-    query GetCrewTraining($id: String!, $rangeDate: RangeDate!) {
-  getCrewTraining(id: $id, rangeDate: $rangeDate) {
-    id
-    title
-    date
-    notes
-    createdByCoach
-    editable
-    validate
-    exercices {
-      title
+export const GetMessagesDocument = gql`
+    query GetMessages($id: String!, $limit: Float, $cursor: String) {
+  getMessages(id: $id, limit: $limit, cursor: $cursor) {
+    totalCount
+    messages {
       id
-      serie
-      rep
-      intensity
-      weight
-      tempo
-      repFormat
-      weightFormat
-      intensityFormat
-      notes
-      position
-      exerciceModel {
+      content
+      createdAt
+      readAt
+      repliedMessage {
         id
-        image
-        title
+        content
+      }
+      sender {
+        id
+      }
+      receiver {
+        id
       }
     }
   }
@@ -4122,76 +4225,348 @@ export const GetCrewTrainingDocument = gql`
     `;
 
 /**
- * __useGetCrewTrainingQuery__
+ * __useGetMessagesQuery__
  *
- * To run a query within a React component, call `useGetCrewTrainingQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetCrewTrainingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetMessagesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMessagesQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetCrewTrainingQuery({
+ * const { data, loading, error } = useGetMessagesQuery({
  *   variables: {
  *      id: // value for 'id'
- *      rangeDate: // value for 'rangeDate'
+ *      limit: // value for 'limit'
+ *      cursor: // value for 'cursor'
  *   },
  * });
  */
-export function useGetCrewTrainingQuery(baseOptions: Apollo.QueryHookOptions<GetCrewTrainingQuery, GetCrewTrainingQueryVariables> & ({ variables: GetCrewTrainingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useGetMessagesQuery(baseOptions: Apollo.QueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables> & ({ variables: GetMessagesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetCrewTrainingQuery, GetCrewTrainingQueryVariables>(GetCrewTrainingDocument, options);
+        return Apollo.useQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
       }
-export function useGetCrewTrainingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCrewTrainingQuery, GetCrewTrainingQueryVariables>) {
+export function useGetMessagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetCrewTrainingQuery, GetCrewTrainingQueryVariables>(GetCrewTrainingDocument, options);
+          return Apollo.useLazyQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
         }
-export function useGetCrewTrainingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCrewTrainingQuery, GetCrewTrainingQueryVariables>) {
+export function useGetMessagesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetCrewTrainingQuery, GetCrewTrainingQueryVariables>(GetCrewTrainingDocument, options);
+          return Apollo.useSuspenseQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
         }
-export type GetCrewTrainingQueryHookResult = ReturnType<typeof useGetCrewTrainingQuery>;
-export type GetCrewTrainingLazyQueryHookResult = ReturnType<typeof useGetCrewTrainingLazyQuery>;
-export type GetCrewTrainingSuspenseQueryHookResult = ReturnType<typeof useGetCrewTrainingSuspenseQuery>;
-export type GetCrewTrainingQueryResult = Apollo.QueryResult<GetCrewTrainingQuery, GetCrewTrainingQueryVariables>;
-export const GetDayNumberTrainingDocument = gql`
-    query GetDayNumberTraining($programId: String!) {
-  getDayNumberTraining(id: $programId)
+export type GetMessagesQueryHookResult = ReturnType<typeof useGetMessagesQuery>;
+export type GetMessagesLazyQueryHookResult = ReturnType<typeof useGetMessagesLazyQuery>;
+export type GetMessagesSuspenseQueryHookResult = ReturnType<typeof useGetMessagesSuspenseQuery>;
+export type GetMessagesQueryResult = Apollo.QueryResult<GetMessagesQuery, GetMessagesQueryVariables>;
+export const GetTotalUnreadMessageDocument = gql`
+    query GetTotalUnreadMessage {
+  getTotalUnreadMessage
 }
     `;
 
 /**
- * __useGetDayNumberTrainingQuery__
+ * __useGetTotalUnreadMessageQuery__
  *
- * To run a query within a React component, call `useGetDayNumberTrainingQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetDayNumberTrainingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetTotalUnreadMessageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTotalUnreadMessageQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetDayNumberTrainingQuery({
+ * const { data, loading, error } = useGetTotalUnreadMessageQuery({
  *   variables: {
- *      programId: // value for 'programId'
  *   },
  * });
  */
-export function useGetDayNumberTrainingQuery(baseOptions: Apollo.QueryHookOptions<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables> & ({ variables: GetDayNumberTrainingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useGetTotalUnreadMessageQuery(baseOptions?: Apollo.QueryHookOptions<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>(GetDayNumberTrainingDocument, options);
+        return Apollo.useQuery<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>(GetTotalUnreadMessageDocument, options);
       }
-export function useGetDayNumberTrainingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>) {
+export function useGetTotalUnreadMessageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>(GetDayNumberTrainingDocument, options);
+          return Apollo.useLazyQuery<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>(GetTotalUnreadMessageDocument, options);
         }
-export function useGetDayNumberTrainingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>) {
+export function useGetTotalUnreadMessageSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>(GetDayNumberTrainingDocument, options);
+          return Apollo.useSuspenseQuery<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>(GetTotalUnreadMessageDocument, options);
         }
-export type GetDayNumberTrainingQueryHookResult = ReturnType<typeof useGetDayNumberTrainingQuery>;
-export type GetDayNumberTrainingLazyQueryHookResult = ReturnType<typeof useGetDayNumberTrainingLazyQuery>;
-export type GetDayNumberTrainingSuspenseQueryHookResult = ReturnType<typeof useGetDayNumberTrainingSuspenseQuery>;
-export type GetDayNumberTrainingQueryResult = Apollo.QueryResult<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>;
+export type GetTotalUnreadMessageQueryHookResult = ReturnType<typeof useGetTotalUnreadMessageQuery>;
+export type GetTotalUnreadMessageLazyQueryHookResult = ReturnType<typeof useGetTotalUnreadMessageLazyQuery>;
+export type GetTotalUnreadMessageSuspenseQueryHookResult = ReturnType<typeof useGetTotalUnreadMessageSuspenseQuery>;
+export type GetTotalUnreadMessageQueryResult = Apollo.QueryResult<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>;
+export const GetCoachCrewsDocument = gql`
+    query GetCoachCrews {
+  getCoachCrews {
+    id
+    name
+    students {
+      id
+      email
+      firstname
+      lastname
+      roles
+      avatar
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetCoachCrewsQuery__
+ *
+ * To run a query within a React component, call `useGetCoachCrewsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCoachCrewsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCoachCrewsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCoachCrewsQuery(baseOptions?: Apollo.QueryHookOptions<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>(GetCoachCrewsDocument, options);
+      }
+export function useGetCoachCrewsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>(GetCoachCrewsDocument, options);
+        }
+export function useGetCoachCrewsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>(GetCoachCrewsDocument, options);
+        }
+export type GetCoachCrewsQueryHookResult = ReturnType<typeof useGetCoachCrewsQuery>;
+export type GetCoachCrewsLazyQueryHookResult = ReturnType<typeof useGetCoachCrewsLazyQuery>;
+export type GetCoachCrewsSuspenseQueryHookResult = ReturnType<typeof useGetCoachCrewsSuspenseQuery>;
+export type GetCoachCrewsQueryResult = Apollo.QueryResult<GetCoachCrewsQuery, GetCoachCrewsQueryVariables>;
+export const GetMyProfileDocument = gql`
+    query GetMyProfile {
+  getCoachProfile {
+    id
+    name
+    description
+    specialisation
+    stripeAccountId
+    chargesEnabled
+    payoutsEnabled
+    detailsSubmitted
+    instagram
+    linkedin
+    facebook
+  }
+}
+    `;
+
+/**
+ * __useGetMyProfileQuery__
+ *
+ * To run a query within a React component, call `useGetMyProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMyProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMyProfileQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetMyProfileQuery(baseOptions?: Apollo.QueryHookOptions<GetMyProfileQuery, GetMyProfileQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMyProfileQuery, GetMyProfileQueryVariables>(GetMyProfileDocument, options);
+      }
+export function useGetMyProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyProfileQuery, GetMyProfileQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMyProfileQuery, GetMyProfileQueryVariables>(GetMyProfileDocument, options);
+        }
+export function useGetMyProfileSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyProfileQuery, GetMyProfileQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMyProfileQuery, GetMyProfileQueryVariables>(GetMyProfileDocument, options);
+        }
+export type GetMyProfileQueryHookResult = ReturnType<typeof useGetMyProfileQuery>;
+export type GetMyProfileLazyQueryHookResult = ReturnType<typeof useGetMyProfileLazyQuery>;
+export type GetMyProfileSuspenseQueryHookResult = ReturnType<typeof useGetMyProfileSuspenseQuery>;
+export type GetMyProfileQueryResult = Apollo.QueryResult<GetMyProfileQuery, GetMyProfileQueryVariables>;
+export const GetStudentsDocument = gql`
+    query getStudents($input: String, $id: String!, $crewId: String, $offerId: String, $sortRemaining: Boolean, $status: String, $page: Float, $limit: Float) {
+  getStudents(
+    input: $input
+    id: $id
+    crewId: $crewId
+    offerId: $offerId
+    sortRemaining: $sortRemaining
+    status: $status
+    page: $page
+    limit: $limit
+  ) {
+    totalCount
+    students {
+      email
+      firstname
+      lastname
+      roles
+      id
+      avatar
+      studentOffer {
+        name
+        durability
+        id
+      }
+      crew {
+        id
+        name
+      }
+      memberships {
+        id
+        endDate
+        isActive
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetStudentsQuery__
+ *
+ * To run a query within a React component, call `useGetStudentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetStudentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetStudentsQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *      id: // value for 'id'
+ *      crewId: // value for 'crewId'
+ *      offerId: // value for 'offerId'
+ *      sortRemaining: // value for 'sortRemaining'
+ *      status: // value for 'status'
+ *      page: // value for 'page'
+ *      limit: // value for 'limit'
+ *   },
+ * });
+ */
+export function useGetStudentsQuery(baseOptions: Apollo.QueryHookOptions<GetStudentsQuery, GetStudentsQueryVariables> & ({ variables: GetStudentsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetStudentsQuery, GetStudentsQueryVariables>(GetStudentsDocument, options);
+      }
+export function useGetStudentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetStudentsQuery, GetStudentsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetStudentsQuery, GetStudentsQueryVariables>(GetStudentsDocument, options);
+        }
+export function useGetStudentsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetStudentsQuery, GetStudentsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetStudentsQuery, GetStudentsQueryVariables>(GetStudentsDocument, options);
+        }
+export type GetStudentsQueryHookResult = ReturnType<typeof useGetStudentsQuery>;
+export type GetStudentsLazyQueryHookResult = ReturnType<typeof useGetStudentsLazyQuery>;
+export type GetStudentsSuspenseQueryHookResult = ReturnType<typeof useGetStudentsSuspenseQuery>;
+export type GetStudentsQueryResult = Apollo.QueryResult<GetStudentsQuery, GetStudentsQueryVariables>;
+export const GetTotalStudentsDocument = gql`
+    query GetTotalStudents {
+  getTotalStudents
+}
+    `;
+
+/**
+ * __useGetTotalStudentsQuery__
+ *
+ * To run a query within a React component, call `useGetTotalStudentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTotalStudentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTotalStudentsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetTotalStudentsQuery(baseOptions?: Apollo.QueryHookOptions<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>(GetTotalStudentsDocument, options);
+      }
+export function useGetTotalStudentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>(GetTotalStudentsDocument, options);
+        }
+export function useGetTotalStudentsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>(GetTotalStudentsDocument, options);
+        }
+export type GetTotalStudentsQueryHookResult = ReturnType<typeof useGetTotalStudentsQuery>;
+export type GetTotalStudentsLazyQueryHookResult = ReturnType<typeof useGetTotalStudentsLazyQuery>;
+export type GetTotalStudentsSuspenseQueryHookResult = ReturnType<typeof useGetTotalStudentsSuspenseQuery>;
+export type GetTotalStudentsQueryResult = Apollo.QueryResult<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>;
+export const GetAllExercicesModelDocument = gql`
+    query GetAllExercicesModel($input: String, $id: String, $getFavorite: Boolean, $muscles: [String!]) {
+  getAllExercicesModel(
+    input: $input
+    id: $id
+    getFavorite: $getFavorite
+    muscles: $muscles
+  ) {
+    id
+    title
+    image
+    description
+    image
+    videoType
+    video
+    user {
+      id
+    }
+    muscles {
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAllExercicesModelQuery__
+ *
+ * To run a query within a React component, call `useGetAllExercicesModelQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllExercicesModelQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllExercicesModelQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *      id: // value for 'id'
+ *      getFavorite: // value for 'getFavorite'
+ *      muscles: // value for 'muscles'
+ *   },
+ * });
+ */
+export function useGetAllExercicesModelQuery(baseOptions?: Apollo.QueryHookOptions<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>(GetAllExercicesModelDocument, options);
+      }
+export function useGetAllExercicesModelLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>(GetAllExercicesModelDocument, options);
+        }
+export function useGetAllExercicesModelSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>(GetAllExercicesModelDocument, options);
+        }
+export type GetAllExercicesModelQueryHookResult = ReturnType<typeof useGetAllExercicesModelQuery>;
+export type GetAllExercicesModelLazyQueryHookResult = ReturnType<typeof useGetAllExercicesModelLazyQuery>;
+export type GetAllExercicesModelSuspenseQueryHookResult = ReturnType<typeof useGetAllExercicesModelSuspenseQuery>;
+export type GetAllExercicesModelQueryResult = Apollo.QueryResult<GetAllExercicesModelQuery, GetAllExercicesModelQueryVariables>;
 export const GetExerciceInfoDocument = gql`
     query GetExerciceInfo($id: String!) {
   getExerciceInfo(id: $id) {
@@ -4275,6 +4650,52 @@ export type GetFavoriteExercicesIdQueryHookResult = ReturnType<typeof useGetFavo
 export type GetFavoriteExercicesIdLazyQueryHookResult = ReturnType<typeof useGetFavoriteExercicesIdLazyQuery>;
 export type GetFavoriteExercicesIdSuspenseQueryHookResult = ReturnType<typeof useGetFavoriteExercicesIdSuspenseQuery>;
 export type GetFavoriteExercicesIdQueryResult = Apollo.QueryResult<GetFavoriteExercicesIdQuery, GetFavoriteExercicesIdQueryVariables>;
+export const GetOneExericeModelDocument = gql`
+    query GetOneExericeModel($id: String!) {
+  getOneExericeModel(id: $id) {
+    id
+    title
+    image
+    description
+    muscles {
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetOneExericeModelQuery__
+ *
+ * To run a query within a React component, call `useGetOneExericeModelQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOneExericeModelQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOneExericeModelQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetOneExericeModelQuery(baseOptions: Apollo.QueryHookOptions<GetOneExericeModelQuery, GetOneExericeModelQueryVariables> & ({ variables: GetOneExericeModelQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>(GetOneExericeModelDocument, options);
+      }
+export function useGetOneExericeModelLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>(GetOneExericeModelDocument, options);
+        }
+export function useGetOneExericeModelSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>(GetOneExericeModelDocument, options);
+        }
+export type GetOneExericeModelQueryHookResult = ReturnType<typeof useGetOneExericeModelQuery>;
+export type GetOneExericeModelLazyQueryHookResult = ReturnType<typeof useGetOneExericeModelLazyQuery>;
+export type GetOneExericeModelSuspenseQueryHookResult = ReturnType<typeof useGetOneExericeModelSuspenseQuery>;
+export type GetOneExericeModelQueryResult = Apollo.QueryResult<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>;
 export const GetFeedbacksDocument = gql`
     query GetFeedbacks($id: String!, $rangeDate: RangeDate!) {
   getFeedbacks(id: $id, rangeDate: $rangeDate) {
@@ -4322,6 +4743,53 @@ export type GetFeedbacksQueryHookResult = ReturnType<typeof useGetFeedbacksQuery
 export type GetFeedbacksLazyQueryHookResult = ReturnType<typeof useGetFeedbacksLazyQuery>;
 export type GetFeedbacksSuspenseQueryHookResult = ReturnType<typeof useGetFeedbacksSuspenseQuery>;
 export type GetFeedbacksQueryResult = Apollo.QueryResult<GetFeedbacksQuery, GetFeedbacksQueryVariables>;
+export const GetStudentFeedbackDocument = gql`
+    query GetStudentFeedback($id: String!, $rangeDate: RangeDate!) {
+  getStudentFeedback(id: $id, rangeDate: $rangeDate) {
+    id
+    title
+    intensity
+    feeling
+    satisfaction
+    date
+    comment
+  }
+}
+    `;
+
+/**
+ * __useGetStudentFeedbackQuery__
+ *
+ * To run a query within a React component, call `useGetStudentFeedbackQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetStudentFeedbackQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetStudentFeedbackQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *      rangeDate: // value for 'rangeDate'
+ *   },
+ * });
+ */
+export function useGetStudentFeedbackQuery(baseOptions: Apollo.QueryHookOptions<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables> & ({ variables: GetStudentFeedbackQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables>(GetStudentFeedbackDocument, options);
+      }
+export function useGetStudentFeedbackLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables>(GetStudentFeedbackDocument, options);
+        }
+export function useGetStudentFeedbackSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables>(GetStudentFeedbackDocument, options);
+        }
+export type GetStudentFeedbackQueryHookResult = ReturnType<typeof useGetStudentFeedbackQuery>;
+export type GetStudentFeedbackLazyQueryHookResult = ReturnType<typeof useGetStudentFeedbackLazyQuery>;
+export type GetStudentFeedbackSuspenseQueryHookResult = ReturnType<typeof useGetStudentFeedbackSuspenseQuery>;
+export type GetStudentFeedbackQueryResult = Apollo.QueryResult<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables>;
 export const GetListUsersCrewDocument = gql`
     query GetListUsersCrew($input: String) {
   getListUsersCrew(input: $input) {
@@ -4367,107 +4835,43 @@ export type GetListUsersCrewQueryHookResult = ReturnType<typeof useGetListUsersC
 export type GetListUsersCrewLazyQueryHookResult = ReturnType<typeof useGetListUsersCrewLazyQuery>;
 export type GetListUsersCrewSuspenseQueryHookResult = ReturnType<typeof useGetListUsersCrewSuspenseQuery>;
 export type GetListUsersCrewQueryResult = Apollo.QueryResult<GetListUsersCrewQuery, GetListUsersCrewQueryVariables>;
-export const GetMessagesDocument = gql`
-    query GetMessages($id: String!, $limit: Float, $cursor: String) {
-  getMessages(id: $id, limit: $limit, cursor: $cursor) {
-    totalCount
-    messages {
-      id
-      content
-      createdAt
-      readAt
-      repliedMessage {
-        id
-        content
-      }
-      sender {
-        id
-      }
-      receiver {
-        id
-      }
-    }
-  }
+export const GetMeDocument = gql`
+    query GetMe {
+  GetMe
 }
     `;
 
 /**
- * __useGetMessagesQuery__
+ * __useGetMeQuery__
  *
- * To run a query within a React component, call `useGetMessagesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetMessagesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetMeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetMessagesQuery({
- *   variables: {
- *      id: // value for 'id'
- *      limit: // value for 'limit'
- *      cursor: // value for 'cursor'
- *   },
- * });
- */
-export function useGetMessagesQuery(baseOptions: Apollo.QueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables> & ({ variables: GetMessagesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
-      }
-export function useGetMessagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
-        }
-export function useGetMessagesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMessagesQuery, GetMessagesQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetMessagesQuery, GetMessagesQueryVariables>(GetMessagesDocument, options);
-        }
-export type GetMessagesQueryHookResult = ReturnType<typeof useGetMessagesQuery>;
-export type GetMessagesLazyQueryHookResult = ReturnType<typeof useGetMessagesLazyQuery>;
-export type GetMessagesSuspenseQueryHookResult = ReturnType<typeof useGetMessagesSuspenseQuery>;
-export type GetMessagesQueryResult = Apollo.QueryResult<GetMessagesQuery, GetMessagesQueryVariables>;
-export const GetMyCoachDocument = gql`
-    query GetMyCoach {
-  getMyCoach {
-    id
-    email
-    firstname
-    lastname
-    avatar
-  }
-}
-    `;
-
-/**
- * __useGetMyCoachQuery__
- *
- * To run a query within a React component, call `useGetMyCoachQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetMyCoachQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetMyCoachQuery({
+ * const { data, loading, error } = useGetMeQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetMyCoachQuery(baseOptions?: Apollo.QueryHookOptions<GetMyCoachQuery, GetMyCoachQueryVariables>) {
+export function useGetMeQuery(baseOptions?: Apollo.QueryHookOptions<GetMeQuery, GetMeQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetMyCoachQuery, GetMyCoachQueryVariables>(GetMyCoachDocument, options);
+        return Apollo.useQuery<GetMeQuery, GetMeQueryVariables>(GetMeDocument, options);
       }
-export function useGetMyCoachLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyCoachQuery, GetMyCoachQueryVariables>) {
+export function useGetMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMeQuery, GetMeQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetMyCoachQuery, GetMyCoachQueryVariables>(GetMyCoachDocument, options);
+          return Apollo.useLazyQuery<GetMeQuery, GetMeQueryVariables>(GetMeDocument, options);
         }
-export function useGetMyCoachSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyCoachQuery, GetMyCoachQueryVariables>) {
+export function useGetMeSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMeQuery, GetMeQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetMyCoachQuery, GetMyCoachQueryVariables>(GetMyCoachDocument, options);
+          return Apollo.useSuspenseQuery<GetMeQuery, GetMeQueryVariables>(GetMeDocument, options);
         }
-export type GetMyCoachQueryHookResult = ReturnType<typeof useGetMyCoachQuery>;
-export type GetMyCoachLazyQueryHookResult = ReturnType<typeof useGetMyCoachLazyQuery>;
-export type GetMyCoachSuspenseQueryHookResult = ReturnType<typeof useGetMyCoachSuspenseQuery>;
-export type GetMyCoachQueryResult = Apollo.QueryResult<GetMyCoachQuery, GetMyCoachQueryVariables>;
+export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
+export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
+export type GetMeSuspenseQueryHookResult = ReturnType<typeof useGetMeSuspenseQuery>;
+export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;
 export const GetMyMembershipDocument = gql`
     query GetMyMembership {
   getMembership {
@@ -4515,185 +4919,66 @@ export type GetMyMembershipQueryHookResult = ReturnType<typeof useGetMyMembershi
 export type GetMyMembershipLazyQueryHookResult = ReturnType<typeof useGetMyMembershipLazyQuery>;
 export type GetMyMembershipSuspenseQueryHookResult = ReturnType<typeof useGetMyMembershipSuspenseQuery>;
 export type GetMyMembershipQueryResult = Apollo.QueryResult<GetMyMembershipQuery, GetMyMembershipQueryVariables>;
-export const GetMyOffersDocument = gql`
-    query GetMyOffers($status: OfferStatus) {
-  getCoachOffers(status: $status) {
+export const GetProgressDocument = gql`
+    query GetProgress {
+  getProgress {
     id
-    name
-    price
-    description
-    availability
-    durability
-    category {
-      label
-      id
-    }
-    crew {
-      id
-      name
-    }
+    profile
+    training
+    program
+    offer
+    searchCoach
+    searchProgram
   }
 }
     `;
 
 /**
- * __useGetMyOffersQuery__
+ * __useGetProgressQuery__
  *
- * To run a query within a React component, call `useGetMyOffersQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetMyOffersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetProgressQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProgressQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetMyOffersQuery({
- *   variables: {
- *      status: // value for 'status'
- *   },
- * });
- */
-export function useGetMyOffersQuery(baseOptions?: Apollo.QueryHookOptions<GetMyOffersQuery, GetMyOffersQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetMyOffersQuery, GetMyOffersQueryVariables>(GetMyOffersDocument, options);
-      }
-export function useGetMyOffersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyOffersQuery, GetMyOffersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetMyOffersQuery, GetMyOffersQueryVariables>(GetMyOffersDocument, options);
-        }
-export function useGetMyOffersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyOffersQuery, GetMyOffersQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetMyOffersQuery, GetMyOffersQueryVariables>(GetMyOffersDocument, options);
-        }
-export type GetMyOffersQueryHookResult = ReturnType<typeof useGetMyOffersQuery>;
-export type GetMyOffersLazyQueryHookResult = ReturnType<typeof useGetMyOffersLazyQuery>;
-export type GetMyOffersSuspenseQueryHookResult = ReturnType<typeof useGetMyOffersSuspenseQuery>;
-export type GetMyOffersQueryResult = Apollo.QueryResult<GetMyOffersQuery, GetMyOffersQueryVariables>;
-export const GetMyProfileDocument = gql`
-    query GetMyProfile {
-  getCoachProfile {
-    id
-    name
-    description
-    specialisation
-    instagram
-    linkedin
-    facebook
-  }
-}
-    `;
-
-/**
- * __useGetMyProfileQuery__
- *
- * To run a query within a React component, call `useGetMyProfileQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetMyProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetMyProfileQuery({
+ * const { data, loading, error } = useGetProgressQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetMyProfileQuery(baseOptions?: Apollo.QueryHookOptions<GetMyProfileQuery, GetMyProfileQueryVariables>) {
+export function useGetProgressQuery(baseOptions?: Apollo.QueryHookOptions<GetProgressQuery, GetProgressQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetMyProfileQuery, GetMyProfileQueryVariables>(GetMyProfileDocument, options);
+        return Apollo.useQuery<GetProgressQuery, GetProgressQueryVariables>(GetProgressDocument, options);
       }
-export function useGetMyProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyProfileQuery, GetMyProfileQueryVariables>) {
+export function useGetProgressLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProgressQuery, GetProgressQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetMyProfileQuery, GetMyProfileQueryVariables>(GetMyProfileDocument, options);
+          return Apollo.useLazyQuery<GetProgressQuery, GetProgressQueryVariables>(GetProgressDocument, options);
         }
-export function useGetMyProfileSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyProfileQuery, GetMyProfileQueryVariables>) {
+export function useGetProgressSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetProgressQuery, GetProgressQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetMyProfileQuery, GetMyProfileQueryVariables>(GetMyProfileDocument, options);
+          return Apollo.useSuspenseQuery<GetProgressQuery, GetProgressQueryVariables>(GetProgressDocument, options);
         }
-export type GetMyProfileQueryHookResult = ReturnType<typeof useGetMyProfileQuery>;
-export type GetMyProfileLazyQueryHookResult = ReturnType<typeof useGetMyProfileLazyQuery>;
-export type GetMyProfileSuspenseQueryHookResult = ReturnType<typeof useGetMyProfileSuspenseQuery>;
-export type GetMyProfileQueryResult = Apollo.QueryResult<GetMyProfileQuery, GetMyProfileQueryVariables>;
-export const GetMyProgramsDocument = gql`
-    query GetMyPrograms($status: String) {
-  getPrograms(status: $status) {
+export type GetProgressQueryHookResult = ReturnType<typeof useGetProgressQuery>;
+export type GetProgressLazyQueryHookResult = ReturnType<typeof useGetProgressLazyQuery>;
+export type GetProgressSuspenseQueryHookResult = ReturnType<typeof useGetProgressSuspenseQuery>;
+export type GetProgressQueryResult = Apollo.QueryResult<GetProgressQuery, GetProgressQueryVariables>;
+export const GetInvoicesDocument = gql`
+    query GetInvoices {
+  getInvoices {
     id
-    title
-    description
     status
-    duration
-    public
-    price
-    level
-    category {
-      id
-      label
-    }
-  }
-}
-    `;
-
-/**
- * __useGetMyProgramsQuery__
- *
- * To run a query within a React component, call `useGetMyProgramsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetMyProgramsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetMyProgramsQuery({
- *   variables: {
- *      status: // value for 'status'
- *   },
- * });
- */
-export function useGetMyProgramsQuery(baseOptions?: Apollo.QueryHookOptions<GetMyProgramsQuery, GetMyProgramsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetMyProgramsQuery, GetMyProgramsQueryVariables>(GetMyProgramsDocument, options);
-      }
-export function useGetMyProgramsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyProgramsQuery, GetMyProgramsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetMyProgramsQuery, GetMyProgramsQueryVariables>(GetMyProgramsDocument, options);
-        }
-export function useGetMyProgramsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyProgramsQuery, GetMyProgramsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetMyProgramsQuery, GetMyProgramsQueryVariables>(GetMyProgramsDocument, options);
-        }
-export type GetMyProgramsQueryHookResult = ReturnType<typeof useGetMyProgramsQuery>;
-export type GetMyProgramsLazyQueryHookResult = ReturnType<typeof useGetMyProgramsLazyQuery>;
-export type GetMyProgramsSuspenseQueryHookResult = ReturnType<typeof useGetMyProgramsSuspenseQuery>;
-export type GetMyProgramsQueryResult = Apollo.QueryResult<GetMyProgramsQuery, GetMyProgramsQueryVariables>;
-export const GetMyTrainingDocument = gql`
-    query GetMyTraining($id: String!, $rangeDate: RangeDate!) {
-  getTrainingsById(id: $id, rangeDate: $rangeDate) {
-    createdByCoach
-    id
-    title
-    date
-    notes
-    editable
-    validate
-    crew {
-      id
-    }
-    exercices {
-      title
-      id
-      serie
-      rep
-      intensity
-      weight
-      tempo
-      repFormat
-      weightFormat
-      intensityFormat
-      notes
-      position
-      exerciceModel {
+    amountPaid
+    currency
+    invoicePdf
+    hostedInvoicePdf
+    paidAt
+    nextPaymentAt
+    profileSubscription {
+      profile {
         id
-        image
-        title
+        name
       }
     }
   }
@@ -4701,38 +4986,77 @@ export const GetMyTrainingDocument = gql`
     `;
 
 /**
- * __useGetMyTrainingQuery__
+ * __useGetInvoicesQuery__
  *
- * To run a query within a React component, call `useGetMyTrainingQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetMyTrainingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetInvoicesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetInvoicesQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetMyTrainingQuery({
+ * const { data, loading, error } = useGetInvoicesQuery({
  *   variables: {
- *      id: // value for 'id'
- *      rangeDate: // value for 'rangeDate'
  *   },
  * });
  */
-export function useGetMyTrainingQuery(baseOptions: Apollo.QueryHookOptions<GetMyTrainingQuery, GetMyTrainingQueryVariables> & ({ variables: GetMyTrainingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useGetInvoicesQuery(baseOptions?: Apollo.QueryHookOptions<GetInvoicesQuery, GetInvoicesQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetMyTrainingQuery, GetMyTrainingQueryVariables>(GetMyTrainingDocument, options);
+        return Apollo.useQuery<GetInvoicesQuery, GetInvoicesQueryVariables>(GetInvoicesDocument, options);
       }
-export function useGetMyTrainingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyTrainingQuery, GetMyTrainingQueryVariables>) {
+export function useGetInvoicesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetInvoicesQuery, GetInvoicesQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetMyTrainingQuery, GetMyTrainingQueryVariables>(GetMyTrainingDocument, options);
+          return Apollo.useLazyQuery<GetInvoicesQuery, GetInvoicesQueryVariables>(GetInvoicesDocument, options);
         }
-export function useGetMyTrainingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyTrainingQuery, GetMyTrainingQueryVariables>) {
+export function useGetInvoicesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetInvoicesQuery, GetInvoicesQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetMyTrainingQuery, GetMyTrainingQueryVariables>(GetMyTrainingDocument, options);
+          return Apollo.useSuspenseQuery<GetInvoicesQuery, GetInvoicesQueryVariables>(GetInvoicesDocument, options);
         }
-export type GetMyTrainingQueryHookResult = ReturnType<typeof useGetMyTrainingQuery>;
-export type GetMyTrainingLazyQueryHookResult = ReturnType<typeof useGetMyTrainingLazyQuery>;
-export type GetMyTrainingSuspenseQueryHookResult = ReturnType<typeof useGetMyTrainingSuspenseQuery>;
-export type GetMyTrainingQueryResult = Apollo.QueryResult<GetMyTrainingQuery, GetMyTrainingQueryVariables>;
+export type GetInvoicesQueryHookResult = ReturnType<typeof useGetInvoicesQuery>;
+export type GetInvoicesLazyQueryHookResult = ReturnType<typeof useGetInvoicesLazyQuery>;
+export type GetInvoicesSuspenseQueryHookResult = ReturnType<typeof useGetInvoicesSuspenseQuery>;
+export type GetInvoicesQueryResult = Apollo.QueryResult<GetInvoicesQuery, GetInvoicesQueryVariables>;
+export const GetAllMuscleGroupDocument = gql`
+    query GetAllMuscleGroup {
+  getAllMuscleGroup {
+    id
+    key
+    label
+  }
+}
+    `;
+
+/**
+ * __useGetAllMuscleGroupQuery__
+ *
+ * To run a query within a React component, call `useGetAllMuscleGroupQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllMuscleGroupQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllMuscleGroupQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllMuscleGroupQuery(baseOptions?: Apollo.QueryHookOptions<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>(GetAllMuscleGroupDocument, options);
+      }
+export function useGetAllMuscleGroupLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>(GetAllMuscleGroupDocument, options);
+        }
+export function useGetAllMuscleGroupSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>(GetAllMuscleGroupDocument, options);
+        }
+export type GetAllMuscleGroupQueryHookResult = ReturnType<typeof useGetAllMuscleGroupQuery>;
+export type GetAllMuscleGroupLazyQueryHookResult = ReturnType<typeof useGetAllMuscleGroupLazyQuery>;
+export type GetAllMuscleGroupSuspenseQueryHookResult = ReturnType<typeof useGetAllMuscleGroupSuspenseQuery>;
+export type GetAllMuscleGroupQueryResult = Apollo.QueryResult<GetAllMuscleGroupQuery, GetAllMuscleGroupQueryVariables>;
 export const GetNotificationDocument = gql`
     query GetNotification($unread: Boolean!, $group: String) {
   getNotification(unread: $unread, group: $group) {
@@ -4857,14 +5181,17 @@ export type GetPreferenceNotificationQueryHookResult = ReturnType<typeof useGetP
 export type GetPreferenceNotificationLazyQueryHookResult = ReturnType<typeof useGetPreferenceNotificationLazyQuery>;
 export type GetPreferenceNotificationSuspenseQueryHookResult = ReturnType<typeof useGetPreferenceNotificationSuspenseQuery>;
 export type GetPreferenceNotificationQueryResult = Apollo.QueryResult<GetPreferenceNotificationQuery, GetPreferenceNotificationQueryVariables>;
-export const GetOneExericeModelDocument = gql`
-    query GetOneExericeModel($id: String!) {
-  getOneExericeModel(id: $id) {
+export const GetOneCoachOffersDocument = gql`
+    query GetOneCoachOffers($id: String!) {
+  getOneCoachOffers(id: $id) {
     id
-    title
-    image
+    name
+    price
     description
-    muscles {
+    availability
+    durability
+    category {
+      label
       id
     }
   }
@@ -4872,37 +5199,271 @@ export const GetOneExericeModelDocument = gql`
     `;
 
 /**
- * __useGetOneExericeModelQuery__
+ * __useGetOneCoachOffersQuery__
  *
- * To run a query within a React component, call `useGetOneExericeModelQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetOneExericeModelQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetOneCoachOffersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOneCoachOffersQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetOneExericeModelQuery({
+ * const { data, loading, error } = useGetOneCoachOffersQuery({
  *   variables: {
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useGetOneExericeModelQuery(baseOptions: Apollo.QueryHookOptions<GetOneExericeModelQuery, GetOneExericeModelQueryVariables> & ({ variables: GetOneExericeModelQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useGetOneCoachOffersQuery(baseOptions: Apollo.QueryHookOptions<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables> & ({ variables: GetOneCoachOffersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>(GetOneExericeModelDocument, options);
+        return Apollo.useQuery<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables>(GetOneCoachOffersDocument, options);
       }
-export function useGetOneExericeModelLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>) {
+export function useGetOneCoachOffersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>(GetOneExericeModelDocument, options);
+          return Apollo.useLazyQuery<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables>(GetOneCoachOffersDocument, options);
         }
-export function useGetOneExericeModelSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>) {
+export function useGetOneCoachOffersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>(GetOneExericeModelDocument, options);
+          return Apollo.useSuspenseQuery<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables>(GetOneCoachOffersDocument, options);
         }
-export type GetOneExericeModelQueryHookResult = ReturnType<typeof useGetOneExericeModelQuery>;
-export type GetOneExericeModelLazyQueryHookResult = ReturnType<typeof useGetOneExericeModelLazyQuery>;
-export type GetOneExericeModelSuspenseQueryHookResult = ReturnType<typeof useGetOneExericeModelSuspenseQuery>;
-export type GetOneExericeModelQueryResult = Apollo.QueryResult<GetOneExericeModelQuery, GetOneExericeModelQueryVariables>;
+export type GetOneCoachOffersQueryHookResult = ReturnType<typeof useGetOneCoachOffersQuery>;
+export type GetOneCoachOffersLazyQueryHookResult = ReturnType<typeof useGetOneCoachOffersLazyQuery>;
+export type GetOneCoachOffersSuspenseQueryHookResult = ReturnType<typeof useGetOneCoachOffersSuspenseQuery>;
+export type GetOneCoachOffersQueryResult = Apollo.QueryResult<GetOneCoachOffersQuery, GetOneCoachOffersQueryVariables>;
+export const GetMyOffersDocument = gql`
+    query GetMyOffers($status: OfferStatus) {
+  getCoachOffers(status: $status) {
+    id
+    name
+    price
+    description
+    availability
+    durability
+    category {
+      label
+      id
+    }
+    crew {
+      id
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetMyOffersQuery__
+ *
+ * To run a query within a React component, call `useGetMyOffersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMyOffersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMyOffersQuery({
+ *   variables: {
+ *      status: // value for 'status'
+ *   },
+ * });
+ */
+export function useGetMyOffersQuery(baseOptions?: Apollo.QueryHookOptions<GetMyOffersQuery, GetMyOffersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMyOffersQuery, GetMyOffersQueryVariables>(GetMyOffersDocument, options);
+      }
+export function useGetMyOffersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyOffersQuery, GetMyOffersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMyOffersQuery, GetMyOffersQueryVariables>(GetMyOffersDocument, options);
+        }
+export function useGetMyOffersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyOffersQuery, GetMyOffersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMyOffersQuery, GetMyOffersQueryVariables>(GetMyOffersDocument, options);
+        }
+export type GetMyOffersQueryHookResult = ReturnType<typeof useGetMyOffersQuery>;
+export type GetMyOffersLazyQueryHookResult = ReturnType<typeof useGetMyOffersLazyQuery>;
+export type GetMyOffersSuspenseQueryHookResult = ReturnType<typeof useGetMyOffersSuspenseQuery>;
+export type GetMyOffersQueryResult = Apollo.QueryResult<GetMyOffersQuery, GetMyOffersQueryVariables>;
+export const GetOneCoachProfileDocument = gql`
+    query GetOneCoachProfile($id: String!) {
+  getOneCoachProfile(id: $id) {
+    id
+    name
+    description
+    specialisation
+    facebook
+    instagram
+    linkedin
+    user {
+      firstname
+      lastname
+      avatar
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetOneCoachProfileQuery__
+ *
+ * To run a query within a React component, call `useGetOneCoachProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOneCoachProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOneCoachProfileQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetOneCoachProfileQuery(baseOptions: Apollo.QueryHookOptions<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables> & ({ variables: GetOneCoachProfileQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables>(GetOneCoachProfileDocument, options);
+      }
+export function useGetOneCoachProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables>(GetOneCoachProfileDocument, options);
+        }
+export function useGetOneCoachProfileSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables>(GetOneCoachProfileDocument, options);
+        }
+export type GetOneCoachProfileQueryHookResult = ReturnType<typeof useGetOneCoachProfileQuery>;
+export type GetOneCoachProfileLazyQueryHookResult = ReturnType<typeof useGetOneCoachProfileLazyQuery>;
+export type GetOneCoachProfileSuspenseQueryHookResult = ReturnType<typeof useGetOneCoachProfileSuspenseQuery>;
+export type GetOneCoachProfileQueryResult = Apollo.QueryResult<GetOneCoachProfileQuery, GetOneCoachProfileQueryVariables>;
+export const GetCurrentProfileSubscriptionDocument = gql`
+    query GetCurrentProfileSubscription {
+  getCurrentProfileSubscription {
+    id
+    status
+    currentPeriodEnd
+  }
+}
+    `;
+
+/**
+ * __useGetCurrentProfileSubscriptionQuery__
+ *
+ * To run a query within a React component, call `useGetCurrentProfileSubscriptionQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCurrentProfileSubscriptionQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCurrentProfileSubscriptionQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCurrentProfileSubscriptionQuery(baseOptions?: Apollo.QueryHookOptions<GetCurrentProfileSubscriptionQuery, GetCurrentProfileSubscriptionQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCurrentProfileSubscriptionQuery, GetCurrentProfileSubscriptionQueryVariables>(GetCurrentProfileSubscriptionDocument, options);
+      }
+export function useGetCurrentProfileSubscriptionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCurrentProfileSubscriptionQuery, GetCurrentProfileSubscriptionQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCurrentProfileSubscriptionQuery, GetCurrentProfileSubscriptionQueryVariables>(GetCurrentProfileSubscriptionDocument, options);
+        }
+export function useGetCurrentProfileSubscriptionSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCurrentProfileSubscriptionQuery, GetCurrentProfileSubscriptionQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetCurrentProfileSubscriptionQuery, GetCurrentProfileSubscriptionQueryVariables>(GetCurrentProfileSubscriptionDocument, options);
+        }
+export type GetCurrentProfileSubscriptionQueryHookResult = ReturnType<typeof useGetCurrentProfileSubscriptionQuery>;
+export type GetCurrentProfileSubscriptionLazyQueryHookResult = ReturnType<typeof useGetCurrentProfileSubscriptionLazyQuery>;
+export type GetCurrentProfileSubscriptionSuspenseQueryHookResult = ReturnType<typeof useGetCurrentProfileSubscriptionSuspenseQuery>;
+export type GetCurrentProfileSubscriptionQueryResult = Apollo.QueryResult<GetCurrentProfileSubscriptionQuery, GetCurrentProfileSubscriptionQueryVariables>;
+export const GetDayNumberTrainingDocument = gql`
+    query GetDayNumberTraining($programId: String!) {
+  getDayNumberTraining(id: $programId)
+}
+    `;
+
+/**
+ * __useGetDayNumberTrainingQuery__
+ *
+ * To run a query within a React component, call `useGetDayNumberTrainingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDayNumberTrainingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetDayNumberTrainingQuery({
+ *   variables: {
+ *      programId: // value for 'programId'
+ *   },
+ * });
+ */
+export function useGetDayNumberTrainingQuery(baseOptions: Apollo.QueryHookOptions<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables> & ({ variables: GetDayNumberTrainingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>(GetDayNumberTrainingDocument, options);
+      }
+export function useGetDayNumberTrainingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>(GetDayNumberTrainingDocument, options);
+        }
+export function useGetDayNumberTrainingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>(GetDayNumberTrainingDocument, options);
+        }
+export type GetDayNumberTrainingQueryHookResult = ReturnType<typeof useGetDayNumberTrainingQuery>;
+export type GetDayNumberTrainingLazyQueryHookResult = ReturnType<typeof useGetDayNumberTrainingLazyQuery>;
+export type GetDayNumberTrainingSuspenseQueryHookResult = ReturnType<typeof useGetDayNumberTrainingSuspenseQuery>;
+export type GetDayNumberTrainingQueryResult = Apollo.QueryResult<GetDayNumberTrainingQuery, GetDayNumberTrainingQueryVariables>;
+export const GetMyProgramsDocument = gql`
+    query GetMyPrograms($status: String) {
+  getPrograms(status: $status) {
+    id
+    title
+    description
+    status
+    duration
+    public
+    price
+    level
+    category {
+      id
+      label
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetMyProgramsQuery__
+ *
+ * To run a query within a React component, call `useGetMyProgramsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMyProgramsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMyProgramsQuery({
+ *   variables: {
+ *      status: // value for 'status'
+ *   },
+ * });
+ */
+export function useGetMyProgramsQuery(baseOptions?: Apollo.QueryHookOptions<GetMyProgramsQuery, GetMyProgramsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMyProgramsQuery, GetMyProgramsQueryVariables>(GetMyProgramsDocument, options);
+      }
+export function useGetMyProgramsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyProgramsQuery, GetMyProgramsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMyProgramsQuery, GetMyProgramsQueryVariables>(GetMyProgramsDocument, options);
+        }
+export function useGetMyProgramsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyProgramsQuery, GetMyProgramsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMyProgramsQuery, GetMyProgramsQueryVariables>(GetMyProgramsDocument, options);
+        }
+export type GetMyProgramsQueryHookResult = ReturnType<typeof useGetMyProgramsQuery>;
+export type GetMyProgramsLazyQueryHookResult = ReturnType<typeof useGetMyProgramsLazyQuery>;
+export type GetMyProgramsSuspenseQueryHookResult = ReturnType<typeof useGetMyProgramsSuspenseQuery>;
+export type GetMyProgramsQueryResult = Apollo.QueryResult<GetMyProgramsQuery, GetMyProgramsQueryVariables>;
 export const GetOneProgramMarketPlaceDocument = gql`
     query GetOneProgramMarketPlace($id: String!) {
   getOneProgramMarketPlace(id: $id) {
@@ -4966,52 +5527,6 @@ export type GetOneProgramMarketPlaceQueryHookResult = ReturnType<typeof useGetOn
 export type GetOneProgramMarketPlaceLazyQueryHookResult = ReturnType<typeof useGetOneProgramMarketPlaceLazyQuery>;
 export type GetOneProgramMarketPlaceSuspenseQueryHookResult = ReturnType<typeof useGetOneProgramMarketPlaceSuspenseQuery>;
 export type GetOneProgramMarketPlaceQueryResult = Apollo.QueryResult<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>;
-export const GetOneTrainingDocument = gql`
-    query GetOneTraining($id: String!) {
-  getOneTraining(id: $id) {
-    id
-    title
-    date
-    notes
-    createdByCoach
-    editable
-    validate
-  }
-}
-    `;
-
-/**
- * __useGetOneTrainingQuery__
- *
- * To run a query within a React component, call `useGetOneTrainingQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetOneTrainingQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetOneTrainingQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetOneTrainingQuery(baseOptions: Apollo.QueryHookOptions<GetOneTrainingQuery, GetOneTrainingQueryVariables> & ({ variables: GetOneTrainingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetOneTrainingQuery, GetOneTrainingQueryVariables>(GetOneTrainingDocument, options);
-      }
-export function useGetOneTrainingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneTrainingQuery, GetOneTrainingQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetOneTrainingQuery, GetOneTrainingQueryVariables>(GetOneTrainingDocument, options);
-        }
-export function useGetOneTrainingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOneTrainingQuery, GetOneTrainingQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetOneTrainingQuery, GetOneTrainingQueryVariables>(GetOneTrainingDocument, options);
-        }
-export type GetOneTrainingQueryHookResult = ReturnType<typeof useGetOneTrainingQuery>;
-export type GetOneTrainingLazyQueryHookResult = ReturnType<typeof useGetOneTrainingLazyQuery>;
-export type GetOneTrainingSuspenseQueryHookResult = ReturnType<typeof useGetOneTrainingSuspenseQuery>;
-export type GetOneTrainingQueryResult = Apollo.QueryResult<GetOneTrainingQuery, GetOneTrainingQueryVariables>;
 export const GetProgramsMarketPlaceDocument = gql`
     query GetProgramsMarketPlace {
   getProgramsMarketPlace {
@@ -5066,51 +5581,131 @@ export type GetProgramsMarketPlaceQueryHookResult = ReturnType<typeof useGetProg
 export type GetProgramsMarketPlaceLazyQueryHookResult = ReturnType<typeof useGetProgramsMarketPlaceLazyQuery>;
 export type GetProgramsMarketPlaceSuspenseQueryHookResult = ReturnType<typeof useGetProgramsMarketPlaceSuspenseQuery>;
 export type GetProgramsMarketPlaceQueryResult = Apollo.QueryResult<GetProgramsMarketPlaceQuery, GetProgramsMarketPlaceQueryVariables>;
-export const GetProgressDocument = gql`
-    query GetProgress {
-  getProgress {
+export const GetTrainingPlanDocument = gql`
+    query GetTrainingPlan($data: getTrainingType!) {
+  getTrainingPlan(data: $data) {
     id
-    profile
-    training
-    program
-    offer
-    searchCoach
-    searchProgram
+    title
+    dayNumber
+    notes
+    exercices {
+      id
+      title
+      serie
+      rep
+      intensity
+      weight
+      notes
+      tempo
+      repFormat
+      weightFormat
+      intensityFormat
+      position
+      exerciceModel {
+        id
+        image
+      }
+    }
   }
 }
     `;
 
 /**
- * __useGetProgressQuery__
+ * __useGetTrainingPlanQuery__
  *
- * To run a query within a React component, call `useGetProgressQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetProgressQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetTrainingPlanQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTrainingPlanQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetProgressQuery({
+ * const { data, loading, error } = useGetTrainingPlanQuery({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useGetTrainingPlanQuery(baseOptions: Apollo.QueryHookOptions<GetTrainingPlanQuery, GetTrainingPlanQueryVariables> & ({ variables: GetTrainingPlanQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>(GetTrainingPlanDocument, options);
+      }
+export function useGetTrainingPlanLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>(GetTrainingPlanDocument, options);
+        }
+export function useGetTrainingPlanSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>(GetTrainingPlanDocument, options);
+        }
+export type GetTrainingPlanQueryHookResult = ReturnType<typeof useGetTrainingPlanQuery>;
+export type GetTrainingPlanLazyQueryHookResult = ReturnType<typeof useGetTrainingPlanLazyQuery>;
+export type GetTrainingPlanSuspenseQueryHookResult = ReturnType<typeof useGetTrainingPlanSuspenseQuery>;
+export type GetTrainingPlanQueryResult = Apollo.QueryResult<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>;
+export const GetUserProgramsDocument = gql`
+    query GetUserPrograms {
+  getUserPrograms {
+    id
+    price
+    commissionRate
+    createdAt
+    startDate
+    paidAt
+    status
+    receip
+    user {
+      id
+      email
+      firstname
+      lastname
+      avatar
+    }
+    coach {
+      id
+      email
+      firstname
+      lastname
+      avatar
+    }
+    program {
+      id
+      title
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetUserProgramsQuery__
+ *
+ * To run a query within a React component, call `useGetUserProgramsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserProgramsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserProgramsQuery({
  *   variables: {
  *   },
  * });
  */
-export function useGetProgressQuery(baseOptions?: Apollo.QueryHookOptions<GetProgressQuery, GetProgressQueryVariables>) {
+export function useGetUserProgramsQuery(baseOptions?: Apollo.QueryHookOptions<GetUserProgramsQuery, GetUserProgramsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetProgressQuery, GetProgressQueryVariables>(GetProgressDocument, options);
+        return Apollo.useQuery<GetUserProgramsQuery, GetUserProgramsQueryVariables>(GetUserProgramsDocument, options);
       }
-export function useGetProgressLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProgressQuery, GetProgressQueryVariables>) {
+export function useGetUserProgramsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserProgramsQuery, GetUserProgramsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetProgressQuery, GetProgressQueryVariables>(GetProgressDocument, options);
+          return Apollo.useLazyQuery<GetUserProgramsQuery, GetUserProgramsQueryVariables>(GetUserProgramsDocument, options);
         }
-export function useGetProgressSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetProgressQuery, GetProgressQueryVariables>) {
+export function useGetUserProgramsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserProgramsQuery, GetUserProgramsQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetProgressQuery, GetProgressQueryVariables>(GetProgressDocument, options);
+          return Apollo.useSuspenseQuery<GetUserProgramsQuery, GetUserProgramsQueryVariables>(GetUserProgramsDocument, options);
         }
-export type GetProgressQueryHookResult = ReturnType<typeof useGetProgressQuery>;
-export type GetProgressLazyQueryHookResult = ReturnType<typeof useGetProgressLazyQuery>;
-export type GetProgressSuspenseQueryHookResult = ReturnType<typeof useGetProgressSuspenseQuery>;
-export type GetProgressQueryResult = Apollo.QueryResult<GetProgressQuery, GetProgressQueryVariables>;
+export type GetUserProgramsQueryHookResult = ReturnType<typeof useGetUserProgramsQuery>;
+export type GetUserProgramsLazyQueryHookResult = ReturnType<typeof useGetUserProgramsLazyQuery>;
+export type GetUserProgramsSuspenseQueryHookResult = ReturnType<typeof useGetUserProgramsSuspenseQuery>;
+export type GetUserProgramsQueryResult = Apollo.QueryResult<GetUserProgramsQuery, GetUserProgramsQueryVariables>;
 export const GetRequestDocument = gql`
     query GetRequest($id: String!) {
   getRequest(id: $id) {
@@ -5212,53 +5807,495 @@ export type GetSentQueryHookResult = ReturnType<typeof useGetSentQuery>;
 export type GetSentLazyQueryHookResult = ReturnType<typeof useGetSentLazyQuery>;
 export type GetSentSuspenseQueryHookResult = ReturnType<typeof useGetSentSuspenseQuery>;
 export type GetSentQueryResult = Apollo.QueryResult<GetSentQuery, GetSentQueryVariables>;
-export const GetStudentFeedbackDocument = gql`
-    query GetStudentFeedback($id: String!, $rangeDate: RangeDate!) {
-  getStudentFeedback(id: $id, rangeDate: $rangeDate) {
-    id
-    title
-    intensity
-    feeling
-    satisfaction
-    date
-    comment
-  }
+export const GetTotalRequestsDocument = gql`
+    query GetTotalRequests {
+  getTotalRequests
 }
     `;
 
 /**
- * __useGetStudentFeedbackQuery__
+ * __useGetTotalRequestsQuery__
  *
- * To run a query within a React component, call `useGetStudentFeedbackQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetStudentFeedbackQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetTotalRequestsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTotalRequestsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetStudentFeedbackQuery({
+ * const { data, loading, error } = useGetTotalRequestsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetTotalRequestsQuery(baseOptions?: Apollo.QueryHookOptions<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>(GetTotalRequestsDocument, options);
+      }
+export function useGetTotalRequestsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>(GetTotalRequestsDocument, options);
+        }
+export function useGetTotalRequestsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>(GetTotalRequestsDocument, options);
+        }
+export type GetTotalRequestsQueryHookResult = ReturnType<typeof useGetTotalRequestsQuery>;
+export type GetTotalRequestsLazyQueryHookResult = ReturnType<typeof useGetTotalRequestsLazyQuery>;
+export type GetTotalRequestsSuspenseQueryHookResult = ReturnType<typeof useGetTotalRequestsSuspenseQuery>;
+export type GetTotalRequestsQueryResult = Apollo.QueryResult<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>;
+export const GetConnectUrlDocument = gql`
+    query GetConnectUrl {
+  getConnectUrl
+}
+    `;
+
+/**
+ * __useGetConnectUrlQuery__
+ *
+ * To run a query within a React component, call `useGetConnectUrlQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetConnectUrlQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetConnectUrlQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetConnectUrlQuery(baseOptions?: Apollo.QueryHookOptions<GetConnectUrlQuery, GetConnectUrlQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetConnectUrlQuery, GetConnectUrlQueryVariables>(GetConnectUrlDocument, options);
+      }
+export function useGetConnectUrlLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetConnectUrlQuery, GetConnectUrlQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetConnectUrlQuery, GetConnectUrlQueryVariables>(GetConnectUrlDocument, options);
+        }
+export function useGetConnectUrlSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetConnectUrlQuery, GetConnectUrlQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetConnectUrlQuery, GetConnectUrlQueryVariables>(GetConnectUrlDocument, options);
+        }
+export type GetConnectUrlQueryHookResult = ReturnType<typeof useGetConnectUrlQuery>;
+export type GetConnectUrlLazyQueryHookResult = ReturnType<typeof useGetConnectUrlLazyQuery>;
+export type GetConnectUrlSuspenseQueryHookResult = ReturnType<typeof useGetConnectUrlSuspenseQuery>;
+export type GetConnectUrlQueryResult = Apollo.QueryResult<GetConnectUrlQuery, GetConnectUrlQueryVariables>;
+export const GetProfilePricingDocument = gql`
+    query GetProfilePricing {
+  getProfilePricing {
+    id
+    name
+    monthlyAmount
+    yearlyAmount
+  }
+}
+    `;
+
+/**
+ * __useGetProfilePricingQuery__
+ *
+ * To run a query within a React component, call `useGetProfilePricingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProfilePricingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProfilePricingQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetProfilePricingQuery(baseOptions?: Apollo.QueryHookOptions<GetProfilePricingQuery, GetProfilePricingQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetProfilePricingQuery, GetProfilePricingQueryVariables>(GetProfilePricingDocument, options);
+      }
+export function useGetProfilePricingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProfilePricingQuery, GetProfilePricingQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetProfilePricingQuery, GetProfilePricingQueryVariables>(GetProfilePricingDocument, options);
+        }
+export function useGetProfilePricingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetProfilePricingQuery, GetProfilePricingQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetProfilePricingQuery, GetProfilePricingQueryVariables>(GetProfilePricingDocument, options);
+        }
+export type GetProfilePricingQueryHookResult = ReturnType<typeof useGetProfilePricingQuery>;
+export type GetProfilePricingLazyQueryHookResult = ReturnType<typeof useGetProfilePricingLazyQuery>;
+export type GetProfilePricingSuspenseQueryHookResult = ReturnType<typeof useGetProfilePricingSuspenseQuery>;
+export type GetProfilePricingQueryResult = Apollo.QueryResult<GetProfilePricingQuery, GetProfilePricingQueryVariables>;
+export const GetPortailStripDocument = gql`
+    query GetPortailStrip {
+  getPortailStrip
+}
+    `;
+
+/**
+ * __useGetPortailStripQuery__
+ *
+ * To run a query within a React component, call `useGetPortailStripQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPortailStripQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPortailStripQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPortailStripQuery(baseOptions?: Apollo.QueryHookOptions<GetPortailStripQuery, GetPortailStripQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPortailStripQuery, GetPortailStripQueryVariables>(GetPortailStripDocument, options);
+      }
+export function useGetPortailStripLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPortailStripQuery, GetPortailStripQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPortailStripQuery, GetPortailStripQueryVariables>(GetPortailStripDocument, options);
+        }
+export function useGetPortailStripSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPortailStripQuery, GetPortailStripQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPortailStripQuery, GetPortailStripQueryVariables>(GetPortailStripDocument, options);
+        }
+export type GetPortailStripQueryHookResult = ReturnType<typeof useGetPortailStripQuery>;
+export type GetPortailStripLazyQueryHookResult = ReturnType<typeof useGetPortailStripLazyQuery>;
+export type GetPortailStripSuspenseQueryHookResult = ReturnType<typeof useGetPortailStripSuspenseQuery>;
+export type GetPortailStripQueryResult = Apollo.QueryResult<GetPortailStripQuery, GetPortailStripQueryVariables>;
+export const GetCoachDocument = gql`
+    query GetCoach($id: String!) {
+  getUserById(id: $id) {
+    coach {
+      id
+      email
+      firstname
+      lastname
+      roles
+      avatar
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetCoachQuery__
+ *
+ * To run a query within a React component, call `useGetCoachQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCoachQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCoachQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetCoachQuery(baseOptions: Apollo.QueryHookOptions<GetCoachQuery, GetCoachQueryVariables> & ({ variables: GetCoachQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCoachQuery, GetCoachQueryVariables>(GetCoachDocument, options);
+      }
+export function useGetCoachLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCoachQuery, GetCoachQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCoachQuery, GetCoachQueryVariables>(GetCoachDocument, options);
+        }
+export function useGetCoachSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCoachQuery, GetCoachQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetCoachQuery, GetCoachQueryVariables>(GetCoachDocument, options);
+        }
+export type GetCoachQueryHookResult = ReturnType<typeof useGetCoachQuery>;
+export type GetCoachLazyQueryHookResult = ReturnType<typeof useGetCoachLazyQuery>;
+export type GetCoachSuspenseQueryHookResult = ReturnType<typeof useGetCoachSuspenseQuery>;
+export type GetCoachQueryResult = Apollo.QueryResult<GetCoachQuery, GetCoachQueryVariables>;
+export const GetMyCoachDocument = gql`
+    query GetMyCoach {
+  getMyCoach {
+    id
+    email
+    firstname
+    lastname
+    avatar
+  }
+}
+    `;
+
+/**
+ * __useGetMyCoachQuery__
+ *
+ * To run a query within a React component, call `useGetMyCoachQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMyCoachQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMyCoachQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetMyCoachQuery(baseOptions?: Apollo.QueryHookOptions<GetMyCoachQuery, GetMyCoachQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMyCoachQuery, GetMyCoachQueryVariables>(GetMyCoachDocument, options);
+      }
+export function useGetMyCoachLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyCoachQuery, GetMyCoachQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMyCoachQuery, GetMyCoachQueryVariables>(GetMyCoachDocument, options);
+        }
+export function useGetMyCoachSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyCoachQuery, GetMyCoachQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMyCoachQuery, GetMyCoachQueryVariables>(GetMyCoachDocument, options);
+        }
+export type GetMyCoachQueryHookResult = ReturnType<typeof useGetMyCoachQuery>;
+export type GetMyCoachLazyQueryHookResult = ReturnType<typeof useGetMyCoachLazyQuery>;
+export type GetMyCoachSuspenseQueryHookResult = ReturnType<typeof useGetMyCoachSuspenseQuery>;
+export type GetMyCoachQueryResult = Apollo.QueryResult<GetMyCoachQuery, GetMyCoachQueryVariables>;
+export const SelectCoachDocument = gql`
+    query SelectCoach($id: String!, $price: [Float!], $input: String, $categorie: String) {
+  selectCoach(id: $id, price: $price, input: $input, categorie: $categorie) {
+    id
+    email
+    firstname
+    lastname
+    roles
+    avatar
+    coachProfile {
+      id
+      name
+      specialisation
+    }
+    offers {
+      id
+      price
+      name
+      description
+      availability
+      durability
+      category {
+        id
+        label
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useSelectCoachQuery__
+ *
+ * To run a query within a React component, call `useSelectCoachQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSelectCoachQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSelectCoachQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *      price: // value for 'price'
+ *      input: // value for 'input'
+ *      categorie: // value for 'categorie'
+ *   },
+ * });
+ */
+export function useSelectCoachQuery(baseOptions: Apollo.QueryHookOptions<SelectCoachQuery, SelectCoachQueryVariables> & ({ variables: SelectCoachQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SelectCoachQuery, SelectCoachQueryVariables>(SelectCoachDocument, options);
+      }
+export function useSelectCoachLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SelectCoachQuery, SelectCoachQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SelectCoachQuery, SelectCoachQueryVariables>(SelectCoachDocument, options);
+        }
+export function useSelectCoachSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SelectCoachQuery, SelectCoachQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SelectCoachQuery, SelectCoachQueryVariables>(SelectCoachDocument, options);
+        }
+export type SelectCoachQueryHookResult = ReturnType<typeof useSelectCoachQuery>;
+export type SelectCoachLazyQueryHookResult = ReturnType<typeof useSelectCoachLazyQuery>;
+export type SelectCoachSuspenseQueryHookResult = ReturnType<typeof useSelectCoachSuspenseQuery>;
+export type SelectCoachQueryResult = Apollo.QueryResult<SelectCoachQuery, SelectCoachQueryVariables>;
+export const GetCrewTrainingDocument = gql`
+    query GetCrewTraining($id: String!, $rangeDate: RangeDate!) {
+  getCrewTraining(id: $id, rangeDate: $rangeDate) {
+    id
+    title
+    date
+    notes
+    createdByCoach
+    editable
+    validate
+    exercices {
+      title
+      id
+      serie
+      rep
+      intensity
+      weight
+      tempo
+      repFormat
+      weightFormat
+      intensityFormat
+      notes
+      position
+      exerciceModel {
+        id
+        image
+        title
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetCrewTrainingQuery__
+ *
+ * To run a query within a React component, call `useGetCrewTrainingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCrewTrainingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCrewTrainingQuery({
  *   variables: {
  *      id: // value for 'id'
  *      rangeDate: // value for 'rangeDate'
  *   },
  * });
  */
-export function useGetStudentFeedbackQuery(baseOptions: Apollo.QueryHookOptions<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables> & ({ variables: GetStudentFeedbackQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useGetCrewTrainingQuery(baseOptions: Apollo.QueryHookOptions<GetCrewTrainingQuery, GetCrewTrainingQueryVariables> & ({ variables: GetCrewTrainingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables>(GetStudentFeedbackDocument, options);
+        return Apollo.useQuery<GetCrewTrainingQuery, GetCrewTrainingQueryVariables>(GetCrewTrainingDocument, options);
       }
-export function useGetStudentFeedbackLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables>) {
+export function useGetCrewTrainingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCrewTrainingQuery, GetCrewTrainingQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables>(GetStudentFeedbackDocument, options);
+          return Apollo.useLazyQuery<GetCrewTrainingQuery, GetCrewTrainingQueryVariables>(GetCrewTrainingDocument, options);
         }
-export function useGetStudentFeedbackSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables>) {
+export function useGetCrewTrainingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCrewTrainingQuery, GetCrewTrainingQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables>(GetStudentFeedbackDocument, options);
+          return Apollo.useSuspenseQuery<GetCrewTrainingQuery, GetCrewTrainingQueryVariables>(GetCrewTrainingDocument, options);
         }
-export type GetStudentFeedbackQueryHookResult = ReturnType<typeof useGetStudentFeedbackQuery>;
-export type GetStudentFeedbackLazyQueryHookResult = ReturnType<typeof useGetStudentFeedbackLazyQuery>;
-export type GetStudentFeedbackSuspenseQueryHookResult = ReturnType<typeof useGetStudentFeedbackSuspenseQuery>;
-export type GetStudentFeedbackQueryResult = Apollo.QueryResult<GetStudentFeedbackQuery, GetStudentFeedbackQueryVariables>;
+export type GetCrewTrainingQueryHookResult = ReturnType<typeof useGetCrewTrainingQuery>;
+export type GetCrewTrainingLazyQueryHookResult = ReturnType<typeof useGetCrewTrainingLazyQuery>;
+export type GetCrewTrainingSuspenseQueryHookResult = ReturnType<typeof useGetCrewTrainingSuspenseQuery>;
+export type GetCrewTrainingQueryResult = Apollo.QueryResult<GetCrewTrainingQuery, GetCrewTrainingQueryVariables>;
+export const GetMyTrainingDocument = gql`
+    query GetMyTraining($id: String!, $rangeDate: RangeDate!) {
+  getTrainingsById(id: $id, rangeDate: $rangeDate) {
+    createdByCoach
+    id
+    title
+    date
+    notes
+    editable
+    validate
+    crew {
+      id
+    }
+    exercices {
+      title
+      id
+      serie
+      rep
+      intensity
+      weight
+      tempo
+      repFormat
+      weightFormat
+      intensityFormat
+      notes
+      position
+      exerciceModel {
+        id
+        image
+        title
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetMyTrainingQuery__
+ *
+ * To run a query within a React component, call `useGetMyTrainingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMyTrainingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMyTrainingQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *      rangeDate: // value for 'rangeDate'
+ *   },
+ * });
+ */
+export function useGetMyTrainingQuery(baseOptions: Apollo.QueryHookOptions<GetMyTrainingQuery, GetMyTrainingQueryVariables> & ({ variables: GetMyTrainingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMyTrainingQuery, GetMyTrainingQueryVariables>(GetMyTrainingDocument, options);
+      }
+export function useGetMyTrainingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMyTrainingQuery, GetMyTrainingQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMyTrainingQuery, GetMyTrainingQueryVariables>(GetMyTrainingDocument, options);
+        }
+export function useGetMyTrainingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMyTrainingQuery, GetMyTrainingQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMyTrainingQuery, GetMyTrainingQueryVariables>(GetMyTrainingDocument, options);
+        }
+export type GetMyTrainingQueryHookResult = ReturnType<typeof useGetMyTrainingQuery>;
+export type GetMyTrainingLazyQueryHookResult = ReturnType<typeof useGetMyTrainingLazyQuery>;
+export type GetMyTrainingSuspenseQueryHookResult = ReturnType<typeof useGetMyTrainingSuspenseQuery>;
+export type GetMyTrainingQueryResult = Apollo.QueryResult<GetMyTrainingQuery, GetMyTrainingQueryVariables>;
+export const GetOneTrainingDocument = gql`
+    query GetOneTraining($id: String!) {
+  getOneTraining(id: $id) {
+    id
+    title
+    date
+    notes
+    createdByCoach
+    editable
+    validate
+  }
+}
+    `;
+
+/**
+ * __useGetOneTrainingQuery__
+ *
+ * To run a query within a React component, call `useGetOneTrainingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOneTrainingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOneTrainingQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetOneTrainingQuery(baseOptions: Apollo.QueryHookOptions<GetOneTrainingQuery, GetOneTrainingQueryVariables> & ({ variables: GetOneTrainingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOneTrainingQuery, GetOneTrainingQueryVariables>(GetOneTrainingDocument, options);
+      }
+export function useGetOneTrainingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneTrainingQuery, GetOneTrainingQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOneTrainingQuery, GetOneTrainingQueryVariables>(GetOneTrainingDocument, options);
+        }
+export function useGetOneTrainingSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOneTrainingQuery, GetOneTrainingQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetOneTrainingQuery, GetOneTrainingQueryVariables>(GetOneTrainingDocument, options);
+        }
+export type GetOneTrainingQueryHookResult = ReturnType<typeof useGetOneTrainingQuery>;
+export type GetOneTrainingLazyQueryHookResult = ReturnType<typeof useGetOneTrainingLazyQuery>;
+export type GetOneTrainingSuspenseQueryHookResult = ReturnType<typeof useGetOneTrainingSuspenseQuery>;
+export type GetOneTrainingQueryResult = Apollo.QueryResult<GetOneTrainingQuery, GetOneTrainingQueryVariables>;
 export const GetStudentTrainingsDocument = gql`
     query getStudentTrainings($id: String!, $rangeDate: RangeDate!) {
   getStudentTrainings(id: $id, rangeDate: $rangeDate) {
@@ -5325,321 +6362,6 @@ export type GetStudentTrainingsQueryHookResult = ReturnType<typeof useGetStudent
 export type GetStudentTrainingsLazyQueryHookResult = ReturnType<typeof useGetStudentTrainingsLazyQuery>;
 export type GetStudentTrainingsSuspenseQueryHookResult = ReturnType<typeof useGetStudentTrainingsSuspenseQuery>;
 export type GetStudentTrainingsQueryResult = Apollo.QueryResult<GetStudentTrainingsQuery, GetStudentTrainingsQueryVariables>;
-export const GetStudentsDocument = gql`
-    query getStudents($input: String, $id: String!, $crewId: String, $offerId: String, $sortRemaining: Boolean, $status: String, $page: Float, $limit: Float) {
-  getStudents(
-    input: $input
-    id: $id
-    crewId: $crewId
-    offerId: $offerId
-    sortRemaining: $sortRemaining
-    status: $status
-    page: $page
-    limit: $limit
-  ) {
-    totalCount
-    students {
-      email
-      firstname
-      lastname
-      roles
-      id
-      avatar
-      studentOffer {
-        name
-        durability
-        id
-      }
-      crew {
-        id
-        name
-      }
-      memberships {
-        id
-        endDate
-        isActive
-      }
-    }
-  }
-}
-    `;
-
-/**
- * __useGetStudentsQuery__
- *
- * To run a query within a React component, call `useGetStudentsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetStudentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetStudentsQuery({
- *   variables: {
- *      input: // value for 'input'
- *      id: // value for 'id'
- *      crewId: // value for 'crewId'
- *      offerId: // value for 'offerId'
- *      sortRemaining: // value for 'sortRemaining'
- *      status: // value for 'status'
- *      page: // value for 'page'
- *      limit: // value for 'limit'
- *   },
- * });
- */
-export function useGetStudentsQuery(baseOptions: Apollo.QueryHookOptions<GetStudentsQuery, GetStudentsQueryVariables> & ({ variables: GetStudentsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetStudentsQuery, GetStudentsQueryVariables>(GetStudentsDocument, options);
-      }
-export function useGetStudentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetStudentsQuery, GetStudentsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetStudentsQuery, GetStudentsQueryVariables>(GetStudentsDocument, options);
-        }
-export function useGetStudentsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetStudentsQuery, GetStudentsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetStudentsQuery, GetStudentsQueryVariables>(GetStudentsDocument, options);
-        }
-export type GetStudentsQueryHookResult = ReturnType<typeof useGetStudentsQuery>;
-export type GetStudentsLazyQueryHookResult = ReturnType<typeof useGetStudentsLazyQuery>;
-export type GetStudentsSuspenseQueryHookResult = ReturnType<typeof useGetStudentsSuspenseQuery>;
-export type GetStudentsQueryResult = Apollo.QueryResult<GetStudentsQuery, GetStudentsQueryVariables>;
-export const GetTotalRequestsDocument = gql`
-    query GetTotalRequests {
-  getTotalRequests
-}
-    `;
-
-/**
- * __useGetTotalRequestsQuery__
- *
- * To run a query within a React component, call `useGetTotalRequestsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTotalRequestsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTotalRequestsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetTotalRequestsQuery(baseOptions?: Apollo.QueryHookOptions<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>(GetTotalRequestsDocument, options);
-      }
-export function useGetTotalRequestsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>(GetTotalRequestsDocument, options);
-        }
-export function useGetTotalRequestsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>(GetTotalRequestsDocument, options);
-        }
-export type GetTotalRequestsQueryHookResult = ReturnType<typeof useGetTotalRequestsQuery>;
-export type GetTotalRequestsLazyQueryHookResult = ReturnType<typeof useGetTotalRequestsLazyQuery>;
-export type GetTotalRequestsSuspenseQueryHookResult = ReturnType<typeof useGetTotalRequestsSuspenseQuery>;
-export type GetTotalRequestsQueryResult = Apollo.QueryResult<GetTotalRequestsQuery, GetTotalRequestsQueryVariables>;
-export const GetTotalStudentsDocument = gql`
-    query GetTotalStudents {
-  getTotalStudents
-}
-    `;
-
-/**
- * __useGetTotalStudentsQuery__
- *
- * To run a query within a React component, call `useGetTotalStudentsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTotalStudentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTotalStudentsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetTotalStudentsQuery(baseOptions?: Apollo.QueryHookOptions<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>(GetTotalStudentsDocument, options);
-      }
-export function useGetTotalStudentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>(GetTotalStudentsDocument, options);
-        }
-export function useGetTotalStudentsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>(GetTotalStudentsDocument, options);
-        }
-export type GetTotalStudentsQueryHookResult = ReturnType<typeof useGetTotalStudentsQuery>;
-export type GetTotalStudentsLazyQueryHookResult = ReturnType<typeof useGetTotalStudentsLazyQuery>;
-export type GetTotalStudentsSuspenseQueryHookResult = ReturnType<typeof useGetTotalStudentsSuspenseQuery>;
-export type GetTotalStudentsQueryResult = Apollo.QueryResult<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>;
-export const GetTotalUnreadMessageDocument = gql`
-    query GetTotalUnreadMessage {
-  getTotalUnreadMessage
-}
-    `;
-
-/**
- * __useGetTotalUnreadMessageQuery__
- *
- * To run a query within a React component, call `useGetTotalUnreadMessageQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTotalUnreadMessageQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTotalUnreadMessageQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetTotalUnreadMessageQuery(baseOptions?: Apollo.QueryHookOptions<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>(GetTotalUnreadMessageDocument, options);
-      }
-export function useGetTotalUnreadMessageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>(GetTotalUnreadMessageDocument, options);
-        }
-export function useGetTotalUnreadMessageSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>(GetTotalUnreadMessageDocument, options);
-        }
-export type GetTotalUnreadMessageQueryHookResult = ReturnType<typeof useGetTotalUnreadMessageQuery>;
-export type GetTotalUnreadMessageLazyQueryHookResult = ReturnType<typeof useGetTotalUnreadMessageLazyQuery>;
-export type GetTotalUnreadMessageSuspenseQueryHookResult = ReturnType<typeof useGetTotalUnreadMessageSuspenseQuery>;
-export type GetTotalUnreadMessageQueryResult = Apollo.QueryResult<GetTotalUnreadMessageQuery, GetTotalUnreadMessageQueryVariables>;
-export const GetTrainingPlanDocument = gql`
-    query GetTrainingPlan($data: getTrainingType!) {
-  getTrainingPlan(data: $data) {
-    id
-    title
-    dayNumber
-    notes
-    exercices {
-      id
-      title
-      serie
-      rep
-      intensity
-      weight
-      notes
-      tempo
-      repFormat
-      weightFormat
-      intensityFormat
-      position
-      exerciceModel {
-        id
-        image
-      }
-    }
-  }
-}
-    `;
-
-/**
- * __useGetTrainingPlanQuery__
- *
- * To run a query within a React component, call `useGetTrainingPlanQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTrainingPlanQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTrainingPlanQuery({
- *   variables: {
- *      data: // value for 'data'
- *   },
- * });
- */
-export function useGetTrainingPlanQuery(baseOptions: Apollo.QueryHookOptions<GetTrainingPlanQuery, GetTrainingPlanQueryVariables> & ({ variables: GetTrainingPlanQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>(GetTrainingPlanDocument, options);
-      }
-export function useGetTrainingPlanLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>(GetTrainingPlanDocument, options);
-        }
-export function useGetTrainingPlanSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>(GetTrainingPlanDocument, options);
-        }
-export type GetTrainingPlanQueryHookResult = ReturnType<typeof useGetTrainingPlanQuery>;
-export type GetTrainingPlanLazyQueryHookResult = ReturnType<typeof useGetTrainingPlanLazyQuery>;
-export type GetTrainingPlanSuspenseQueryHookResult = ReturnType<typeof useGetTrainingPlanSuspenseQuery>;
-export type GetTrainingPlanQueryResult = Apollo.QueryResult<GetTrainingPlanQuery, GetTrainingPlanQueryVariables>;
-export const SelectCoachDocument = gql`
-    query SelectCoach($id: String!, $price: [Float!], $input: String, $categorie: String) {
-  selectCoach(id: $id, price: $price, input: $input, categorie: $categorie) {
-    id
-    email
-    firstname
-    lastname
-    roles
-    avatar
-    coachProfile {
-      id
-      name
-      specialisation
-    }
-    offers {
-      id
-      price
-      name
-      description
-      availability
-      durability
-      category {
-        id
-        label
-      }
-    }
-  }
-}
-    `;
-
-/**
- * __useSelectCoachQuery__
- *
- * To run a query within a React component, call `useSelectCoachQuery` and pass it any options that fit your needs.
- * When your component renders, `useSelectCoachQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useSelectCoachQuery({
- *   variables: {
- *      id: // value for 'id'
- *      price: // value for 'price'
- *      input: // value for 'input'
- *      categorie: // value for 'categorie'
- *   },
- * });
- */
-export function useSelectCoachQuery(baseOptions: Apollo.QueryHookOptions<SelectCoachQuery, SelectCoachQueryVariables> & ({ variables: SelectCoachQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<SelectCoachQuery, SelectCoachQueryVariables>(SelectCoachDocument, options);
-      }
-export function useSelectCoachLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SelectCoachQuery, SelectCoachQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<SelectCoachQuery, SelectCoachQueryVariables>(SelectCoachDocument, options);
-        }
-export function useSelectCoachSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SelectCoachQuery, SelectCoachQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<SelectCoachQuery, SelectCoachQueryVariables>(SelectCoachDocument, options);
-        }
-export type SelectCoachQueryHookResult = ReturnType<typeof useSelectCoachQuery>;
-export type SelectCoachLazyQueryHookResult = ReturnType<typeof useSelectCoachLazyQuery>;
-export type SelectCoachSuspenseQueryHookResult = ReturnType<typeof useSelectCoachSuspenseQuery>;
-export type SelectCoachQueryResult = Apollo.QueryResult<SelectCoachQuery, SelectCoachQueryVariables>;
 export const LastMessageReadDocument = gql`
     subscription LastMessageRead($id: String) {
   lastMessageRead(id: $id)

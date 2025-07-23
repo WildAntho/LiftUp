@@ -22,6 +22,7 @@ import { GraphQLError } from "graphql";
 import {
   regenerateToken,
   getExpirationTokenTime,
+  checkTokenVersion,
 } from "./services/userService";
 import { Response, Request } from "express";
 import { createPubSub } from "@graphql-yoga/subscription";
@@ -32,6 +33,9 @@ import { NotificationPreferenceResolver } from "./resolvers/notificationPreferen
 import { DashboardResolver } from "./resolvers/dashboardResolver";
 import { S3Resolver } from "./resolvers/s3Resolver";
 import { UserRole } from "./InputType/userType";
+import { AdminResolver } from "./resolvers/adminResolver";
+import { InvoiceResolver } from "./resolvers/invoiceResolver";
+import { ProfileSubscriptionResolver } from "./resolvers/profileSubscriptionResolver";
 
 type PubSubType = ReturnType<typeof createPubSub>;
 
@@ -62,6 +66,9 @@ export const createSchema = async (pubsub: PubSubType) => {
       NotificationPreferenceResolver,
       DashboardResolver,
       S3Resolver,
+      AdminResolver,
+      InvoiceResolver,
+      ProfileSubscriptionResolver,
     ],
     emitSchemaFile: true,
     pubSub: pubsub,
@@ -90,9 +97,16 @@ export const createContext = async (
       token,
       process.env.APP_SECRET
     ) as JwtPayload;
+    await checkTokenVersion(tokenContent.id, tokenContent.tokenVersion, res);
     const timeRemaining = getExpirationTokenTime(token);
     if (timeRemaining < 7200)
-      regenerateToken(tokenContent.id, tokenContent.role, res);
+      regenerateToken(
+        tokenContent.id,
+        tokenContent.role,
+        tokenContent.profile,
+        tokenContent.tokenVersion,
+        res
+      );
     return {
       req,
       res,

@@ -19,8 +19,9 @@ import { uploadURL } from "@/services/utils";
 import { Input, Select, SelectItem } from "@heroui/react";
 import { toast } from "sonner";
 import Saving from "@/components/Saving";
-import { useDebouncedCallback } from "@/services/useDebouncedCallback";
+import { useDebouncedCallback } from "@/services/hooks/useDebouncedCallback";
 import { FaMars, FaVenus } from "react-icons/fa";
+import AnimatedWrapper from "@/components/AnimatedWrapper";
 
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
 
@@ -46,7 +47,8 @@ export default function MyProfile() {
   ];
   const [showOldPassword, setShowOldPassword] = useState<boolean>(false);
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
   const renderIconSex = () => {
     switch (sex) {
       case "female":
@@ -130,7 +132,7 @@ export default function MyProfile() {
 
       if (user.data) {
         const newUser = user.data?.updateProfile;
-        setUser(newUser);
+        setUser({ ...newUser, profile: currentUser?.profile });
         toast.success("Votre profil a bien été mis à jour", {
           style: {
             backgroundColor: "#dcfce7",
@@ -197,8 +199,8 @@ export default function MyProfile() {
   };
 
   return (
-    <section className="w-full h-full flex flex-col justify-start items-start gap-10 py-4">
-      <section className="flex flex-col items-start justify-start gap-7 w-[60%] max-w-[800px] p-4 shadow-md rounded-xl border border-gray-200">
+    <AnimatedWrapper className="w-full h-full flex flex-col justify-start items-start gap-10 py-4">
+      <section className="flex flex-col items-start justify-start gap-7 w-[60%] 2xl:w-[50%] p-4 shadow-md rounded-xl border border-gray-200 bg-white">
         <div className="w-full flex justify-start items-center gap-8">
           <div
             className="relative flex justify-center items-center w-32 h-32 rounded-full overflow-hidden border border-gray-300 bg-gray-100 cursor-pointer"
@@ -292,17 +294,17 @@ export default function MyProfile() {
           </div>
         </section>
       </section>
-      <div className="w-[60%] max-w-[800px] p-4 rounded-xl shadow-md border border-gray-200 flex flex-col items-start justify-start gap-5">
+      <div className="w-[60%] 2xl:w-[50%] p-4 rounded-xl shadow-md border border-gray-200 flex flex-col items-start justify-start gap-5">
         <p className="flex justify-start items-center gap-2 text-lg font-semibold">
           <Award />
-          Votre souscription
+          Ton rôle
         </p>
         <section className="w-full h-full flex justify-center items-center gap-2">
           <CardRole role={UserRole.Coach} />
           <CardRole role={UserRole.Student} />
         </section>
       </div>
-      <div className="w-[60%] max-w-[800px] h-full p-4 rounded-xl shadow-md border border-gray-200 flex items-start justify-center gap-5">
+      <div className="w-[60%] 2xl:w-[50%] h-full p-4 rounded-xl shadow-md border border-gray-200 flex items-start justify-center gap-5">
         <section className="w-[50%] h-full flex flex-col justify-start items-start gap-1">
           <p className="flex justify-start items-start gap-2 text-lg font-semibold">
             <Lock />
@@ -384,6 +386,6 @@ export default function MyProfile() {
           </div>
         </section>
       </div>
-    </section>
+    </AnimatedWrapper>
   );
 }

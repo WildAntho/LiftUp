@@ -16,9 +16,11 @@ import { createNotification } from "../services/notificationsService";
 import { Program } from "../entities/program";
 import { ProgramMarketplaceResponse } from "../InputType/programType";
 import { UserProgram, UserProgramStatus } from "../entities/userProgram";
-import { In } from "typeorm";
+import { In, MoreThan } from "typeorm";
 import { stripe } from "../config/stripe";
-import { UserRole } from "../InputType/userType";
+import { Crew } from "../entities/crew";
+import { CtxUser } from "../InputType/coachType";
+import { checkStripeCustomerId } from "../services/stripeService";
 
 @Authorized("STUDENT")
 @Resolver(User)
@@ -38,7 +40,7 @@ export class StudentResolver {
       .leftJoinAndSelect("user.coachProfile", "coachProfile")
       .leftJoinAndSelect("user.offers", "offers")
       .leftJoinAndSelect("offers.category", "category")
-      .where("user.roles = :role", { role: UserRole.COACH });
+      .where("user.roles @> :role", { role: '["COACH"]' });
 
     // Ajouter des conditions de recherche par nom (firstname ou lastname)
     if (input) {
@@ -94,6 +96,16 @@ export class StudentResolver {
     // Exécuter la requête et retourner les résultats
     const users = await queryBuilder.getMany();
     return users;
+  }
+
+  @Query(() => Crew)
+  async getMyCrew(@Ctx() context: { user: CtxUser }) {
+    const crew = await Crew.createQueryBuilder("crew")
+      .leftJoinAndSelect("crew.students", "student")
+      .leftJoinAndSelect("crew.coach", "coach")
+      .where("student.id = :userId", { userId: context.user.id })
+      .getOne();
+    return crew;
   }
 
   @Query(() => [User])
@@ -197,6 +209,7 @@ export class StudentResolver {
     const programs = await Program.find({
       where: {
         public: true,
+        price: MoreThan(0),
       },
       relations: {
         category: true,
@@ -212,6 +225,7 @@ export class StudentResolver {
       where: {
         id,
         public: true,
+        price: MoreThan(0),
       },
       relations: {
         category: true,
@@ -244,15 +258,21 @@ export class StudentResolver {
     if (!program) {
       throw new Error("Programme introuvable");
     }
-    const coach = await User.findOneBy({ id: coachId });
+    const coach = await User.findOne({
+      where: { id: coachId },
+      relations: { coachProfile: true },
+    });
     if (!coach) {
       throw new Error("Aucun coach n'a été trouvé");
     }
-    if (!program.public) {
+    if (!program.public || !program.price) {
       throw new Error("Ce programme est privé");
     }
+    if (!coach?.coachProfile?.stripeAccountId) {
+      throw new Error("Le coach n’a pas de compte Stripe Connect.");
+    }
     // Vérifie si une souscription existe déjà (pending)
-    let subscription = await UserProgram.findOne({
+    let programSubscription = await UserProgram.findOne({
       where: {
         user: { id: user.id },
         program: { id: program.id },
@@ -260,24 +280,30 @@ export class StudentResolver {
       },
     });
 
-    if (!subscription) {
+    const commissionRate = 0.15;
+
+    if (!programSubscription) {
       // Crée la souscription si elle n'existe pas
-      subscription = UserProgram.create({
+      programSubscription = UserProgram.create({
         user,
         coach,
         program,
         status: UserProgramStatus.PENDING_PAYMENT,
         price: program.price || 0,
         startDate,
+        commissionRate,
+        currency: "eur",
       });
-      await subscription.save();
+      await programSubscription.save();
     }
+
+    const stripeCustomerId = await checkStripeCustomerId(user);
 
     // ✅ Toujours recalculer le Stripe Session pour cette souscription
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
-      customer_email: user.email,
+      customer: stripeCustomerId,
       line_items: [
         {
           price_data: {
@@ -285,21 +311,33 @@ export class StudentResolver {
             product_data: {
               name: `Programme : ${program.title}`,
             },
-            unit_amount: program.price && program.price * 100,
+            unit_amount: program.price && Math.round(program.price * 100),
           },
           quantity: 1,
         },
       ],
-      metadata: {
-        subscriptionId: subscription.id,
+      allow_promotion_codes: true,
+      payment_intent_data: {
+        metadata: {
+          programSubscriptionId: programSubscription.id,
+        },
+        transfer_data: {
+          destination: coach.coachProfile.stripeAccountId,
+        },
+        application_fee_amount: Math.round(
+          program.price * commissionRate * 100
+        ),
       },
-      success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      metadata: {
+        programSubscriptionId: programSubscription.id,
+      },
+      success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}&refetch=true`,
       cancel_url: `${process.env.FRONTEND_URL}/marketplace/program/${programId}`,
     });
 
     // ✅ Mets à jour le Stripe Session ID chaque fois
-    subscription.stripeSessionId = session.id;
-    await subscription.save();
+    programSubscription.stripeSessionId = session.id;
+    await programSubscription.save();
 
     return session.url!;
   }

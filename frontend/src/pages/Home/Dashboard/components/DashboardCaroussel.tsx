@@ -9,7 +9,7 @@ import { ReactElement, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { type CarouselApi } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { Button } from "@/components/ui/button";
+import { SlideButton } from "./SlideButton";
 
 type Items = {
   title: string;
@@ -74,17 +74,12 @@ export default function DashboardCaroussel({ items }: DashboardCarousselProps) {
                   <p className="text-lg font-semibold">{i.title}</p>
                   <p className="text-sm text-gray-600">{i.description}</p>
                 </div>
-                <Button
-                  data-testid="create-program-button"
-                  variant="link"
-                  className="group text-tertiary flex items-center gap-4 shadow-none h-16 w-auto rounded-xl hover:translate-y-[-2px] transition-all duration-200"
+                <div
+                  className="w-full h-full"
                   onClick={() => navigate(i.redirect)}
                 >
-                  {i.icon}
-                  <p className="text-md transition-all duration-200 group-hover:translate-x-1">
-                    {i.buttonContent}
-                  </p>
-                </Button>
+                  <SlideButton title={i.title} icon={i.icon} />
+                </div>
               </div>
             </CarouselItem>
           ))}
@@ -105,8 +100,8 @@ export default function DashboardCaroussel({ items }: DashboardCarousselProps) {
             onClick={() => api?.scrollTo(index)}
             className={`rounded-full transition-all duration-200 ${
               index === current
-                ? "bg-tertiary w-4 h-2"
-                : "bg-gray-300 hover:bg-gray-400 w-2 h-2"
+                ? "bg-primary w-4 h-2"
+                : "bg-primary/20 hover:bg-primary/40 w-2 h-2"
             }`}
             aria-label={`Aller à l'élément ${index + 1}`}
           />

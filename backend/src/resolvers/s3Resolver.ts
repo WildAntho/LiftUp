@@ -2,6 +2,7 @@ import { Arg, Authorized, Ctx, Field, Mutation, ObjectType, Resolver } from "typ
 import { ExerciceModel } from "../entities/exerciceModel";
 import { CtxUser } from "../InputType/coachType";
 import { generateFileName, generateS3SignedUrl } from "../services/s3Service";
+import { HasPermissionClass } from "../middleware/hasPermissionClass";
 
 @ObjectType()
 export class GenerateUploadURL {
@@ -12,6 +13,7 @@ export class GenerateUploadURL {
   fileName!: string;
 }
 
+@HasPermissionClass(["manage:Video"])
 @Authorized()
 @Resolver(ExerciceModel)
 export class S3Resolver {

@@ -46,6 +46,8 @@ import Cancel from "../Cancel";
 import ConfirmButton from "../ConfirmButton";
 import DateInput from "../DateInput";
 import { useRole } from "@/services/hooks/useRole";
+import { useHasPermission } from "@/services/hooks/hasPermission";
+import { PERMISSIONS } from "@/services/constants";
 
 interface Config {
   rep: number;
@@ -84,6 +86,7 @@ export default function TrainingModal({
   const currentStudent = useStudentStore((state) => state.student);
   const currentCrew = useCrewStore((state) => state.crew);
   const isCoach = useRole(UserRole.Coach);
+  const canManageFeedback = useHasPermission(PERMISSIONS.MANAGE_FEEDBACK);
   // To show on card Training
   const [addTraining, { loading }] = useAddTrainingMutation();
   const [addTrainingStudent, { loading: loadingStudent }] =
@@ -696,7 +699,8 @@ export default function TrainingModal({
               !currentStudent &&
               !currentCrew &&
               training?.crew === null &&
-              !training.validate && (
+              !training.validate &&
+              canManageFeedback && (
                 <ConfirmButton
                   onClick={() => setOpenFeedback(true)}
                   title="Valider l'entraînement"

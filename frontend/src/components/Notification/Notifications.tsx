@@ -202,7 +202,7 @@ export default function Notifications() {
           <IoIosNotificationsOutline className="w-[26px] h-[26px] text-gray-500 group-hover:text-gray-800 transition" />
         </div>
         {totalUnread > 0 && countRequest > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+          <span className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
             {!socketNotification ? totalUnread : countRequest}
           </span>
         )}

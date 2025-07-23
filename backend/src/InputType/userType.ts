@@ -1,4 +1,4 @@
-import { Field, InputType, registerEnumType } from "type-graphql";
+import { Field, InputType, ObjectType, registerEnumType } from "type-graphql";
 
 export enum UserRole {
   STUDENT = "STUDENT",
@@ -57,4 +57,19 @@ export class UpdateProfile {
 
   @Field({ nullable: true })
   avatar?: string;
+}
+
+@ObjectType()
+export class ProfileOutput {
+  @Field(() => String)
+  id!: string;
+
+  @Field()
+  name!: string;
+
+  @Field({ nullable: true })
+  monthlyAmount?: number;
+
+  @Field({ nullable: true })
+  yearlyAmount?: number;
 }
