@@ -55,6 +55,6 @@ export class Profile extends BaseEntity {
   @OneToMany(() => User, (user) => user.profile)
   users?: User[];
 
-  @OneToMany(() => ProfileSubscription, (subscription) => subscription.profile)
-  profileSubscriptions!: ProfileSubscription[];
+  @OneToMany(() => ProfileSubscription, (subscription) => subscription.profile, { nullable: true})
+  profileSubscriptions?: ProfileSubscription[];
 }

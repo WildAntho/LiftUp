@@ -25,6 +25,7 @@ const seedDatabase = async () => {
 
     // create profile
     const profile = new Profile();
+    profile.name = 'Coach-Maestro'
     profile.permissions = [];
     profile.permissions.push(permission);
     await profile.save();

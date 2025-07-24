@@ -58,9 +58,10 @@ describe("StudentResolver", () => {
 
       const result = await resolver.selectCoach("123", "john");
 
-      expect(mockWhere).toHaveBeenCalledWith("user.roles = :role", {
-        role: UserRole.COACH,
-      });
+      expect(mockWhere).toHaveBeenCalledWith(
+        "user.roles @> :role",
+        { role: '["COACH"]' }
+      );
       expect(mockAndWhere).toHaveBeenCalledWith(
         "(user.firstname ILIKE :input OR user.lastname ILIKE :input)",
         { input: "%john%" }

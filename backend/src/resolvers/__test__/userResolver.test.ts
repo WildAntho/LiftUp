@@ -11,6 +11,7 @@ import {
 jest.mock("../../entities/user");
 jest.mock("argon2");
 jest.mock("jsonwebtoken");
+jest.mock("stripe");
 
 describe("UserResolver", () => {
   let userResolver: UserResolver;
