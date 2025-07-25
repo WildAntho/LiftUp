@@ -6,7 +6,7 @@ import {
   useGetSentQuery,
   useSelectCoachQuery,
 } from "@/graphql/hooks";
-import { useUserStore } from "@/services/zustand/userStore";
+import { UserWithoutPassword, useUserStore } from "@/services/zustand/userStore";
 import { Receiver, Sender } from "@/type";
 import { Chip, Tabs, Tab, Progress } from "@heroui/react";
 import { PlaneTakeoff, Search, User } from "lucide-react";
@@ -180,7 +180,7 @@ export default function MyCoach() {
                       <div className="w-full flex flex-col justify-start items-center gap-2">
                         {allCoach.map((c) => (
                           <div key={c.id} className="w-full">
-                            <CoachCard coach={c} />
+                            <CoachCard coach={c as UserWithoutPassword} />
                           </div>
                         ))}
                       </div>
