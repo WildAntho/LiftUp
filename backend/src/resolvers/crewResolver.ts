@@ -3,10 +3,14 @@ import { Crew } from "../entities/crew";
 import { User } from "../entities/user";
 import { CtxUser } from "../InputType/coachType";
 import { ILike, In, IsNull, Like } from "typeorm";
+import { HasPermissionClass } from "../middleware/hasPermissionClass";
+import { TrainingData } from "../InputType/trainingType";
+import { createTrainingsForDates } from "../services/trainingService";
 
+@HasPermissionClass(["manage:Crew"])
+@Authorized("COACH")
 @Resolver(Crew)
 export class CrewResolver {
-  @Authorized("COACH")
   @Query(() => [User])
   async getListUsersCrew(
     @Ctx() context: { user: CtxUser },
@@ -42,7 +46,6 @@ export class CrewResolver {
     return users;
   }
 
-  @Authorized("COACH")
   @Query(() => [Crew])
   async getCoachCrews(@Ctx() context: { user: CtxUser }) {
     const crews = await Crew.find({
@@ -56,18 +59,6 @@ export class CrewResolver {
     return crews;
   }
 
-  @Authorized("STUDENT")
-  @Query(() => Crew)
-  async getMyCrew(@Ctx() context: { user: CtxUser }) {
-    const crew = await Crew.createQueryBuilder("crew")
-      .leftJoinAndSelect("crew.students", "student")
-      .leftJoinAndSelect("crew.coach", "coach")
-      .where("student.id = :userId", { userId: context.user.id })
-      .getOne();
-    return crew;
-  }
-
-  @Authorized("COACH")
   @Mutation(() => String)
   async createCrew(
     @Arg("ids", () => [String]) ids: string[],
@@ -100,7 +91,6 @@ export class CrewResolver {
     return JSON.stringify("L'équipe a été créé avec succès");
   }
 
-  @Authorized("COACH")
   @Mutation(() => String)
   async deleteCrew(@Arg("id") id: string) {
     const crew = await Crew.findOne({
@@ -113,7 +103,6 @@ export class CrewResolver {
     return JSON.stringify("L'équipe a bien été supprimé");
   }
 
-  @Authorized("COACH")
   @Mutation(() => String)
   async updateCrew(
     @Arg("id") id: string,
@@ -142,5 +131,30 @@ export class CrewResolver {
     crew.students = students;
     await crew.save();
     return JSON.stringify("L'équipe a bien été modifiée");
+  }
+
+  @Mutation(() => String)
+  async addTrainingCrew(
+    @Arg("data") data: TrainingData,
+    @Ctx() context: { user: CtxUser }
+  ) {
+    const crew = await Crew.findOne({
+      where: { id: data.id },
+      relations: { coach: true, trainings: true },
+    });
+    if (!crew || crew.coach?.id !== context.user.id) {
+      throw new Error("Vous n'êtes pas le coach de cet(te) élève");
+    }
+
+    // Ici, on ajoute une propriété spécifique indiquant que l'entraînement a été créé par un coach et qu'il n'est pas editable
+    const trainings = await createTrainingsForDates(data.date, data, crew, {
+      createdByCoach: context.user.id,
+      editable: false,
+      validate: true,
+    });
+
+    return JSON.stringify(
+      `${trainings.length} entraînements ont été créés avec succès`
+    );
   }
 }

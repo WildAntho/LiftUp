@@ -48,10 +48,18 @@ export default function OfferCard({
               >
                 {offer?.name}
               </div>
-              <Badge className="text-xs text-blue-500">
+              <Badge
+                className={`text-xs text-blue-500 ${
+                  !offer?.availability && "bg-gray-100 text-gray-500"
+                }`}
+              >
                 {offer?.category.label}
               </Badge>
-              <Badge className="text-xs text-green-500">
+              <Badge
+                className={`text-xs text-green-500 ${
+                  !offer?.availability && "bg-gray-100 text-gray-500"
+                }`}
+              >
                 {offer?.durability} mois
               </Badge>
             </div>

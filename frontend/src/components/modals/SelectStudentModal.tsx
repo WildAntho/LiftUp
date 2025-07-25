@@ -21,7 +21,7 @@ import { useCrewStore } from "@/services/zustand/crewStore";
 import PaginationBar from "../PaginationBar";
 import { Search } from "lucide-react";
 import { Separator } from "../ui/separator";
-import { useDebouncedCallback } from "@/services/useDebouncedCallback";
+import { useDebouncedCallback } from "@/services/hooks/useDebouncedCallback";
 import SkeletonUser from "../SkeletonUser";
 import { useRole } from "@/services/hooks/useRole";
 
@@ -51,7 +51,7 @@ export default function SelectStudentModal({
   const currentStudent = useStudentStore((state) => state.student);
   const setStudent = useStudentStore((state) => state.set);
   const clearCrew = useCrewStore((state) => state.clear);
-  const isCoach = useRole(UserRole.Coach)
+  const isCoach = useRole(UserRole.Coach);
   const [selected, setSelected] = useState(currentStudent?.id ?? "");
   const [page, setPage] = useState<number>(1);
   const limit = 20;

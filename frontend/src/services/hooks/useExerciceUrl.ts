@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useUserStore } from "./userStore";
+import { useUserStore } from "../zustand/userStore";
 
 export const useExerciceURL = (imageSource: string) => {
   const s3CloudFront = import.meta.env.VITE_S3_CLOUDFRONT;

@@ -17,6 +17,8 @@ import { dataURLtoFile } from "./dataURLtoFile";
 import { getYoutubeId, getYoutubeThumbnail } from "./youtubeHandling";
 import MuscleGroupSelect from "../MuscleGroupSelect";
 import { uploadFileToAWS } from "@/services/zustand/utils/s3utils";
+import { useHasPermission } from "@/services/hooks/hasPermission";
+import { PERMISSIONS } from "@/services/constants";
 
 type CreateExerciceProps = {
   allMuscleGroup: MuscleGroup[];
@@ -38,6 +40,8 @@ export default function CreateExercice({
   const [createExerciceModel, { loading }] = useCreateExerciceModelMutation();
   const [generateUploadURL] = useGenerateUploadUrlMutation();
   const toastIdRef = useRef<string | number | null>(null);
+
+  const canManageVideo = useHasPermission(PERMISSIONS.MANAGE_VIDEO);
 
   const handleChangeVideoSource = (source: VideoType) => {
     setYoutubeURL("");
@@ -200,42 +204,44 @@ export default function CreateExercice({
           setMuscles={setMuscles}
         />
       </section>
-      <section className="w-[70%] flex flex-col items-start justify-start gap-4 rounded-2xl border border-gray-100 shadow-sm p-4">
-        <div className="flex items-center gap-2 text-gray-700 my-2">
-          <Video size={20} />
-          <p className="font-semibold">Vidéo</p>
-        </div>
-        <div className="w-full flex justify-center">
-          <VideoSourceSelector
-            value={videoSource}
-            onChange={handleChangeVideoSource}
-          />
-        </div>
-        <div className="w-full flex flex-col gap-2 justify-center items-center">
-          {videoSource === VideoType.Perso && (
-            <UploadVideo
-              setFile={setFile}
-              setThumbnail={setThumbnail}
-              thumbnail={thumbnail}
+      {canManageVideo && (
+        <section className="w-[70%] flex flex-col items-start justify-start gap-4 rounded-2xl border border-gray-100 shadow-sm p-4">
+          <div className="flex items-center gap-2 text-gray-700 my-2">
+            <Video size={20} />
+            <p className="font-semibold">Vidéo</p>
+          </div>
+          <div className="w-full flex justify-center">
+            <VideoSourceSelector
+              value={videoSource}
+              onChange={handleChangeVideoSource}
             />
-          )}
-          {videoSource === VideoType.Youtube && (
-            <Input
-              type="text"
-              label="Lien de la vidéo"
-              value={youtubeURL}
-              onChange={(e) => setYoutubeURL(e.target.value)}
-            />
-          )}
-          {videoSource === VideoType.Youtube && thumbnail && (
-            <img
-              src={thumbnail}
-              alt="preview image video"
-              className="rounded-2xl"
-            />
-          )}
-        </div>
-      </section>
+          </div>
+          <div className="w-full flex flex-col gap-2 justify-center items-center">
+            {videoSource === VideoType.Perso && (
+              <UploadVideo
+                setFile={setFile}
+                setThumbnail={setThumbnail}
+                thumbnail={thumbnail}
+              />
+            )}
+            {videoSource === VideoType.Youtube && (
+              <Input
+                type="text"
+                label="Lien de la vidéo"
+                value={youtubeURL}
+                onChange={(e) => setYoutubeURL(e.target.value)}
+              />
+            )}
+            {videoSource === VideoType.Youtube && thumbnail && (
+              <img
+                src={thumbnail}
+                alt="preview image video"
+                className="rounded-2xl"
+              />
+            )}
+          </div>
+        </section>
+      )}
       <div className="w-[70%] flex justify-end items-center">
         <Saving onClick={handleCreateExerciceModel} loading={loading} />
       </div>

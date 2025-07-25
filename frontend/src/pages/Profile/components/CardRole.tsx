@@ -27,10 +27,10 @@ export default function CardRole({ role }: CardRoleProps) {
           role === UserRole.Coach ? "Coach" : "Sportif"
         }`}</p>
         {role === UserRole.Coach ? (
-          <p className="text-xs">Pour coacher tous vos élèves</p>
+          <p className="text-xs">Pour coacher tous tes élèves</p>
         ) : (
           <p className="text-xs">
-            Pour gérer tous vos entraînements personnels
+            Pour gérer tous tes entraînements personnels
           </p>
         )}
       </div>

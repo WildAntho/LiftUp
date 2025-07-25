@@ -18,7 +18,6 @@ import {
   useUpdateExerciceModelMutation,
   VideoType,
 } from "@/graphql/hooks";
-import { useExerciceURL } from "@/services/zustand/useExerciceUrl";
 import { Ban, Repeat, Save, SquarePlay, Trash2 } from "lucide-react";
 import VideoSourceSelector from "../CreateExercice/VideoSourceSelector";
 import UploadVideo from "../CreateExercice/UploadVideo";
@@ -31,6 +30,7 @@ import { toast } from "sonner";
 import ConfirmModal from "./ConfirmModal";
 import { dataURLtoFile } from "../CreateExercice/dataURLtoFile";
 import { uploadFileToAWS } from "@/services/zustand/utils/s3utils";
+import { useExerciceURL } from "@/services/hooks/useExerciceUrl";
 
 type UpdateExerciceModalProps = {
   isOpen: boolean;

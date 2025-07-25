@@ -21,6 +21,9 @@ import { FaUserEdit } from "react-icons/fa";
 import { HiOutlineLogout } from "react-icons/hi";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { useRole } from "@/services/hooks/useRole";
+import { useHasPermission } from "@/services/hooks/hasPermission";
+import { PERMISSIONS } from "@/services/constants";
+import InteractiveHoverButton from "./InteractiveHoverButton";
 
 type Link = {
   id: number;
@@ -38,6 +41,8 @@ export default function Navigation() {
   const path = location.pathname;
   const splitPath = path.split("/")[1];
   const currentUser = useUserStore((state) => state.user);
+  const canManageMessage = useHasPermission(PERMISSIONS.MANAGE_MESSAGE);
+  const canManageCrew = useHasPermission(PERMISSIONS.MANAGE_CREW);
   const links: Link[] = [
     {
       id: 1,
@@ -51,11 +56,15 @@ export default function Navigation() {
             value: "students",
             label: "Mes élèves",
           },
-          {
-            id: 3,
-            value: "crew",
-            label: "Mes équipes",
-          },
+          ...(canManageCrew
+            ? [
+                {
+                  id: 3,
+                  value: "crew",
+                  label: "Mes équipes",
+                },
+              ]
+            : []),
         ]
       : []),
     ...(isStudent
@@ -116,10 +125,11 @@ export default function Navigation() {
               </div>
             </Button>
           ))}
+          <InteractiveHoverButton />
         </section>
       </section>
       <section className="flex items-center gap-5">
-        <ChatIcon />
+        {canManageMessage && <ChatIcon />}
         <Notifications />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -143,7 +153,7 @@ export default function Navigation() {
               </DropdownMenuItem>
               {isAdmin && (
                 <DropdownMenuItem
-                  onClick={() => console.log("Je suis admin")}
+                  onClick={() => navigate("/admin")}
                   className="flex justify-start"
                 >
                   <MdAdminPanelSettings />

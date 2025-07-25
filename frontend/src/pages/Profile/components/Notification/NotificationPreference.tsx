@@ -7,18 +7,16 @@ import {
   useUpdatePreferenceNotificationMutation,
 } from "@/graphql/hooks";
 import { useRole } from "@/services/hooks/useRole";
-import { useDebouncedCallback } from "@/services/useDebouncedCallback";
+import { useDebouncedCallback } from "@/services/hooks/useDebouncedCallback";
 import { Switch } from "@heroui/switch";
-import {
-  BellOff,
-  BellRing,
-  BicepsFlexed,
-  Handshake,
-  MessageCircleQuestion,
-  Power,
-} from "lucide-react";
+import { FaQuestionCircle } from "react-icons/fa";
+import { FaCircleCheck } from "react-icons/fa6";
+import { FaPowerOff } from "react-icons/fa";
+import { FaFilePen } from "react-icons/fa6";
 import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
+import IllustrationNotif from "./IllustrationNotif";
+import AnimatedWrapper from "@/components/AnimatedWrapper";
 
 export default function NotificationPreference() {
   const isCoach = useRole(UserRole.Coach);
@@ -79,19 +77,19 @@ export default function NotificationPreference() {
             {
               key: NotificationType.NewRequest,
               label: "Lors de la réception d'une nouvelle demande de coaching",
-              icon: <MessageCircleQuestion size={20} />,
+              icon: <FaQuestionCircle size={20} />,
               color: "text-blue-500 bg-blue-500",
             },
             {
               key: NotificationType.NewFeedback,
               label: "Lorsqu'un élève valide un entraînement",
-              icon: <BicepsFlexed size={20} />,
+              icon: <FaCircleCheck size={20} />,
               color: "text-green-500 bg-green-500",
             },
             {
               key: NotificationType.CancelMembership,
               label: "Lorsqu'un élève arrête son coaching",
-              icon: <Power size={20} />,
+              icon: <FaPowerOff size={20} />,
               color: "text-orange-500 bg-orange-500",
             },
           ]
@@ -99,19 +97,19 @@ export default function NotificationPreference() {
             {
               key: NotificationType.AcceptRequest,
               label: "Lorsqu'une demande de coaching a été acceptée",
-              icon: <Handshake size={20} />,
-              color: "text-blue-500 bg-blue-500",
+              icon: <FaCircleCheck size={20} />,
+              color: "text-green-500 bg-green-500",
             },
             {
               key: NotificationType.NewTraining,
               label: "Lorsque ton coach te programme des entraînements",
-              icon: <BicepsFlexed size={20} />,
-              color: "text-green-500 bg-green-500",
+              icon: <FaFilePen size={20} />,
+              color: "text-blue-500 bg-blue-500",
             },
             {
               key: NotificationType.ActivateMembership,
               label: "Lorsque ton coach active ton suivi",
-              icon: <Power size={20} />,
+              icon: <FaPowerOff size={20} />,
               color: "text-orange-500 bg-orange-500",
             },
           ]),
@@ -120,8 +118,9 @@ export default function NotificationPreference() {
   );
 
   return (
-    <section className="flex flex-col items-start justify-start gap-4 p-4">
-      <section className="flex flex-col gap-4 shadow-md border-1 border-gray-100 rounded-xl p-8 w-[50%]">
+    <AnimatedWrapper className="flex flex-col items-start justify-start gap-4 px-4 pb-4">
+      <IllustrationNotif />
+      <section className="flex flex-col gap-4 shadow-md border-1 border-gray-100 rounded-xl p-8 w-[60%]">
         <div className="flex flex-col items-start justify-start gap-1 pl-2">
           <p className="font-medium text-xl">Préférences de notifications</p>
           <p className="text-xs text-gray-500">
@@ -145,9 +144,7 @@ export default function NotificationPreference() {
                 </p>
               </div>
               <Switch
-                size="md"
-                startContent={<BellRing />}
-                endContent={<BellOff />}
+                size="sm"
                 isSelected={!disabledNotifications.includes(type.key)}
                 onChange={() => toggleNotification(type.key)}
               />
@@ -155,9 +152,9 @@ export default function NotificationPreference() {
           ))}
         </div>
       </section>
-      <div className="w-[50%] flex justify-end items-center">
+      <div className="w-[60%] flex justify-end items-center">
         <Saving onClick={debounceUpdate} loading={loading} />
       </div>
-    </section>
+    </AnimatedWrapper>
   );
 }

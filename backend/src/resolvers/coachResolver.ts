@@ -27,6 +27,9 @@ import {
 import isNotificationAllowed from "../services/notificationPreferenceService";
 import { NotificationType } from "../InputType/notificationType";
 import { createNotification } from "../services/notificationsService";
+import { stripe } from "../config/stripe";
+import { CoachProfile } from "../entities/coachProfile";
+import { getStripeAccountStatus } from "../webhook/services/getStripeAccountStatus";
 
 @Authorized("COACH")
 @Resolver(User)
@@ -276,31 +279,6 @@ export class CoachResolver {
   }
 
   @Mutation(() => String)
-  async addTrainingCrew(
-    @Arg("data") data: TrainingData,
-    @Ctx() context: { user: CtxUser }
-  ) {
-    const crew = await Crew.findOne({
-      where: { id: data.id },
-      relations: { coach: true, trainings: true },
-    });
-    if (!crew || crew.coach?.id !== context.user.id) {
-      throw new Error("Vous n'êtes pas le coach de cet(te) élève");
-    }
-
-    // Ici, on ajoute une propriété spécifique indiquant que l'entraînement a été créé par un coach et qu'il n'est pas editable
-    const trainings = await createTrainingsForDates(data.date, data, crew, {
-      createdByCoach: context.user.id,
-      editable: false,
-      validate: true,
-    });
-
-    return JSON.stringify(
-      `${trainings.length} entraînements ont été créés avec succès`
-    );
-  }
-
-  @Mutation(() => String)
   async deleteTraining(
     @Arg("id") id: string,
     @Ctx() context: { user: CtxUser }
@@ -362,5 +340,54 @@ export class CoachResolver {
       },
     });
     return feedbacks;
+  }
+
+  @Query(() => String)
+  async getConnectUrl(@Ctx() context: { user: CtxUser }) {
+    const coachProfile = await CoachProfile.findOne({
+      where: {
+        user: {
+          id: context.user.id,
+        },
+      },
+    });
+
+    if (!coachProfile) throw new Error("Aucun utilisateur n'a été trouvé");
+
+    const { stripeAccountId } = coachProfile;
+    const hasAccount = !!stripeAccountId;
+
+    const refreshUrl = `${process.env.FRONTEND_URL}/profile?tab=stripe`;
+    const returnUrl = refreshUrl;
+
+    if (!hasAccount) {
+      const account = await stripe.accounts.create({ type: "express" });
+      const accountLink = await stripe.accountLinks.create({
+        account: account.id,
+        refresh_url: refreshUrl,
+        return_url: returnUrl,
+        type: "account_onboarding",
+      });
+      coachProfile.stripeAccountId = account.id;
+      await coachProfile.save();
+      return accountLink.url;
+    }
+
+    const account = await stripe.accounts.retrieve(stripeAccountId);
+    const status = getStripeAccountStatus(account);
+
+    if (status.ready) {
+      const loginLink = await stripe.accounts.createLoginLink(stripeAccountId);
+      return loginLink.url;
+    } else {
+      console.warn("Compte non prêt :", status.reason);
+      const accountLink = await stripe.accountLinks.create({
+        account: stripeAccountId,
+        refresh_url: refreshUrl,
+        return_url: returnUrl,
+        type: "account_onboarding",
+      });
+      return accountLink.url;
+    }
   }
 }

@@ -30,6 +30,22 @@ export class CoachProfile extends BaseEntity {
 
   @Field({ nullable: true })
   @Column({ nullable: true })
+  stripeAccountId?: string;
+
+  @Field()
+  @Column({ default: false })
+  chargesEnabled!: boolean;
+
+  @Field()
+  @Column({ default: false })
+  payoutsEnabled!: boolean;
+
+  @Field()
+  @Column({ default: false })
+  detailsSubmitted!: boolean;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
   facebook?: string;
 
   @Field({ nullable: true })

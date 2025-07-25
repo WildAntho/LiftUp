@@ -11,7 +11,7 @@ import { Check, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 import { Input } from "@heroui/react";
-import { useDebouncedCallback } from "@/services/useDebouncedCallback";
+import { useDebouncedCallback } from "@/services/hooks/useDebouncedCallback";
 import { useUserStore } from "@/services/zustand/userStore";
 import { toast } from "sonner";
 import { FilterCardEnum } from "@/services/utils";
@@ -26,6 +26,9 @@ import { FaHeart } from "react-icons/fa";
 import { FaCirclePlus } from "react-icons/fa6";
 import { RiLayoutGridFill } from "react-icons/ri";
 import { FaCircleUser } from "react-icons/fa6";
+import { useHasPermission } from "@/services/hooks/hasPermission";
+import { PERMISSIONS } from "@/services/constants";
+import AnimatedWrapper from "./AnimatedWrapper";
 
 type TabExercicesProps = {
   activeExercices: ExerciceModel[] | null;
@@ -67,6 +70,8 @@ export default function TabExercices({
   const [openInfo, setOpenInfo] = useState<boolean>(false);
   const [openEdit, setOpenEdit] = useState<boolean>(false);
   const [selectedId, setSelectedId] = useState<string>("");
+
+  const canManageExercice = useHasPermission(PERMISSIONS.MANAGE_EXERCICE);
 
   const handleClick = (e: ExerciceModel) => {
     const newExercice = { ...e };
@@ -164,16 +169,20 @@ export default function TabExercices({
       title: "Tous",
       description: "Tous les exercices",
       type: FilterCardEnum.ALL,
-      isActive: activeTabId == 1,
+      isActive: activeTabId === 1,
     },
-    {
-      id: 2,
-      icon: <FaCircleUser size={20} />,
-      title: "Mes exercices",
-      description: "Exercices personnalisés",
-      type: FilterCardEnum.MINE,
-      isActive: activeTabId === 2,
-    },
+    ...(canManageExercice
+      ? [
+          {
+            id: 2,
+            icon: <FaCircleUser size={20} />,
+            title: "Mes exercices",
+            description: "Exercices personnalisés",
+            type: FilterCardEnum.MINE,
+            isActive: activeTabId === 2,
+          },
+        ]
+      : []),
     {
       id: 3,
       icon: <FaHeart size={20} />,
@@ -182,14 +191,18 @@ export default function TabExercices({
       type: FilterCardEnum.FAVORITE,
       isActive: activeTabId === 3,
     },
-    {
-      id: 4,
-      icon: <FaCirclePlus size={20} />,
-      title: "Créer",
-      description: "Créer un nouvel exercice",
-      type: FilterCardEnum.NEW,
-      isActive: activeTabId === 4,
-    },
+    ...(canManageExercice
+      ? [
+          {
+            id: 4,
+            icon: <FaCirclePlus size={20} />,
+            title: "Créer",
+            description: "Créer un nouvel exercice",
+            type: FilterCardEnum.NEW,
+            isActive: activeTabId === 4,
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -205,7 +218,10 @@ export default function TabExercices({
         refetch={refetch}
       />
       <ExerciceInfo id={selectedId} isOpen={openInfo} setOpen={setOpenInfo} />
-      <div className="flex w-full justify-start items-center gap-2">
+      <AnimatedWrapper
+        animation="slideUp"
+        className="flex w-full justify-start items-center gap-2"
+      >
         {tabChoice.map((t) => (
           <div key={t.id} onClick={() => setActiveTabId(t.id)}>
             <FilterCard
@@ -217,7 +233,7 @@ export default function TabExercices({
             />
           </div>
         ))}
-      </div>
+      </AnimatedWrapper>
       {activeTabId !== 4 ? (
         <section className="w-full ">
           <section className="w-full flex items-center gap-2">

@@ -43,7 +43,9 @@ export default function CollapseItem(props: CollapseItemProps) {
       }`}
     >
       <div className="h-full flex justify-center items-center gap-5">
-        <div className="flex justify-center items-center pl-1">{props?.icon}</div>
+        <div className="flex justify-center items-center pl-1">
+          {props?.icon}
+        </div>
         <AnimatePresence>
           {props.open && (
             <motion.p

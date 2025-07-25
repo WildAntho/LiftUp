@@ -18,16 +18,21 @@ import { TbCoinEuroFilled } from "react-icons/tb";
 import { FaDumbbell } from "react-icons/fa";
 import { FaChalkboardUser } from "react-icons/fa6";
 import { useRole } from "@/services/hooks/useRole";
+import { useHasPermission } from "@/services/hooks/hasPermission";
+import { PERMISSIONS } from "@/services/constants";
 
 export default function HomeSidebar() {
   const navigate = useNavigate();
-  const isCoach = useRole(UserRole.Coach)
+  const isCoach = useRole(UserRole.Coach);
+  const isStudent = useRole(UserRole.Student);
   const [searchParams] = useSearchParams();
   const params = searchParams.get("tab");
   const isCalendar = params === "calendar";
   const [open, setOpen] = useState(false);
   const [openStudentModal, setOpenStudentModal] = useState(false);
   const [openCrewModal, setOpenCrewModal] = useState(false);
+  const canManageProgram = useHasPermission(PERMISSIONS.MANAGE_PROGRAM);
+  const canManageCrew = useHasPermission(PERMISSIONS.MANAGE_CREW);
 
   const parentVariants = {
     hidden: {
@@ -60,28 +65,34 @@ export default function HomeSidebar() {
       title: "Calendrier",
       value: "calendar",
       withArrow: true,
-      rotateArrow: isCalendar && isCoach,
+      rotateArrow: isCoach && isCalendar,
       icon: <IoCalendar className="size-6" />,
       get: () => navigate("/home?tab=calendar"),
       type: "content",
-      subitems: isCoach
-        ? [
-            {
-              title: "Sélectionner un élève",
-              withArrow: false,
-              get: () => setOpenStudentModal(true),
-              type: "user",
-            },
-            {
-              title: "Sélectionner une équipe",
-              withArrow: false,
-              get: () => setOpenCrewModal(true),
-              type: "crew",
-            },
-          ]
-        : undefined,
+      subitems: [
+        ...(isCoach
+          ? [
+              {
+                title: "Sélectionner un élève",
+                withArrow: false,
+                get: () => setOpenStudentModal(true),
+                type: "user",
+              },
+            ]
+          : []),
+        ...(isCoach && canManageCrew
+          ? [
+              {
+                title: "Sélectionner une équipe",
+                withArrow: false,
+                get: () => setOpenCrewModal(true),
+                type: "crew",
+              },
+            ]
+          : []),
+      ],
     },
-    ...(isCoach
+    ...(isCoach && canManageProgram
       ? [
           {
             title: "Programmes",
@@ -91,17 +102,21 @@ export default function HomeSidebar() {
             type: "content",
             get: () => navigate("/home?tab=program"),
           },
+        ]
+      : []),
+    ...(isCoach
+      ? [
           {
             title: "Offres",
             value: "offers",
-            get: () => navigate("/home?tab=offers"),
             withArrow: true,
             icon: <TbCoinEuroFilled className="size-[25px]" />,
             type: "content",
+            get: () => navigate("/home?tab=offers"),
           },
         ]
       : []),
-    ...(!isCoach
+    ...(isStudent
       ? [
           {
             title: "Coaching",
@@ -151,7 +166,7 @@ export default function HomeSidebar() {
               <motion.div
                 whileTap={{ scale: 0.99 }}
                 transition={{ type: "spring", stiffness: 600 }}
-                className={`group hover:bg-dark/5 rounded-md py-2 cursor-pointer text-gray-600 ${
+                className={`group hover:bg-dark/5 rounded-xl py-2 cursor-pointer text-gray-600 ${
                   ((!params && s.value === "dashboard") ||
                     s.value === params) &&
                   "bg-primary/10 text-primary font-semibold"

@@ -26,6 +26,9 @@ import { NotificationPreference } from "./notificationPreference";
 import { ProgressSession } from "./progressSession";
 import { UserProgram } from "./userProgram";
 import { UserRole } from "../InputType/userType";
+import { Profile } from "./profile";
+import { ProfileSubscription } from "./profileSubscription";
+import { Invoice } from "./invoice";
 
 @ObjectType()
 @Entity()
@@ -64,6 +67,14 @@ export class User extends BaseEntity {
   @Field({ nullable: true })
   @Column({ nullable: true })
   sex?: "male" | "female";
+
+  @Field()
+  @Column({ type: "int", default: 0 })
+  tokenVersion!: number;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  stripeCustomerId?: string;
 
   @Field(() => [User], { nullable: true })
   @OneToMany(() => User, (user) => user.coach)
@@ -161,8 +172,17 @@ export class User extends BaseEntity {
   @OneToMany(() => UserProgram, (userProgram) => userProgram.user)
   userPrograms?: UserProgram[];
 
-  // Si tu veux côté coach :
   @Field(() => [UserProgram], { nullable: true })
   @OneToMany(() => UserProgram, (userProgram) => userProgram.coach)
   coachingPrograms?: UserProgram[];
+
+  @Field(() => Profile, { nullable: true })
+  @ManyToOne(() => Profile, { eager: true, nullable: true })
+  profile?: Profile | null;
+
+  @OneToMany(() => ProfileSubscription, (subscription) => subscription.user)
+  profileSubscriptions!: ProfileSubscription[];
+
+  @OneToMany(() => Invoice, (invoice) => invoice.user)
+  invoices!: Invoice[];
 }

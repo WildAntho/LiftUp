@@ -3,6 +3,8 @@ import { Training } from "../entities/training";
 import { TrainingPlan } from "../entities/trainingPlan";
 import { User } from "../entities/user";
 import { Exercice } from "../entities/exercice";
+import { ProgramInput } from "../InputType/programType";
+import { OfferCategory } from "../entities/offerCategory";
 
 export async function generateTraining(
   trainings: TrainingPlan[],
@@ -43,4 +45,20 @@ async function createAllExercices(
     })
   );
   return result;
+}
+
+export function checkAutorization(data: ProgramInput, coach: User, category?: OfferCategory | null) {
+  const canSell =
+    coach?.coachProfile?.chargesEnabled && coach.coachProfile.payoutsEnabled;
+  if (data.public && !canSell) {
+    throw new Error(
+      "Tu ne peux pas encore vendre de programme, configure ton compte Connect dans Profil > Vendre sur Liftup"
+    );
+  }
+  if (data.public && data.price === 0) {
+    throw new Error("Un programme public ne peut pas avoir un prix de 0");
+  }
+  if (data.public && !category) {
+    throw new Error("Le champs catégorie est manquant");
+  }
 }

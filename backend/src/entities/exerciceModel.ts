@@ -47,7 +47,7 @@ export class ExerciceModel extends BaseEntity {
   video?: string;
 
   @Field(() => User, { nullable: true })
-  @ManyToOne(() => User, (user) => user.exerciceModels, { nullable: true })
+  @ManyToOne(() => User, (user) => user.exerciceModels, { nullable: true, onDelete: "CASCADE" })
   user?: User;
 
   @Field(() => [User], { nullable: true })

@@ -1,11 +1,25 @@
+import { useGetMeLazyQuery } from "@/graphql/hooks";
+import { useUserStore } from "@/services/zustand/userStore";
 import { Button } from "@heroui/react";
 import { Calendar, CheckCircleIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function SuccessPage() {
+  const location = useLocation();
+  const setStore = useUserStore((state) => state.set);
   const navigate = useNavigate();
-
-  const handleClick = () => {
+  const [getMe] = useGetMeLazyQuery();
+  const searchParams = new URLSearchParams(location.search);
+  const refetch = searchParams.get("refetch") === "true";
+  
+  const handleClick = async () => {
+    if (refetch) {
+      const { data } = await getMe();
+      if (data?.GetMe) {
+        const profile = JSON.parse(data.GetMe);
+        setStore(profile);
+      }
+    }
     navigate("/home?tab=calendar");
   };
 

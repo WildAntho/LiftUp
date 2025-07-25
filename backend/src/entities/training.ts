@@ -45,7 +45,7 @@ export class Training extends BaseEntity {
   validate!: boolean;
 
   @Field(() => User, { nullable: true })
-  @ManyToOne(() => User, (user) => user.trainings)
+  @ManyToOne(() => User, (user) => user.trainings, { onDelete: "CASCADE" })
   user?: User;
 
   @Field(() => Crew, { nullable: true })

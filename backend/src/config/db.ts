@@ -21,6 +21,10 @@ import { NotificationPreference } from "../entities/notificationPreference";
 import { UserSubscriber } from "../entities/userSubscriber";
 import { ProgressSession } from "../entities/progressSession";
 import { UserProgram } from "../entities/userProgram";
+import { Permission } from "../entities/permission";
+import { Profile } from "../entities/profile";
+import { ProfileSubscription } from "../entities/profileSubscription";
+import { Invoice } from "../entities/invoice";
 
 config();
 
@@ -54,7 +58,11 @@ export const dataSource = new DataSource({
     MuscleGroup,
     NotificationPreference,
     ProgressSession,
-    UserProgram
+    UserProgram,
+    Permission,
+    Profile,
+    ProfileSubscription,
+    Invoice
   ],
   synchronize: true,
   migrations: ["build/migrations/*.js"],

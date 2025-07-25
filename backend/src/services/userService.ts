@@ -2,6 +2,8 @@ import { Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { User } from "../entities/user";
 import { UserRole } from "../InputType/userType";
+import { Profile } from "../entities/profile";
+import { GraphQLError } from "graphql";
 
 export const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
@@ -27,12 +29,18 @@ export function getExpirationTokenTime(token: string): number {
 export function regenerateToken(
   id: string,
   roles: string,
+  profile: Profile,
+  tokenVersion: number,
   res: Response
 ): void {
   try {
-    const newToken = jwt.sign({ id, roles }, process.env.APP_SECRET as string, {
-      expiresIn: "7d",
-    });
+    const newToken = jwt.sign(
+      { id, roles, profile, tokenVersion },
+      process.env.APP_SECRET as string,
+      {
+        expiresIn: "7d",
+      }
+    );
     // Supprimer l'ancien cookie
     res.clearCookie("token", {
       httpOnly: true,
@@ -56,3 +64,37 @@ export function hasAnyRole(user: User | undefined, roles: UserRole[]): boolean {
 
   return roles.some((role) => user.roles.includes(role));
 }
+
+export async function invalidateUserTokens(user: User) {
+  if (!user) {
+    throw new Error("Utilisateur non fourni");
+  }
+
+  user.tokenVersion += 1;
+  await user.save();
+}
+
+export const checkTokenVersion = async (
+  userId: string,
+  jwtTokenVersion: number,
+  res: Response
+) => {
+  const user = await User.createQueryBuilder("user")
+    .select(["user.id", "user.tokenVersion"])
+    .where("user.id = :id", { id: userId })
+    .getOne();
+
+  if (!user) {
+    res.clearCookie("token");
+    throw new GraphQLError("Utilisateur introuvable", {
+      extensions: { code: "UNAUTHENTICATED", http: { status: 401 } },
+    });
+  }
+
+  if (user.tokenVersion !== jwtTokenVersion) {
+    res.clearCookie("token");
+    throw new GraphQLError("Le token a été invalidé (droits modifiés).", {
+      extensions: { code: "TOKEN_INVALIDATED", http: { status: 401 } },
+    });
+  }
+};

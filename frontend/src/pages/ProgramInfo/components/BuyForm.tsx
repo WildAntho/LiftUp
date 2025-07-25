@@ -3,7 +3,13 @@ import { Separator } from "@/components/ui/separator";
 import { Program } from "@/graphql/hooks";
 import { Button, Checkbox } from "@heroui/react";
 import { format } from "date-fns";
-import { BadgeEuro, Calendar, Dumbbell, MessageCircleMore } from "lucide-react";
+import {
+  BadgeEuro,
+  Calendar,
+  Dumbbell,
+  MessageCircleMore,
+  Star,
+} from "lucide-react";
 import { useState } from "react";
 
 type BuyFormProps = {
@@ -45,6 +51,13 @@ export default function BuyForm({
               <div className="flex justify-center items-center gap-2 text-sm">
                 <Dumbbell size={16} className="text-primary" />
                 <p>Accès aux ressources fournies par l'entraîneur</p>
+              </div>
+              <div className="flex justify-center items-center gap-2 text-sm">
+                <Star size={16} className="text-primary" />
+                <p>
+                  Abonnement Maestro (gratuit pendant {program.duration}{" "}
+                  semaines)
+                </p>
               </div>
             </div>
           </div>

@@ -38,6 +38,9 @@ import { RiAlarmFill } from "react-icons/ri";
 import { BiSolidAlarmOff } from "react-icons/bi";
 import { TbCoinEuroFilled } from "react-icons/tb";
 import { HiMiniUserGroup } from "react-icons/hi2";
+import { useHasPermission } from "@/services/hooks/hasPermission";
+import { PERMISSIONS } from "@/services/constants";
+import AnimatedWrapper from "@/components/AnimatedWrapper";
 
 type UserType = {
   id: string;
@@ -60,6 +63,7 @@ type TabStudentProps = {
 
 export default function TabStudent({ refetch }: TabStudentProps) {
   const currentUser = useUserStore((state) => state.user);
+  const canManageCrew = useHasPermission(PERMISSIONS.MANAGE_CREW);
   const [activeCard, setActiveCard] = useState<StatusStudent | null>(null);
   const [input, setInput] = useState<string>("");
   const [offer, setOffer] = useState<string>("");
@@ -100,6 +104,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
   };
   const { data: dataCrews } = useGetCoachCrewsQuery({
     fetchPolicy: "cache-and-network",
+    skip: !canManageCrew,
   });
   const allCrews = [noCrew, ...(dataCrews?.getCoachCrews ?? [])];
   const {
@@ -381,7 +386,10 @@ export default function TabStudent({ refetch }: TabStudentProps) {
 
   return (
     <section className="w-full h-full flex flex-col items-center justify-start gap-5">
-      <section className="w-full flex justify-start items-center gap-2">
+      <AnimatedWrapper
+        animation="slideUp"
+        className="w-full flex justify-start items-center gap-2"
+      >
         <div onClick={() => setActiveCard(null)}>
           <StatusStudentCard
             icon={<FaUserFriends size={20} />}
@@ -426,7 +434,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
             isActive={activeCard === StatusStudent.expired}
           />
         </div>
-      </section>
+      </AnimatedWrapper>
       <Table
         isHeaderSticky
         onSortChange={handleSortChange}

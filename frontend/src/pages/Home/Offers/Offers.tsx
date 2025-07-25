@@ -16,6 +16,7 @@ import StatusCard from "./component/StatusCard";
 import { FaCheckCircle } from "react-icons/fa";
 import { TbCoinEuroFilled } from "react-icons/tb";
 import { AiFillStop } from "react-icons/ai";
+import AnimatedWrapper from "@/components/AnimatedWrapper";
 
 export default function Offers() {
   const [deleteOffer, { loading }] = useDeleteOfferMutation();
@@ -54,7 +55,10 @@ export default function Offers() {
       <section className="w-full h-full flex flex-col items-center px-4 pt-10 bg-white rounded-2xl">
         <section className="w-full h-full flex flex-col items-center justify-start gap-4 pt-6 pb-4">
           <div className="w-[85%] flex justify-between items-center">
-            <section className="flex justify-start items-start gap-2">
+            <AnimatedWrapper
+              animation="slideUp"
+              className="flex justify-start items-start gap-2"
+            >
               <div onClick={() => setActiveCard(null)}>
                 <StatusCard
                   icon={<TbCoinEuroFilled size={22} />}
@@ -81,8 +85,11 @@ export default function Offers() {
                   isActive={activeCard === OfferStatus.Cancel}
                 />
               </div>
-            </section>
-            <section className="h-full flex items-end">
+            </AnimatedWrapper>
+            <AnimatedWrapper
+              animation="slideLeft"
+              className="h-full flex items-end"
+            >
               <Button
                 className="group shadow-none text-tertiary h-12 w-auto rounded-xl bg-tertiary bg-opacity-20 border border-tertiary border-opacity-20 hover:bg-tertiary hover:bg-opacity-20 hover:translate-y-[-2px] hover:shadow-sm transition-all duration-200"
                 onClick={() => {
@@ -95,7 +102,7 @@ export default function Offers() {
                   Ajouter une nouvelle offre
                 </p>
               </Button>
-            </section>
+            </AnimatedWrapper>
           </div>
           <section className="flex flex-col justify-start items-start gap-4 h-full w-[85%] bg-gray-50 bg-opacity-50 border border-gray-100 shadow-md p-4 rounded-xl overflow-y-auto">
             <Input

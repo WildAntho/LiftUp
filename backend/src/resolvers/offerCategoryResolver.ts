@@ -1,9 +1,9 @@
 import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 import { OfferCategory } from "../entities/offerCategory";
 
-@Authorized()
 @Resolver(OfferCategory)
 export class OfferCategoryResolver {
+  @Authorized("ADMIN")
   @Mutation(() => String)
   async addCategory(@Arg("label") label: string) {
     const newCategory = new OfferCategory();
@@ -12,6 +12,7 @@ export class OfferCategoryResolver {
     return JSON.stringify("Nouvelle catégorie d'offre créée");
   }
 
+  @Authorized()
   @Query(() => [OfferCategory])
   async getAllCategories() {
     const categories = await OfferCategory.find();

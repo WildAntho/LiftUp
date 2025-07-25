@@ -41,6 +41,10 @@ import MarketPlace from "./pages/MarketPlace/MarketPlace.tsx";
 import ProgramInfo from "./pages/ProgramInfo/ProgramInfo.tsx";
 import SuccessPage from "./pages/SuccessPage.tsx";
 import { UserRole } from "./graphql/hooks.tsx";
+import { PERMISSIONS } from "./services/constants.tsx";
+import AccessDenied from "./pages/AccessDenied/AccessDenied.tsx";
+import Admin from "./pages/Admin/Admin.tsx";
+import Pricing from "./pages/Pricing/Pricing.tsx";
 
 const isStaging = import.meta.env.VITE_NODE_ENV === "staging";
 const isProd = import.meta.env.VITE_NODE_ENV === "production";
@@ -168,7 +172,10 @@ const router = createBrowserRouter([
       {
         path: "/crew",
         element: (
-          <ProtectedRoute requiredRole={UserRole.Coach}>
+          <ProtectedRoute
+            requiredRole={UserRole.Coach}
+            permission={PERMISSIONS.MANAGE_CREW}
+          >
             <MyCrews />
           </ProtectedRoute>
         ),
@@ -184,12 +191,36 @@ const router = createBrowserRouter([
       {
         path: "/chat",
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute permission={PERMISSIONS.MANAGE_MESSAGE}>
             <Chat />
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/admin",
+        element: (
+          <ProtectedRoute requiredRole={UserRole.Admin}>
+            <Admin />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/pricing",
+        element: (
+          <ProtectedRoute>
+            <Pricing />
+          </ProtectedRoute>
+        ),
+      },
     ],
+  },
+  {
+    path: "/denied",
+    element: (
+      <ProtectedRoute>
+        <AccessDenied />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/success",

@@ -8,7 +8,7 @@ import {
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input, Select, SelectItem } from "@heroui/react";
-import { Check, ChevronDown, Info, Loader2 } from "lucide-react";
+import { Check, ChevronDown, Info, Loader2, AlertTriangle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Privacy from "./components/Privacy";
 import {
@@ -22,6 +22,8 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { allLevel } from "@/services/utils";
 import LexicalEditorComponent from "@/components/LexicalEditor/LexicalEditorComponent";
+import { commissionProgram } from "@/services/constants";
+import { ApolloError } from "@apollo/client";
 
 type ProgramModalProps = {
   open: boolean;
@@ -85,7 +87,7 @@ export default function ProgramModal({
       { title: "Confidentialité", isCompleted: true },
       {
         title: "Informations générales",
-        isCompleted: form.title !== "" && form.description !== "",
+        isCompleted: form.title !== "",
       },
     ];
 
@@ -147,8 +149,14 @@ export default function ProgramModal({
       refetch();
       navigate("/home?tab=program&section=configuration");
     } catch (error) {
-      console.error(error);
-      toast.error("Une erreur est survenue lors de la création du programme");
+      if (error instanceof ApolloError) {
+        toast.error(error.message, {
+          style: {
+            backgroundColor: "#fee2e2",
+            color: "#b91c1c",
+          },
+        });
+      }
     }
   };
 
@@ -367,6 +375,13 @@ export default function ProgramModal({
                                   isRequired
                                   min={0}
                                   step={1}
+                                  description={
+                                    <p className="flex justify-start items-center gap-2">
+                                      <AlertTriangle />
+                                      La plateforme prend{" "}
+                                      {commissionProgram * 100}% du prix vendu
+                                    </p>
+                                  }
                                   value={form.price.toString()}
                                   onChange={(e) =>
                                     setForm({
