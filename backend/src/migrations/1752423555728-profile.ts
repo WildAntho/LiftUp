@@ -4,7 +4,7 @@ export class Profile1752423555728 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
             -- Crée les profils
-            INSERT INTO profile (name, type, stripeProductId, stripePriceMonth, stripePriceYear)
+            INSERT INTO profile (name, type, "stripeProductId", "stripePriceMonth", "stripePriceYear")
             VALUES 
               ('User-Maestro', 'STUDENT', 'prod_SgRohXAgleoetP', 'price_1Rl4udCLW748OffEJRdZUUWa', 'price_1Rl4w6CLW748OffEiOLQo6Md'),
               ('Student-Maestro', 'STUDENT', null, null, null),
