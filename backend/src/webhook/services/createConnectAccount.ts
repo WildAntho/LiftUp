@@ -19,7 +19,7 @@ export async function createConnectAccount(user: User): Promise<User> {
     return user;
   }
 
-  if (user.stripeCustomerId) {
+  if (user.coachProfile.stripeAccountId) {
     console.log(
       `[Stripe] Coach ${user.id} a déjà un compte Connect (${user.coachProfile.stripeAccountId}).`
     );

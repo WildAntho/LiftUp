@@ -83,4 +83,5 @@ export const stripeWebhookHandlerConnect = async (
       break;
     }
   }
+  res.status(200).json({ received: true });
 };

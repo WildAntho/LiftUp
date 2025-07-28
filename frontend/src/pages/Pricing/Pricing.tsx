@@ -38,7 +38,7 @@ export default function Pricing() {
   const currentUser = useUserStore((state) => state.user);
   const isCoach = useRole(UserRole.Coach);
   const isStudent = useRole(UserRole.Student);
-  const userProfile = currentUser?.profile;
+  const userProfile = !!currentUser?.profile;
   const { data, loading } = useGetProfilePricingQuery();
   const [generateSession, { loading: loadingSession }] =
     useGenerateSessionProfileMutation();
@@ -234,7 +234,7 @@ export default function Pricing() {
                 periodicity={periodicity}
                 onSubscribe={handleSubscribe}
                 loading={loadingSession}
-                isSubscribed={userProfile !== null}
+                isSubscribed={userProfile}
               />
             )
         )}

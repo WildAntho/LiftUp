@@ -15,8 +15,13 @@ export async function handleAccountUpdated(account: Stripe.Account) {
       return;
     }
 
-    coachProfile.chargesEnabled = account.charges_enabled;
-    coachProfile.payoutsEnabled = account.payouts_enabled;
+    if (account.charges_enabled) {
+      coachProfile.chargesEnabled = true;
+    }
+    if (account.payouts_enabled) {
+      coachProfile.payoutsEnabled = true;
+    }
+    coachProfile.detailsSubmitted = account.details_submitted;
     coachProfile.detailsSubmitted = account.details_submitted;
 
     await coachProfile.save();
