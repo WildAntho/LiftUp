@@ -9,14 +9,17 @@ import { handleAccountUpdated } from "./handlers/handleAccountUpdated";
 import { handleSubscriptionUpdated } from "./handlers/handleSubscriptionUpdated";
 import { handleSubscriptionDeleted } from "./handlers/handleSubscriptionDeleted";
 
-export const stripeWebhookHandler = async (req: Request, res: Response) => {
+export const stripeWebhookHandlerPlateform = async (
+  req: Request,
+  res: Response
+) => {
   const sig = req.headers["stripe-signature"] as string;
   let event;
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET_PLATEFORM!
     );
   } catch (err: any) {
     console.error("❌ Signature Stripe invalide :", err.message);
@@ -43,11 +46,6 @@ export const stripeWebhookHandler = async (req: Request, res: Response) => {
       await handleChargeUpdated(charge);
       break;
     }
-    case "account.updated": {
-      const account = event.data.object as Stripe.Account;
-      await handleAccountUpdated(account);
-      break;
-    }
     case "customer.subscription.updated": {
       const subscription = event.data.object as Stripe.Subscription;
       await handleSubscriptionUpdated(subscription);
@@ -60,4 +58,29 @@ export const stripeWebhookHandler = async (req: Request, res: Response) => {
     }
   }
   res.status(200).json({ received: true });
+};
+
+export const stripeWebhookHandlerConnect = async (
+  req: Request,
+  res: Response
+) => {
+  const sig = req.headers["stripe-signature"] as string;
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET_CONNECT!
+    );
+  } catch (err: any) {
+    console.error("❌ Signature Stripe invalide :", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+  switch (event.type) {
+    case "account.updated": {
+      const account = event.data.object as Stripe.Account;
+      await handleAccountUpdated(account);
+      break;
+    }
+  }
 };
