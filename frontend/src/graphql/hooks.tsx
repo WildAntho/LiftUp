@@ -803,12 +803,14 @@ export type ProgramMarketplaceResponse = {
 /** Le statut d'un programme (brouillon, publié, archivé) */
 export enum ProgramStatus {
   Archived = 'ARCHIVED',
+  Deleted = 'DELETED',
   Draft = 'DRAFT',
   Published = 'PUBLISHED'
 }
 
 export type ProgressSession = {
   __typename?: 'ProgressSession';
+  createConnect: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
   offer: Scalars['Boolean']['output'];
   profile: Scalars['Boolean']['output'];
@@ -1207,6 +1209,7 @@ export type User = {
   stripeCustomerId?: Maybe<Scalars['String']['output']>;
   studentOffer?: Maybe<Offer>;
   students?: Maybe<Array<User>>;
+  tokenVersion: Scalars['Float']['output'];
   trainings?: Maybe<Array<Training>>;
   userPrograms?: Maybe<Array<UserProgram>>;
 };
@@ -1838,7 +1841,7 @@ export type GetMyMembershipQuery = { __typename?: 'Query', getMembership: { __ty
 export type GetProgressQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetProgressQuery = { __typename?: 'Query', getProgress: { __typename?: 'ProgressSession', id: string, profile: boolean, training: boolean, program: boolean, offer: boolean, searchCoach: boolean, searchProgram: boolean } };
+export type GetProgressQuery = { __typename?: 'Query', getProgress: { __typename?: 'ProgressSession', id: string, profile: boolean, training: boolean, program: boolean, offer: boolean, searchCoach: boolean, searchProgram: boolean, createConnect: boolean } };
 
 export type GetInvoicesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -4929,6 +4932,7 @@ export const GetProgressDocument = gql`
     offer
     searchCoach
     searchProgram
+    createConnect
   }
 }
     `;

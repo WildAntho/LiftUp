@@ -19,7 +19,7 @@ export default function UserProfile({ open }: UserProfileProps) {
       color="foreground"
     >
       <section
-        className="hover:bg-gray-500 hover:bg-opacity-20 w-full cursor-pointer"
+        className="hover:bg-gray-500 hover:bg-opacity-20 w-full cursor-pointer pl-1"
         onClick={() => navigate("/profile?tab=informations")}
       >
         <section className="flex justify-between items-center p-2 w-full">

@@ -5,6 +5,7 @@ export enum ProgramStatus {
   DRAFT = "DRAFT",
   PUBLISHED = "PUBLISHED",
   ARCHIVED = "ARCHIVED",
+  DELETED = "DELETED"
 }
 
 registerEnumType(ProgramStatus, {

@@ -180,7 +180,7 @@ export default function Program() {
   return (
     <section className="relative w-full h-full flex flex-col justify-start items-center bg-white rounded-2xl px-4 pt-10 gap-4">
       {!isConfiguration && (
-        <section className="w-full flex flex-col justify-start items-center rounded-2xl gap-4 pt-6 pb-4">
+        <section className="w-full h-full flex flex-col justify-start items-center rounded-2xl gap-4 pt-6 pb-4">
           <section className="w-[85%] flex justify-between items-center">
             <AnimatedWrapper
               animation="slideUp"

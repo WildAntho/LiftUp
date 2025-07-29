@@ -10,6 +10,7 @@ export const GET_PROGRESS = gql`
       offer
       searchCoach
       searchProgram
+      createConnect
     }
   }
 `;

@@ -140,7 +140,8 @@ export class ProgramResolver {
   async deleteProgram(@Arg("id") id: string) {
     const program = await Program.findOneBy({ id });
     if (!program) throw new Error("Aucun programme n'a été trouvé");
-    program.remove();
+    program.status = ProgramStatus.DELETED;
+    await program.save();
     return "Le programme a bien été supprimé";
   }
 

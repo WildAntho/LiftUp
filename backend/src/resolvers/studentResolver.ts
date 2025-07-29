@@ -14,7 +14,7 @@ import isNotificationAllowed from "../services/notificationPreferenceService";
 import { NotificationType } from "../InputType/notificationType";
 import { createNotification } from "../services/notificationsService";
 import { Program } from "../entities/program";
-import { ProgramMarketplaceResponse } from "../InputType/programType";
+import { ProgramMarketplaceResponse, ProgramStatus } from "../InputType/programType";
 import { UserProgram, UserProgramStatus } from "../entities/userProgram";
 import { In, MoreThan } from "typeorm";
 import { stripe } from "../config/stripe";
@@ -209,6 +209,7 @@ export class StudentResolver {
     const programs = await Program.find({
       where: {
         public: true,
+        status: ProgramStatus.PUBLISHED,
         price: MoreThan(0),
       },
       relations: {

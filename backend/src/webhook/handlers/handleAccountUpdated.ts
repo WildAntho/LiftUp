@@ -1,11 +1,15 @@
 import Stripe from "stripe";
 import { CoachProfile } from "../../entities/coachProfile";
+import { updateProgress } from "../../services/progressService";
 
 // Handler pour déterminer si le compte coach peut recevoir et retirer des paiements
 export async function handleAccountUpdated(account: Stripe.Account) {
   try {
     const coachProfile = await CoachProfile.findOne({
       where: { stripeAccountId: account.id },
+      relations: {
+        user: true,
+      },
     });
 
     if (!coachProfile) {
@@ -23,6 +27,8 @@ export async function handleAccountUpdated(account: Stripe.Account) {
     }
     coachProfile.detailsSubmitted = account.details_submitted;
     coachProfile.detailsSubmitted = account.details_submitted;
+    if (coachProfile.user)
+      await updateProgress(coachProfile.user.id, "createConnect");
 
     await coachProfile.save();
     console.log(
