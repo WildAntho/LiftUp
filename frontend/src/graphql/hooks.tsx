@@ -982,6 +982,13 @@ export type QueryGetProgramsArgs = {
 };
 
 
+export type QueryGetProgramsMarketPlaceArgs = {
+  categorie?: InputMaybe<Scalars['String']['input']>;
+  level?: InputMaybe<ProgramLevel>;
+  price?: InputMaybe<Array<Scalars['Float']['input']>>;
+};
+
+
 export type QueryGetRequestArgs = {
   id: Scalars['String']['input'];
 };
@@ -1930,7 +1937,11 @@ export type GetOneProgramMarketPlaceQueryVariables = Exact<{
 
 export type GetOneProgramMarketPlaceQuery = { __typename?: 'Query', getOneProgramMarketPlace: { __typename?: 'ProgramMarketplaceResponse', trainingsCount: number, program: { __typename?: 'Program', id: string, title: string, description?: string | null, duration: number, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', label: string, id: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null, coachProfile?: { __typename?: 'CoachProfile', specialisation?: Array<string> | null, name?: string | null } | null } } } };
 
-export type GetProgramsMarketPlaceQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetProgramsMarketPlaceQueryVariables = Exact<{
+  price?: InputMaybe<Array<Scalars['Float']['input']> | Scalars['Float']['input']>;
+  categorie?: InputMaybe<Scalars['String']['input']>;
+  level?: InputMaybe<ProgramLevel>;
+}>;
 
 
 export type GetProgramsMarketPlaceQuery = { __typename?: 'Query', getProgramsMarketPlace: Array<{ __typename?: 'Program', id: string, title: string, duration: number, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', id: string, label: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } }> };
@@ -5586,8 +5597,8 @@ export type GetOneProgramMarketPlaceLazyQueryHookResult = ReturnType<typeof useG
 export type GetOneProgramMarketPlaceSuspenseQueryHookResult = ReturnType<typeof useGetOneProgramMarketPlaceSuspenseQuery>;
 export type GetOneProgramMarketPlaceQueryResult = Apollo.QueryResult<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>;
 export const GetProgramsMarketPlaceDocument = gql`
-    query GetProgramsMarketPlace {
-  getProgramsMarketPlace {
+    query GetProgramsMarketPlace($price: [Float!], $categorie: String, $level: ProgramLevel) {
+  getProgramsMarketPlace(price: $price, categorie: $categorie, level: $level) {
     id
     title
     duration
@@ -5620,6 +5631,9 @@ export const GetProgramsMarketPlaceDocument = gql`
  * @example
  * const { data, loading, error } = useGetProgramsMarketPlaceQuery({
  *   variables: {
+ *      price: // value for 'price'
+ *      categorie: // value for 'categorie'
+ *      level: // value for 'level'
  *   },
  * });
  */

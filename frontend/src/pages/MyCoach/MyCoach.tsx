@@ -6,16 +6,21 @@ import {
   useGetSentQuery,
   useSelectCoachQuery,
 } from "@/graphql/hooks";
-import { UserWithoutPassword, useUserStore } from "@/services/zustand/userStore";
+import {
+  UserWithoutPassword,
+  useUserStore,
+} from "@/services/zustand/userStore";
 import { Receiver, Sender } from "@/type";
-import { Chip, Tabs, Tab, Progress } from "@heroui/react";
+import { Chip, Tabs, Tab } from "@heroui/react";
 import { PlaneTakeoff, Search, User } from "lucide-react";
 import { Key, useEffect, useState } from "react";
-import SearchCoach from "./components/SearchCoach";
 import { useLocation } from "react-router-dom";
+import SearchBar from "@/components/MarketPlace/SearchBar";
+import SkeletonMarketplace from "@/components/SkeletonMarketPlace";
 
 export default function MyCoach() {
   const currentUser = useUserStore((state) => state.user);
+  const [loadingMarket, setLoadingMarket] = useState<boolean>(true);
   const location = useLocation();
   const [formSearch, setFormSearch] = useState({
     input: "",
@@ -36,11 +41,7 @@ export default function MyCoach() {
     });
   }, [location]);
 
-  const {
-    data: dataCoach,
-    loading: loadingCoach,
-    refetch: refetchMyCoach,
-  } = useGetCoachQuery({
+  const { data: dataCoach, refetch: refetchMyCoach } = useGetCoachQuery({
     variables: { id: currentUser ? currentUser.id.toString() : "" },
     fetchPolicy: "cache-and-network",
   });
@@ -57,21 +58,13 @@ export default function MyCoach() {
     },
     fetchPolicy: "cache-and-network",
   });
-  const {
-    data: dataRequest,
-    loading: loadingRequest,
-    refetch: refetchRequest,
-  } = useGetRequestQuery({
+  const { data: dataRequest, refetch: refetchRequest } = useGetRequestQuery({
     variables: {
       id: currentUser?.id.toString() as string,
     },
     fetchPolicy: "cache-and-network",
   });
-  const {
-    data: dataSent,
-    loading: loadingSent,
-    refetch: refetchSent,
-  } = useGetSentQuery({
+  const { data: dataSent, refetch: refetchSent } = useGetSentQuery({
     variables: {
       id: currentUser?.id.toString() as string,
     },
@@ -85,24 +78,25 @@ export default function MyCoach() {
     refetchRequest,
   };
 
-  const [valueLoading, setValueLoading] = useState<number>(0);
   useEffect(() => {
-    const loadingStates = [
-      loadingCoach,
-      loadingSelectCoach,
-      loadingRequest,
-      loadingSent,
-    ];
-    const activeLoadings = loadingStates.filter((loading) => !loading).length;
-    const percentage = (activeLoadings / loadingStates.length) * 100;
-    setValueLoading(percentage);
-  }, [loadingCoach, loadingSelectCoach, loadingRequest, loadingSent]);
+    const time = setTimeout(() => {
+      setLoadingMarket(false);
+    }, 300);
+    return () => clearTimeout(time);
+  }, []);
 
   const myCoach =
     dataCoach && dataCoach?.getUserById && dataCoach.getUserById.coach;
   const allCoach = dataSelectCoach?.selectCoach ?? [];
   const myRequests = dataRequest?.getRequest ?? [];
   const mySent = dataSent?.getSent ?? [];
+
+  const loading = loadingSelectCoach || loadingMarket;
+
+  const handleSearch = () => {
+    setLoadingMarket(true);
+    setTimeout(() => setLoadingMarket(false), 300);
+  };
 
   const options = [
     {
@@ -152,105 +146,97 @@ export default function MyCoach() {
       </div>
       <section className="w-[80%] 2xl:w-[100rem] min-h-full rounded-2xl flex flex-col justify-start items-center gap-7">
         <section className="relative w-[90%] flex flex-col justify-start items-center gap-4">
-          {!loadingCoach &&
-          !loadingSelectCoach &&
-          !loadingRequest &&
-          !loadingSent ? (
-            <>
-              <Tabs
-                aria-label="Options"
-                color="primary"
-                variant="underlined"
-                size="md"
-                className="w-full"
-                selectedKey={active}
-                onSelectionChange={handleSelectionChange}
-              >
-                {options.map((s) => (
-                  <Tab key={s.id} title={s.label} />
-                ))}
-              </Tabs>
-              {active === "search" &&
-                (!myCoach ? (
-                  <section className="flex justify-start items-start flex-wrap w-full gap-2">
-                    <div className="w-full flex flex-col justify-center items-end mb-2 gap-1">
-                      <SearchCoach loading={loadingSelectCoach} />
+          <Tabs
+            aria-label="Options"
+            color="primary"
+            variant="underlined"
+            size="md"
+            className="w-full"
+            selectedKey={active}
+            onSelectionChange={handleSelectionChange}
+          >
+            {options.map((s) => (
+              <Tab key={s.id} title={s.label} />
+            ))}
+          </Tabs>
+          {active === "search" &&
+            (!myCoach ? (
+              !loading ? (
+                <section className="flex justify-center items-start flex-wrap w-full gap-2">
+                  <div className="w-full flex flex-col justify-center items-end mb-2 gap-1">
+                    <SearchBar
+                      loading={loadingSelectCoach}
+                      withLevel={false}
+                      onSearch={handleSearch}
+                    />
+                  </div>
+                  {allCoach.length > 0 ? (
+                    <div className="w-full flex flex-col justify-start items-center gap-2">
+                      {allCoach.map((c) => (
+                        <div key={c.id} className="w-full">
+                          <CoachCard coach={c as UserWithoutPassword} />
+                        </div>
+                      ))}
                     </div>
-                    {allCoach.length > 0 ? (
-                      <div className="w-full flex flex-col justify-start items-center gap-2">
-                        {allCoach.map((c) => (
-                          <div key={c.id} className="w-full">
-                            <CoachCard coach={c as UserWithoutPassword} />
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="w-full h-full">
-                        Aucun coach ne correspond aux critères.
-                      </div>
-                    )}
-                  </section>
-                ) : (
-                  <p className="w-full justify-start pl-5 text-sm text-gray-600">
-                    Vous avez déjà un coach.
-                  </p>
+                  ) : (
+                    <p className="text-sm text-gray-500 w-full text-center">
+                      Aucun coach trouvé.
+                    </p>
+                  )}
+                </section>
+              ) : (
+                <SkeletonMarketplace />
+              )
+            ) : (
+              <p className="w-full justify-start pl-5 text-sm text-gray-600">
+                Vous avez déjà un coach.
+              </p>
+            ))}
+          {active === "coach" &&
+            (myCoach ? (
+              <section className="flex justify-start items-start flex-wrap w-full gap-2">
+                <div className="w-[49%] h-[100px]">
+                  <UserCard user={myCoach} refetch={refetch} />
+                </div>
+              </section>
+            ) : (
+              <p className="w-full justify-start pl-5 text-sm text-gray-600">
+                Vous n'avez pas encore de coach.
+              </p>
+            ))}
+          {active === "request" &&
+            (myRequests.length > 0 ? (
+              <section className="flex justify-start items-start flex-wrap w-full gap-2">
+                {myRequests.map((c: Sender) => (
+                  <div key={c.sender.id} className="w-[49%] h-[100px]">
+                    <UserCard
+                      user={c.sender}
+                      canAccept={true}
+                      refetch={refetch}
+                      requestId={c.id}
+                    />
+                  </div>
                 ))}
-              {active === "coach" &&
-                (myCoach ? (
-                  <section className="flex justify-start items-start flex-wrap w-full gap-2">
-                    <div className="w-[49%] h-[100px]">
-                      <UserCard user={myCoach} refetch={refetch} />
-                    </div>
-                  </section>
-                ) : (
-                  <p className="w-full justify-start pl-5 text-sm text-gray-600">
-                    Vous n'avez pas encore de coach.
-                  </p>
+              </section>
+            ) : (
+              <p className="w-full justify-start pl-5 text-sm text-gray-600">
+                Vous n'avez aucune demande en cours.
+              </p>
+            ))}
+          {active === "pending" &&
+            (mySent.length > 0 ? (
+              <section className="flex justify-start items-start flex-wrap w-full gap-2">
+                {mySent.map((c: Receiver) => (
+                  <div key={c.receiver.id} className="w-[49%] h-[100px]">
+                    <UserCard user={c.receiver} refetch={refetch} />
+                  </div>
                 ))}
-              {active === "request" &&
-                (myRequests.length > 0 ? (
-                  <section className="flex justify-start items-start flex-wrap w-full gap-2">
-                    {myRequests.map((c: Sender) => (
-                      <div key={c.sender.id} className="w-[49%] h-[100px]">
-                        <UserCard
-                          user={c.sender}
-                          canAccept={true}
-                          refetch={refetch}
-                          requestId={c.id}
-                        />
-                      </div>
-                    ))}
-                  </section>
-                ) : (
-                  <p className="w-full justify-start pl-5 text-sm text-gray-600">
-                    Vous n'avez aucune demande en cours.
-                  </p>
-                ))}
-              {active === "pending" &&
-                (mySent.length > 0 ? (
-                  <section className="flex justify-start items-start flex-wrap w-full gap-2">
-                    {mySent.map((c: Receiver) => (
-                      <div key={c.receiver.id} className="w-[49%] h-[100px]">
-                        <UserCard user={c.receiver} refetch={refetch} />
-                      </div>
-                    ))}
-                  </section>
-                ) : (
-                  <p className="w-full justify-start pl-5 text-sm text-gray-600">
-                    Vous n'avez envoyé aucune demande.
-                  </p>
-                ))}
-            </>
-          ) : (
-            <section className="absolute top-20 w-full flex justify-center items-center">
-              <Progress
-                aria-label="Loading..."
-                className="max-w-md"
-                size="sm"
-                value={valueLoading}
-              />
-            </section>
-          )}
+              </section>
+            ) : (
+              <p className="w-full justify-start pl-5 text-sm text-gray-600">
+                Vous n'avez envoyé aucune demande.
+              </p>
+            ))}
         </section>
       </section>
     </section>

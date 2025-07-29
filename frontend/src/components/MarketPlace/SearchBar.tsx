@@ -7,18 +7,27 @@ import {
   Select,
   SelectItem,
 } from "@heroui/react";
-import SliderPrice from "./SliderPrice";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { useGetAllCategoriesQuery } from "@/graphql/hooks";
+import { ProgramLevel, useGetAllCategoriesQuery } from "@/graphql/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
+import SliderPrice from "@/pages/MyCoach/components/SliderPrice";
+import { allLevel } from "@/services/utils";
 
-type SearchCoachProps = {
+type SearchbarProps = {
   loading: boolean;
+  withName?: boolean;
+  withLevel?: boolean;
+  onSearch: () => void;
 };
 
-export default function SearchCoach({ loading }: SearchCoachProps) {
+export default function SearchBar({
+  loading,
+  withName = true,
+  withLevel = true,
+  onSearch,
+}: SearchbarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { data: dataCategories } = useGetAllCategoriesQuery();
@@ -27,6 +36,14 @@ export default function SearchCoach({ loading }: SearchCoachProps) {
   const [name, setName] = useState<string>("");
   const [selectPrice, setSelectPrice] = useState<boolean>(false);
   const [categorie, setCategorie] = useState<string>("");
+  const [level, setLevel] = useState<ProgramLevel | "">("");
+
+  const handleResetState = () => {
+    setPrice([50, 150]);
+    setName("");
+    setCategorie("");
+    setLevel("");
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -37,8 +54,8 @@ export default function SearchCoach({ loading }: SearchCoachProps) {
       setPrice(priceParam.split(",").map(Number));
     }
     setCategorie(params.get("categorie") || "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    setLevel((params.get("level") as ProgramLevel) || "");
+  }, [location.search]);
 
   const handlePriceChange = (value: number | number[]) => {
     setSelectPrice(true);
@@ -49,23 +66,27 @@ export default function SearchCoach({ loading }: SearchCoachProps) {
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    params.set("input", name);
+    if (withName && name) params.set("input", name);
     if (price[1] !== Number.MAX_VALUE && selectPrice)
       params.set("price", price.join(","));
     if (categorie) params.set("categorie", categorie);
+    if (level && withLevel) params.set("level", level);
     // Mettre à jour l'URL sans recharger la page
     navigate({
       pathname: location.pathname,
       search: params.toString(),
     });
+    if (params.size > 0) onSearch();
   };
 
   const resetFilters = () => {
+    handleResetState();
     setSelectPrice(false);
     const url = new URL(window.location.href);
     url.searchParams.delete("price");
     url.searchParams.delete("input");
     url.searchParams.delete("categorie");
+    url.searchParams.delete("level");
     // Mettre à jour l'URL sans recharger la page
     navigate({
       pathname: location.pathname,
@@ -75,16 +96,18 @@ export default function SearchCoach({ loading }: SearchCoachProps) {
   return (
     <section className="w-full flex flex-col justify-center items-end gap-1">
       <section className="w-full h-[50px] flex justify-center items-center rounded-2xl overflow-hidden shadow-sm">
-        <Input
-          radius="none"
-          label="Nom du coach"
-          className="h-full "
-          classNames={{
-            inputWrapper: "bg-white",
-          }}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        {withName && (
+          <Input
+            radius="none"
+            label="Nom du coach"
+            className="h-full "
+            classNames={{
+              inputWrapper: "bg-white",
+            }}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        )}
         <Separator orientation="vertical" />
         <Select
           className="max-w-xs"
@@ -100,6 +123,23 @@ export default function SearchCoach({ loading }: SearchCoachProps) {
             <SelectItem key={categorie.id}>{categorie.label}</SelectItem>
           ))}
         </Select>
+        <Separator orientation="vertical" />
+        {withLevel && (
+          <Select
+            className="max-w-xs"
+            label="Niveau"
+            radius="none"
+            classNames={{
+              trigger: "bg-white hover:bg-gray-100",
+            }}
+            selectedKeys={[level]}
+            onChange={(e) => setLevel(e.target.value as ProgramLevel)}
+          >
+            {allLevel.map((level) => (
+              <SelectItem key={level.key}>{level.label}</SelectItem>
+            ))}
+          </Select>
+        )}
         <Separator orientation="vertical" />
         <Popover placement="bottom-start">
           <PopoverTrigger>

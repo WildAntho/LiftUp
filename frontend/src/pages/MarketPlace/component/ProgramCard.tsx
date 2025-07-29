@@ -54,7 +54,7 @@ export default function ProgramCard({ program }: ProgramCardProps) {
       </section>
       <section className="flex justify-center items-center gap-5">
         <div className="flex flex-col items-start justify-center">
-          <p className="text-sm">
+          <div className="text-sm">
             <p className="text-primary text-lg font-semibold">
               {program.price}€ total
             </p>
@@ -63,7 +63,7 @@ export default function ProgramCard({ program }: ProgramCardProps) {
                 getPricePerWeek(program.price, program.duration)}
               €/semaine
             </span>
-          </p>
+          </div>
         </div>
         <ChevronRight
           size={18}
