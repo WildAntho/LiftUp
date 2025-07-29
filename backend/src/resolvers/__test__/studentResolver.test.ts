@@ -6,7 +6,6 @@ import {
   mockOrderBy,
   mockWhere,
 } from "../../factory/queryBuilderMock";
-import { UserRole } from "../../InputType/userType";
 import { StudentResolver } from "../studentResolver";
 
 // Mocks pour la sous-requête

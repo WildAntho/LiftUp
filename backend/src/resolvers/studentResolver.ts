@@ -14,7 +14,10 @@ import isNotificationAllowed from "../services/notificationPreferenceService";
 import { NotificationType } from "../InputType/notificationType";
 import { createNotification } from "../services/notificationsService";
 import { Program } from "../entities/program";
-import { ProgramMarketplaceResponse, ProgramStatus } from "../InputType/programType";
+import {
+  ProgramMarketplaceResponse,
+  ProgramStatus,
+} from "../InputType/programType";
 import { UserProgram, UserProgramStatus } from "../entities/userProgram";
 import { In, MoreThan } from "typeorm";
 import { stripe } from "../config/stripe";
@@ -40,7 +43,8 @@ export class StudentResolver {
       .leftJoinAndSelect("user.coachProfile", "coachProfile")
       .leftJoinAndSelect("user.offers", "offers")
       .leftJoinAndSelect("offers.category", "category")
-      .where("user.roles @> :role", { role: '["COACH"]' });
+      .where("user.roles @> :role", { role: '["COACH"]' })
+      .andWhere("coachProfile.profileVisible = :visible", { visible: true });
 
     // Ajouter des conditions de recherche par nom (firstname ou lastname)
     if (input) {
@@ -206,17 +210,16 @@ export class StudentResolver {
 
   @Query(() => [Program])
   async getProgramsMarketPlace() {
-    const programs = await Program.find({
-      where: {
-        public: true,
-        status: ProgramStatus.PUBLISHED,
-        price: MoreThan(0),
-      },
-      relations: {
-        category: true,
-        coach: true,
-      },
-    });
+    const programs = await Program.createQueryBuilder("program")
+      .leftJoinAndSelect("program.category", "category")
+      .leftJoinAndSelect("program.coach", "coach")
+      .leftJoinAndSelect("coach.coachProfile", "coachProfile")
+      .where("program.public = :isPublic", { isPublic: true })
+      .andWhere("program.status = :status", { status: ProgramStatus.PUBLISHED })
+      .andWhere("program.price > 0")
+      .andWhere("coachProfile.programVisible = :visible", { visible: true })
+      .getMany();
+
     return programs;
   }
 

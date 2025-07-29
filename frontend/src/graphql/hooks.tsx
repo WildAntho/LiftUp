@@ -51,6 +51,8 @@ export type CoachProfile = {
   linkedin?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   payoutsEnabled: Scalars['Boolean']['output'];
+  profileVisible: Scalars['Boolean']['output'];
+  programVisible: Scalars['Boolean']['output'];
   specialisation?: Maybe<Array<Scalars['String']['output']>>;
   stripeAccountId?: Maybe<Scalars['String']['output']>;
   user?: Maybe<User>;
@@ -328,6 +330,7 @@ export type Mutation = {
   updateProgress: Scalars['String']['output'];
   updateTraining: Scalars['String']['output'];
   updateTrainingPlan: Scalars['String']['output'];
+  updateVisibility: Scalars['String']['output'];
 };
 
 
@@ -620,6 +623,12 @@ export type MutationUpdateTrainingPlanArgs = {
   id: Scalars['String']['input'];
   notes?: InputMaybe<Scalars['String']['input']>;
   title: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateVisibilityArgs = {
+  profileVisible?: InputMaybe<Scalars['Boolean']['input']>;
+  programVisible?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type Notification = {
@@ -1684,6 +1693,14 @@ export type UpdateTrainingPlanMutationVariables = Exact<{
 
 export type UpdateTrainingPlanMutation = { __typename?: 'Mutation', updateTrainingPlan: string };
 
+export type UpdateVisibilityMutationVariables = Exact<{
+  programVisible?: InputMaybe<Scalars['Boolean']['input']>;
+  profileVisible?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+
+export type UpdateVisibilityMutation = { __typename?: 'Mutation', updateVisibility: string };
+
 export type ValidateProgramMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
@@ -1755,7 +1772,7 @@ export type GetCoachCrewsQuery = { __typename?: 'Query', getCoachCrews: Array<{ 
 export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMyProfileQuery = { __typename?: 'Query', getCoachProfile: { __typename?: 'CoachProfile', id: string, name?: string | null, description?: string | null, specialisation?: Array<string> | null, stripeAccountId?: string | null, chargesEnabled: boolean, payoutsEnabled: boolean, detailsSubmitted: boolean, instagram?: string | null, linkedin?: string | null, facebook?: string | null } };
+export type GetMyProfileQuery = { __typename?: 'Query', getCoachProfile: { __typename?: 'CoachProfile', id: string, name?: string | null, description?: string | null, specialisation?: Array<string> | null, stripeAccountId?: string | null, chargesEnabled: boolean, payoutsEnabled: boolean, detailsSubmitted: boolean, profileVisible: boolean, programVisible: boolean, instagram?: string | null, linkedin?: string | null, facebook?: string | null } };
 
 export type GetStudentsQueryVariables = Exact<{
   input?: InputMaybe<Scalars['String']['input']>;
@@ -3812,6 +3829,41 @@ export function useUpdateTrainingPlanMutation(baseOptions?: Apollo.MutationHookO
 export type UpdateTrainingPlanMutationHookResult = ReturnType<typeof useUpdateTrainingPlanMutation>;
 export type UpdateTrainingPlanMutationResult = Apollo.MutationResult<UpdateTrainingPlanMutation>;
 export type UpdateTrainingPlanMutationOptions = Apollo.BaseMutationOptions<UpdateTrainingPlanMutation, UpdateTrainingPlanMutationVariables>;
+export const UpdateVisibilityDocument = gql`
+    mutation UpdateVisibility($programVisible: Boolean, $profileVisible: Boolean) {
+  updateVisibility(
+    programVisible: $programVisible
+    profileVisible: $profileVisible
+  )
+}
+    `;
+export type UpdateVisibilityMutationFn = Apollo.MutationFunction<UpdateVisibilityMutation, UpdateVisibilityMutationVariables>;
+
+/**
+ * __useUpdateVisibilityMutation__
+ *
+ * To run a mutation, you first call `useUpdateVisibilityMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateVisibilityMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateVisibilityMutation, { data, loading, error }] = useUpdateVisibilityMutation({
+ *   variables: {
+ *      programVisible: // value for 'programVisible'
+ *      profileVisible: // value for 'profileVisible'
+ *   },
+ * });
+ */
+export function useUpdateVisibilityMutation(baseOptions?: Apollo.MutationHookOptions<UpdateVisibilityMutation, UpdateVisibilityMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateVisibilityMutation, UpdateVisibilityMutationVariables>(UpdateVisibilityDocument, options);
+      }
+export type UpdateVisibilityMutationHookResult = ReturnType<typeof useUpdateVisibilityMutation>;
+export type UpdateVisibilityMutationResult = Apollo.MutationResult<UpdateVisibilityMutation>;
+export type UpdateVisibilityMutationOptions = Apollo.BaseMutationOptions<UpdateVisibilityMutation, UpdateVisibilityMutationVariables>;
 export const ValidateProgramDocument = gql`
     mutation ValidateProgram($id: String!) {
   publishProgram(id: $id)
@@ -4357,6 +4409,8 @@ export const GetMyProfileDocument = gql`
     chargesEnabled
     payoutsEnabled
     detailsSubmitted
+    profileVisible
+    programVisible
     instagram
     linkedin
     facebook

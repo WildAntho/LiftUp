@@ -11,7 +11,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import NotificationPreference from "./components/Notification/NotificationPreference";
 import { useRole } from "@/services/hooks/useRole";
-import { UserRole } from "@/graphql/hooks";
+import { CoachProfile, useGetMyProfileQuery, UserRole } from "@/graphql/hooks";
 import Invoices from "./components/Invoices/Invoices";
 import Stripe from "./components/Stripe/Stripe";
 import ProtectedRoute from "@/services/ProtectedRoutes";
@@ -25,6 +25,16 @@ export default function Profile() {
   const [searchParams] = useSearchParams();
   const tabFromUrl = searchParams.get("tab") || "informations";
   const [active, setActive] = useState<string>(tabFromUrl);
+
+  const {
+    data: dataProfile,
+    loading: loadingProfile,
+    refetch,
+  } = useGetMyProfileQuery({
+    skip: !isCoach,
+  });
+
+  const profile = dataProfile?.getCoachProfile || null;
 
   useEffect(() => {
     if (tabFromUrl !== active) {
@@ -85,8 +95,7 @@ export default function Profile() {
             classNames={{
               tabList: "p-0",
               tab: "text-gray-400 data-[selected=true]:text-black",
-              tabContent:
-                "group-data-[selected=true]:text-black text-gray-400",
+              tabContent: "group-data-[selected=true]:text-black text-gray-400",
               cursor: "bg-black",
             }}
           >
@@ -111,7 +120,11 @@ export default function Profile() {
             {active === "informations" && <MyProfile />}
             {active === "about" && isCoach && (
               <ProtectedRoute requiredRole={UserRole.Coach}>
-                <About />
+                <About
+                  profile={profile as CoachProfile}
+                  loading={loadingProfile}
+                  refetch={refetch}
+                />
               </ProtectedRoute>
             )}
             {active === "notifications" && <NotificationPreference />}
@@ -121,7 +134,7 @@ export default function Profile() {
                 requiredRole={UserRole.Coach}
                 permission={PERMISSIONS.MANAGE_PROGRAM}
               >
-                <Stripe />
+                <Stripe profile={profile as CoachProfile} refetch={refetch}/>
               </ProtectedRoute>
             )}
           </section>
