@@ -26,6 +26,11 @@ const getStatusColors = (type: ProgramStatus) => {
         bg: "bg-orange-100",
         text: "text-orange-600",
       };
+    case ProgramStatus.Deleted:
+      return {
+        bg: "",
+        text: "",
+      };
   }
 };
 
