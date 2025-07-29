@@ -203,7 +203,7 @@ export default function HomeSidebar() {
           ))}
         </div>
       </div>
-      <div className="pl-1 w-full">
+      <div className="w-full">
         <UserProfile open={open} />
       </div>
     </motion.section>

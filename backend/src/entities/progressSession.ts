@@ -38,6 +38,10 @@ export class ProgressSession extends BaseEntity {
 
   @Field()
   @Column({ default: false })
+  createConnect!: boolean;
+
+  @Field()
+  @Column({ default: false })
   searchProgram!: boolean;
 
   @Field(() => User)

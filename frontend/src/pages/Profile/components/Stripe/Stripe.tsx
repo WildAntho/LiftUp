@@ -17,12 +17,21 @@ export default function Stripe() {
     fetchPolicy: "cache-and-network",
   });
   const coachProfile = dataProfile?.getCoachProfile;
+  const gotStripeAccount = coachProfile?.stripeAccountId !== null;
+  const canSell = coachProfile?.chargesEnabled;
+  const canPayout = coachProfile?.payoutsEnabled;
+  const onboardingComplete = coachProfile?.detailsSubmitted;
+
   const handleCreatePortailStripe = async () => {
     try {
       const { data } = await getConnect();
       if (data?.getConnectUrl) {
         const connectUrl = data?.getConnectUrl;
-        window.open(connectUrl);
+        if (canSell && canPayout) {
+          window.open(connectUrl);
+        } else {
+          window.location.href = connectUrl;
+        }
       }
     } catch (error) {
       console.error(error);
@@ -31,10 +40,6 @@ export default function Stripe() {
       );
     }
   };
-  const gotStripeAccount = coachProfile?.stripeAccountId !== null;
-  const canSell = coachProfile?.chargesEnabled;
-  const canPayout = coachProfile?.payoutsEnabled;
-  const onboardingComplete = coachProfile?.detailsSubmitted;
   return (
     <AnimatedWrapper className="w-full h-full pb-4">
       <section className="w-full px-4">
