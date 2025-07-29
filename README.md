@@ -1,77 +1,78 @@
-🏋️ Plateforme de Coaching Sportif – Présentation
-Notre plateforme est un outil complet dédié au coaching sportif, conçu pour faciliter la mise en relation entre coach et élèves, tout en centralisant l’essentiel pour organiser, suivre et enrichir les entraînements.
+# 🏋️ Plateforme de Coaching Sportif – Présentation
 
-🚀 Objectifs de la plateforme
-Faciliter la connexion entre coachs et sportifs
+Notre plateforme est un **outil complet dédié au coaching sportif**, conçu pour faciliter la **mise en relation entre coach et élèves**, tout en centralisant l’essentiel pour organiser, suivre et enrichir les entraînements.
 
-Offrir un espace de programmation d'entraînements personnalisés
+---
 
-Structurer les offres de coaching dans un cadre digital et accessible
+## 🚀 Objectifs de la plateforme
 
-Optimiser la communication et l'organisation du coaching
+- Faciliter la **connexion entre coachs et sportifs**
+- Offrir un espace de **programmation d'entraînements personnalisés**
+- Structurer les **offres de coaching** dans un cadre digital et accessible
+- Optimiser la **communication et l'organisation du coaching**
 
-🧩 Fonctionnalités clés
-👥 Mise en relation Coach / Élèves
-Marketplace : les coachs peuvent rendre leur profil visible pour être contactés par des sportifs et vendre leurs programmes.
+---
 
-Possibilité d'accepter ou refuser les demandes d’élèves.
+## 🧩 Fonctionnalités clés
 
-Création et gestion de groupes/équipes d'entraînement.
+### 👥 Mise en relation Coach / Élèves
 
-📝 Programmation d’entraînements
-Création de séances d’entraînement personnalisées
+- **Marketplace** : les coachs peuvent rendre leur profil visible pour être contactés par des sportifs et vendre leurs programmes
+- Possibilité d'**accepter ou refuser les demandes** d’élèves
+- **Création et gestion de groupes/équipes d'entraînement**
 
-Outil de programmation clair et flexible
+### 📝 Programmation d’entraînements
 
-Debrief post-séance entre coach et élève
+- Création de **séances d’entraînement personnalisées**
+- **Outil de programmation** clair et flexible
+- **Debrief post-séance** entre coach et élève
+- Ajout d’**exercices génériques** ou **personnalisés avec vidéo**
+- Génération des exercices ou **vente sur le marketplace**
 
-Ajout d’exercices génériques ou personnalisés avec vidéo (personels)
+### 📦 Offres de coaching
 
-Génération des exercices ou vente sur le marketplace
+- Les coachs peuvent **définir et proposer des offres de suivi**
+- L’élève peut **visualiser ces offres** depuis le profil du coach (dans le marketplace) et **faire une demande de coaching**
 
-📦 Offres de coaching
-Les coachs peuvent définir et proposer des offres de suivi
+### 🧠 Suivi des élèves
 
-L’élève peut visualiser ces offres depuis le profil du coach (dans le marketplace) et faire une demande de coaching
+- **Visualisation des séances assignées**
+- Possibilité de **commenter et faire un retour** après chaque entraînement
+- **Tableau de suivi détaillé** des souscriptions des élèves
+- **Tableau des demandes de coaching** avec détails
 
-🧠 Suivi des élèves
-Visualisation des séances assignées
+### 💬 Communication & notifications
 
-Possibilité de commenter et faire un retour après chaque entraînement
+- **Messagerie instantanée** entre coachs et élèves
+- **Notifications en temps réel** (nouvelle séance, message, demande, etc.)
 
-Tableau de suivi détaillé des souscriptions des élèves
+### 💎 Abonnements
 
-Tableau des demandes de coaching avec détails sur la demande
+- **Système d’abonnement Premium** pour accéder à certaines fonctionnalités avancées (coach et élève)
 
-💬 Communication & notifications
-Messagerie instantanée entre coachs et élèves
+### 💰 Marketplace de programmes
 
-Notifications en temps réel (nouvelle séance, message, demande, etc.)
+- **Vente de programmes d'entraînement** directement depuis la plateforme
+- **Paiement intégré** et **suivi des ventes pour les coachs** via Stripe Connect
 
-💎 Abonnements
-Système d’abonnement Premium pour accéder à certaines fonctionnalités avancées côté coach ou élève
+---
 
-💰 Marketplace de programmes
-Vente de programmes d'entraînement directement depuis la plateforme
+## 👤 Pour qui ?
 
-Paiement intégré et suivi des ventes pour les coachs via Connect (Stripe)
+- 🧑‍🏫 **Coachs sportifs** souhaitant structurer leur activité en ligne
+- 🧑‍🎓 **Sportifs** à la recherche d’un suivi personnalisé ou de programmes prêts à l’emploi
+- 🧘‍♂️ **Sportifs autonomes** souhaitant organiser leur pratique efficacement
 
-👤 Pour qui ?
-🧑‍🏫 Coachs sportifs souhaitant structurer leur activité en ligne
+---
 
-🧑‍🎓 Sportifs à la recherche d’un suivi personnalisé ou de programmes prêts à l’emploi
+## 🔒 En résumé
 
-Ou encore sportifs souhaitant organiser sa pratique en toute autonomie
-
-🔒 En résumé
 La plateforme offre une base solide pour la gestion du coaching sportif en ligne :
 
-Programmation claire
+- ✅ Programmation claire
+- ✅ Communication fluide
+- ✅ Mise en relation efficace
+- ✅ Vente de programmes intégrée
 
-Communication fluide
+> 🧪 Le développement est **évolutif** et de nouvelles fonctionnalités (statistiques, paiements pour le coaching, reporting…) seront ajoutées progressivement.
 
-Mise en relation efficace
-
-Vente de programmes intégrée
-
-Le développement est évolutif et de nouvelles fonctionnalités (statistiques, paiements coaching, reporting…) seront ajoutées progressivement.
