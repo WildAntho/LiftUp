@@ -59,4 +59,29 @@ export class CoachProfileResolver {
     });
     return profile;
   }
+
+  @Mutation(() => String)
+  async updateVisibility(
+    @Ctx() context: { user: CtxUser },
+    @Arg("profileVisible", { nullable: true }) profileVisible?: boolean,
+    @Arg("programVisible", { nullable: true }) programVisible?: boolean
+  ) {
+    const profile = await CoachProfile.findOne({
+      where: {
+        user: {
+          id: context.user.id,
+        },
+      },
+    });
+    if (!profile)
+      throw new Error("Aucun profil n'a été trouvé pour cet utilisateur");
+    if (profileVisible !== undefined) {
+      profile.profileVisible = profileVisible;
+    }
+    if (programVisible !== undefined) {
+      profile.programVisible = programVisible;
+    }
+    await profile.save();
+    return "Le profil a été mis à jour avec succès";
+  }
 }

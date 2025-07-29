@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Eye, Loader2, X } from "lucide-react";
 import {
-  useGetMyProfileQuery,
+  CoachProfile,
   useUpdateCoachProfileMutation,
 } from "@/graphql/hooks";
 import { Badge } from "@/components/ui/badge";
@@ -21,16 +21,15 @@ import { Label } from "@/components/ui/label";
 import IllustrationAbout from "./IllustrationAbout";
 import AnimatedWrapper from "@/components/AnimatedWrapper";
 
-export default function About() {
+type AboutProps = {
+  profile: CoachProfile
+  loading: boolean
+  refetch: () => void
+}
+
+export default function About({ profile, loading, refetch }: AboutProps) {
   const currentUser = useUserStore((state) => state.user);
-  const {
-    data: dataProfile,
-    loading: loadingProfile,
-    refetch,
-  } = useGetMyProfileQuery();
   const [update, { loading: loadingUpdate }] = useUpdateCoachProfileMutation();
-  const loading = loadingUpdate;
-  const profile = dataProfile?.getCoachProfile || null;
   const [isShow, setIsShow] = useState<boolean>(true);
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -121,7 +120,7 @@ export default function About() {
           </ModalContent>
         </Modal>
         <section className="w-full flex flex-col items-start justify-start gap-2">
-          {!loadingProfile ? (
+          {!loading ? (
             <>
               <div className="flex items-center justify-end w-full mt-2">
                 <div className="flex justify-center items-center gap-2 bg-gray-100 px-2 py-1 rounded-full">
@@ -275,7 +274,7 @@ export default function About() {
                   Annuler
                 </p>
               </Button>
-              <Saving loading={loading} onClick={handleSave} />
+              <Saving loading={loadingUpdate} onClick={handleSave} />
             </section>
           )}
         </section>

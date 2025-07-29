@@ -28,6 +28,14 @@ export class CoachProfile extends BaseEntity {
   @Column("text", { array: true, nullable: true })
   specialisation?: string[];
 
+  @Field()
+  @Column({ default: true })
+  profileVisible!: boolean;
+
+  @Field()
+  @Column({ default: true })
+  programVisible!: boolean;
+
   @Field({ nullable: true })
   @Column({ nullable: true })
   stripeAccountId?: string;

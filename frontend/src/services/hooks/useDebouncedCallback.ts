@@ -1,8 +1,7 @@
 import { useRef, useCallback } from "react";
 
-// On définit un type générique avec une contrainte sur les arguments du callback.
-// Ici, T est une fonction qui prend un ou plusieurs arguments de type `string`.
-export function useDebouncedCallback<T extends (value?: string) => void>(
+// T est une fonction avec n'importe quels paramètres et retourne void
+export function useDebouncedCallback<T extends (...args: Parameters<T>) => void>(
   callback: T,
   delay: number,
   options?: { leading?: boolean }
@@ -11,7 +10,7 @@ export function useDebouncedCallback<T extends (value?: string) => void>(
   const calledRef = useRef(false);
 
   const debouncedFn = useCallback(
-    (value?: string) => { // On définit que la fonction attend un argument `value` de type string.
+    (...args: Parameters<T>): void => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
@@ -19,13 +18,13 @@ export function useDebouncedCallback<T extends (value?: string) => void>(
       const shouldCallNow = options?.leading && !calledRef.current;
 
       if (shouldCallNow) {
-        callback(value); // Appel avec un paramètre de type string
+        callback(...args);
         calledRef.current = true;
       }
 
       timeoutRef.current = setTimeout(() => {
         if (!shouldCallNow) {
-          callback(value); // Appel avec un paramètre de type string
+          callback(...args);
         }
         calledRef.current = false;
       }, delay);

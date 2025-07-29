@@ -11,6 +11,8 @@ export const GET_MYPROFILE = gql`
       chargesEnabled
       payoutsEnabled
       detailsSubmitted
+      profileVisible
+      programVisible
       instagram
       linkedin
       facebook
