@@ -8,6 +8,8 @@ import SearchBar from "@/components/MarketPlace/SearchBar";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import SkeletonMarketplace from "../../components/SkeletonMarketPlace";
+import IllustrationProgram from "./component/IllustrationProgram";
+import AnimatedWrapper from "@/components/AnimatedWrapper";
 
 type FormSearch = {
   price: number[];
@@ -63,13 +65,9 @@ export default function MarketPlace() {
   };
 
   return (
-    <section className="h-full w-full pb-4 gap-4 flex flex-col justify-start items-center overflow-y-auto bg-gray-100">
-      <div className="w-full h-[250px]">
-        <img
-          src="/marketbanner.webp"
-          className="object-cover w-full h-full object-top"
-          alt="Market banner"
-        />
+    <AnimatedWrapper className="h-full w-full pb-4 gap-4 flex flex-col justify-start items-center overflow-y-auto bg-gray-100">
+      <div className="w-full">
+        <IllustrationProgram />
       </div>
 
       <section className="w-[80%] 2xl:w-[100rem] min-h-full rounded-2xl flex flex-col justify-start items-center gap-7">
@@ -98,6 +96,6 @@ export default function MarketPlace() {
           )}
         </section>
       </section>
-    </section>
+    </AnimatedWrapper>
   );
 }

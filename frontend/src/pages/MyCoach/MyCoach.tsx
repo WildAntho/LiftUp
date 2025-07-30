@@ -17,6 +17,8 @@ import { Key, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import SearchBar from "@/components/MarketPlace/SearchBar";
 import SkeletonMarketplace from "@/components/SkeletonMarketPlace";
+import IllustrationCoach from "./components/IllustrationCoach";
+import AnimatedWrapper from "@/components/AnimatedWrapper";
 
 export default function MyCoach() {
   const currentUser = useUserStore((state) => state.user);
@@ -140,9 +142,9 @@ export default function MyCoach() {
   };
 
   return (
-    <section className="h-full w-full pb-4 gap-4 flex flex-col justify-start items-center overflow-y-auto bg-gray-100">
-      <div className="w-full h-[250px]">
-        <img src="/mainbanner.jpg" className="object-cover w-full h-full" />
+    <AnimatedWrapper className="h-full w-full pb-4 gap-4 flex flex-col justify-start items-center overflow-y-auto bg-gray-100">
+      <div className="w-full">
+        <IllustrationCoach />
       </div>
       <section className="w-[80%] 2xl:w-[100rem] min-h-full rounded-2xl flex flex-col justify-start items-center gap-7">
         <section className="relative w-[90%] flex flex-col justify-start items-center gap-4">
@@ -239,6 +241,6 @@ export default function MyCoach() {
             ))}
         </section>
       </section>
-    </section>
+    </AnimatedWrapper>
   );
 }
