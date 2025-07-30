@@ -26,7 +26,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { FaBoxArchive } from "react-icons/fa6";
 import { BiSolidNotepad } from "react-icons/bi";
 import { useRole } from "@/services/hooks/useRole";
-import AnimatedWrapper from "@/components/AnimatedWrapper";
+import AnimatedWrapper from "@/components/Wrapper/AnimatedWrapper";
 import { ApolloError } from "@apollo/client";
 
 export default function Program() {

@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { Response } from "express";
 import {
   ProfileOutput,
+  UpdatePasswordInput,
   UpdateProfile,
   UserInput,
   userLogin,
@@ -200,6 +201,28 @@ export class UserResolver {
     if (data.sex) user.sex = data.sex;
     await user.save();
     return user;
+  }
+
+  @Authorized()
+  @Mutation(() => String)
+  async updatePassword(
+    @Arg("data") data: UpdatePasswordInput,
+    @Ctx() context: { user: CtxUser }
+  ) {
+    const user = await User.findOneBy({ id: context.user.id });
+    if (!user) throw new Error("Aucun utilisateur n'a été trouvé");
+    const verify = await argon.verify(user.password, data.currentPassword);
+    if (!verify) throw new Error("Le mot de passe actuel est incorrect");
+    if (!passwordRegex.test(data.newPassword))
+      throw new Error(
+        "Le nouveau mot de passe doit contenir une majuscule, une minuscule, un chiffre et un caractère spécial"
+      );
+    if (data.newPassword !== data.confirmPassword)
+      throw new Error("Les mots de passes ne correspondent pas");
+    const hashPaswword = await argon.hash(data.newPassword);
+    user.password = hashPaswword;
+    await user.save();
+    return "Le mot de passe a bien été mis à jour";
   }
 
   @Authorized()

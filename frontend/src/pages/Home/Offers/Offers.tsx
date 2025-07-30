@@ -16,7 +16,7 @@ import StatusCard from "./component/StatusCard";
 import { FaCheckCircle } from "react-icons/fa";
 import { TbCoinEuroFilled } from "react-icons/tb";
 import { AiFillStop } from "react-icons/ai";
-import AnimatedWrapper from "@/components/AnimatedWrapper";
+import AnimatedWrapper from "@/components/Wrapper/AnimatedWrapper";
 
 export default function Offers() {
   const [deleteOffer, { loading }] = useDeleteOfferMutation();

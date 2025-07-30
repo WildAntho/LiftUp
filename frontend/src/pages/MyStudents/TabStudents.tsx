@@ -40,7 +40,7 @@ import { TbCoinEuroFilled } from "react-icons/tb";
 import { HiMiniUserGroup } from "react-icons/hi2";
 import { useHasPermission } from "@/services/hooks/hasPermission";
 import { PERMISSIONS } from "@/services/constants";
-import AnimatedWrapper from "@/components/AnimatedWrapper";
+import AnimatedWrapper from "@/components/Wrapper/AnimatedWrapper";
 
 type UserType = {
   id: string;

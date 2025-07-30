@@ -73,3 +73,15 @@ export class ProfileOutput {
   @Field({ nullable: true })
   yearlyAmount?: number;
 }
+
+@InputType()
+export class UpdatePasswordInput {
+  @Field()
+  currentPassword!: string;
+
+  @Field()
+  newPassword!: string;
+
+  @Field()
+  confirmPassword!: string;
+}

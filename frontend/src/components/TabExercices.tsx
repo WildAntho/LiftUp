@@ -28,7 +28,7 @@ import { RiLayoutGridFill } from "react-icons/ri";
 import { FaCircleUser } from "react-icons/fa6";
 import { useHasPermission } from "@/services/hooks/hasPermission";
 import { PERMISSIONS } from "@/services/constants";
-import AnimatedWrapper from "./AnimatedWrapper";
+import AnimatedWrapper from "./Wrapper/AnimatedWrapper";
 
 type TabExercicesProps = {
   activeExercices: ExerciceModel[] | null;
