@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { Eye, Loader2, X } from "lucide-react";
-import {
-  CoachProfile,
-  useUpdateCoachProfileMutation,
-} from "@/graphql/hooks";
+import { CoachProfile, useUpdateCoachProfileMutation } from "@/graphql/hooks";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { FaFacebook, FaLinkedin, FaInstagram } from "react-icons/fa";
@@ -19,13 +16,13 @@ import { useUserStore } from "@/services/zustand/userStore";
 import { InputWithTags } from "@/components/InputWithTags";
 import { Label } from "@/components/ui/label";
 import IllustrationAbout from "./IllustrationAbout";
-import AnimatedWrapper from "@/components/AnimatedWrapper";
+import AnimatedWrapper from "@/components/Wrapper/AnimatedWrapper";
 
 type AboutProps = {
-  profile: CoachProfile
-  loading: boolean
-  refetch: () => void
-}
+  profile: CoachProfile;
+  loading: boolean;
+  refetch: () => void;
+};
 
 export default function About({ profile, loading, refetch }: AboutProps) {
   const currentUser = useUserStore((state) => state.user);

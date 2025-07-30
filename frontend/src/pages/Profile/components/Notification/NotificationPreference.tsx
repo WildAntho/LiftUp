@@ -16,7 +16,7 @@ import { FaFilePen } from "react-icons/fa6";
 import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import IllustrationNotif from "./IllustrationNotif";
-import AnimatedWrapper from "@/components/AnimatedWrapper";
+import AnimatedWrapper from "@/components/Wrapper/AnimatedWrapper";
 
 export default function NotificationPreference() {
   const isCoach = useRole(UserRole.Coach);

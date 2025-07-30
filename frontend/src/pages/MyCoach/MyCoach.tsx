@@ -18,7 +18,7 @@ import { useLocation } from "react-router-dom";
 import SearchBar from "@/components/MarketPlace/SearchBar";
 import SkeletonMarketplace from "@/components/SkeletonMarketPlace";
 import IllustrationCoach from "./components/IllustrationCoach";
-import AnimatedWrapper from "@/components/AnimatedWrapper";
+import AnimatedWrapper from "@/components/Wrapper/AnimatedWrapper";
 
 export default function MyCoach() {
   const currentUser = useUserStore((state) => state.user);

@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import SkeletonMarketplace from "../../components/SkeletonMarketPlace";
 import IllustrationProgram from "./component/IllustrationProgram";
-import AnimatedWrapper from "@/components/AnimatedWrapper";
+import AnimatedWrapper from "@/components/Wrapper/AnimatedWrapper";
 
 type FormSearch = {
   price: number[];

@@ -14,19 +14,27 @@ import {
 } from "lucide-react";
 import { useRef, useState } from "react";
 import CardRole from "./CardRole";
-import { UserRole, useUpdateProfileMutation } from "@/graphql/hooks";
+import {
+  UpdatePasswordInput,
+  UserRole,
+  useUpdatePasswordMutation,
+  useUpdateProfileMutation,
+} from "@/graphql/hooks";
 import { uploadURL } from "@/services/utils";
 import { Input, Select, SelectItem } from "@heroui/react";
 import { toast } from "sonner";
 import Saving from "@/components/Saving";
 import { useDebouncedCallback } from "@/services/hooks/useDebouncedCallback";
 import { FaMars, FaVenus } from "react-icons/fa";
-import AnimatedWrapper from "@/components/AnimatedWrapper";
+import AnimatedWrapper from "@/components/Wrapper/AnimatedWrapper";
+import { ApolloError } from "@apollo/client";
 
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
 
 export default function MyProfile() {
   const [updateProfile] = useUpdateProfileMutation();
+  const [updatePassword, { loading: loadingPassword }] =
+    useUpdatePasswordMutation();
   const currentUser = useUserStore((state) => state.user);
   const setUser = useUserStore((state) => state.set);
   const [previewImage, setPreviewImage] = useState<string | null>(
@@ -45,6 +53,11 @@ export default function MyProfile() {
     { key: "female", label: "Femme" },
     { key: "male", label: "Homme" },
   ];
+  const [password, setPassword] = useState<UpdatePasswordInput>({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
   const [showOldPassword, setShowOldPassword] = useState<boolean>(false);
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
@@ -60,6 +73,14 @@ export default function MyProfile() {
     }
   };
   const [fileError, setFileError] = useState<string | null>(null);
+
+  const resetPasswordInput = () => {
+    setPassword({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+  };
 
   const data = {
     firstname: firstname as string,
@@ -151,6 +172,42 @@ export default function MyProfile() {
       });
     }
   };
+
+  const handleUpdatePassword = async () => {
+    try {
+      const { data } = await updatePassword({
+        variables: {
+          data: password,
+        },
+      });
+      if (data?.updatePassword) {
+        toast.success(data.updatePassword, {
+          style: {
+            backgroundColor: "#dcfce7",
+            color: "#15803d",
+          },
+        });
+        resetPasswordInput();
+      }
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        toast.error(error.message, {
+          style: {
+            backgroundColor: "#fee2e2",
+            color: "#b91c1c",
+          },
+        });
+      }
+    }
+  };
+
+  const debouncedUpdatePassword = useDebouncedCallback(
+    async () => {
+      handleUpdatePassword();
+    },
+    2000,
+    { leading: true }
+  );
 
   const debouncedUpdate = useDebouncedCallback(
     async () => {
@@ -319,6 +376,13 @@ export default function MyProfile() {
             type={`${showOldPassword ? "text" : "password"}`}
             isRequired
             label="Mot de passe actuel"
+            value={password.currentPassword}
+            onChange={(e) =>
+              setPassword({
+                ...password,
+                currentPassword: e.target.value,
+              })
+            }
             startContent={<Lock size={20} className="text-gray-500" />}
             endContent={
               <>
@@ -341,6 +405,13 @@ export default function MyProfile() {
             type={`${showNewPassword ? "text" : "password"}`}
             isRequired
             label="Nouveau mot de passe"
+            value={password.newPassword}
+            onChange={(e) =>
+              setPassword({
+                ...password,
+                newPassword: e.target.value,
+              })
+            }
             startContent={<Lock size={20} className="text-gray-500" />}
             endContent={
               <>
@@ -363,6 +434,13 @@ export default function MyProfile() {
             type={`${showConfirmPassword ? "text" : "password"}`}
             isRequired
             label="Confirmer nouveau mot de passe"
+            value={password.confirmPassword}
+            onChange={(e) =>
+              setPassword({
+                ...password,
+                confirmPassword: e.target.value,
+              })
+            }
             startContent={<Lock size={20} className="text-gray-500" />}
             endContent={
               <>
@@ -382,7 +460,11 @@ export default function MyProfile() {
             }
           />
           <div className="w-full mt-2 flex justify-end">
-            <Saving onClick={() => console.log("save")} disabled={true} />
+            <Saving
+              onClick={debouncedUpdatePassword}
+              disabled={loadingPassword}
+              loading={loadingPassword}
+            />
           </div>
         </section>
       </div>

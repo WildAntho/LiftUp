@@ -22,7 +22,7 @@ import { FaStar } from "react-icons/fa";
 import { useUserStore } from "@/services/zustand/userStore";
 import MembershipView from "./MembershipView";
 import SubscriptionModal from "./SubscriptionModal";
-import AnimatedWrapper from "@/components/AnimatedWrapper";
+import AnimatedWrapper from "@/components/Wrapper/AnimatedWrapper";
 
 export default function Invoices() {
   const location = useLocation();
@@ -195,7 +195,7 @@ export default function Invoices() {
         {active === "PROGRAM" && (
           <TabProgramReceip programs={allPrograms as UserProgram[]} />
         )}
-          <FloatingDockInvoice onChange={onChangeActive} active={active} />
+        <FloatingDockInvoice onChange={onChangeActive} active={active} />
       </section>
     </AnimatedWrapper>
   );

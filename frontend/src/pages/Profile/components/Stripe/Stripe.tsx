@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import StripeStatusNotice from "./StripeStatusNotice";
 import HowItWorks from "./HowItWorks";
 import MarketPlaceInfo from "./MarketPlaceInfo";
-import AnimatedWrapper from "@/components/AnimatedWrapper";
+import AnimatedWrapper from "@/components/Wrapper/AnimatedWrapper";
 import { useEffect, useState } from "react";
 
 type StripeProps = {
