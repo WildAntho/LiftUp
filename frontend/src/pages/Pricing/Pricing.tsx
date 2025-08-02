@@ -196,7 +196,7 @@ export default function Pricing() {
           setPeriodicity={setPeriodicity}
         />
       </div>
-      <div className="p-8 bg-gray-100 w-full flex justify-center items-start gap-4">
+      <div className="p-8 bg-gray-100 w-full flex justify-center items-start gap-8">
         <PricingCard
           title="Starter"
           subtitle="La solution parfaite pour démarrer"

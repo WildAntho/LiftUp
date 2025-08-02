@@ -5,6 +5,7 @@ import { Button } from "@heroui/react";
 import { MdDiscount } from "react-icons/md";
 import { FaCheck } from "react-icons/fa";
 import { Periodicity } from "@/graphql/hooks";
+import ShadowWrapper from "@/components/Wrapper/ShadowWrapper";
 
 type PricingCardProps = {
   title: string;
@@ -96,7 +97,7 @@ export const PricingCard = ({
   );
 
   return (
-    <div className="w-[400px] bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden transform hover:scale-[1.02] hover:shadow-lg hover:border-gray-400 transition-all duration-300">
+    <ShadowWrapper className="w-[450px] bg-white rounded-2xl overflow-hidden ">
       {/* Header */}
       <div className="bg-gray-50 px-6 py-6 text-center border-b">
         <motion.h3
@@ -220,6 +221,6 @@ export const PricingCard = ({
           </>
         )}
       </div>
-    </div>
+    </ShadowWrapper>
   );
 };

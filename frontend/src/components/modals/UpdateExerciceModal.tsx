@@ -8,7 +8,7 @@ import {
   Input,
 } from "@heroui/react";
 import { Separator } from "../ui/separator";
-import { useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import LexicalEditorComponent from "../LexicalEditor/LexicalEditorComponent";
 import MuscleGroupSelect from "../MuscleGroupSelect";
 import {
@@ -31,6 +31,7 @@ import ConfirmModal from "./ConfirmModal";
 import { dataURLtoFile } from "../CreateExercice/dataURLtoFile";
 import { uploadFileToAWS } from "@/services/zustand/utils/s3utils";
 import { useExerciceURL } from "@/services/hooks/useExerciceUrl";
+import { LoaderFive } from "../ui/loader";
 
 type UpdateExerciceModalProps = {
   isOpen: boolean;
@@ -133,7 +134,7 @@ export default function UpdateExerciceModal({
     handleChangeVideoSource,
   } = useVideoManagement();
 
-  const showLoadingToast = (message: string) => {
+  const showLoadingToast = (message: ReactElement) => {
     toastIdRef.current = toast.loading(message);
   };
 
@@ -183,7 +184,7 @@ export default function UpdateExerciceModal({
 
   const handleDeleteVideo = async () => {
     try {
-      showLoadingToast("Suppression de la vidéo...");
+      showLoadingToast(<LoaderFive text="Suppression de la vidéo..." />);
       const { data } = await updateExercice({
         variables: {
           data: {
@@ -212,7 +213,7 @@ export default function UpdateExerciceModal({
       return;
     }
     try {
-      showLoadingToast("Enregistrement de la vidéo...");
+      showLoadingToast(<LoaderFive text="Enregistrement de la vidéo..." />);
       const { data } = await updateExercice({
         variables: {
           data: {
@@ -235,27 +236,29 @@ export default function UpdateExerciceModal({
     }
   };
 
-  const handleVideoAWS = async (isNew: boolean) => {
+  const handleVideoAWS = async () => {
     if (!file || !thumbnail) {
       toast.error("Aucun fichier n'a été ajouté");
       return;
     }
 
     try {
-      showLoadingToast("Enregistrement de la vidéo...");
+      showLoadingToast(<LoaderFive text="Enregistrement de la vidéo..." />);
       const thumbnailFile = dataURLtoFile(thumbnail, file.file.name);
 
       const [videoURLData, thumbnailURLData] = await Promise.all([
         generateUploadURL({
           variables: {
             fileType: file.file.type,
-            fileName: isNew ? file.file.name : exercice.video
+            fileName: !exercice.video ? file.file.name : exercice.video,
+            isNew: !exercice.video
           },
         }),
         generateUploadURL({
           variables: {
             fileType: "image/jpeg",
-            fileName: isNew ? file.file.name : exercice.image
+            fileName: !exercice.image ? file.file.name : exercice.image,
+            isNew: !exercice.image
           },
         }),
       ]);
@@ -299,12 +302,12 @@ export default function UpdateExerciceModal({
     }
   };
 
-  const handleVideo = async (isNew = false) => {
+  const handleVideo = async () => {
     switch (videoSource) {
       case VideoType.Youtube:
         return handleVideoYoutube();
       case VideoType.Perso:
-        return handleVideoAWS(isNew);
+        return handleVideoAWS();
     }
   };
 

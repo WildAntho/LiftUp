@@ -13,9 +13,9 @@ export default function SkeletonPricing() {
       </div>
 
       {/* Cartes pricing */}
-      <div className="flex flex-col md:flex-row justify-center items-start gap-4 w-full max-w-4xl">
-        <Skeleton className="w-[400px] h-[1000px] rounded-2xl bg-gray-50" />
-        <Skeleton className="w-[400px] h-[1000px] rounded-2xl bg-gray-50" />
+      <div className="flex flex-col md:flex-row justify-center items-start gap-8 w-full max-w-4xl">
+        <Skeleton className="w-[450px] h-[1000px] rounded-2xl bg-gray-50" />
+        <Skeleton className="w-[450px] h-[1000px] rounded-2xl bg-gray-50" />
       </div>
     </div>
   );
