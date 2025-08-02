@@ -28,7 +28,8 @@ export default {
   		fontFamily: {
   			logo: [
   				'Teko'
-  			]
+  			],
+			inter: ['Inter', 'sans-serif'],
   		},
   		keyframes: {
   			'accordion-down': {

@@ -86,8 +86,8 @@ export default function Navigation() {
   const [logout] = useLogoutMutation();
 
   const handleLogout = async () => {
-    await logout();
     await client.resetStore();
+    await logout();
     navigate("/login");
   };
 

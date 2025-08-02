@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import ConfirmModal from "@/components/modals/ConfirmModal";
 import { useState } from "react";
 import { toast } from "sonner";
+import ShadowWrapper from "@/components/Wrapper/ShadowWrapper";
 
 export default function Coaching() {
   const navigate = useNavigate();
@@ -82,7 +83,7 @@ export default function Coaching() {
           onConfirm={handleCancelMembership}
         />
         {myCoach ? (
-          <section className="w-[50%] 2xl:w-[40%] p-8 mt-10 flex flex-col gap-4">
+          <ShadowWrapper className="w-[650px] p-8 mt-10 rounded-xl flex flex-col gap-4">
             <section className="w-full flex flex-col items-start justify-start gap-6">
               <div className="w-full">
                 <div className="flex justify-start items-center gap-2">
@@ -164,7 +165,7 @@ export default function Coaching() {
                 )}
               </div>
             </section>
-          </section>
+          </ShadowWrapper>
         ) : (
           <section className="w-full h-full flex flex-col items-center justify-center gap-4">
             <div className="flex flex-col items-center justify-center gap-2">

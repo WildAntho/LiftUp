@@ -19,6 +19,7 @@ import MuscleGroupSelect from "../MuscleGroupSelect";
 import { uploadFileToAWS } from "@/services/zustand/utils/s3utils";
 import { useHasPermission } from "@/services/hooks/hasPermission";
 import { PERMISSIONS } from "@/services/constants";
+import { LoaderFive } from "../ui/loader";
 
 type CreateExerciceProps = {
   allMuscleGroup: MuscleGroup[];
@@ -55,7 +56,9 @@ export default function CreateExercice({
 
   const handleUploadAWS = async () => {
     if (file && thumbnail) {
-      toastIdRef.current = toast.loading("Enregistrement de l'exercice...");
+      toastIdRef.current = toast.loading(
+        <LoaderFive text="Enregistrement de l'exercice..." />
+      );
       const thumbnailFile = dataURLtoFile(thumbnail, file.file.name);
       const [videoURLData, thumbnailURLData] = await Promise.all([
         generateUploadURL({
