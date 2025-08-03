@@ -8,10 +8,10 @@ import {
   useGetExerciceCategoriesQuery,
   useGetFavoriteExercicesIdQuery,
 } from "@/graphql/hooks";
-import { Check, Search } from "lucide-react";
+import { Check, Search, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
-import { Button, Input } from "@heroui/react";
+import { Button, Input, Tooltip } from "@heroui/react";
 import { useDebouncedCallback } from "@/services/hooks/useDebouncedCallback";
 import { useUserStore } from "@/services/zustand/userStore";
 import { toast } from "sonner";
@@ -303,6 +303,25 @@ export default function TabExercices({
                     setMuscles={setMuscles}
                   />
                 </div>
+                {getCountFilter() > 0 && (
+                  <Tooltip
+                    content="Réinitialiser"
+                    showArrow={true}
+                    color="foreground"
+                    className="text-xs"
+                    placement="bottom"
+                  >
+                    <div
+                      className="p-3 rounded-full hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        setCategory("");
+                        setMuscles([]);
+                      }}
+                    >
+                      <X size={20} />
+                    </div>
+                  </Tooltip>
+                )}
               </AnimatedWrapper>
             )}
           </section>
