@@ -32,10 +32,10 @@ export class ExerciceModelResolver {
     const query = ExerciceModel.createQueryBuilder("exercice")
       .leftJoinAndSelect("exercice.user", "user")
       .leftJoinAndSelect("exercice.muscles", "muscles")
-      .leftJoinAndSelect("exercice.category", "category");
-
-    const hasFilters =
-      id || input || getFavorite || (muscles && muscles.length > 0);
+      .leftJoinAndSelect("exercice.category", "category")
+      .andWhere("(user.id = :userId OR user.id IS NULL)", {
+        userId: context.user.id,
+      });
 
     if (id) {
       query.andWhere("user.id = :id", { id });
@@ -59,12 +59,6 @@ export class ExerciceModelResolver {
 
     if (category) {
       query.andWhere("category.id = :category", { category });
-    }
-
-    if (!hasFilters) {
-      query.andWhere("(user.id = :userId OR user.id IS NULL)", {
-        userId: context.user.id,
-      });
     }
 
     query

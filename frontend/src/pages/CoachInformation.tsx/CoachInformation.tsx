@@ -3,8 +3,10 @@ import RequestForm from "./components/RequestForm";
 import {
   CoachProfile,
   Offer,
+  Program,
   useGetOneCoachOffersQuery,
   useGetOneCoachProfileQuery,
+  useGetProgramsMarketPlaceQuery,
 } from "@/graphql/hooks";
 import AboutCoach from "./components/AboutCoach";
 import OffersCoach from "./components/OffersCoach";
@@ -13,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import UserAvatar from "@/components/UserAvatar";
 import { Badge } from "@/components/ui/badge";
+import ProgramCoach from "./components/ProgramCoach";
 
 type CoachInformationProps = {
   prevId?: string;
@@ -31,17 +34,28 @@ export default function CoachInformation({ prevId }: CoachInformationProps) {
       variables: { id: prevId ? prevId : (id as string) },
       fetchPolicy: "cache-and-network",
     });
+  const { data: dataProgram, loading: loadingProgram } =
+    useGetProgramsMarketPlaceQuery({
+      variables: {
+        id,
+      },
+    });
   const offers = dataOffers?.getOneCoachOffers ?? [];
   const profile = dataProfile?.getOneCoachProfile as CoachProfile;
   const availableOffers = offers.filter((offer) => offer.availability);
+  const programs = dataProgram?.getProgramsMarketPlace ?? [];
+  const loading = loadingOffers || loadingProfile || loadingProgram;
 
   return (
     <>
-      {!loadingOffers || !loadingProfile ? (
+      {!loading ? (
         <section className="flex flex-col justify-start items-center h-full w-full overflow-y-scroll">
           <div className="relative w-full h-[250px] flex justify-start items-center">
             <div className="relative w-full h-full">
-              <img src="/banner.jpg" className="object-cover w-full h-full" />
+              <img
+                src="/bannercoach.webp"
+                className="object-cover w-full h-full"
+              />
               <div className="absolute inset-0 bg-black/50"></div>
             </div>
             <div className="absolute left-16 flex justify-start items-center gap-2 text-white z-1">
@@ -100,6 +114,14 @@ export default function CoachInformation({ prevId }: CoachInformationProps) {
                     <p className="text-xs">Aucune offre renseignée</p>
                   )}
                 </section>
+                {programs.length > 0 && (
+                  <section className="w-full bg-white rounded-2xl p-6">
+                    <ProgramCoach
+                      programs={programs as Program[]}
+                      isPrev={!!prevId}
+                    />
+                  </section>
+                )}
                 {profile && (
                   <section className="w-full px-6 pb-4 flex justify-end">
                     <SocialCoach profile={profile} />

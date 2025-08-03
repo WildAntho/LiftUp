@@ -12,7 +12,7 @@ export default function AboutCoach({ profile }: AboutProfileProps) {
     <section className="flex flex-col items-start justify-start gap-5 mt-5">
       <div className="w-full">
         <p className="font-semibold text-lg mb-4 flex items-center gap-3">
-          <MdStickyNote2 size={24} />À propos de{" "}
+          <MdStickyNote2 size={28} />À propos de{" "}
           {profile?.user?.firstname + " " + profile?.user?.lastname}
         </p>
         <Separator />

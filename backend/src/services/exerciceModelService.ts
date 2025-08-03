@@ -64,7 +64,6 @@ export async function buildResponseExercice(exerciceModel: ExerciceModel) {
       type: "getObject",
     });
     link = url;
-    console.log(exerciceModel);
 
     return {
       link,
