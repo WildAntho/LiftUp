@@ -36,6 +36,7 @@ import { UserRole } from "./InputType/userType";
 import { AdminResolver } from "./resolvers/adminResolver";
 import { InvoiceResolver } from "./resolvers/invoiceResolver";
 import { ProfileSubscriptionResolver } from "./resolvers/profileSubscriptionResolver";
+import { ExerciceCategoryResolver } from "./resolvers/exerciceCategory";
 
 type PubSubType = ReturnType<typeof createPubSub>;
 
@@ -69,6 +70,7 @@ export const createSchema = async (pubsub: PubSubType) => {
       AdminResolver,
       InvoiceResolver,
       ProfileSubscriptionResolver,
+      ExerciceCategoryResolver
     ],
     emitSchemaFile: true,
     pubSub: pubsub,

@@ -1,5 +1,7 @@
 import { ExerciceModel } from "@/graphql/hooks";
-import { Heart, Info } from "lucide-react";
+import { Info } from "lucide-react";
+import { RiHeartAddLine } from "react-icons/ri";
+import { RiHeartFill } from "react-icons/ri";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Tooltip } from "@heroui/tooltip";
@@ -82,13 +84,14 @@ export default function ChooseExerciceCard({
           onClick={handleChange}
           className="group absolute top-2 right-2 z-10 cursor-pointer p-1 shadow-sm border-1 border-gray-200 bg-gray-50 rounded-xl"
         >
-          <Heart
-            size={20}
-            fill={currentIsFavorite ? "#ef4444" : "none"}
-            className={`transition-colors duration-300 group-hover:text-red-500 ${
-              currentIsFavorite ? "text-red-500" : "text-gray-500"
-            }`}
-          />
+          {currentIsFavorite ? (
+            <RiHeartFill size={20} className="text-red-600 opacity-70" />
+          ) : (
+            <RiHeartAddLine
+              size={20}
+              className="group-hover:text-red-600 group-hover:opacity-70 text-gray-500"
+            />
+          )}
         </motion.div>
       </Tooltip>
       <div className="w-full h-[75%] flex justify-center items-center">

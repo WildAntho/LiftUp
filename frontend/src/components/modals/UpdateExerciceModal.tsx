@@ -10,8 +10,9 @@ import {
 import { Separator } from "../ui/separator";
 import { ReactElement, useEffect, useRef, useState } from "react";
 import LexicalEditorComponent from "../LexicalEditor/LexicalEditorComponent";
-import MuscleGroupSelect from "../MuscleGroupSelect";
+import MuscleGroupSelect from "../Select/MuscleGroupSelect";
 import {
+  ExerciceCategory,
   ExerciceModel,
   MuscleGroup,
   useGenerateUploadUrlMutation,
@@ -32,12 +33,14 @@ import { dataURLtoFile } from "../CreateExercice/dataURLtoFile";
 import { uploadFileToAWS } from "@/services/zustand/utils/s3utils";
 import { useExerciceURL } from "@/services/hooks/useExerciceUrl";
 import { LoaderFive } from "../ui/loader";
+import ExerciceCategorySelect from "../Select/ExerciceCategorySelect";
 
 type UpdateExerciceModalProps = {
   isOpen: boolean;
   onClose: () => void;
   exercice: ExerciceModel;
   allMuscles: MuscleGroup[];
+  allCategories: ExerciceCategory[];
   refetch: () => void;
 };
 
@@ -49,6 +52,7 @@ function useExerciceForm(exercice: ExerciceModel) {
   );
   const [title, setTitle] = useState<string>(exercice?.title || "");
   const [muscles, setMuscles] = useState<string[]>(muscleId ?? []);
+  const [category, setCategory] = useState<string>(exercice?.category?.id ?? "");
 
   return {
     content,
@@ -57,6 +61,8 @@ function useExerciceForm(exercice: ExerciceModel) {
     setTitle,
     muscles,
     setMuscles,
+    category,
+    setCategory,
   };
 }
 
@@ -110,6 +116,7 @@ export default function UpdateExerciceModal({
   onClose,
   exercice,
   allMuscles,
+  allCategories,
   refetch,
 }: UpdateExerciceModalProps) {
   const [updateExercice, { loading }] = useUpdateExerciceModelMutation();
@@ -118,8 +125,16 @@ export default function UpdateExerciceModal({
   const [openConfirm, setOpenConfirm] = useState<boolean>(false);
 
   const exercicesURL = useExerciceURL(exercice?.image ?? "");
-  const { content, setContent, title, setTitle, muscles, setMuscles } =
-    useExerciceForm(exercice);
+  const {
+    content,
+    setContent,
+    title,
+    setTitle,
+    muscles,
+    setMuscles,
+    category,
+    setCategory,
+  } = useExerciceForm(exercice);
   const {
     replaceVideo,
     setReplaceVideo,
@@ -170,6 +185,7 @@ export default function UpdateExerciceModal({
             title,
             description: content ? JSON.stringify(content) : null,
             muscles,
+            category
           },
         },
       });
@@ -251,14 +267,14 @@ export default function UpdateExerciceModal({
           variables: {
             fileType: file.file.type,
             fileName: !exercice.video ? file.file.name : exercice.video,
-            isNew: !exercice.video
+            isNew: !exercice.video,
           },
         }),
         generateUploadURL({
           variables: {
             fileType: "image/jpeg",
             fileName: !exercice.image ? file.file.name : exercice.image,
-            isNew: !exercice.image
+            isNew: !exercice.image,
           },
         }),
       ]);
@@ -349,7 +365,10 @@ export default function UpdateExerciceModal({
             onContentChange={handleChangeContent}
             muscles={muscles}
             setMuscles={setMuscles}
+            category={category}
+            setCategory={setCategory}
             allMuscles={allMuscles}
+            allCategories={allCategories}
           />
 
           <VideoSection
@@ -388,7 +407,6 @@ export default function UpdateExerciceModal({
   );
 }
 
-// Composants extraits pour une meilleure organisation
 function ExerciceForm({
   title,
   setTitle,
@@ -397,6 +415,9 @@ function ExerciceForm({
   muscles,
   setMuscles,
   allMuscles,
+  category,
+  setCategory,
+  allCategories,
 }: {
   title: string;
   setTitle: (title: string) => void;
@@ -405,6 +426,9 @@ function ExerciceForm({
   muscles: string[];
   setMuscles: (muscles: string[]) => void;
   allMuscles: MuscleGroup[];
+  category: string;
+  setCategory: (value: string) => void;
+  allCategories: ExerciceCategory[];
 }) {
   return (
     <section className="w-full flex flex-col justify-start items-center gap-6 py-4">
@@ -425,7 +449,12 @@ function ExerciceForm({
         />
       </div>
 
-      <div className="w-full">
+      <div className="w-full flex flex-col justify-center items-center gap-2">
+        <ExerciceCategorySelect
+          category={category}
+          allCategories={allCategories}
+          setCategory={setCategory}
+        />
         <MuscleGroupSelect
           muscles={muscles}
           allMuscles={allMuscles}

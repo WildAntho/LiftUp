@@ -3,8 +3,9 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerBody,
-  Chip,
   Spinner,
+  DrawerFooter,
+  Button,
 } from "@heroui/react";
 import { Separator } from "../ui/separator";
 import VideoPlayer from "../VideoPlayer";
@@ -111,10 +112,12 @@ export default function ExerciceInfo({
       <>
         <DrawerHeader className="w-full flex flex-col items-start justify-center">
           <p className="font-bold text-2xl">DETAILS</p>
-          <p className="text-tertiary text-sm">{exerciceInfo?.title}</p>
+          <p className="text-tertiary text-sm">
+            {exerciceInfo?.title?.toUpperCase()}
+          </p>
         </DrawerHeader>
         <Separator />
-        <DrawerBody className="w-full h-full flex flex-col items-center justify-start gap-8 pb-8">
+        <DrawerBody className="w-full h-full flex flex-col items-center justify-start gap-8 py-2">
           {exerciceInfo?.link ? (
             <VideoPlayer url={exerciceInfo.link} />
           ) : (
@@ -130,22 +133,37 @@ export default function ExerciceInfo({
             </div>
           )}
 
-          {exerciceInfo?.muscles && exerciceInfo.muscles.length > 0 && (
+          {(exerciceInfo?.muscles || exerciceInfo.category) && (
             <div className="flex flex-col items-start justify-center w-full gap-2">
-              <p className="font-bold">MUSCLES</p>
+              <p className="font-bold">{"Caractéristiques".toUpperCase()}</p>
               <div className="w-full py-2 rounded-lg text-gray-700 flex justify-start items-center gap-2">
-                {exerciceInfo.muscles.map((m) => (
-                  <Chip size="md" key={m.id}>
-                    {m.label}
-                  </Chip>
-                ))}
+                <div className="flex justify-center items-center gap-2 text-dark py-2 px-4 rounded-full bg-gray-100">
+                  <p className="font-semibold text-sm">Catégorie:</p>
+                  <p className="text-sm text-gray-500">
+                    {exerciceInfo.category?.label}
+                  </p>
+                </div>
+                {exerciceInfo.muscles && exerciceInfo?.muscles?.length > 0 && (
+                  <div className="flex justify-center items-center gap-2 text-dark py-2 px-4 rounded-full bg-gray-100">
+                    <p className="font-semibold text-sm">Muscles:</p>
+                    {exerciceInfo?.muscles?.map((m, i) => {
+                      const isLast = i === exerciceInfo.muscles!.length - 1;
+                      return (
+                        <p className="text-sm text-gray-500" key={m.id}>
+                          {m.label}
+                          {!isLast && " /"}
+                        </p>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           )}
           {exerciceInfo?.description && (
             <div className="flex flex-col items-start justify-center w-full gap-2">
               <p className="font-bold">DESCRIPTION</p>
-              <div className="w-full py-2 rounded-lg text-gray-700">
+              <div className="w-full rounded-lg text-gray-700">
                 <LexicalEditorComponent
                   value={JSON.parse(exerciceInfo.description)}
                   readOnly={true}
@@ -154,13 +172,25 @@ export default function ExerciceInfo({
             </div>
           )}
         </DrawerBody>
+        <DrawerFooter className="w-full py-3 border-t-1">
+          <Button
+            type="button"
+            className="group my-2 shadow-none text-white h-[50px] w-full rounded-xl bg-dark hover:translate-y-[-2px] hover:shadow-lg transition-all duration-200"
+            onPress={() => setOpen(false)}
+            disabled={loading}
+          >
+            <p className="text-sm transition-all duration-200 group-hover:translate-x-1">
+              Fermer
+            </p>
+          </Button>
+        </DrawerFooter>
       </>
     );
   };
 
   return (
     <Drawer {...drawerProps}>
-      <DrawerContent className="h-full flex flex-col justify-center items-center gap-2">
+      <DrawerContent className="h-full flex flex-col justify-center items-center">
         {renderContent()}
       </DrawerContent>
     </Drawer>

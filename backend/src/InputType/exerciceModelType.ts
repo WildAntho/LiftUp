@@ -6,6 +6,7 @@ import {
   registerEnumType,
 } from "type-graphql";
 import { MuscleGroup } from "../entities/muscleGroup";
+import { ExerciceCategory } from "../entities/exerciceCategory";
 
 export enum VideoType {
   YOUTUBE = "YOUTUBE",
@@ -39,6 +40,9 @@ export class ExerciceModelData {
 
   @Field(() => [String], { nullable: true })
   muscles?: string[];
+
+  @Field(() => String, { nullable: true })
+  category?: string;
 }
 
 @ObjectType()
@@ -51,6 +55,9 @@ export class ExerciceInfoResponse {
 
   @Field(() => [MuscleGroup], { nullable: true })
   muscles?: MuscleGroup[];
+
+  @Field(() => ExerciceCategory, { nullable: true })
+  category?: ExerciceCategory;
 
   @Field({ nullable: true })
   title?: string;
