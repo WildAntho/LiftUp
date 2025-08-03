@@ -52,7 +52,9 @@ function useExerciceForm(exercice: ExerciceModel) {
   );
   const [title, setTitle] = useState<string>(exercice?.title || "");
   const [muscles, setMuscles] = useState<string[]>(muscleId ?? []);
-  const [category, setCategory] = useState<string>(exercice?.category?.id ?? "");
+  const [category, setCategory] = useState<string>(
+    exercice?.category?.id ?? ""
+  );
 
   return {
     content,
@@ -185,7 +187,7 @@ export default function UpdateExerciceModal({
             title,
             description: content ? JSON.stringify(content) : null,
             muscles,
-            category
+            category,
           },
         },
       });
@@ -389,7 +391,6 @@ export default function UpdateExerciceModal({
             loading={loading}
           />
         </DrawerBody>
-
         <DrawerFooter>
           <Button
             startContent={<Save size={16} />}
@@ -449,17 +450,21 @@ function ExerciceForm({
         />
       </div>
 
-      <div className="w-full flex flex-col justify-center items-center gap-2">
-        <ExerciceCategorySelect
-          category={category}
-          allCategories={allCategories}
-          setCategory={setCategory}
-        />
-        <MuscleGroupSelect
-          muscles={muscles}
-          allMuscles={allMuscles}
-          setMuscles={setMuscles}
-        />
+      <div className="w-full flex flex-col justify-center items-center h-32">
+        <div className="w-full h-full">
+          <ExerciceCategorySelect
+            category={category}
+            allCategories={allCategories}
+            setCategory={setCategory}
+          />
+        </div>
+        <div className="w-full h-full">
+          <MuscleGroupSelect
+            muscles={muscles}
+            allMuscles={allMuscles}
+            setMuscles={setMuscles}
+          />
+        </div>
       </div>
     </section>
   );
