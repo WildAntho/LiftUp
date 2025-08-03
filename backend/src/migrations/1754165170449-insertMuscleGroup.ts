@@ -127,11 +127,6 @@ export class InsertMuscleGroup1754165170449 implements MigrationInterface {
         SELECT em.id, mg.id
         FROM exercice_model em, muscle_group mg
         WHERE em.title = 'Curl incliné altères' AND mg.key IN ('biceps');`);
-
-    await queryRunner.query(`UPDATE exercice_model
-        SET "categoryId" = (
-        SELECT id FROM exercice_category WHERE key = 'strength'
-        );`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {}
