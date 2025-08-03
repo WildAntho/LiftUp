@@ -14,6 +14,7 @@ import { User } from "./user";
 import { MuscleGroup } from "./muscleGroup";
 import { Exercice } from "./exercice";
 import { VideoType } from "../InputType/exerciceModelType";
+import { ExerciceCategory } from "./exerciceCategory";
 
 @ObjectType()
 @Entity()
@@ -47,7 +48,10 @@ export class ExerciceModel extends BaseEntity {
   video?: string;
 
   @Field(() => User, { nullable: true })
-  @ManyToOne(() => User, (user) => user.exerciceModels, { nullable: true, onDelete: "CASCADE" })
+  @ManyToOne(() => User, (user) => user.exerciceModels, {
+    nullable: true,
+    onDelete: "CASCADE",
+  })
   user?: User;
 
   @Field(() => [User], { nullable: true })
@@ -56,20 +60,16 @@ export class ExerciceModel extends BaseEntity {
   })
   userFavorites?: User[];
 
-  @Field(() => MuscleGroup, { nullable: true })
-  @ManyToOne(() => MuscleGroup, { nullable: true })
-  primaryMuscle?: MuscleGroup;
-
-  @Field(() => MuscleGroup, { nullable: true })
-  @ManyToOne(() => MuscleGroup, { nullable: true })
-  secondaryMuscle?: MuscleGroup;
-
   @Field(() => [MuscleGroup], { nullable: true })
   @ManyToMany(() => MuscleGroup, (muscleGroup) => muscleGroup.exercices, {
     cascade: true,
   })
   @JoinTable()
   muscles?: MuscleGroup[];
+
+  @Field(() => ExerciceCategory, { nullable: true })
+  @ManyToOne(() => ExerciceCategory, { nullable: true })
+  category?: ExerciceCategory;
 
   @Field(() => Exercice, { nullable: true })
   @OneToMany(() => Exercice, (exercice) => exercice.exerciceModel)

@@ -26,11 +26,13 @@ export class ExerciceModelResolver {
     @Arg("id", { nullable: true }) id?: string,
     @Arg("input", { nullable: true }) input?: string,
     @Arg("getFavorite", { nullable: true }) getFavorite?: boolean,
-    @Arg("muscles", () => [String], { nullable: true }) muscles?: string[]
+    @Arg("muscles", () => [String], { nullable: true }) muscles?: string[],
+    @Arg("category", { nullable: true }) category?: string
   ) {
     const query = ExerciceModel.createQueryBuilder("exercice")
       .leftJoinAndSelect("exercice.user", "user")
-      .leftJoinAndSelect("exercice.muscles", "muscles");
+      .leftJoinAndSelect("exercice.muscles", "muscles")
+      .leftJoinAndSelect("exercice.category", "category");
 
     const hasFilters =
       id || input || getFavorite || (muscles && muscles.length > 0);
@@ -53,6 +55,10 @@ export class ExerciceModelResolver {
 
     if (muscles && muscles.length > 0) {
       query.andWhere("muscles.id IN (:...muscles)", { muscles });
+    }
+
+    if (category) {
+      query.andWhere("category.id = :category", { category });
     }
 
     if (!hasFilters) {
@@ -192,9 +198,9 @@ export class ExerciceModelResolver {
       relations: {
         user: true,
         muscles: true,
+        category: true,
       },
     });
-
     if (!exerciceModel) throw new Error("Aucun exercice n'a été trouvé");
     const isOwnerOrStudent =
       exerciceModel.user && canGetExercice(connectedUser, exerciceModel.user);

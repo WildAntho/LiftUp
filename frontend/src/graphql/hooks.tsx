@@ -111,6 +111,14 @@ export type Exercice = {
   weightFormat?: Maybe<WeightFormat>;
 };
 
+export type ExerciceCategory = {
+  __typename?: 'ExerciceCategory';
+  exerciceModels?: Maybe<Array<ExerciceModel>>;
+  id: Scalars['ID']['output'];
+  key: Scalars['String']['output'];
+  label: Scalars['String']['output'];
+};
+
 export type ExerciceData = {
   config?: InputMaybe<Config>;
   exerciceModelId?: InputMaybe<Scalars['String']['input']>;
@@ -131,6 +139,7 @@ export type ExerciceData = {
 
 export type ExerciceInfoResponse = {
   __typename?: 'ExerciceInfoResponse';
+  category?: Maybe<ExerciceCategory>;
   description?: Maybe<Scalars['String']['output']>;
   link?: Maybe<Scalars['String']['output']>;
   muscles?: Maybe<Array<MuscleGroup>>;
@@ -139,6 +148,7 @@ export type ExerciceInfoResponse = {
 
 export type ExerciceModel = {
   __typename?: 'ExerciceModel';
+  category?: Maybe<ExerciceCategory>;
   description?: Maybe<Scalars['String']['output']>;
   exercices?: Maybe<Exercice>;
   id: Scalars['ID']['output'];
@@ -154,6 +164,7 @@ export type ExerciceModel = {
 };
 
 export type ExerciceModelData = {
+  category?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
@@ -852,6 +863,7 @@ export type Query = {
   getCrewTraining: Array<Training>;
   getCurrentProfileSubscription: ProfileSubscription;
   getDayNumberTraining: Array<Scalars['Float']['output']>;
+  getExerciceCategories: Array<ExerciceCategory>;
   getExerciceInfo: ExerciceInfoResponse;
   getExercices: Array<Exercice>;
   getFavoriteExercicesId: Array<Scalars['String']['output']>;
@@ -895,6 +907,7 @@ export type Query = {
 
 
 export type QueryGetAllExercicesModelArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
   getFavorite?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   input?: InputMaybe<Scalars['String']['input']>;
@@ -1819,22 +1832,28 @@ export type GetTotalStudentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetTotalStudentsQuery = { __typename?: 'Query', getTotalStudents: number };
 
+export type GetExerciceCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetExerciceCategoriesQuery = { __typename?: 'Query', getExerciceCategories: Array<{ __typename?: 'ExerciceCategory', id: string, key: string, label: string }> };
+
 export type GetAllExercicesModelQueryVariables = Exact<{
   input?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   getFavorite?: InputMaybe<Scalars['Boolean']['input']>;
   muscles?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type GetAllExercicesModelQuery = { __typename?: 'Query', getAllExercicesModel: Array<{ __typename?: 'ExerciceModel', id: string, title: string, image?: string | null, description?: string | null, videoType?: VideoType | null, video?: string | null, user?: { __typename?: 'User', id: string } | null, muscles?: Array<{ __typename?: 'MuscleGroup', id: string }> | null }> };
+export type GetAllExercicesModelQuery = { __typename?: 'Query', getAllExercicesModel: Array<{ __typename?: 'ExerciceModel', id: string, title: string, image?: string | null, description?: string | null, videoType?: VideoType | null, video?: string | null, user?: { __typename?: 'User', id: string } | null, muscles?: Array<{ __typename?: 'MuscleGroup', id: string }> | null, category?: { __typename?: 'ExerciceCategory', id: string } | null }> };
 
 export type GetExerciceInfoQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type GetExerciceInfoQuery = { __typename?: 'Query', getExerciceInfo: { __typename?: 'ExerciceInfoResponse', link?: string | null, description?: string | null, title?: string | null, muscles?: Array<{ __typename?: 'MuscleGroup', id: string, label: string }> | null } };
+export type GetExerciceInfoQuery = { __typename?: 'Query', getExerciceInfo: { __typename?: 'ExerciceInfoResponse', link?: string | null, description?: string | null, title?: string | null, muscles?: Array<{ __typename?: 'MuscleGroup', id: string, label: string }> | null, category?: { __typename?: 'ExerciceCategory', id: string, key: string, label: string } | null } };
 
 export type GetFavoriteExercicesIdQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -4625,13 +4644,55 @@ export type GetTotalStudentsQueryHookResult = ReturnType<typeof useGetTotalStude
 export type GetTotalStudentsLazyQueryHookResult = ReturnType<typeof useGetTotalStudentsLazyQuery>;
 export type GetTotalStudentsSuspenseQueryHookResult = ReturnType<typeof useGetTotalStudentsSuspenseQuery>;
 export type GetTotalStudentsQueryResult = Apollo.QueryResult<GetTotalStudentsQuery, GetTotalStudentsQueryVariables>;
+export const GetExerciceCategoriesDocument = gql`
+    query GetExerciceCategories {
+  getExerciceCategories {
+    id
+    key
+    label
+  }
+}
+    `;
+
+/**
+ * __useGetExerciceCategoriesQuery__
+ *
+ * To run a query within a React component, call `useGetExerciceCategoriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetExerciceCategoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetExerciceCategoriesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetExerciceCategoriesQuery(baseOptions?: Apollo.QueryHookOptions<GetExerciceCategoriesQuery, GetExerciceCategoriesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetExerciceCategoriesQuery, GetExerciceCategoriesQueryVariables>(GetExerciceCategoriesDocument, options);
+      }
+export function useGetExerciceCategoriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetExerciceCategoriesQuery, GetExerciceCategoriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetExerciceCategoriesQuery, GetExerciceCategoriesQueryVariables>(GetExerciceCategoriesDocument, options);
+        }
+export function useGetExerciceCategoriesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetExerciceCategoriesQuery, GetExerciceCategoriesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetExerciceCategoriesQuery, GetExerciceCategoriesQueryVariables>(GetExerciceCategoriesDocument, options);
+        }
+export type GetExerciceCategoriesQueryHookResult = ReturnType<typeof useGetExerciceCategoriesQuery>;
+export type GetExerciceCategoriesLazyQueryHookResult = ReturnType<typeof useGetExerciceCategoriesLazyQuery>;
+export type GetExerciceCategoriesSuspenseQueryHookResult = ReturnType<typeof useGetExerciceCategoriesSuspenseQuery>;
+export type GetExerciceCategoriesQueryResult = Apollo.QueryResult<GetExerciceCategoriesQuery, GetExerciceCategoriesQueryVariables>;
 export const GetAllExercicesModelDocument = gql`
-    query GetAllExercicesModel($input: String, $id: String, $getFavorite: Boolean, $muscles: [String!]) {
+    query GetAllExercicesModel($input: String, $id: String, $getFavorite: Boolean, $muscles: [String!], $category: String) {
   getAllExercicesModel(
     input: $input
     id: $id
     getFavorite: $getFavorite
     muscles: $muscles
+    category: $category
   ) {
     id
     title
@@ -4644,6 +4705,9 @@ export const GetAllExercicesModelDocument = gql`
       id
     }
     muscles {
+      id
+    }
+    category {
       id
     }
   }
@@ -4666,6 +4730,7 @@ export const GetAllExercicesModelDocument = gql`
  *      id: // value for 'id'
  *      getFavorite: // value for 'getFavorite'
  *      muscles: // value for 'muscles'
+ *      category: // value for 'category'
  *   },
  * });
  */
@@ -4693,6 +4758,11 @@ export const GetExerciceInfoDocument = gql`
     title
     muscles {
       id
+      label
+    }
+    category {
+      id
+      key
       label
     }
   }

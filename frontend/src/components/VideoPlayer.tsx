@@ -17,7 +17,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, controls = true }) => {
         src={url}
         controls={controls}
         controlsList="nodownload"
-        style={{ borderRadius: "8px", width: "100%" }}
+        style={{ borderRadius: "8px", width: "100%", maxHeight: "400px" }}
+        autoPlay
       />
     );
   }

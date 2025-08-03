@@ -25,6 +25,7 @@ import { Permission } from "../entities/permission";
 import { Profile } from "../entities/profile";
 import { ProfileSubscription } from "../entities/profileSubscription";
 import { Invoice } from "../entities/invoice";
+import { ExerciceCategory } from "../entities/exerciceCategory";
 
 config();
 
@@ -62,7 +63,8 @@ export const dataSource = new DataSource({
     Permission,
     Profile,
     ProfileSubscription,
-    Invoice
+    Invoice,
+    ExerciceCategory
   ],
   synchronize: true,
   migrations: ["build/migrations/*.js"],

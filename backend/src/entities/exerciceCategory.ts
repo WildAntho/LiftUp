@@ -3,7 +3,6 @@ import {
   BaseEntity,
   Column,
   Entity,
-  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
@@ -11,7 +10,7 @@ import { ExerciceModel } from "./exerciceModel";
 
 @ObjectType()
 @Entity()
-export class MuscleGroup extends BaseEntity {
+export class ExerciceCategory extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn()
   id!: string;
@@ -25,6 +24,9 @@ export class MuscleGroup extends BaseEntity {
   label!: string;
 
   @Field(() => [ExerciceModel], { nullable: true })
-  @ManyToMany(() => ExerciceModel, (exercice) => exercice.muscles)
-  exercices?: ExerciceModel[];
+  @OneToMany(() => ExerciceModel, (exercice) => exercice.category, {
+    nullable: true,
+    eager: true,
+  })
+  exerciceModels?: ExerciceModel[];
 }

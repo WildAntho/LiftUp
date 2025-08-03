@@ -10,6 +10,11 @@ export const GET_EXERCICE_INFO = gql`
         id
         label
       }
+      category {
+        id
+        key
+        label
+      }
     }
   }
 `;

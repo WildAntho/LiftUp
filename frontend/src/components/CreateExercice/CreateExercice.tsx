@@ -3,6 +3,7 @@ import { Notebook, Settings, Video } from "lucide-react";
 import UploadVideo from "./UploadVideo";
 import { useEffect, useRef, useState } from "react";
 import {
+  ExerciceCategory,
   MuscleGroup,
   useCreateExerciceModelMutation,
   useGenerateUploadUrlMutation,
@@ -15,22 +16,26 @@ import { toast } from "sonner";
 import { FileWithPreview } from "@/hooks/use-file-upload";
 import { dataURLtoFile } from "./dataURLtoFile";
 import { getYoutubeId, getYoutubeThumbnail } from "./youtubeHandling";
-import MuscleGroupSelect from "../MuscleGroupSelect";
+import MuscleGroupSelect from "../Select/MuscleGroupSelect";
 import { uploadFileToAWS } from "@/services/zustand/utils/s3utils";
 import { useHasPermission } from "@/services/hooks/hasPermission";
 import { PERMISSIONS } from "@/services/constants";
 import { LoaderFive } from "../ui/loader";
+import ExerciceCategorySelect from "../Select/ExerciceCategorySelect";
 
 type CreateExerciceProps = {
   allMuscleGroup: MuscleGroup[];
+  allCategories: ExerciceCategory[];
   onCreate: () => void;
 };
 
 export default function CreateExercice({
   allMuscleGroup,
+  allCategories,
   onCreate,
 }: CreateExerciceProps) {
   const [muscles, setMuscles] = useState<string[]>([]);
+  const [category, setCategory] = useState<string>("");
   const [videoSource, setVideoSource] = useState<VideoType>(VideoType.Youtube);
   const [content, setContent] = useState<object | null>(null);
   const [title, setTitle] = useState<string>("");
@@ -96,9 +101,12 @@ export default function CreateExercice({
               title,
               description: content ? JSON.stringify(content) : null,
               muscles,
+              category,
               videoType: !file && !youtubeURL ? null : videoSource,
-              video: `${videoData.fileName}`,
-              image: `${thumbnailData.fileName}`,
+              video: videoData.fileName ? `${videoData.fileName}` : null,
+              image: thumbnailData.fileName
+                ? `${thumbnailData.fileName}`
+                : null,
             },
           },
         });
@@ -136,6 +144,7 @@ export default function CreateExercice({
             title,
             description: content ? JSON.stringify(content) : null,
             muscles,
+            category,
             videoType: !file && !youtubeURL ? null : videoSource,
             video: youtubeURL,
             image: thumbnail ? `${thumbnail}` : null,
@@ -201,11 +210,18 @@ export default function CreateExercice({
           <Settings size={20} />
           <p className="font-semibold">Information détaillées</p>
         </div>
-        <MuscleGroupSelect
-          muscles={muscles}
-          allMuscles={allMuscleGroup}
-          setMuscles={setMuscles}
-        />
+        <div className="w-full flex justify-center items-center gap-2">
+          <ExerciceCategorySelect
+            category={category}
+            allCategories={allCategories}
+            setCategory={setCategory}
+          />
+          <MuscleGroupSelect
+            muscles={muscles}
+            allMuscles={allMuscleGroup}
+            setMuscles={setMuscles}
+          />
+        </div>
       </section>
       {canManageVideo && (
         <section className="w-[70%] flex flex-col items-start justify-start gap-4 rounded-2xl border border-gray-100 shadow-sm p-4">

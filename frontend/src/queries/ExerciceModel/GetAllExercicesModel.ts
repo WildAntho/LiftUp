@@ -6,12 +6,14 @@ export const GET_ALLEXERCICE_MODEL = gql`
     $id: String
     $getFavorite: Boolean
     $muscles: [String!]
+    $category: String
   ) {
     getAllExercicesModel(
       input: $input
       id: $id
       getFavorite: $getFavorite
       muscles: $muscles
+      category: $category
     ) {
       id
       title
@@ -24,6 +26,9 @@ export const GET_ALLEXERCICE_MODEL = gql`
         id
       }
       muscles {
+        id
+      }
+      category {
         id
       }
     }
