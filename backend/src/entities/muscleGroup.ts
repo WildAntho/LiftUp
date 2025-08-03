@@ -25,20 +25,6 @@ export class MuscleGroup extends BaseEntity {
   label!: string;
 
   @Field(() => [ExerciceModel], { nullable: true })
-  @OneToMany(() => ExerciceModel, (exercice) => exercice.primaryMuscle, {
-    nullable: true,
-    cascade: true,
-  })
-  primaryExercises?: ExerciceModel[];
-
-  @Field(() => [ExerciceModel], { nullable: true })
-  @OneToMany(() => ExerciceModel, (exercice) => exercice.secondaryMuscle, {
-    nullable: true,
-    cascade: true,
-  })
-  secondaryExercises?: ExerciceModel[];
-
-  @Field(() => [ExerciceModel], { nullable: true })
   @ManyToMany(() => ExerciceModel, (exercice) => exercice.muscles)
   exercices?: ExerciceModel[];
 }
