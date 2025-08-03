@@ -15,7 +15,7 @@ export default function IllustrationAbout() {
       {/* Contenu textuel superposé */}
       <div className="relative z-10 max-w-md">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          Bienvenue sur ton espace A propos
+          Bienvenue sur ton espace {"à".toUpperCase()} propos
         </h1>
         <h2 className="text-2xl text-green-500 font-bold mb-4">
           Crée ton profil coach !

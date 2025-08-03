@@ -233,7 +233,7 @@ export default function TabStudent({ refetch }: TabStudentProps) {
             if (user.remaining < 8) {
               textColor = "text-red-700";
               bgColor = "bg-red-100";
-            } else if (user.remaining < 15) {
+            } else if (user.remaining < 10) {
               textColor = "text-orange-700";
               bgColor = "bg-orange-100";
             } else {

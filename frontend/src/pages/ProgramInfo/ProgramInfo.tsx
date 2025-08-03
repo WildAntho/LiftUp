@@ -66,7 +66,10 @@ export default function ProgramInfo() {
         <section className="flex flex-col justify-start items-center h-full w-full overflow-y-scroll">
           <div className="relative w-full h-[250px] flex justify-start items-center">
             <div className="relative w-full h-full">
-              <img src="/banner.jpg" className="object-cover w-full h-full" />
+              <img
+                src="/bannerprogram.webp"
+                className="object-cover w-full h-full"
+              />
               <div className="absolute inset-0 bg-black/50"></div>
             </div>
             <div className="absolute left-16 flex justify-start items-center gap-2 text-white z-1">

@@ -52,7 +52,7 @@ export default function Profile() {
       ? [
           {
             key: "about",
-            label: "A propos",
+            label: "à".toUpperCase() + " " + "propos",
             icon: <FaQuestionCircle size={24} />,
           },
         ]
@@ -134,7 +134,7 @@ export default function Profile() {
                 requiredRole={UserRole.Coach}
                 permission={PERMISSIONS.MANAGE_PROGRAM}
               >
-                <Stripe profile={profile as CoachProfile} refetch={refetch}/>
+                <Stripe profile={profile as CoachProfile} refetch={refetch} />
               </ProtectedRoute>
             )}
           </section>

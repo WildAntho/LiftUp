@@ -154,8 +154,6 @@ export type ExerciceModel = {
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   muscles?: Maybe<Array<MuscleGroup>>;
-  primaryMuscle?: Maybe<MuscleGroup>;
-  secondaryMuscle?: Maybe<MuscleGroup>;
   title: Scalars['String']['output'];
   user?: Maybe<User>;
   userFavorites?: Maybe<Array<User>>;
@@ -278,8 +276,6 @@ export type MuscleGroup = {
   id: Scalars['ID']['output'];
   key: Scalars['String']['output'];
   label: Scalars['String']['output'];
-  primaryExercises?: Maybe<Array<ExerciceModel>>;
-  secondaryExercises?: Maybe<Array<ExerciceModel>>;
 };
 
 export type Mutation = {
@@ -1003,6 +999,7 @@ export type QueryGetProgramsArgs = {
 
 export type QueryGetProgramsMarketPlaceArgs = {
   categorie?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
   level?: InputMaybe<ProgramLevel>;
   price?: InputMaybe<Array<Scalars['Float']['input']>>;
 };
@@ -1979,10 +1976,11 @@ export type GetProgramsMarketPlaceQueryVariables = Exact<{
   price?: InputMaybe<Array<Scalars['Float']['input']> | Scalars['Float']['input']>;
   categorie?: InputMaybe<Scalars['String']['input']>;
   level?: InputMaybe<ProgramLevel>;
+  id?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type GetProgramsMarketPlaceQuery = { __typename?: 'Query', getProgramsMarketPlace: Array<{ __typename?: 'Program', id: string, title: string, duration: number, price?: number | null, level: ProgramLevel, category?: { __typename?: 'OfferCategory', id: string, label: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } }> };
+export type GetProgramsMarketPlaceQuery = { __typename?: 'Query', getProgramsMarketPlace: Array<{ __typename?: 'Program', id: string, title: string, duration: number, price?: number | null, level: ProgramLevel, description?: string | null, category?: { __typename?: 'OfferCategory', id: string, label: string } | null, coach: { __typename?: 'User', id: string, email: string, firstname: string, lastname: string, avatar?: string | null } }> };
 
 export type GetTrainingPlanQueryVariables = Exact<{
   data: GetTrainingType;
@@ -5717,13 +5715,19 @@ export type GetOneProgramMarketPlaceLazyQueryHookResult = ReturnType<typeof useG
 export type GetOneProgramMarketPlaceSuspenseQueryHookResult = ReturnType<typeof useGetOneProgramMarketPlaceSuspenseQuery>;
 export type GetOneProgramMarketPlaceQueryResult = Apollo.QueryResult<GetOneProgramMarketPlaceQuery, GetOneProgramMarketPlaceQueryVariables>;
 export const GetProgramsMarketPlaceDocument = gql`
-    query GetProgramsMarketPlace($price: [Float!], $categorie: String, $level: ProgramLevel) {
-  getProgramsMarketPlace(price: $price, categorie: $categorie, level: $level) {
+    query GetProgramsMarketPlace($price: [Float!], $categorie: String, $level: ProgramLevel, $id: String) {
+  getProgramsMarketPlace(
+    price: $price
+    categorie: $categorie
+    level: $level
+    id: $id
+  ) {
     id
     title
     duration
     price
     level
+    description
     category {
       id
       label
@@ -5754,6 +5758,7 @@ export const GetProgramsMarketPlaceDocument = gql`
  *      price: // value for 'price'
  *      categorie: // value for 'categorie'
  *      level: // value for 'level'
+ *      id: // value for 'id'
  *   },
  * });
  */

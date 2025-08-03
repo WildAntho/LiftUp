@@ -215,7 +215,8 @@ export class StudentResolver {
     @Arg("price", () => [Number], { nullable: true }) price?: number[],
     @Arg("categorie", { nullable: true }) categorie?: string,
     @Arg("level", () => ProgramLevel, { nullable: true })
-    level?: ProgramLevel | null
+    level?: ProgramLevel | null,
+    @Arg("id", { nullable: true }) id?: string
   ) {
     const queryBuilder = Program.createQueryBuilder("program")
       .leftJoinAndSelect("program.category", "category")
@@ -225,6 +226,10 @@ export class StudentResolver {
       .andWhere("program.status = :status", { status: ProgramStatus.PUBLISHED })
       .andWhere("program.price > 0")
       .andWhere("coachProfile.programVisible = :visible", { visible: true });
+
+    if (id) {
+      queryBuilder.andWhere("program.coach.id = :id", { id });
+    }
 
     if (price && price.length > 0) {
       const [minPrice, maxPrice] = price;

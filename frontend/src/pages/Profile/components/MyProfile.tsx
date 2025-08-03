@@ -462,7 +462,12 @@ export default function MyProfile() {
           <div className="w-full mt-2 flex justify-end">
             <Saving
               onClick={debouncedUpdatePassword}
-              disabled={loadingPassword}
+              disabled={
+                loadingPassword ||
+                !password.currentPassword ||
+                !password.newPassword ||
+                !password.confirmPassword
+              }
               loading={loadingPassword}
             />
           </div>

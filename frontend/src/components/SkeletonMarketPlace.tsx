@@ -2,14 +2,14 @@ import { Skeleton } from "@heroui/react";
 
 export default function SkeletonMarketplace() {
   return (
-    <section className="flex flex-col items-center gap-6 w-full">
+    <section className="flex flex-col items-center gap-8 w-full">
       {/* Skeleton des filtres */}
       <div className="w-full flex justify-end">
         <Skeleton className="w-full h-[50px] rounded-xl" />
       </div>
 
       {/* Skeleton des cartes programmes */}
-      <section className="w-full flex flex-col gap-4">
+      <section className="w-full flex flex-col gap-2">
         {[...Array(2)].map((_, i) => (
           <div
             key={i}

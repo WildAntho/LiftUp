@@ -56,7 +56,8 @@ export default function ProgramCard({ program }: ProgramCardProps) {
         <div className="flex flex-col items-start justify-center">
           <div className="text-sm">
             <p className="text-primary text-lg font-semibold">
-              {program.price}€ total
+              {program.price}€{" "}
+              <span className="text-sm text-gray-500">au total</span>
             </p>
             <span className="text-sm font-semibold opacity-50">
               {program.price &&

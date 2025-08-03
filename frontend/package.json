@@ -51,6 +51,7 @@
     "evergreen-ui": "^7.1.9",
     "graphql": "^16.9.0",
     "graphql-ws": "^6.0.4",
+    "input-otp": "^1.4.2",
     "install": "^0.13.0",
     "lexical": "^0.31.2",
     "lucide-react": "^0.473.0",

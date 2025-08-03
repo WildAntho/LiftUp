@@ -12,7 +12,7 @@ export default function OffersCoach({ offers }: OffersCoachProps) {
     <section className="flex flex-col items-start justify-start gap-5 mt-5">
       <div className="w-full">
         <p className="font-semibold text-lg mb-4 flex items-center gap-3">
-          <RiMoneyEuroCircleFill size={24} />
+          <RiMoneyEuroCircleFill size={28} />
           Prestations proposées
         </p>
         <Separator />
