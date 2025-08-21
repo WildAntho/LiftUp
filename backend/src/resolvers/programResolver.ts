@@ -53,7 +53,7 @@ export class ProgramResolver {
       relations: { coachProfile: true },
     });
     const category = await OfferCategory.findOneBy({ id: data.categoryId });
-    if (!category) throw new Error("Aucune catégorie n'a été trouvé");
+    if (!category && data.public) throw new Error("Aucune catégorie n'a été trouvé");
     if (!coach) throw new Error("Aucun utilisateur n'a été trouvé");
     checkAutorization(data, coach, category);
     const program = new Program();
@@ -63,7 +63,7 @@ export class ProgramResolver {
     program.price = data.price;
     program.level = data.level;
     program.public = data.public;
-    program.category = category;
+    if (category) program.category = category;
     program.coach = coach;
     await program.save();
     await updateProgress(context.user.id, "program");
