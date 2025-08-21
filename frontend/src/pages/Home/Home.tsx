@@ -1,16 +1,16 @@
 import { useUserStore } from "@/services/zustand/userStore";
-import HomeSidebar from "./components/HomeSidebar";
 import { useLocation } from "react-router-dom";
 import Program from "./Program/Program";
 import Dashboard from "./Dashboard/Dashboard";
-import Calendar from "./components/Calendar";
-import PathBreadcrumbs from "./components/PathBreadcrumbs";
 import Offers from "./Offers/Offers";
 import ProtectedRoute from "@/services/ProtectedRoutes";
 import ExerciceModelSection from "./ExerciceModel/ExerciceModelSection";
 import Coaching from "./Coaching/Coaching";
 import { UserRole } from "@/graphql/hooks";
 import { PERMISSIONS } from "@/services/constants";
+import PathBreadcrumbs from "./Calendar/components/PathBreadcrumbs";
+import Calendar from "./Calendar/Calendar";
+import HomeSidebar from "./Calendar/components/HomeSidebar";
 
 export default function Home() {
   const currentUser = useUserStore((state) => state.user);

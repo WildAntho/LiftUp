@@ -1,11 +1,5 @@
-import { Membership } from "../entities/memberShip";
+import { maxFreeStudents } from "../constants";
 import { User } from "../entities/user";
-
-export async function desactivateMemberShip(memberShip: Membership) {
-  memberShip.isActive = false;
-  memberShip.endDate = new Date();
-  await memberShip.save();
-}
 
 export async function deleteFromCrew(student: User) {
   student.crew = null;
@@ -19,4 +13,10 @@ export async function deleteStudent(studentId: string, coach: User) {
   coach.students = newStudents;
   await coach.save();
   return JSON.stringify("L'élève a bien été supprimé");
+}
+
+export function canAddStudent(coach: User): boolean {
+  if (coach.profile?.name === "Coach-Maestro") return true;
+  if (!coach.students || coach.students.length <= maxFreeStudents) return true;
+  return false;
 }

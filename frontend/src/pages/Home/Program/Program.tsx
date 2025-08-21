@@ -1,5 +1,4 @@
 import ProgramModal from "@/components/modals/ProgramModal/ProgramModal";
-import Configuration from "./components/Configuration/Configuration";
 import { Button } from "@/components/ui/button";
 import { Plus, PlusCircle, Search } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -28,6 +27,7 @@ import { BiSolidNotepad } from "react-icons/bi";
 import { useRole } from "@/services/hooks/useRole";
 import AnimatedWrapper from "@/components/Wrapper/AnimatedWrapper";
 import { ApolloError } from "@apollo/client";
+import Configuration from "./Configuration/Configuration";
 
 export default function Program() {
   const currentUser = useUserStore((state) => state.user);
@@ -181,10 +181,10 @@ export default function Program() {
     <section className="relative w-full h-full flex flex-col justify-start items-center bg-white rounded-2xl px-4 pt-10 gap-4">
       {!isConfiguration && (
         <section className="w-full h-full flex flex-col justify-start items-center rounded-2xl gap-4 pt-6 pb-4">
-          <section className="w-[85%] flex justify-between items-center">
+          <section className="w-[90%] 2xl:w-[85%] flex justify-between items-center gap-2">
             <AnimatedWrapper
               animation="slideUp"
-              className="flex justify-start items-start gap-2"
+              className="flex justify-start items-start gap-2 overflow-x-scroll"
             >
               <div onClick={() => setActiveCard(ProgramStatus.Published)}>
                 <StatusCard
@@ -230,7 +230,7 @@ export default function Program() {
               </Button>
             </AnimatedWrapper>
           </section>
-          <section className="h-full w-[85%] bg-gray-50 bg-opacity-50 border border-gray-100 shadow-md p-4 flex flex-col justify-start items-start rounded-xl gap-4 overflow-y-scroll">
+          <section className="h-full w-[90%] 2xl:w-[85%] bg-gray-50 bg-opacity-50 border border-gray-100 shadow-md p-4 flex flex-col justify-start items-start rounded-xl gap-4 overflow-y-scroll">
             <Input
               label="Recherche"
               placeholder="Rechercher un programme"

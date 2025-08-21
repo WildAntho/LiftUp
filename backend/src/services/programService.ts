@@ -47,7 +47,11 @@ async function createAllExercices(
   return result;
 }
 
-export function checkAutorization(data: ProgramInput, coach: User, category?: OfferCategory | null) {
+export function checkAutorization(
+  data: ProgramInput,
+  coach: User,
+  category?: OfferCategory | null
+) {
   const canSell =
     coach?.coachProfile?.chargesEnabled && coach.coachProfile.payoutsEnabled;
   if (data.public && !canSell) {

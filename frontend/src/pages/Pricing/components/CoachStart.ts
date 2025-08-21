@@ -4,7 +4,7 @@ export const coachStarter: Feature[] = [
   {
     id: 1,
     category: "Gestion des clients",
-    text: "5 élèves",
+    text: "2 élèves",
     status: "included",
   },
   {

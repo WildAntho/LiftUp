@@ -15,14 +15,14 @@ export class Profile1752423555728 implements MigrationInterface {
             SELECT p.id, perm.id
             FROM profile p, permission perm
             WHERE p.name = 'User-Maestro'
-              AND perm.key IN ('manage:Exercice', 'manage:Feedback', 'read:Video', 'read:Feedback')
+              AND perm.key IN ('manage:Exercice', 'manage:Feedback', 'read:Video', 'read:Feedback', 'manage:Message')
             ON CONFLICT DO NOTHING;
       
             INSERT INTO profile_permissions_permission ("profileId", "permissionId")
             SELECT p.id, perm.id
             FROM profile p, permission perm
             WHERE p.name = 'Student-Maestro'
-              AND perm.key IN ('manage:Exercice', 'manage:Feedback', 'read:Video', 'manage:Message', 'read:Feedback')
+              AND perm.key IN ('manage:Feedback', 'read:Video', 'manage:Message', 'read:Feedback')
             ON CONFLICT DO NOTHING;
       
             INSERT INTO profile_permissions_permission ("profileId", "permissionId")

@@ -17,6 +17,7 @@ import { Crew } from "../entities/crew";
 import { NotificationType } from "../InputType/notificationType";
 import { hasAnyRole } from "../services/userService";
 import { UserRole } from "../InputType/userType";
+import { canAddStudent } from "../services/coachService";
 
 @Authorized()
 @Resolver(Request)
@@ -68,6 +69,11 @@ export class RequestResolver {
     const isSenderCoach = sender && hasAnyRole(sender, [UserRole.COACH]);
     if (receiver && sender && isReceiverCoach && isSenderCoach) {
       throw new Error("Un coach ne peut pas ajouter un coach");
+    }
+    if (isReceiverCoach) {
+      const isRequestAllowed = canAddStudent(receiver);
+      if (!isRequestAllowed)
+        throw new Error("Ce coach ne peut plus ajouter de nouveaux élèves");
     }
     if (receiver && sender) {
       newRequest.receiver = receiver;
@@ -125,8 +131,6 @@ export class RequestResolver {
       },
     });
     const isSenderStudent = sender && hasAnyRole(sender, [UserRole.STUDENT]);
-    const isReceiverStudent =
-      receiver && hasAnyRole(receiver, [UserRole.STUDENT]);
     const isReceiverCoach = receiver && hasAnyRole(receiver, [UserRole.COACH]);
     // Assignation de l'offre au user si c'est un élève
     if (sender && isSenderStudent && request?.offer) {
@@ -170,7 +174,7 @@ export class RequestResolver {
           requestNotification = request;
         }
       }
-      if (isReceiverStudent) {
+      if (!isSenderStudent) {
         receiver.coach = sender;
         await receiver.save();
         if (request) {

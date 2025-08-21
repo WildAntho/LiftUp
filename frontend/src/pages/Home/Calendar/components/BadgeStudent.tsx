@@ -2,7 +2,7 @@ import { Tooltip, User } from "@heroui/react";
 import { useStudentStore } from "@/services/zustand/studentStore";
 import { X } from "lucide-react";
 import { uploadURL } from "@/services/utils";
-import imgDefault from "../../../../public/default.jpg";
+import imgDefault from "../../../../../public/default.jpg";
 
 type BadgeStudentProps = {
   student: {

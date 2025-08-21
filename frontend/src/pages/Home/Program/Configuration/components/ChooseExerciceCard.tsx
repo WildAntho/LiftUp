@@ -85,7 +85,7 @@ export default function ChooseExerciceCard({
           className="group absolute top-2 right-2 z-10 cursor-pointer p-1 shadow-sm border-1 border-gray-200 bg-gray-50 rounded-xl"
         >
           {currentIsFavorite ? (
-            <RiHeartFill size={20} className="text-red-600 opacity-70" />
+            <RiHeartFill size={20} className="text-red-600 opacity-90" />
           ) : (
             <RiHeartAddLine
               size={20}

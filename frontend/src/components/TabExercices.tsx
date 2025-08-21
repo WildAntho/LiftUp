@@ -16,9 +16,6 @@ import { useDebouncedCallback } from "@/services/hooks/useDebouncedCallback";
 import { useUserStore } from "@/services/zustand/userStore";
 import { toast } from "sonner";
 import { FilterCardEnum } from "@/services/utils";
-import FilterCard from "@/pages/Home/Program/components/Configuration/components/FilterCard";
-import ChooseExerciceCard from "@/pages/Home/Program/components/Configuration/components/ChooseExerciceCard";
-import SkeletonExerciceCard from "@/pages/Home/Program/components/Configuration/components/SkeletonExerciceCard";
 import CreateExercice from "./CreateExercice/CreateExercice";
 import MuscleGroupSelect from "./Select/MuscleGroupSelect";
 import UpdateExerciceModal from "./modals/UpdateExerciceModal";
@@ -32,6 +29,9 @@ import { useHasPermission } from "@/services/hooks/hasPermission";
 import { PERMISSIONS } from "@/services/constants";
 import AnimatedWrapper from "./Wrapper/AnimatedWrapper";
 import ExerciceCategorySelect from "./Select/ExerciceCategorySelect";
+import FilterCard from "@/pages/Home/Program/Configuration/components/FilterCard";
+import SkeletonExerciceCard from "@/pages/Home/Program/Configuration/components/SkeletonExerciceCard";
+import ChooseExerciceCard from "@/pages/Home/Program/Configuration/components/ChooseExerciceCard";
 
 type TabExercicesProps = {
   activeExercices: ExerciceModel[] | null;

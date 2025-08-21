@@ -39,7 +39,6 @@ import { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useCrewStore } from "@/services/zustand/crewStore";
 import { Separator } from "../ui/separator";
-import ExerciceComponent from "@/pages/Home/Program/components/Configuration/components/ExerciceComponent";
 import ConfirmModal from "./ConfirmModal";
 import Saving from "../Saving";
 import Cancel from "../Cancel";
@@ -48,6 +47,7 @@ import DateInput from "../DateInput";
 import { useRole } from "@/services/hooks/useRole";
 import { useHasPermission } from "@/services/hooks/hasPermission";
 import { PERMISSIONS } from "@/services/constants";
+import ExerciceComponent from "@/pages/Home/Program/Configuration/components/ExerciceComponent";
 
 interface Config {
   rep: number;

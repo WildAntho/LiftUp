@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 
-export default function useIsDesktop(breakpoint = 1024) {
-  const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= breakpoint);
+export default function useIsDesktop(breakpoint = 1150) {
+  const [isDesktop, setIsDesktop] = useState(
+    () => window.innerWidth >= breakpoint
+  );
 
   useEffect(() => {
     const handleResize = () => {

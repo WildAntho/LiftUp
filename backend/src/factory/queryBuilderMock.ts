@@ -4,3 +4,4 @@ export const mockAndWhere = jest.fn().mockReturnThis();
 export const mockWhere = jest.fn().mockReturnThis();
 export const mockLeftJoinAndSelect = jest.fn().mockReturnThis();
 export const mockOrderBy = jest.fn().mockReturnThis();
+export const mockLeftJoin = jest.fn().mockReturnThis();

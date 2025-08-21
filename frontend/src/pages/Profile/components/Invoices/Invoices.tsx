@@ -52,6 +52,10 @@ export default function Invoices() {
   const allInvoices = data?.getInvoices ?? [];
   const allPrograms = dataProgram?.getUserPrograms ?? [];
   const currentSubscription = dataProfileSub?.getCurrentProfileSubscription;
+  const isMaestro =
+    !!currentUser?.profile &&
+    (currentUser.profile.name === "User-Maestro" ||
+      currentUser?.profile.name === "Coach-Maestro");
 
   const getParams = (value?: string | null) => {
     switch (value) {
@@ -182,7 +186,7 @@ export default function Invoices() {
         {active === "SUBSCRIPTION" && (
           <div className="w-[60%] 2xl:w-[50%]">
             <MembershipView
-              isMaestro={currentUser?.profile !== null}
+              isMaestro={isMaestro}
               currentSubscription={currentSubscription as ProfileSubscription}
               onAction={handleSubscription}
               loading={loadingCancel || loadingReactivate}

@@ -54,10 +54,10 @@ export default function Offers() {
     <>
       <section className="w-full h-full flex flex-col items-center px-4 pt-10 bg-white rounded-2xl">
         <section className="w-full h-full flex flex-col items-center justify-start gap-4 pt-6 pb-4">
-          <div className="w-[85%] flex justify-between items-center">
+          <div className="w-[90%] 2xl:w-[85%] flex justify-between items-center gap-2">
             <AnimatedWrapper
               animation="slideUp"
-              className="flex justify-start items-start gap-2"
+              className="flex justify-start items-start gap-2 overflow-x-scroll"
             >
               <div onClick={() => setActiveCard(null)}>
                 <StatusCard
@@ -104,13 +104,13 @@ export default function Offers() {
               </Button>
             </AnimatedWrapper>
           </div>
-          <section className="flex flex-col justify-start items-start gap-4 h-full w-[85%] bg-gray-50 bg-opacity-50 border border-gray-100 shadow-md p-4 rounded-xl overflow-y-auto">
+          <section className="flex flex-col justify-start items-start gap-4 h-full w-[90%] 2xl:w-[85%] bg-gray-50 bg-opacity-50 border border-gray-100 shadow-md p-4 rounded-xl overflow-y-auto">
             <Input
               label="Recherche"
               placeholder="Rechercher une offre"
               capture
               value={input}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              onChange={(e) => {
                 setInput(e.target.value);
               }}
               startContent={<Search size={20} className="text-gray-500" />}

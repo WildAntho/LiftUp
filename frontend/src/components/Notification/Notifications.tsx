@@ -7,6 +7,7 @@ import {
   Notification,
   NotificationGroup,
   NotificationType,
+  useGetMeLazyQuery,
   useGetNotificationQuery,
   useHasBeenseenMutation,
   useIsReadMutation,
@@ -37,6 +38,8 @@ interface NotificationContentProps {
 
 export default function Notifications() {
   const currentUser = useUserStore((state) => state.user);
+  const setStore = useUserStore((state) => state.set);
+  const [getMe] = useGetMeLazyQuery();
   const [tabRead, setTabread] = useState("all");
   const [activeGroup, setActiveGroup] = useState<NotificationGroup | null>(
     null
@@ -90,6 +93,13 @@ export default function Notifications() {
       refetch();
     }
     const redirectPath = getNotificationRedirectPath(type);
+    if (type === NotificationType.ActivateMembership) {
+      const { data } = await getMe();
+      if (data?.GetMe) {
+        const profile = JSON.parse(data.GetMe);
+        setStore(profile);
+      }
+    }
     navigate(redirectPath);
     setIsOpen(false);
   };

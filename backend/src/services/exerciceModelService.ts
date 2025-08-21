@@ -74,6 +74,7 @@ export async function buildResponseExercice(exerciceModel: ExerciceModel) {
     };
   }
   return {
+    link,
     description: exerciceModel.description,
     muscles: exerciceModel.muscles,
     category: exerciceModel.category,

@@ -9,7 +9,6 @@ import {
 } from "type-graphql";
 import { User } from "../entities/user";
 import { Membership } from "../entities/memberShip";
-import { desactivateMemberShip } from "../services/coachService";
 import isNotificationAllowed from "../services/notificationPreferenceService";
 import { NotificationType } from "../InputType/notificationType";
 import { createNotification } from "../services/notificationsService";
@@ -25,6 +24,8 @@ import { stripe } from "../config/stripe";
 import { Crew } from "../entities/crew";
 import { CtxUser } from "../InputType/coachType";
 import { checkStripeCustomerId } from "../services/stripeService";
+import { commissionProgram, maxFreeStudents } from "../constants";
+import { desactivateMemberShip } from "../services/memberShipService";
 
 @Authorized("STUDENT")
 @Resolver(User)
@@ -44,6 +45,8 @@ export class StudentResolver {
       .leftJoinAndSelect("user.coachProfile", "coachProfile")
       .leftJoinAndSelect("user.offers", "offers")
       .leftJoinAndSelect("offers.category", "category")
+      .leftJoin("user.profile", "profile")
+      .leftJoin("user.students", "student")
       .where("user.roles @> :role", { role: '["COACH"]' })
       .andWhere("coachProfile.profileVisible = :visible", { visible: true })
       .andWhere("offers.availability = true");
@@ -95,6 +98,23 @@ export class StudentResolver {
         .getQuery();
       return `user.id NOT IN ${subQuery}`;
     });
+
+    queryBuilder.andWhere(
+      (qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select("1")
+          .from(User, "u")
+          .leftJoin("u.students", "s")
+          .where("u.id = user.id")
+          .groupBy("u.id")
+          .having("COUNT(s.id) <= :maxStudents")
+          .getQuery();
+
+        return `(profile.name = :profileName OR EXISTS ${subQuery})`;
+      },
+      { profileName: "Coach-Maestro", maxStudents: maxFreeStudents ?? 2 }
+    );
 
     // Ordonner les résultats par prix des offres
     queryBuilder.orderBy("offers.price", "ASC");
@@ -173,6 +193,7 @@ export class StudentResolver {
       relations: {
         crew: true,
         coach: true,
+        profile: true,
       },
     });
     const memberShip = await Membership.findOne({
@@ -188,6 +209,9 @@ export class StudentResolver {
     await desactivateMemberShip(memberShip);
     user.coach = null;
     user.crew = null;
+    if (user.profile && user.profile.name !== "User-Maestro") {
+      user.profile = null;
+    }
     await user.save();
 
     const allowedNotification = await isNotificationAllowed(
@@ -222,10 +246,12 @@ export class StudentResolver {
       .leftJoinAndSelect("program.category", "category")
       .leftJoinAndSelect("program.coach", "coach")
       .leftJoinAndSelect("coach.coachProfile", "coachProfile")
+      .leftJoinAndSelect("coach.profile", "profile")
       .where("program.public = :isPublic", { isPublic: true })
       .andWhere("program.status = :status", { status: ProgramStatus.PUBLISHED })
       .andWhere("program.price > 0")
-      .andWhere("coachProfile.programVisible = :visible", { visible: true });
+      .andWhere("coachProfile.programVisible = :visible", { visible: true })
+      .andWhere("profile.name = :profile", { profile: "Coach-Maestro" });
 
     if (id) {
       queryBuilder.andWhere("program.coach.id = :id", { id });
@@ -292,13 +318,16 @@ export class StudentResolver {
     }
     const coach = await User.findOne({
       where: { id: coachId },
-      relations: { coachProfile: true },
+      relations: { coachProfile: true, profile: true },
     });
     if (!coach) {
       throw new Error("Aucun coach n'a été trouvé");
     }
     if (!program.public || !program.price) {
       throw new Error("Ce programme est privé");
+    }
+    if (!coach.profile || coach.profile.name !== "Coach-Maestro") {
+      throw new Error("Le coach n'a pas les droits pour vendre des programmes");
     }
     if (!coach?.coachProfile?.stripeAccountId) {
       throw new Error("Le coach n’a pas de compte Stripe Connect.");
@@ -312,8 +341,6 @@ export class StudentResolver {
       },
     });
 
-    const commissionRate = 0.15;
-
     if (!programSubscription) {
       // Crée la souscription si elle n'existe pas
       programSubscription = UserProgram.create({
@@ -323,7 +350,7 @@ export class StudentResolver {
         status: UserProgramStatus.PENDING_PAYMENT,
         price: program.price || 0,
         startDate,
-        commissionRate,
+        commissionRate: commissionProgram,
         currency: "eur",
       });
       await programSubscription.save();
@@ -357,7 +384,7 @@ export class StudentResolver {
           destination: coach.coachProfile.stripeAccountId,
         },
         application_fee_amount: Math.round(
-          program.price * commissionRate * 100
+          program.price * commissionProgram * 100
         ),
       },
       metadata: {
