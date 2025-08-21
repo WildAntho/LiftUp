@@ -1,6 +1,5 @@
 import { Key, useEffect, useState } from "react";
 import { getDaysInMonth, getDaysInWeek } from "../../../services/utils";
-import { ScheduleCalendar } from "./ScheduleCalendar";
 import { ViewMode } from "@/type";
 import { UserWithoutPassword } from "@/services/zustand/userStore";
 import {
@@ -19,6 +18,7 @@ import { useCrewStore } from "@/services/zustand/crewStore";
 import { useHasPermission } from "@/services/hooks/hasPermission";
 import { PERMISSIONS } from "@/services/constants";
 import { useRole } from "@/services/hooks/useRole";
+import { ScheduleCalendar } from "./components/ScheduleCalendar";
 
 type CalendarProps = {
   currentUser: UserWithoutPassword | null;

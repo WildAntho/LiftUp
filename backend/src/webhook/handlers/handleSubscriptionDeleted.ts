@@ -4,6 +4,7 @@ import {
   ProfileSubscriptionStatus,
 } from "../../entities/profileSubscription";
 import { User } from "../../entities/user";
+import { invalidateUserTokens } from "../../services/userService";
 
 export const handleSubscriptionDeleted = async (
   subscription: Stripe.Subscription
@@ -40,10 +41,11 @@ export const handleSubscriptionDeleted = async (
   // Retrait du profil à l'utilisateur
   user.profile = null;
   await user.save();
+  await invalidateUserTokens(user);
 
   // ✅ Mise à jour de la subscription locale
   localSub.status = ProfileSubscriptionStatus.CANCELED;
-  localSub.endDate = new Date(); // ou conserve la précédente
+  localSub.endDate = new Date();
   await localSub.save();
 
   console.log("🚫 Accès au profil retiré pour user:", user.id);

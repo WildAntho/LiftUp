@@ -354,7 +354,9 @@ export default function UpdateExerciceModal({
       <DrawerContent>
         <DrawerHeader className="flex flex-col items-start justify-center">
           <p className="font-bold text-2xl">ÉDITER L'EXERCICE</p>
-          <p className="text-tertiary text-sm">{exercice?.title}</p>
+          <p className="text-tertiary text-sm">
+            {exercice?.title.toUpperCase()}
+          </p>
         </DrawerHeader>
 
         <Separator />

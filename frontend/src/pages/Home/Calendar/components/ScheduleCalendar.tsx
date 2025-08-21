@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { isSameDay } from "date-fns";
-import { CalendarEvent, ViewMode } from "../../../type";
 import { Day } from "./Day";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Tooltip } from "@heroui/tooltip";
@@ -19,6 +18,7 @@ import BadgeCrew from "./BadgeCrew";
 import { FaRegCalendar } from "react-icons/fa6";
 import { IoArrowUndo } from "react-icons/io5";
 import { useRole } from "@/services/hooks/useRole";
+import { CalendarEvent, ViewMode } from "@/type";
 
 interface CalendarProps<T> {
   events: T[];

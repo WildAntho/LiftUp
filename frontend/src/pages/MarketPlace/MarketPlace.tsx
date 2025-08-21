@@ -70,8 +70,8 @@ export default function MarketPlace() {
         <IllustrationProgram />
       </div>
 
-      <section className="w-[80%] 2xl:w-[100rem] min-h-full rounded-2xl flex flex-col justify-start items-center gap-7">
-        <section className="relative w-[90%] flex flex-col justify-start items-center gap-2">
+      <section className="w-[80%] 2xl:w-[100rem] h-full rounded-2xl flex flex-col justify-start items-center gap-7">
+        <section className="relative w-[90%] flex flex-col justify-start items-center gap-2 pb-4">
           {loading ? (
             <SkeletonMarketplace />
           ) : (

@@ -23,10 +23,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, controls = true }) => {
     );
   }
 
-  // Sinon, fallback vers ReactPlayer (ex: YouTube)
+  // Sinon, fallback vers ReactPlayer
   return (
-    <div className="w-full min-h-[400px] aspect-video rounded-lg overflow-hidden">
-      <ReactPlayer url={url} controls={controls} width="100%" height="100%" />
+    <div className="w-full min-h-[400px] rounded-lg overflow-hidden">
+      <ReactPlayer
+        url={url}
+        controls={controls}
+        width="100%"
+        height="100%"
+        playing={true}
+      />
     </div>
   );
 };

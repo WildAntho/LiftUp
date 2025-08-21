@@ -26,7 +26,7 @@ async function StartGraphQLServer() {
 
   app.post(
     "/webhook/stripe/plateform",
-    express.raw({ type: "application/json" }),
+    express.raw({ type: "*/*" }),
     stripeWebhookHandlerPlateform
   );
 

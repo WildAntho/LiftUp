@@ -1,8 +1,8 @@
 import { FaFire } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa";
 import { FaFileInvoiceDollar } from "react-icons/fa6";
-import FloatingDockDesktop from "@/pages/Home/Program/components/Configuration/components/FloatingMenu";
 import { useNavigate } from "react-router-dom";
+import FloatingDockDesktop from "@/pages/Home/Program/Configuration/components/FloatingMenu";
 
 type FloatingDockInvoiceProps = {
   onChange: (value: "SUBSCRIPTION" | "INVOICE" | "PROGRAM") => void;

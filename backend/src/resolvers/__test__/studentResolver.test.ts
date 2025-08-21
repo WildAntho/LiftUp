@@ -2,6 +2,7 @@ import { User } from "../../entities/user";
 import {
   mockAndWhere,
   mockGetMany,
+  mockLeftJoin,
   mockLeftJoinAndSelect,
   mockOrderBy,
   mockWhere,
@@ -25,6 +26,7 @@ const mockQueryBuilder = {
   subQuery: jest.fn(() => mockSubQueryBuilder),
   orderBy: mockOrderBy,
   getMany: mockGetMany,
+  leftJoin: mockLeftJoin,
 };
 
 jest
@@ -57,10 +59,9 @@ describe("StudentResolver", () => {
 
       const result = await resolver.selectCoach("123", "john");
 
-      expect(mockWhere).toHaveBeenCalledWith(
-        "user.roles @> :role",
-        { role: '["COACH"]' }
-      );
+      expect(mockWhere).toHaveBeenCalledWith("user.roles @> :role", {
+        role: '["COACH"]',
+      });
       expect(mockAndWhere).toHaveBeenCalledWith(
         "(user.firstname ILIKE :input OR user.lastname ILIKE :input)",
         { input: "%john%" }

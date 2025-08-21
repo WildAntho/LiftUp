@@ -3,6 +3,7 @@ import { UserProgram, UserProgramStatus } from "../../entities/userProgram";
 import { TrainingPlan } from "../../entities/trainingPlan";
 import { generateTraining } from "../../services/programService";
 import { Profile } from "../../entities/profile";
+import { User } from "../../entities/user";
 
 // Service de gestion de génération de programme lorsque la session de paiement d'un programme est validée
 export async function handleProgramCheckoutSession(
@@ -36,11 +37,13 @@ export async function handleProgramCheckoutSession(
     subscription.paidAt = new Date();
     await subscription.save();
 
-
     // On récupère le profil student-maestro
     const profile = await Profile.findOneBy({ name: "Student-Maestro" });
+    const user = await User.findOne({
+      where: { id: subscription.user.id },
+      relations: { profile: true },
+    });
 
-    const user = subscription.user;
     const program = subscription.program;
     const coachId = subscription.coach?.id;
     const startDate = subscription.startDate;
@@ -72,9 +75,9 @@ export async function handleProgramCheckoutSession(
       return;
     }
 
-    // On assigne à l'utilisateur le profile student-maestro
-    if (profile) user.profile = profile
-    await user.save()
+    // On assigne à l'utilisateur le profile student-maestro (si il n'a pas de profil actuel)
+    if (profile && !user.profile) user.profile = profile;
+    await user.save();
 
     try {
       await generateTraining(trainings, user, coachId, startDate);

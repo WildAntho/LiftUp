@@ -38,7 +38,6 @@ export default function Pricing() {
   const currentUser = useUserStore((state) => state.user);
   const isCoach = useRole(UserRole.Coach);
   const isStudent = useRole(UserRole.Student);
-  const userProfile = !!currentUser?.profile;
   const { data, loading } = useGetProfilePricingQuery();
   const [generateSession, { loading: loadingSession }] =
     useGenerateSessionProfileMutation();
@@ -46,6 +45,10 @@ export default function Pricing() {
   const [periodicity, setPeriodicity] = useState<Periodicity>(
     Periodicity.Monthly
   );
+  const isMaestro =
+    !!currentUser?.profile &&
+    (currentUser.profile.name === "User-Maestro" ||
+      currentUser?.profile.name === "Coach-Maestro");
 
   const renderFeature = () => {
     if (currentUser?.roles.includes(UserRole.Student)) {
@@ -129,7 +132,7 @@ export default function Pricing() {
             ),
             title: "Est-ce que mes clients doivent payer l'abonnement ?",
             content:
-              "Non lorsque tu ajoutes un élève celui bénéficie immédiatement de l'offre Maestro Elève.",
+              "Non lorsque tu ajoutes un élève celui bénéficie immédiatement des fonctionnalités nécessaires à son suivi.",
           },
           {
             id: "4",
@@ -157,9 +160,9 @@ export default function Pricing() {
                 aria-hidden="true"
               />
             ),
-            title: "Pourquoi la messagerie n'est-elle pas accessible ?",
+            title: "Comment fonctionne la messagerie ?",
             content:
-              "Seules les élèves ayant souscrit à un programme ou à un suivi personnalisé auront accès à la messagerie avec leur coach.",
+              "La messagerie te permet d'échanger avec ton coach dans le cadre d'un suivi ou lorsque tu achètes un programme.",
           },
           {
             id: "6",
@@ -234,7 +237,7 @@ export default function Pricing() {
                 periodicity={periodicity}
                 onSubscribe={handleSubscribe}
                 loading={loadingSession}
-                isSubscribed={userProfile}
+                isSubscribed={isMaestro}
               />
             )
         )}

@@ -53,6 +53,6 @@ export const studentMaestro: Feature[] = [
     id: 9,
     category: "Communication",
     text: "Accès à la messagerie (réservé au coaching)",
-    status: "excluded",
+    status: "included",
   },
 ];

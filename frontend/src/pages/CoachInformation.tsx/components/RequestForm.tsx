@@ -122,10 +122,10 @@ export default function RequestForm({ offers, coachId }: RequestFormProps) {
             </p>
           </Button>
           <div className="w-full flex justify-between items-center">
-            <p className="flex-1 text-xs text-gray-500">
+            <p className="flex-1 text-[10px] text-gray-500">
               <span className="text-red-500">*</span> Champs obligatoires
             </p>
-            <p className="flex-1 text-xs text-gray-500">
+            <p className="flex-1 text-[10px] text-gray-500 text-end">
               Cette action est sans engagement
             </p>
           </div>

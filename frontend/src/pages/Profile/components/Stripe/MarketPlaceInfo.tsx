@@ -48,10 +48,9 @@ export default function MarketPlaceInfo({
       <p className="text-sm text-gray-600">
         Le marketplace permet aux sportifs, sans entraîneur, de trouver des
         plans d'entraînement et/ou un entraîneur. Être visible sur la
-        marketplace Liftup est inclus dans ton abonnement entraîneur et permet à
+        marketplace Liftup est inclus dans l'abonnement Maestro entraîneur et permet à
         ton contenu d'être visible pour tout sportif cherchant à préparer un
-        objectif. Bénéficie de la visibilité qu'offre Liftup sans coût
-        supplémentaire.
+        objectif. Bénéficie de la visibilité qu'offre Liftup.
       </p>
       <div className="flex flex-col items-start justify-center gap-2">
         <p className="text-lg font-semibold">Page entraîneur</p>

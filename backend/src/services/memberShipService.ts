@@ -14,3 +14,9 @@ export async function startMembership(student: User, offer: Offer) {
   newMemberShip.offer = offer;
   await newMemberShip.save();
 }
+
+export async function desactivateMemberShip(memberShip: Membership) {
+  memberShip.isActive = false;
+  memberShip.endDate = new Date();
+  await memberShip.save();
+}

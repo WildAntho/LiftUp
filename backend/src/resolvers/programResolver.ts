@@ -37,12 +37,7 @@ export class ProgramResolver {
     @Arg("status", { nullable: true }) status?: ProgramStatus
   ) {
     const programs = await Program.find({
-      where: {
-        coach: {
-          id: context.user.id,
-        },
-        status,
-      },
+      where: { coach: { id: context.user.id }, status },
       relations: { category: true },
     });
     return programs;
@@ -54,14 +49,11 @@ export class ProgramResolver {
     @Ctx() context: { user: CtxUser }
   ) {
     const coach = await User.findOne({
-      where: {
-        id: context.user.id,
-      },
-      relations: {
-        coachProfile: true,
-      },
+      where: { id: context.user.id },
+      relations: { coachProfile: true },
     });
     const category = await OfferCategory.findOneBy({ id: data.categoryId });
+    if (!category && data.public) throw new Error("Aucune catégorie n'a été trouvé");
     if (!coach) throw new Error("Aucun utilisateur n'a été trouvé");
     checkAutorization(data, coach, category);
     const program = new Program();

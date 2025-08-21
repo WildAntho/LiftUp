@@ -19,17 +19,15 @@ import { StudentsResponse } from "../InputType/coachProfileType";
 import { createTrainingsForDates } from "../services/trainingService";
 import { StatusStudent } from "../InputType/memberShipType";
 import { Membership } from "../entities/memberShip";
-import {
-  deleteFromCrew,
-  deleteStudent,
-  desactivateMemberShip,
-} from "../services/coachService";
+import { deleteFromCrew, deleteStudent } from "../services/coachService";
 import isNotificationAllowed from "../services/notificationPreferenceService";
 import { NotificationType } from "../InputType/notificationType";
 import { createNotification } from "../services/notificationsService";
 import { stripe } from "../config/stripe";
 import { CoachProfile } from "../entities/coachProfile";
 import { getStripeAccountStatus } from "../webhook/services/getStripeAccountStatus";
+import { deleteProfile } from "../services/profileService";
+import { desactivateMemberShip } from "../services/memberShipService";
 
 @Authorized("COACH")
 @Resolver(User)
@@ -49,6 +47,7 @@ export class CoachResolver {
       relations: {
         crew: true,
         studentOffer: true,
+        profile: true,
       },
     });
     // Récupération du memberShip de l'élève
@@ -67,9 +66,12 @@ export class CoachResolver {
     if (memberShip) {
       desactivateMemberShip(memberShip);
     }
-    // Si l'élève est dans un Crew (appartenant au coach) on le supprime de ce Crew
+    // Si l'élève est dans un Crew (appartenant au coach) on le supprime de ce Crew + retrait du profile (si Student-Maestro)
     if (student) {
       deleteFromCrew(student);
+      if (student.profile && student.profile.name !== "User-Maestro") {
+        deleteProfile(student, true);
+      }
     }
     // On supprime ensuite l'élève de la liste d'élève du coach
     if (coach && student) {

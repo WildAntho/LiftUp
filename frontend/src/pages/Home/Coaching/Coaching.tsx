@@ -2,6 +2,7 @@ import { Separator } from "@/components/ui/separator";
 import imgDefault from "../../../../public/default.jpg";
 import {
   useCancelMembershipMutation,
+  useGetMeLazyQuery,
   useGetMyCoachQuery,
   useGetMyMembershipQuery,
 } from "@/graphql/hooks";
@@ -23,9 +24,12 @@ import ConfirmModal from "@/components/modals/ConfirmModal";
 import { useState } from "react";
 import { toast } from "sonner";
 import ShadowWrapper from "@/components/Wrapper/ShadowWrapper";
+import { useUserStore } from "@/services/zustand/userStore";
 
 export default function Coaching() {
   const navigate = useNavigate();
+  const [getMe] = useGetMeLazyQuery();
+  const setStore = useUserStore((state) => state.set);
   const [openConfirm, setOpenConfirm] = useState<boolean>(false);
   const { data: dataCoach, loading: loadingCoach } = useGetMyCoachQuery({
     fetchPolicy: "no-cache",
@@ -50,6 +54,11 @@ export default function Coaching() {
           color: "#15803d",
         },
       });
+      const { data: dataMe } = await getMe();
+      if (dataMe?.GetMe) {
+        const profile = JSON.parse(dataMe.GetMe);
+        setStore(profile);
+      }
       navigate("/home");
     } catch (error) {
       console.error(error);

@@ -8,6 +8,7 @@ import { addMonths } from "date-fns";
 import isNotificationAllowed from "../services/notificationPreferenceService";
 import { NotificationType } from "../InputType/notificationType";
 import { createNotification } from "../services/notificationsService";
+import { giveProfile } from "../services/profileService";
 
 @Authorized("COACH")
 @Resolver(Membership)
@@ -17,7 +18,10 @@ export class MembershipResolver {
     @Arg("data") data: ActiveMembershipType,
     @Ctx() context: { pubsub: PubSub }
   ) {
-    const student = await User.findOneBy({ id: data.studentId });
+    const student = await User.findOne({
+      where: { id: data.studentId },
+      relations: { profile: true },
+    });
     if (!student) throw new Error("Aucun étudiant n'existe pour cet id");
     const offer = await Offer.findOneBy({ id: data.offerId });
     if (!offer) throw new Error("Aucune offre n'existe pour cet id");
@@ -31,6 +35,9 @@ export class MembershipResolver {
     if (memberShip.length > 0)
       throw new Error("Cet élève a déjà une souscription active");
     await startMembership(student, offer);
+    if (!student.profile) {
+      await giveProfile(student, "Student-Maestro");
+    }
     const allowedNotification = await isNotificationAllowed(
       NotificationType.ACTIVATE_MEMBERSHIP,
       data.studentId

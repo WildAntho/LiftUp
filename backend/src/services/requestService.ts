@@ -1,4 +1,3 @@
-import { In } from "typeorm";
 import { Request } from "../entities/request";
 
 export async function checkRequest(senderId: string, receiverId: string) {
