@@ -34,7 +34,7 @@ export default function Invoices() {
   });
   const { data: dataProfileSub, refetch: refetchSubscription } =
     useGetCurrentProfileSubscriptionQuery({
-      fetchPolicy: "no-cache",
+      fetchPolicy: "cache-and-network",
     });
   const [cancelSubscription, { loading: loadingCancel }] =
     useCancelProfileSubscriptionMutation();
