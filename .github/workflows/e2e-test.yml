@@ -9,7 +9,7 @@ on:
 
 jobs:
   test-e2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
@@ -37,7 +37,7 @@ jobs:
 
       - name: Build and run Docker Compose
         run: |
-          docker-compose -f compose.e2e.yaml up -d --build
+          docker compose -f compose.e2e.yaml up -d --build
 
       - name: Seed the database
         run: |
@@ -62,4 +62,4 @@ jobs:
       - name: Stop and clean up Docker containers
         if: always()
         run: |
-          docker-compose -f compose.e2e.yaml down
+          docker compose -f compose.e2e.yaml down
