@@ -52,7 +52,7 @@ services:
       - development
   liftup-dev-database:
     container_name: liftup-dev-database
-    image: postgres
+    image: postgres:17
     volumes:
       - ./persist/data/:/var/lib/postgresql/data
     environment:

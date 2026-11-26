@@ -14,7 +14,6 @@ export const stripeWebhookHandlerPlateform = async (
   res: Response
 ) => {
   const sig = req.headers["stripe-signature"] as string;
-  console.log("enter");
   let event;
   try {
     event = stripe.webhooks.constructEvent(
